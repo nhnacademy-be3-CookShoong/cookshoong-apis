@@ -1,6 +1,6 @@
 package repository;
 
-import entity.CouponTypePercent;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypePercent;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 

@@ -1,6 +1,6 @@
 package repository;
 
-import entity.Status;
+import store.cookshoong.www.cookshoongbackend.accounts.entity.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
