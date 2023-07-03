@@ -1,6 +1,6 @@
 package repository;
 
-import entity.Options;
+import store.cookshoong.www.cookshoongbackend.order.Options;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 

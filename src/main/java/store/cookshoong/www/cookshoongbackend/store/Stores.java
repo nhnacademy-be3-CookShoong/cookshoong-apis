@@ -1,4 +1,4 @@
-package entity;
+package store.cookshoong.www.cookshoongbackend.store;
 
 import lombok.Data;
 

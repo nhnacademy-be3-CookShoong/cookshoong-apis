@@ -1,4 +1,4 @@
-package entity;
+package store.cookshoong.www.cookshoongbackend.store;
 
 import lombok.Data;
 
@@ -10,16 +10,16 @@ import java.io.Serializable;
 
 @Data
 @Entity
-@Table(name = "order_status")
-public class OrderStatus implements Serializable {
+@Table(name = "store_status")
+public class StoreStatus implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "order_status_code", nullable = false)
-    private String orderStatusCode;
+    @Column(name = "store_status_code", nullable = false)
+    private String storeStatusCode;
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description")
     private String description;
 
 }

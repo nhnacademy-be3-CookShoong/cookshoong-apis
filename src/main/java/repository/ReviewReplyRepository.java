@@ -1,6 +1,6 @@
 package repository;
 
-import entity.ReviewReply;
+import store.cookshoong.www.cookshoongbackend.review.ReviewReply;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 

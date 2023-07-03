@@ -1,6 +1,6 @@
 package repository;
 
-import entity.OrderDetailMenuOption;
+import store.cookshoong.www.cookshoongbackend.order.OrderDetailMenuOption;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 

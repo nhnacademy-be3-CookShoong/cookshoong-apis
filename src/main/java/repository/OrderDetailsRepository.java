@@ -1,6 +1,6 @@
 package repository;
 
-import entity.OrderDetails;
+import store.cookshoong.www.cookshoongbackend.order.OrderDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 

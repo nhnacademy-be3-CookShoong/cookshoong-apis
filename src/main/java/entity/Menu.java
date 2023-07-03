@@ -6,7 +6,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-@Data
 @Entity
 @Table(name = "menu")
 public class Menu implements Serializable {
