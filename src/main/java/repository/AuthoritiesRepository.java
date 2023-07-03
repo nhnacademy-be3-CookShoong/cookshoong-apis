@@ -1,6 +1,6 @@
 package repository;
 
-import entity.Authorities;
+import store.cookshoong.www.cookshoongbackend.accounts.entity.Authorities;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 

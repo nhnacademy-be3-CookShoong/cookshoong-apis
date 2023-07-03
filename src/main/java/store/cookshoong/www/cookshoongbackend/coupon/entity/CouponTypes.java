@@ -1,4 +1,4 @@
-package entity;
+package store.cookshoong.www.cookshoongbackend.coupon.entity;
 
 import lombok.Data;
 
@@ -7,8 +7,8 @@ import java.io.Serializable;
 
 @Data
 @Entity
-@Table(name = "coupon_type_cash")
-public class CouponTypeCash implements Serializable {
+@Table(name = "coupon_types")
+public class CouponTypes implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -16,11 +16,5 @@ public class CouponTypeCash implements Serializable {
     @Column(name = "coupon_type_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer couponTypeId;
-
-    @Column(name = "discount_amount", nullable = false)
-    private Integer discountAmount;
-
-    @Column(name = "minimum_price")
-    private Integer minimumPrice;
 
 }

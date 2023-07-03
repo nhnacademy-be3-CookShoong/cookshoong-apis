@@ -1,4 +1,4 @@
-package entity;
+package store.cookshoong.www.cookshoongbackend.accounts.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

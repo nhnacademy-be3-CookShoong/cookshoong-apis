@@ -1,4 +1,4 @@
-package entity;
+package store.cookshoong.www.cookshoongbackend.coupon.entity;
 
 import lombok.Data;
 
@@ -10,8 +10,8 @@ import java.io.Serializable;
 
 @Data
 @Entity
-@Table(name = "coupon_usage_merchant")
-public class CouponUsageMerchant implements Serializable {
+@Table(name = "coupon_usage_store")
+public class CouponUsageStore implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -19,7 +19,7 @@ public class CouponUsageMerchant implements Serializable {
     @Column(name = "coupon_usage_id", nullable = false)
     private Long couponUsageId;
 
-    @Column(name = "merchant_id", nullable = false)
-    private Long merchantId;
+    @Column(name = "stores_store_id", nullable = false)
+    private Long storesStoreId;
 
 }

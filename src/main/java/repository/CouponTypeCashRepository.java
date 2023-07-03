@@ -1,6 +1,6 @@
 package repository;
 
-import entity.CouponTypeCash;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
