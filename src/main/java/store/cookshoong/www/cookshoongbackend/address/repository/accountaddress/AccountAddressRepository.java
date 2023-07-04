@@ -4,10 +4,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import store.cookshoong.www.cookshoongbackend.address.entity.AccountAddress;
 
 /**
- * {설명을 작성해주세요}.
+ * 회원과 주소 repository.
  *
  * @author jeongjewan
  * @since 2023.07.04
  */
-public interface AccountAddressRepository extends JpaRepository<AccountAddress, AccountAddress.Pk>, AccountAddressRepositoryCustom{
+public interface AccountAddressRepository extends JpaRepository<AccountAddress, AccountAddress.Pk>,
+                                                                        AccountAddressRepositoryCustom{
+
 }

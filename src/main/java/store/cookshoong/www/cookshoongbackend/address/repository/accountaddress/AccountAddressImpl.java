@@ -3,10 +3,10 @@ package store.cookshoong.www.cookshoongbackend.address.repository.accountaddress
 import com.querydsl.core.types.Projections;
 import java.util.List;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
-import store.cookshoong.www.cookshoongbackend.address.dto.response.MainAddressResponseDto;
 import store.cookshoong.www.cookshoongbackend.address.entity.AccountAddress;
 import store.cookshoong.www.cookshoongbackend.address.entity.QAccountAddress;
 import store.cookshoong.www.cookshoongbackend.address.entity.QAddress;
+import store.cookshoong.www.cookshoongbackend.address.model.response.MainAddressResponseDto;
 
 /**
  * 회원과 주소 repository.
@@ -21,7 +21,7 @@ public class AccountAddressImpl extends QuerydslRepositorySupport implements Acc
     }
 
     /**
-     * 회원의 주소 리스를 조회 합니다.
+     * 회원의 주소 리스트를 조회 합니다.
      *
      * @param accountId 회원 아이디
      * @return 회원 주소 목록

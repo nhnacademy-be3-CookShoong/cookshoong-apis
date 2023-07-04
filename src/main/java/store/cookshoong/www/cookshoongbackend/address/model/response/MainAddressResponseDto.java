@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.address.dto.response;
+package store.cookshoong.www.cookshoongbackend.address.model.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,6 @@ import lombok.Getter;
  * @author jeongjewan
  * @since 2023.07.04
  */
-
 @Getter
 @AllArgsConstructor
 public class MainAddressResponseDto {

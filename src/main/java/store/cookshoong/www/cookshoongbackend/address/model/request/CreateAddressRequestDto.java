@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.address.dto.request;
+package store.cookshoong.www.cookshoongbackend.address.model.request;
 
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
@@ -10,11 +10,9 @@ import lombok.Getter;
  * @author jeongjewan
  * @since 2023.07.04
  */
-
 @Getter
 @AllArgsConstructor
 public class CreateAddressRequestDto {
-
 
     private String mainPlace;
 

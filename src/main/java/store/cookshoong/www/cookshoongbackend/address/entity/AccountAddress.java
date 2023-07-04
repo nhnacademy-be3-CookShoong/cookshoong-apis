@@ -23,9 +23,9 @@ import org.hibernate.annotations.ColumnDefault;
  * @author jeongjewan
  * @since 2023.07.04
  */
-
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Entity
 @Table(name = "account_address")
 public class AccountAddress {
@@ -46,12 +46,12 @@ public class AccountAddress {
      * 회원과 주소를 연결하는 pk.
      *
      * @author jeongjewan
-     * @since 2023/07/04
+     * @since 2023 /07/04
      */
     @Getter
     @Embeddable
     @EqualsAndHashCode
-    @NoArgsConstructor
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
     @AllArgsConstructor
     public static class Pk implements Serializable {
 
@@ -61,6 +61,5 @@ public class AccountAddress {
         @Column(name = "address_id")
         private Long addressId;
     }
-
 
 }
