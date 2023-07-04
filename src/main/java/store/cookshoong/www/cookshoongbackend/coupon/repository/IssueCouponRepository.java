@@ -7,9 +7,8 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
  * 쿠폰 발행 repository.
  *
  * @author eora21
- * @since 2023/07/04
+ * @since 2023.07.04
  */
-
 public interface IssueCouponRepository extends JpaRepository<IssueCoupon, String> {
 
 }

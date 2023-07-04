@@ -16,9 +16,8 @@ import lombok.Getter;
  * 쿠폰 정책 entity.
  *
  * @author eora21
- * @since 2023/07/04
+ * @since 2023.07.04
  */
-
 @Getter
 @Entity
 @Table(name = "coupon_policy")

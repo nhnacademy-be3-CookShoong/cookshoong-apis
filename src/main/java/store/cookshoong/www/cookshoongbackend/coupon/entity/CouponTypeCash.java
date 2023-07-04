@@ -10,9 +10,8 @@ import lombok.Getter;
  * 쿠폰 타입 금액 entity.
  *
  * @author eora21
- * @since 2023/07/04
+ * @since 2023.07.04
  */
-
 @Getter
 @Entity
 @Table(name = "coupon_type_cash")
