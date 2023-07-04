@@ -14,7 +14,6 @@ import store.cookshoong.www.cookshoongbackend.address.model.response.MainAddress
  * @author jeongjewan
  * @since 2023.07.04
  */
-@Repository
 public class AccountAddressRepositoryImpl implements AccountAddressRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
