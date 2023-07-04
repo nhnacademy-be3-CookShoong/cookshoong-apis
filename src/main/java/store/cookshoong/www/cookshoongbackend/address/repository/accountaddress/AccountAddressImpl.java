@@ -1,9 +1,10 @@
 package store.cookshoong.www.cookshoongbackend.address.repository.accountaddress;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
-import store.cookshoong.www.cookshoongbackend.address.entity.AccountAddress;
+import org.springframework.stereotype.Repository;
 import store.cookshoong.www.cookshoongbackend.address.entity.QAccountAddress;
 import store.cookshoong.www.cookshoongbackend.address.entity.QAddress;
 import store.cookshoong.www.cookshoongbackend.address.model.response.MainAddressResponseDto;
@@ -14,10 +15,13 @@ import store.cookshoong.www.cookshoongbackend.address.model.response.MainAddress
  * @author jeongjewan
  * @since 2023.07.04
  */
-public class AccountAddressImpl extends QuerydslRepositorySupport implements AccountAddressRepositoryCustom {
+@Repository
+public class AccountAddressImpl implements AccountAddressRepositoryCustom {
 
-    public AccountAddressImpl() {
-        super(AccountAddress.class);
+    private final JPAQueryFactory jpaQueryFactory;
+
+    public AccountAddressImpl(JPAQueryFactory jpaQueryFactory) {
+        this.jpaQueryFactory = jpaQueryFactory;
     }
 
     /**
@@ -31,8 +35,9 @@ public class AccountAddressImpl extends QuerydslRepositorySupport implements Acc
         QAccountAddress accountAddress = QAccountAddress.accountAddress;
         QAddress address = QAddress.address;
 
-        return from(accountAddress)
+        return jpaQueryFactory
             .select(Projections.constructor(MainAddressResponseDto.class, address.mainPlace))
+            .from(accountAddress)
             .join(accountAddress.address, address)
             .where(accountAddress.pk.addressId.eq(accountId))
             .fetch();
