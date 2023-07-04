@@ -6,7 +6,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * 쿠폰 내역 타입 entity. 사용, 환불 등을 표기.
@@ -16,6 +18,7 @@ import lombok.Getter;
  */
 @Getter
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "coupon_log_type")
 public class CouponLogType {
 

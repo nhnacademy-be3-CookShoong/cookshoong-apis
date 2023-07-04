@@ -4,7 +4,10 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * 쿠폰 타입 금액 entity.
@@ -14,8 +17,10 @@ import lombok.Getter;
  */
 @Getter
 @Entity
-@Table(name = "coupon_type_cash")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DiscriminatorValue("CASH")
+@Table(name = "coupon_type_cash")
 public class CouponTypeCash extends CouponType {
 
     @Column(name = "discount_amount", nullable = false)
