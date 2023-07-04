@@ -3,7 +3,6 @@ package store.cookshoong.www.cookshoongbackend.address.repository.accountaddress
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
-import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 import store.cookshoong.www.cookshoongbackend.address.entity.QAccountAddress;
 import store.cookshoong.www.cookshoongbackend.address.entity.QAddress;
@@ -16,11 +15,11 @@ import store.cookshoong.www.cookshoongbackend.address.model.response.MainAddress
  * @since 2023.07.04
  */
 @Repository
-public class AccountAddressImpl implements AccountAddressRepositoryCustom {
+public class AccountAddressRepositoryImpl implements AccountAddressRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 
-    public AccountAddressImpl(JPAQueryFactory jpaQueryFactory) {
+    public AccountAddressRepositoryImpl(JPAQueryFactory jpaQueryFactory) {
         this.jpaQueryFactory = jpaQueryFactory;
     }
 
