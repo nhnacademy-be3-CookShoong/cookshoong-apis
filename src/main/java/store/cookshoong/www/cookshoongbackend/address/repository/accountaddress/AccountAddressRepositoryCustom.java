@@ -2,7 +2,7 @@ package store.cookshoong.www.cookshoongbackend.address.repository.accountaddress
 
 import java.util.List;
 import org.springframework.data.repository.NoRepositoryBean;
-import store.cookshoong.www.cookshoongbackend.address.model.response.MainAddressResponseDto;
+import store.cookshoong.www.cookshoongbackend.address.model.response.AccountAddressResponseDto;
 
 /**
  * 회원과 주소 repository.
@@ -13,5 +13,5 @@ import store.cookshoong.www.cookshoongbackend.address.model.response.MainAddress
 @NoRepositoryBean
 public interface AccountAddressRepositoryCustom {
 
-    List<MainAddressResponseDto> findAccountByAccountId(Long accountId);
+    List<AccountAddressResponseDto> getByAccountIdAddress(Long accountId);
 }

@@ -26,7 +26,7 @@ public class Address {
     @Id
     @Column(name = "address_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long addressId;
+    private Long id;
 
     @Column(name = "main_place", length = 80, nullable = false)
     private String mainPlace;
@@ -39,5 +39,20 @@ public class Address {
 
     @Column(name = "longitude", precision = 10, scale = 7, nullable = false)
     private BigDecimal longitude;
+
+    /**
+     * Address 생성자.
+     *
+     * @param mainPlace 메인 주소
+     * @param detailPlace 상세 주소
+     * @param latitude 위도
+     * @param longitude 경도
+     */
+    public Address(String mainPlace, String detailPlace, BigDecimal latitude, BigDecimal longitude) {
+        this.mainPlace = mainPlace;
+        this.detailPlace = detailPlace;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
 
 }

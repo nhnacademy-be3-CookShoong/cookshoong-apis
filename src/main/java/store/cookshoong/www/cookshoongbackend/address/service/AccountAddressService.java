@@ -6,19 +6,17 @@ import store.cookshoong.www.cookshoongbackend.address.repository.accountaddress.
 import store.cookshoong.www.cookshoongbackend.address.repository.address.AddressRepository;
 
 /**
- * 주소 서비스를 구현하는 Service.
+ * 회원과 주소 서비스를 구현하는 AccountAddressService
  *
  * @author jeongjewan
- * @since 2023.07.04
+ * @since 2023.07.05
  */
 @Service
 @RequiredArgsConstructor
-public class AddressService {
-
-    private final AddressRepository addressRepository;
+public class AccountAddressService {
 
     private final AccountAddressRepository accountAddressRepository;
-
+    private final AddressRepository addressRepository;
 
 
 }

@@ -11,7 +11,8 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public class MainAddressResponseDto {
+public class AccountAddressResponseDto {
 
+    private String alias;
     private String mainAddress;
 }

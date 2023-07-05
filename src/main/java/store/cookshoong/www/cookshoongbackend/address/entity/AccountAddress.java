@@ -15,7 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
+import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 
 /**
  * 회원과 연결되서 주소를 입력 받아 주소 테이블에 저장되는 Entity.
@@ -33,13 +33,17 @@ public class AccountAddress {
     @EmbeddedId
     private Pk pk;
 
+    @MapsId("accountId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id")
+    private Account account;
+
     @MapsId("addressId")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @Column(name = "alias", nullable = false, length = 10)
-    @ColumnDefault("기본")
+    @Column(name = "alias", length = 10, nullable = false)
     private String alias;
 
     /**
