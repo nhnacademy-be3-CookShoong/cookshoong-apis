@@ -2,8 +2,10 @@ package store.cookshoong.www.cookshoongbackend.coupon.model.request;
 
 import java.math.BigDecimal;
 import java.time.LocalTime;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypePercent;
 
@@ -14,7 +16,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypePercent;
  * @since 2023.07.04
  */
 @Getter
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CreatePercentCouponPolicyRequestDto implements CouponPolicyRequest {
     private String name;
 
