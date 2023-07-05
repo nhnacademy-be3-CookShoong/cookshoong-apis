@@ -16,8 +16,11 @@ import store.cookshoong.www.cookshoongbackend.address.model.response.AccountAddr
  */
 public class AccountAddressRepositoryImpl implements AccountAddressRepositoryCustom {
 
-    @Autowired
-    private JPAQueryFactory jpaQueryFactory;
+    private final JPAQueryFactory jpaQueryFactory;
+
+    public AccountAddressRepositoryImpl(JPAQueryFactory jpaQueryFactory) {
+        this.jpaQueryFactory = jpaQueryFactory;
+    }
 
     /**
      * 회원의 주소 리스트를 조회 합니다.
