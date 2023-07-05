@@ -9,7 +9,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsage;
 
 /**
- * 가게에서 쿠폰 CASH 정책을 생성할 때 사용되는 dto.
+ * 가게에서 금액 쿠폰 정책을 생성할 때 사용되는 dto.
  *
  * @author eora21
  * @since 2023.07.04
@@ -29,17 +29,17 @@ public class CreateStoreCashCouponPolicyRequestDto {
     private int minimumPrice;
 
     /**
-     * To coupon type cash coupon type cash.
+     * dto 값을 이용하여 CouponTypeCash 엔티티를 생성하는 static method.
      *
      * @param dto the dto
-     * @return the coupon type cash
+     * @return the coupon type cash entity
      */
     public static CouponTypeCash toCouponTypeCash(CreateStoreCashCouponPolicyRequestDto dto) {
         return new CouponTypeCash(dto.getDiscountAmount(), dto.getMinimumPrice());
     }
 
     /**
-     * To coupon policy coupon policy.
+     * dto, 쿠폰 타입, 쿠폰 사용처를 이용하여 CouponPolicy 엔티티를 생성하는 static method.
      *
      * @param couponTypeCash the coupon type cash
      * @param couponUsage    the coupon usage
