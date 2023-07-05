@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.coupon.repository;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 
@@ -10,5 +11,5 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
  * @since 2023.07.04
  */
 public interface CouponUsageStoreRepository extends JpaRepository<CouponUsageStore, Long> {
-
+    Optional<CouponUsageStore> findByStoreId(Long storeId);
 }
