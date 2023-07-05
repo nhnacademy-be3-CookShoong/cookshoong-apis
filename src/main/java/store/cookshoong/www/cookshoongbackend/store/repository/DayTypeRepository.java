@@ -9,6 +9,5 @@ import store.cookshoong.www.cookshoongbackend.store.entity.DayType;
  * @author seungyeon
  * @since 2023.07.04
  */
-
 public interface DayTypeRepository extends JpaRepository<DayType, String> {
 }

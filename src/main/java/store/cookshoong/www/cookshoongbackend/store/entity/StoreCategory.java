@@ -4,7 +4,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +14,6 @@ import lombok.NoArgsConstructor;
  * @author seungyeon
  * @since 2023.07.04
  */
-
 @Getter
 @Entity
 @Table(name = "store_categories")
@@ -27,21 +25,5 @@ public class StoreCategory {
 
     @Column(name = "description", nullable = false, length = 30)
     private String description;
-
-    public String getCategoryCode() {
-        return categoryCode;
-    }
-
-    public void setCategoryCode(String categoryCode) {
-        this.categoryCode = categoryCode;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
 }

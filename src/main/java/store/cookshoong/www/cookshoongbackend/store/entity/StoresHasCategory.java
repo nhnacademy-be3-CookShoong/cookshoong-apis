@@ -1,10 +1,19 @@
 package store.cookshoong.www.cookshoongbackend.store.entity;
 
-import javax.persistence.*;
-
-import lombok.*;
-
 import java.io.Serializable;
+import javax.persistence.Embeddable;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
+import javax.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * 매장-카테고리 엔티티.
@@ -17,7 +26,6 @@ import java.io.Serializable;
 @Table(name = "stores_has_categories")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class StoresHasCategory {
-    //TODO 3. Pk 이름 규칙 어떻게할지
     @EmbeddedId
     private Pk pk;
 
@@ -33,7 +41,6 @@ public class StoresHasCategory {
 
     /**
      * 매장_카테고리 엔티티 복합키.
-     *
      */
     @Embeddable
     @Getter

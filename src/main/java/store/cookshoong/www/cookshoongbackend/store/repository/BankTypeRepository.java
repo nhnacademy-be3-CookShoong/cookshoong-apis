@@ -9,6 +9,5 @@ import store.cookshoong.www.cookshoongbackend.store.entity.BankType;
  * @author seungyeon
  * @since 2023.07.04
  */
-
 public interface BankTypeRepository extends JpaRepository<BankType, String> {
 }

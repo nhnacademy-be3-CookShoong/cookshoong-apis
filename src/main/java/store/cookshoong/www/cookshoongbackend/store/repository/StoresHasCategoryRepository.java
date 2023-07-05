@@ -9,6 +9,5 @@ import store.cookshoong.www.cookshoongbackend.store.entity.StoresHasCategory;
  * @author seungyeon
  * @since 2023.07.04
  */
-
 public interface StoresHasCategoryRepository extends JpaRepository<StoresHasCategory, StoresHasCategory.Pk> {
 }

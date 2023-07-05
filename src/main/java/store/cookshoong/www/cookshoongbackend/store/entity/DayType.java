@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
  * @author seungyeon
  * @since 2023.07.04
  */
-
 @Getter
 @Entity
 @Table(name = "day_types")

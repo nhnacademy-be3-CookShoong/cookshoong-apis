@@ -2,8 +2,17 @@ package store.cookshoong.www.cookshoongbackend.store.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import javax.persistence.*;
-//TODO 2. *로 되는데 어떻게 할지
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +24,6 @@ import store.cookshoong.www.cookshoongbackend.address.entity.Address;
  * @author seungyeon
  * @since 2023.07.04
  */
-
 @Getter
 @Entity
 @Table(name = "stores")
