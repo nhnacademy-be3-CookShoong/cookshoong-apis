@@ -20,7 +20,7 @@ import store.cookshoong.www.cookshoongbackend.service.CouponService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/coupon")
+@RequestMapping("/api/coupon")
 public class CouponController {
     private final CouponService couponService;
 
@@ -32,7 +32,7 @@ public class CouponController {
      * @param dto     가게에서 쿠폰 금액 정책을 생성할 때 사용되는 dto
      * @return CREATED status 및 쿠폰 정책 id
      */
-    @PostMapping("store/{storeId}/cash")
+    @PostMapping("/store/{storeId}/cash")
     public ResponseEntity<Long> createStoreCashCouponPolicy(@PathVariable Long storeId,
                                                             CreateStoreCashCouponPolicyRequestDto dto) {
         Long storeCashCouponPolicyId = couponService.createStoreCashCouponPolicy(storeId, dto);
