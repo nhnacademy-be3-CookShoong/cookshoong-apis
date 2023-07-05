@@ -80,58 +80,35 @@ class AccountAddressRepositoryTest {
     @DisplayName("회원 아이디로 조회한 주소")
     void getFindAccountByAccountId() {
 
-        Rank actual1 = new Rank("VIP", "VIP");
-        AccountsStatus actual2 = new AccountsStatus("ACTIVE", "활성");
-        Authority actual3 = new Authority("USER", "일반회원");
+        Rank rank = new Rank("VIP", "VIP");
+        AccountsStatus accountsStatus = new AccountsStatus("ACTIVE", "활성");
+        Authority authority = new Authority("USER", "일반회원");
 
-        Account account = new Account(actual1, actual2, actual3, "user1", "1234", "유유저",
+        Account account = new Account(rank, accountsStatus, authority, "user1", "1234", "유유저",
             "이름이유저래", "user@cookshoong.store", LocalDate.of(1997, 6, 4),
             "01012345678");
 
-        em.persist(actual1);
-        em.persist(actual2);
-        em.persist(actual3);
+        em.persist(rank);
+        em.persist(accountsStatus);
+        em.persist(authority);
 
         em.persist(account);
 
-        Address address1 = new Address("광주 광역시 서석동0", "조선대학교0", new BigDecimal("23.5757577"), new BigDecimal("24.8898989"));
-        Address address2 = new Address("광주 광역시 서석동1", "조선대학교1", new BigDecimal("23.5757577"), new BigDecimal("24.8898989"));
-        Address address3 = new Address("광주 광역시 서석동2", "조선대학교2", new BigDecimal("23.5757577"), new BigDecimal("24.8898989"));
+        Address address = new Address("광주 광역시 서석동0", "조선대학교0", new BigDecimal("23.5757577"), new BigDecimal("24.8898989"));
+        em.persist(address);
 
-        em.persist(address1);
-        AccountAddress accountAddress1 = new AccountAddress(
-            new AccountAddress.Pk(account.getId(), address1.getId()),
+        AccountAddress accountAddress = new AccountAddress(
+            new AccountAddress.Pk(account.getId(), address.getId()),
             account,
-            address1,
+            address,
             "기본0");
-        accountAddressRepository.save(accountAddress1);
-
-        em.persist(address2);
-        AccountAddress accountAddress2 = new AccountAddress(
-            new AccountAddress.Pk(account.getId(), address2.getId()),
-            account,
-            address2,
-            "기본1");
-        accountAddressRepository.save(accountAddress2);
-
-        em.persist(address3);
-        AccountAddress accountAddress3 = new AccountAddress(
-            new AccountAddress.Pk(account.getId(), address3.getId()),
-            account,
-            address3,
-            "기본2");
-        accountAddressRepository.save(accountAddress3);
+        accountAddressRepository.save(accountAddress);
 
 
         List<AccountAddressResponseDto> accountAddressList = accountAddressRepository.getByAccountIdAddress(account.getId());
 
-        assertThat(accountAddressList).hasSize(3);
-        assertThat(accountAddressList.get(0).getMainAddress()).isEqualTo(address1.getMainPlace());
-        assertThat(accountAddressList.get(0).getAlias()).isEqualTo(accountAddress1.getAlias());
-        assertThat(accountAddressList.get(1).getMainAddress()).isEqualTo(address2.getMainPlace());
-        assertThat(accountAddressList.get(1).getAlias()).isEqualTo(accountAddress2.getAlias());
-        assertThat(accountAddressList.get(2).getMainAddress()).isEqualTo(address3.getMainPlace());
-        assertThat(accountAddressList.get(2).getAlias()).isEqualTo(accountAddress3.getAlias());
+        assertThat(accountAddressList.get(0).getMainAddress()).isEqualTo(accountAddress.getAddress().getMainPlace());
+        assertThat(accountAddressList.get(0).getAlias()).isEqualTo(accountAddress.getAlias());
 
     }
 

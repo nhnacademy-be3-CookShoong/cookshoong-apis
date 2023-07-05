@@ -31,7 +31,7 @@ import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 public class AccountAddress {
 
     @EmbeddedId
-    private Pk id;
+    private Pk pk;
 
     @MapsId("accountId")
     @ManyToOne(fetch = FetchType.LAZY)
