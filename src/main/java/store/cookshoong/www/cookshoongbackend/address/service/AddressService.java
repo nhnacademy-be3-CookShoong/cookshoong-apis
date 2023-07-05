@@ -85,6 +85,7 @@ public class AddressService {
      * @param accountId     회원 아이디
      * @return              회원이 등록한 주소 중 메인 주소만 리턴
      */
+    @Transactional(readOnly = true)
     public List<AccountAddressResponseDto> getAccountAddressList(Long accountId) {
 
         return accountAddressRepository.getByAccountIdAddress(accountId);
@@ -96,6 +97,7 @@ public class AddressService {
      * @param accountId     회원 아이디
      * @return              회원의 결제 페이지에서 보여주는 메인 주소와 상세 주소 리턴
      */
+    @Transactional(readOnly = true)
     public AddressResponseDto getAccountAddressForPayment(Long accountId, Long addressId) {
 
         AccountAddress.Pk pk = new AccountAddress.Pk(accountId, addressId);
