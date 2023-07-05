@@ -29,6 +29,7 @@ public class CouponService {
      *
      * @param storeId the store id
      * @param dto     the creation store cash coupon request dto
+     * @return the long
      */
     public Long createStoreCashCouponPolicy(Long storeId, CreateStoreCashCouponPolicyRequestDto dto) {
         CouponTypeCash couponTypeCash =
