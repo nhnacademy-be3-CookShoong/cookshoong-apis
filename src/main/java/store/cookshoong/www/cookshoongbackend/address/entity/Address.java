@@ -43,10 +43,10 @@ public class Address {
     /**
      * Address 생성자.
      *
-     * @param mainPlace mainPlace
-     * @param detailPlace detailPlace
-     * @param latitude latitude
-     * @param longitude longitude
+     * @param mainPlace 메인 주소
+     * @param detailPlace 상세 주소
+     * @param latitude 위도
+     * @param longitude 경도
      */
     public Address(String mainPlace, String detailPlace, BigDecimal latitude, BigDecimal longitude) {
         this.mainPlace = mainPlace;
