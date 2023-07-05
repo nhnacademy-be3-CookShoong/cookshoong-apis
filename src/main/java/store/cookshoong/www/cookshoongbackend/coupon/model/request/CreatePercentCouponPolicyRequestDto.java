@@ -32,7 +32,7 @@ public class CreatePercentCouponPolicyRequestDto {
     private int maximumPrice;
 
     /**
-     * dto 값을 이용하여 CouponTypeCash 엔티티를 생성하는 static method.
+     * dto 값을 이용하여 CouponTypePercent 엔티티를 생성하는 static method.
      *
      * @param dto the dto
      * @return the coupon type percent
