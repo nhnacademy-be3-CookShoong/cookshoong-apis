@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.entity.AccountsStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
@@ -22,7 +21,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
  * @author koesnam
  * @since 2023.07.04
  */
-@ActiveProfiles("dev")
 @DataJpaTest
 class AccountRepositoryTest {
     @MockBean
