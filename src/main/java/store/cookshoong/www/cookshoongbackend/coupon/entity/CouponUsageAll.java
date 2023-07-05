@@ -16,5 +16,8 @@ import lombok.Getter;
 @Table(name = "coupon_usage_all")
 @DiscriminatorValue("ALL")
 public class CouponUsageAll extends CouponUsage {
-
+    @Override
+    public String getTypeName() {
+        return "ALL";
+    }
 }

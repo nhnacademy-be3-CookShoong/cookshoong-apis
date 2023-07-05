@@ -27,4 +27,8 @@ public class CouponUsageMerchant extends CouponUsage {
     @Column(name = "merchant_id", nullable = false)
     private Long merchantId;
 
+    @Override
+    public String getTypeName() {
+        return "MERCHANT";
+    }
 }

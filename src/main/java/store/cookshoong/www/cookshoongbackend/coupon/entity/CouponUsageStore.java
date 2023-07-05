@@ -27,4 +27,8 @@ public class CouponUsageStore extends CouponUsage {
     @Column(name = "store_id", nullable = false)
     private Long storeId;
 
+    @Override
+    public String getTypeName() {
+        return "STORE";
+    }
 }

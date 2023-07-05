@@ -22,11 +22,13 @@ import lombok.Getter;
 @Table(name = "coupon_usage")
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "sub_type")
-public class CouponUsage {
+public abstract class CouponUsage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "coupon_usage_id", nullable = false)
     private Long id;
+
+    public abstract String getTypeName();
 
 }
