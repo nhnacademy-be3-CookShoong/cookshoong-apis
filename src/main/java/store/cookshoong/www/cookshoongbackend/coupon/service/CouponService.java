@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.service;
+package store.cookshoong.www.cookshoongbackend.coupon.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
