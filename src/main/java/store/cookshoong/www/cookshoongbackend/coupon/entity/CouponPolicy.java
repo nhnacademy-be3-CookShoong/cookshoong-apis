@@ -26,6 +26,24 @@ import lombok.NoArgsConstructor;
 @Table(name = "coupon_policy")
 public class CouponPolicy {
 
+    /**
+     * Instantiates a new Coupon policy.
+     *
+     * @param couponType     the coupon type
+     * @param couponUsage    the coupon usage
+     * @param name           the name
+     * @param description    the description
+     * @param expirationTime the expiration time
+     */
+    public CouponPolicy(CouponType couponType, CouponUsage couponUsage, String name, String description,
+                        LocalTime expirationTime) {
+        this.couponType = couponType;
+        this.couponUsage = couponUsage;
+        this.name = name;
+        this.description = description;
+        this.expirationTime = expirationTime;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "coupon_policy_id", nullable = false)
