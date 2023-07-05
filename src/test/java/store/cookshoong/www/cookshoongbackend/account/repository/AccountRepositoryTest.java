@@ -35,17 +35,17 @@ class AccountRepositoryTest {
     @Test
     @DisplayName("회원 조회 - 성공")
     void find_account() {
-        AccountsStatus actual1 = new AccountsStatus("ACTIVE", "활성");
-        Authority actual2 = new Authority("USER", "일반회원");
-        Rank actual3 = new Rank("VIP", "VIP");
+        AccountsStatus status = new AccountsStatus("ACTIVE", "활성");
+        Authority authority = new Authority("USER", "일반회원");
+        Rank rank = new Rank("LEVEL_4", "VIP");
 
-        Account actual = new Account(actual1, actual2, actual3, "user1", "1234", "유유저",
+        Account actual = new Account(status, authority, rank, "user1", "1234", "유유저",
                 "이름이유저래", "user@cookshoong.store", LocalDate.of(1997, 6, 4),
                 "01012345678");
 
-        em.persist(actual1);
-        em.persist(actual2);
-        em.persist(actual3);
+        em.persist(status);
+        em.persist(authority);
+        em.persist(rank);
 
         accountRepository.save(actual);
 
@@ -67,17 +67,17 @@ class AccountRepositoryTest {
     @Test
     @DisplayName("회원 저장 - 성공")
     void save_account() {
-        AccountsStatus actual1 = new AccountsStatus("ACTIVE", "활성");
-        Authority actual2 = new Authority("USER", "일반회원");
-        Rank actual3 = new Rank("VIP", "VIP");
+        AccountsStatus status = new AccountsStatus("ACTIVE", "활성");
+        Authority authority = new Authority("USER", "일반회원");
+        Rank rank = new Rank("LEVEL_4", "VIP");
 
-        Account actual = new Account(actual1, actual2, actual3, "user1", "1234", "유유저",
-                "이름이유저래", "user@cookshoong.store", LocalDate.of(1997, 6, 4),
-                "01012345678");
+        Account actual = new Account(status, authority, rank, "user1", "1234", "유유저",
+            "이름이유저래", "user@cookshoong.store", LocalDate.of(1997, 6, 4),
+            "01012345678");
 
-        em.persist(actual1);
-        em.persist(actual2);
-        em.persist(actual3);
+        em.persist(status);
+        em.persist(authority);
+        em.persist(rank);
 
         Long accountId = accountRepository.save(actual).getId();
 

@@ -71,30 +71,6 @@ public class Account {
     /**
      * 회원 생성자.
      *
-     * @param loginId     로그인 아이디
-     * @param password    비밀번호
-     * @param name        이름
-     * @param nickname    별명
-     * @param email       이메일
-     * @param birthday    생년월일
-     * @param phoneNumber 전화번호
-     */
-    public Account(String loginId, String password, String name,
-                   String nickname, String email, LocalDate birthday,
-                   String phoneNumber) {
-        this.loginId = loginId;
-        this.password = password;
-        this.name = name;
-        this.nickname = nickname;
-        this.email = email;
-        this.birthday = birthday;
-        this.phoneNumber = phoneNumber;
-        this.lastLoginAt = LocalDateTime.now();
-    }
-
-    /**
-     * 회원 생성자.
-     *
      * @param status      회원 상태
      * @param authority   회원 권한
      * @param rank        회원 등급
@@ -106,17 +82,29 @@ public class Account {
      * @param birthday    생년월일
      * @param phoneNumber 전화번호
      */
-    public Account(AccountsStatus status, Authority authority, Rank rank, String loginId, String password, String name, String nickname, String email, LocalDate birthday, String phoneNumber) {
-        this(loginId, password, name, nickname, email, birthday, phoneNumber);
+    public Account(AccountsStatus status, Authority authority, Rank rank,
+                   String loginId, String password, String name,
+                   String nickname, String email, LocalDate birthday,
+                   String phoneNumber) {
         this.rank = rank;
         this.status = status;
         this.authority = authority;
+        this.loginId = loginId;
+        this.password = password;
+        this.name = name;
+        this.nickname = nickname;
+        this.email = email;
+        this.birthday = birthday;
+        this.phoneNumber = phoneNumber;
+        this.lastLoginAt = LocalDateTime.now();
     }
 
-    public Account(AccountsStatus status, Authority authority, Rank rank, SignUpRequestDto signUpRequestDto) {
-        this(status, authority, rank, signUpRequestDto.getLoginId(),
-            signUpRequestDto.getPassword(), signUpRequestDto.getName(), signUpRequestDto.getNickname(),
-            signUpRequestDto.getEmail(), signUpRequestDto.getBirthday(), signUpRequestDto.getPhoneNumber());
+    public Account(AccountsStatus status, Authority authority, Rank rank,
+                   SignUpRequestDto signUpRequestDto) {
+        this(status, authority, rank,
+            signUpRequestDto.getLoginId(), signUpRequestDto.getPassword(), signUpRequestDto.getName(),
+            signUpRequestDto.getNickname(), signUpRequestDto.getEmail(), signUpRequestDto.getBirthday(),
+            signUpRequestDto.getPhoneNumber());
     }
 
     public void updateRank(Rank rank) {

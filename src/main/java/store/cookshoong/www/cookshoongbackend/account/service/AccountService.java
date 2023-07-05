@@ -9,6 +9,8 @@ import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.account.exception.DuplicatedUserException;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
+import store.cookshoong.www.cookshoongbackend.account.model.vo.AccountStatusCode;
+import store.cookshoong.www.cookshoongbackend.account.model.vo.RankCode;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountsStatusRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.RankRepository;
@@ -19,7 +21,6 @@ import store.cookshoong.www.cookshoongbackend.account.repository.RankRepository;
  * @author koesnam
  * @since 2023.07.05
  */
-
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -29,18 +30,17 @@ public class AccountService {
     public final AccountsStatusRepository accountsStatusRepository;
 
     @Transactional
-    public boolean saveAccount(SignUpRequestDto signUpRequestDto, Authority authority) {
+    public Long saveAccount(SignUpRequestDto signUpRequestDto, Authority authority) {
         String loginId = signUpRequestDto.getLoginId();
         if (accountRepository.existsByLoginId(loginId)) {
             throw new DuplicatedUserException(loginId);
         }
 
-        AccountsStatus status = accountsStatusRepository.getReferenceById("ACTIVE");
-        Rank defaultRank = rankRepository.getReferenceById("FRIEND");
+        AccountsStatus status = accountsStatusRepository.getReferenceById(AccountStatusCode.ACTIVE.name());
+        Rank defaultRank = rankRepository.getReferenceById(RankCode.LEVEL_1.name());
         Account account = new Account(status, authority, defaultRank, signUpRequestDto);
 
-        accountRepository.save(account);
-        return true;
+        return accountRepository.save(account).getId();
     }
 
 }

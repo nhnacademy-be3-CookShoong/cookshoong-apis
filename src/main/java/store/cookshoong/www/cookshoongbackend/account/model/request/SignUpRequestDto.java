@@ -1,7 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.account.model.request;
 
 import java.time.LocalDate;
-import java.util.Map;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -19,7 +18,6 @@ import store.cookshoong.www.cookshoongbackend.common.util.ValidationFailureMessa
  * @author koesnam
  * @since 2023.07.05
  */
-
 @Getter
 @AllArgsConstructor
 public class SignUpRequestDto {

@@ -6,7 +6,6 @@ package store.cookshoong.www.cookshoongbackend.common.util;
  * @author koesnam
  * @since 2023.07.05
  */
-
 public class ValidationFailureMessages {
     private ValidationFailureMessages() {
         throw new IllegalStateException("It's util class");
