@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateStoreCashCouponPolicyRequestDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateStorePercentCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.service.CouponService;
 
 /**
@@ -40,5 +41,22 @@ public class CouponController {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(storeCashCouponPolicyId);
+    }
+
+    /**
+     * 매장 포인트 쿠폰 정책 생성을 위한 엔드포인트.
+     *
+     * @param storeId the store id
+     * @param dto     가게에서 쿠폰 포인트 정책을 생성할 때 사용되는 dto
+     * @return CREATED status 및 쿠폰 정책 id
+     */
+    @PostMapping("/store/{storeId}/policy/percent")
+    public ResponseEntity<Long> createStorePercentCouponPolicy(@PathVariable Long storeId,
+                                                            CreateStorePercentCouponPolicyRequestDto dto) {
+        Long storePercentCouponPolicyId = couponService.createStorePercentCouponPolicy(storeId, dto);
+
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(storePercentCouponPolicyId);
     }
 }
