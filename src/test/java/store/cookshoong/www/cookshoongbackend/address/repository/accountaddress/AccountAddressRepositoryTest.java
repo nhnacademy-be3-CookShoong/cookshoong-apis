@@ -29,7 +29,6 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author jeongjewan
  * @since 2023.07.04
  */
-@ActiveProfiles("dev")
 @DataJpaTest
 @Import(QueryDslConfig.class)
 class AccountAddressRepositoryTest {
