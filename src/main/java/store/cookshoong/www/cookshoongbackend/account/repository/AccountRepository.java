@@ -11,4 +11,6 @@ import store.cookshoong.www.cookshoongbackend.account.entity.Account;
  */
 public interface AccountRepository extends JpaRepository<Account, Long> {
     Account findByLoginId(String loginId);
+
+    boolean existsByLoginId(String loginId);
 }

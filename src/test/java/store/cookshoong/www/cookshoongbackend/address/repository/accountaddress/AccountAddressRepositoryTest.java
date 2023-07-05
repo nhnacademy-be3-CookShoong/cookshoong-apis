@@ -42,18 +42,17 @@ class AccountAddressRepositoryTest {
     @DisplayName("회원으로 주소 등록")
     void createAccountAddress() {
 
-        Rank actual1 = new Rank("VIP", "VIP");
-        AccountsStatus actual2 = new AccountsStatus("ACTIVE", "활성");
-        Authority actual3 = new Authority("USER", "일반회원");
+        AccountsStatus status = new AccountsStatus("ACTIVE", "활성");
+        Authority authority = new Authority("USER", "일반회원");
+        Rank rank = new Rank("LEVEL_4", "VIP");
 
-
-        Account account = new Account(actual1, actual2, actual3, "user1", "1234", "유유저",
+        Account account = new Account(status, authority, rank, "user1", "1234", "유유저",
             "이름이유저래", "user@cookshoong.store", LocalDate.of(1997, 6, 4),
             "01012345678");
 
-        em.persist(actual1);
-        em.persist(actual2);
-        em.persist(actual3);
+        em.persist(status);
+        em.persist(authority);
+        em.persist(rank);
         em.persist(account);
 
         Address address = new Address("광주 광역시 서석동", "조선대학교", new BigDecimal("23.5757577"), new BigDecimal("24.8898989"));
@@ -77,18 +76,17 @@ class AccountAddressRepositoryTest {
     @DisplayName("회원 아이디로 조회한 주소")
     void getFindAccountByAccountId() {
 
-        Rank rank = new Rank("VIP", "VIP");
-        AccountsStatus accountsStatus = new AccountsStatus("ACTIVE", "활성");
+        AccountsStatus status = new AccountsStatus("ACTIVE", "활성");
         Authority authority = new Authority("USER", "일반회원");
+        Rank rank = new Rank("LEVEL_4", "VIP");
 
-        Account account = new Account(rank, accountsStatus, authority, "user1", "1234", "유유저",
+        Account account = new Account(status, authority, rank, "user1", "1234", "유유저",
             "이름이유저래", "user@cookshoong.store", LocalDate.of(1997, 6, 4),
             "01012345678");
 
-        em.persist(rank);
-        em.persist(accountsStatus);
+        em.persist(status);
         em.persist(authority);
-
+        em.persist(rank);
         em.persist(account);
 
         Address address = new Address("광주 광역시 서석동0", "조선대학교0", new BigDecimal("23.5757577"), new BigDecimal("24.8898989"));

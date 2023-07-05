@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
 
 /**
  * 회원 엔티티.
@@ -32,16 +33,16 @@ public class Account {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "rank_code", nullable = false)
-    private Rank rank;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "status_code", nullable = false)
     private AccountsStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "authority_code", nullable = false)
     private Authority authority;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "rank_code", nullable = false)
+    private Rank rank;
 
     @Column(nullable = false, length = 30)
     private String loginId;
@@ -70,6 +71,9 @@ public class Account {
     /**
      * 회원 생성자.
      *
+     * @param status      회원 상태
+     * @param authority   회원 권한
+     * @param rank        회원 등급
      * @param loginId     로그인 아이디
      * @param password    비밀번호
      * @param name        이름
@@ -78,9 +82,13 @@ public class Account {
      * @param birthday    생년월일
      * @param phoneNumber 전화번호
      */
-    public Account(String loginId, String password, String name,
+    public Account(AccountsStatus status, Authority authority, Rank rank,
+                   String loginId, String password, String name,
                    String nickname, String email, LocalDate birthday,
                    String phoneNumber) {
+        this.rank = rank;
+        this.status = status;
+        this.authority = authority;
         this.loginId = loginId;
         this.password = password;
         this.name = name;
@@ -91,25 +99,12 @@ public class Account {
         this.lastLoginAt = LocalDateTime.now();
     }
 
-    /**
-     * 회원 생성자.
-     *
-     * @param rank        회원 등급
-     * @param status      회원 상태
-     * @param authority   회원 권한
-     * @param loginId     로그인 아이디
-     * @param password    비밀번호
-     * @param name        이름
-     * @param nickname    별명
-     * @param email       이메일
-     * @param birthday    생년월일
-     * @param phoneNumber 전화번호
-     */
-    public Account(Rank rank, AccountsStatus status, Authority authority, String loginId, String password, String name, String nickname, String email, LocalDate birthday, String phoneNumber) {
-        this(loginId, password, name, nickname, email, birthday, phoneNumber);
-        this.rank = rank;
-        this.status = status;
-        this.authority = authority;
+    public Account(AccountsStatus status, Authority authority, Rank rank,
+                   SignUpRequestDto signUpRequestDto) {
+        this(status, authority, rank,
+            signUpRequestDto.getLoginId(), signUpRequestDto.getPassword(), signUpRequestDto.getName(),
+            signUpRequestDto.getNickname(), signUpRequestDto.getEmail(), signUpRequestDto.getBirthday(),
+            signUpRequestDto.getPhoneNumber());
     }
 
     public void updateRank(Rank rank) {
