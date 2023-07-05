@@ -91,6 +91,27 @@ public class Account {
         this.lastLoginAt = LocalDateTime.now();
     }
 
+    /**
+     * 회원 생성자.
+     *
+     * @param rank        회원 등급
+     * @param status      회원 상태
+     * @param authority   회원 권한
+     * @param loginId     로그인 아이디
+     * @param password    비밀번호
+     * @param name        이름
+     * @param nickname    별명
+     * @param email       이메일
+     * @param birthday    생년월일
+     * @param phoneNumber 전화번호
+     */
+    public Account(Rank rank, AccountsStatus status, Authority authority, String loginId, String password, String name, String nickname, String email, LocalDate birthday, String phoneNumber) {
+        this(loginId, password, name, nickname, email, birthday, phoneNumber);
+        this.rank = rank;
+        this.status = status;
+        this.authority = authority;
+    }
+
     public void updateRank(Rank rank) {
         this.rank = rank;
     }

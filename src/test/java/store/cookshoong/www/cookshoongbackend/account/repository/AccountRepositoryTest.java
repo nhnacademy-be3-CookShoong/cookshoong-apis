@@ -35,23 +35,19 @@ class AccountRepositoryTest {
     @Test
     @DisplayName("회원 조회 - 성공")
     void find_account() {
-        Account actual = new Account("user1", "1234", "유유저",
+        Rank actual1 = new Rank("VIP", "VIP");
+        AccountsStatus actual2 = new AccountsStatus("ACTIVE", "활성");
+        Authority actual3 = new Authority("USER", "일반회원");
+
+        Account actual = new Account(actual1, actual2, actual3, "user1", "1234", "유유저",
                 "이름이유저래", "user@cookshoong.store", LocalDate.of(1997, 6, 4),
                 "01012345678");
-
-        Authority actual1 = new Authority("USER", "일반회원");
-        AccountsStatus actual2 = new AccountsStatus("ACTIVE", "활성");
-        Rank actual3 = new Rank("VIP", "VIP");
 
         em.persist(actual1);
         em.persist(actual2);
         em.persist(actual3);
 
-        actual.updateAuthority(actual1);
-        actual.updateStatus(actual2);
-        actual.updateRank(actual3);
-
-        em.persistAndFlush(actual);
+        accountRepository.save(actual);
 
         em.clear();
 
@@ -71,26 +67,20 @@ class AccountRepositoryTest {
     @Test
     @DisplayName("회원 저장 - 성공")
     void save_account() {
-        Account actual = new Account("user1", "1234", "유유저",
+        Rank actual1 = new Rank("VIP", "VIP");
+        AccountsStatus actual2 = new AccountsStatus("ACTIVE", "활성");
+        Authority actual3 = new Authority("USER", "일반회원");
+
+        Account actual = new Account(actual1, actual2, actual3, "user1", "1234", "유유저",
                 "이름이유저래", "user@cookshoong.store", LocalDate.of(1997, 6, 4),
                 "01012345678");
-
-        Authority actual1 = new Authority("USER", "일반회원");
-        AccountsStatus actual2 = new AccountsStatus("ACTIVE", "활성");
-        Rank actual3 = new Rank("VIP", "VIP");
 
         em.persist(actual1);
         em.persist(actual2);
         em.persist(actual3);
 
-        actual.updateAuthority(actual1);
-        actual.updateStatus(actual2);
-        actual.updateRank(actual3);
-
-        Long accountId = accountRepository.saveAndFlush(actual).getId();
-
-        em.clear();
-
+        Long accountId = accountRepository.save(actual).getId();
+        
         Account expect = em.find(Account.class, accountId);
 
         assertThat(expect.getId()).isEqualTo(actual.getId());
