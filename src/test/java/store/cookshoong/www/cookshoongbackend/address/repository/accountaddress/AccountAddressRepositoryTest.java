@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.entity.AccountsStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
@@ -112,7 +111,7 @@ class AccountAddressRepositoryTest {
             accountAddressRepository.save(accountAddress);
         }
 
-        List<AccountAddressResponseDto> accountAddressList = accountAddressRepository.findAllByAccountId(account.getId());
+        List<AccountAddressResponseDto> accountAddressList = accountAddressRepository.getByAccountIdAddress(account.getId());
 
         assertThat(accountAddressList).hasSize(3);
         assertEquals("광주 광역시 서석동0", accountAddressList.get(0).getMainAddress());

@@ -29,7 +29,7 @@ public class AccountAddressRepositoryImpl implements AccountAddressRepositoryCus
      * @return 회원 주소 목록
      */
     @Override
-    public List<AccountAddressResponseDto> findAllByAccountId(Long accountId) {
+    public List<AccountAddressResponseDto> getByAccountIdAddress(Long accountId) {
         QAccountAddress accountAddress = QAccountAddress.accountAddress;
         QAddress address = QAddress.address;
 

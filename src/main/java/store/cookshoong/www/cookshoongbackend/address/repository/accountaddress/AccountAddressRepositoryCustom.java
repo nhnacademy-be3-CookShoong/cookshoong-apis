@@ -13,5 +13,5 @@ import store.cookshoong.www.cookshoongbackend.address.model.response.AccountAddr
 @NoRepositoryBean
 public interface AccountAddressRepositoryCustom {
 
-    List<AccountAddressResponseDto> findAllByAccountId(Long accountId);
+    List<AccountAddressResponseDto> getByAccountIdAddress(Long accountId);
 }
