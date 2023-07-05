@@ -3,9 +3,13 @@ package store.cookshoong.www.cookshoongbackend.coupon.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponPolicy;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponType;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypePercent;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsage;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
+import store.cookshoong.www.cookshoongbackend.coupon.model.request.CouponPolicyRequest;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateCashCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreatePercentCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;
@@ -39,8 +43,7 @@ public class CouponService {
         CouponTypeCash couponTypeCash = getOrCreateCouponTypeCash(dto);
         CouponUsageStore couponUsageStore = getOrCreateCouponUsageStore(storeId);
 
-        return couponPolicyRepository.save(
-                CreateCashCouponPolicyRequestDto.toCouponPolicy(couponTypeCash, couponUsageStore, dto))
+        return createCouponPolicy(couponTypeCash, couponUsageStore, dto)
             .getId();
     }
 
@@ -55,8 +58,7 @@ public class CouponService {
         CouponTypePercent couponTypePercent = getOrCreateCouponTypePercent(dto);
         CouponUsageStore couponUsageStore = getOrCreateCouponUsageStore(storeId);
 
-        return couponPolicyRepository.save(
-                CreatePercentCouponPolicyRequestDto.toCouponPolicy(couponTypePercent, couponUsageStore, dto))
+        return createCouponPolicy(couponTypePercent, couponUsageStore, dto)
             .getId();
     }
 
@@ -64,18 +66,24 @@ public class CouponService {
         return couponTypeCashRepository.findByDiscountAmountAndMinimumPrice(
                 dto.getDiscountAmount(), dto.getMinimumPrice())
             .orElseGet(() -> couponTypeCashRepository.save(
-                CreateCashCouponPolicyRequestDto.toCouponTypeCash(dto)));
+                CreateCashCouponPolicyRequestDto.toEntity(dto)));
     }
 
     private CouponTypePercent getOrCreateCouponTypePercent(CreatePercentCouponPolicyRequestDto dto) {
         return couponTypePercentRepository.findByRateAndMinimumPriceAndMaximumPrice(
                 dto.getRate(), dto.getMinimumPrice(), dto.getMaximumPrice())
             .orElseGet(() -> couponTypePercentRepository.save(
-                CreatePercentCouponPolicyRequestDto.toCouponTypePercent(dto)));
+                CreatePercentCouponPolicyRequestDto.toEntity(dto)));
     }
 
     private CouponUsageStore getOrCreateCouponUsageStore(Long storeId) {
         return couponUsageStoreRepository.findByStoreId(storeId)
             .orElseGet(() -> couponUsageStoreRepository.save(new CouponUsageStore(storeId)));
+    }
+
+    private CouponPolicy createCouponPolicy(CouponType couponType, CouponUsage couponUsage, CouponPolicyRequest req) {
+        return couponPolicyRepository.save(
+                new CouponPolicy(couponType, couponUsage, req.getName(), req.getDescription(),
+                    req.getExpirationTime()));
     }
 }
