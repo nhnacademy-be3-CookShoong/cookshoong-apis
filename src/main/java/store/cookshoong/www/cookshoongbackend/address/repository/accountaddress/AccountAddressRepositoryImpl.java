@@ -3,7 +3,6 @@ package store.cookshoong.www.cookshoongbackend.address.repository.accountaddress
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import store.cookshoong.www.cookshoongbackend.address.entity.QAccountAddress;
 import store.cookshoong.www.cookshoongbackend.address.entity.QAddress;
 import store.cookshoong.www.cookshoongbackend.address.model.response.AccountAddressResponseDto;
