@@ -59,4 +59,38 @@ public class CouponController {
             .status(HttpStatus.CREATED)
             .body(storePercentCouponPolicyId);
     }
+
+    /**
+     * 가맹점 금액 쿠폰 정책 생성을 위한 엔드포인트.
+     *
+     * @param merchantId the merchant id
+     * @param dto        가맹점에서 쿠폰 금액 정책을 생성할 때 사용되는 dto
+     * @return CREATED status 및 쿠폰 정책 id
+     */
+    @PostMapping("/merchants/{merchantId}/policies/cash")
+    public ResponseEntity<Long> createMerchantCashCouponPolicy(@PathVariable Long merchantId,
+                                                               CreateCashCouponPolicyRequestDto dto) {
+        Long storePercentCouponPolicyId = couponService.createMerchantCashCouponPolicy(merchantId, dto);
+
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(storePercentCouponPolicyId);
+    }
+
+    /**
+     * 가맹점 포인트 쿠폰 정책 생성을 위한 엔드포인트.
+     *
+     * @param merchantId the merchant id
+     * @param dto        가맹점에서 쿠폰 포인트 정책을 생성할 때 사용되는 dto
+     * @return CREATED status 및 쿠폰 정책 id
+     */
+    @PostMapping("/merchants/{merchantId}/policies/percent")
+    public ResponseEntity<Long> createMerchantPointCouponPolicy(@PathVariable Long merchantId,
+                                                                CreatePercentCouponPolicyRequestDto dto) {
+        Long storePercentCouponPolicyId = couponService.createMerchantPercentCouponPolicy(merchantId, dto);
+
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(storePercentCouponPolicyId);
+    }
 }
