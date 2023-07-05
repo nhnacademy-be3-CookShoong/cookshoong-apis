@@ -10,6 +10,7 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.cookshoong.www.cookshoongbackend.address.model.request.ModifyAccountAddressRequestDto;
 
 /**
  * 주소 정보에 해당하는 엔티티.
@@ -43,16 +44,25 @@ public class Address {
     /**
      * Address 생성자.
      *
-     * @param mainPlace 메인 주소
-     * @param detailPlace 상세 주소
-     * @param latitude 위도
-     * @param longitude 경도
+     * @param mainPlace     메인 주소
+     * @param detailPlace   상세 주소
+     * @param latitude      위도
+     * @param longitude     경도
      */
     public Address(String mainPlace, String detailPlace, BigDecimal latitude, BigDecimal longitude) {
         this.mainPlace = mainPlace;
         this.detailPlace = detailPlace;
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    /**
+     * 상세 주소를 변경하는 메소드
+     *
+     * @param requestDto    상세주소에 관한 Dto
+     */
+    public void updateDetailAddress(ModifyAccountAddressRequestDto requestDto) {
+        this.detailPlace = requestDto.getDetailPlace();
     }
 
 }
