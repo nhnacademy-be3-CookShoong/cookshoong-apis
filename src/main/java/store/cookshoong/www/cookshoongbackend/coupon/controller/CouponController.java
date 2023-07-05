@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateStoreCashCouponPolicyRequestDto;
-import store.cookshoong.www.cookshoongbackend.service.CouponService;
+import store.cookshoong.www.cookshoongbackend.coupon.service.CouponService;
 
 /**
  * 쿠폰 RestController.

@@ -1,0 +1,22 @@
+<Configuration>
+    <Appenders>
+        <!-- 파일로 로그를 기록하는 Appender 설정 -->
+        <RollingFile name="FileAppender" fileName="${log.file.path}/server.log"
+                     filePattern="${log.file.path}/server-%d{yyyy-MM-dd}.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %logger{36} - %msg%n"/>
+            <Policies>
+                <!-- 로그 파일을 매일 롤링하도록 설정 -->
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy max="30"/> <!-- 최대 30일까지 유지 -->
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="FileAppender"/>
+        </Root>
+        <Root level="info">
+            <AppenderRef ref="FileAppender"/>
+        </Root>
+    </Loggers>
+</Configuration>
