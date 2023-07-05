@@ -16,7 +16,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsage;
  */
 @Getter
 @AllArgsConstructor
-public class CreateStoreCashCouponPolicyRequestDto {
+public class CreateCashCouponPolicyRequestDto {
     private String name;
 
     private String description;
@@ -34,7 +34,7 @@ public class CreateStoreCashCouponPolicyRequestDto {
      * @param dto the dto
      * @return the coupon type cash entity
      */
-    public static CouponTypeCash toCouponTypeCash(CreateStoreCashCouponPolicyRequestDto dto) {
+    public static CouponTypeCash toCouponTypeCash(CreateCashCouponPolicyRequestDto dto) {
         return new CouponTypeCash(dto.getDiscountAmount(), dto.getMinimumPrice());
     }
 
@@ -47,7 +47,7 @@ public class CreateStoreCashCouponPolicyRequestDto {
      * @return the coupon policy
      */
     public static CouponPolicy toCouponPolicy(CouponTypeCash couponTypeCash, CouponUsage couponUsage,
-                                              CreateStoreCashCouponPolicyRequestDto dto) {
+                                              CreateCashCouponPolicyRequestDto dto) {
         return new CouponPolicy(couponTypeCash, couponUsage, dto.getName(), dto.getDescription(),
             dto.getExpirationTime());
     }

@@ -6,8 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypePercent;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
-import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateStoreCashCouponPolicyRequestDto;
-import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateStorePercentCouponPolicyRequestDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateCashCouponPolicyRequestDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreatePercentCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponTypeCashRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponTypePercentRepository;
@@ -35,16 +35,16 @@ public class CouponService {
      * @param dto     the creation store cash coupon request dto
      * @return the long
      */
-    public Long createStoreCashCouponPolicy(Long storeId, CreateStoreCashCouponPolicyRequestDto dto) {
+    public Long createStoreCashCouponPolicy(Long storeId, CreateCashCouponPolicyRequestDto dto) {
         CouponTypeCash couponTypeCash =
             couponTypeCashRepository.findByDiscountAmountAndMinimumPrice(dto.getDiscountAmount(), dto.getMinimumPrice())
                 .orElseGet(() -> couponTypeCashRepository.save(
-                    CreateStoreCashCouponPolicyRequestDto.toCouponTypeCash(dto)));
+                    CreateCashCouponPolicyRequestDto.toCouponTypeCash(dto)));
 
         CouponUsageStore couponUsageStore = getOrCreateCouponUsageStore(storeId);
 
         return couponPolicyRepository.save(
-                CreateStoreCashCouponPolicyRequestDto.toCouponPolicy(couponTypeCash, couponUsageStore, dto))
+                CreateCashCouponPolicyRequestDto.toCouponPolicy(couponTypeCash, couponUsageStore, dto))
             .getId();
     }
 
@@ -55,16 +55,16 @@ public class CouponService {
      * @param dto     the creation store point coupon request dto
      * @return the long
      */
-    public Long createStorePercentCouponPolicy(Long storeId, CreateStorePercentCouponPolicyRequestDto dto) {
+    public Long createStorePercentCouponPolicy(Long storeId, CreatePercentCouponPolicyRequestDto dto) {
         CouponTypePercent couponTypePercent = couponTypePercentRepository.findByRateAndMinimumPriceAndMaximumPrice(
                 dto.getRate(), dto.getMinimumPrice(), dto.getMaximumPrice())
             .orElseGet(() -> couponTypePercentRepository.save(
-                CreateStorePercentCouponPolicyRequestDto.toCouponTypePercent(dto)));
+                CreatePercentCouponPolicyRequestDto.toCouponTypePercent(dto)));
 
         CouponUsageStore couponUsageStore = getOrCreateCouponUsageStore(storeId);
 
         return couponPolicyRepository.save(
-                CreateStorePercentCouponPolicyRequestDto.toCouponPolicy(couponTypePercent, couponUsageStore, dto))
+                CreatePercentCouponPolicyRequestDto.toCouponPolicy(couponTypePercent, couponUsageStore, dto))
             .getId();
     }
 

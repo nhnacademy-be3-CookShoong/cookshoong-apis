@@ -17,7 +17,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsage;
  */
 @Getter
 @AllArgsConstructor
-public class CreateStorePercentCouponPolicyRequestDto {
+public class CreatePercentCouponPolicyRequestDto {
     private String name;
 
     private String description;
@@ -37,7 +37,7 @@ public class CreateStorePercentCouponPolicyRequestDto {
      * @param dto the dto
      * @return the coupon type percent
      */
-    public static CouponTypePercent toCouponTypePercent(CreateStorePercentCouponPolicyRequestDto dto) {
+    public static CouponTypePercent toCouponTypePercent(CreatePercentCouponPolicyRequestDto dto) {
         return new CouponTypePercent(dto.getRate(), dto.getMinimumPrice(), dto.getMaximumPrice());
     }
 
@@ -50,7 +50,7 @@ public class CreateStorePercentCouponPolicyRequestDto {
      * @return the coupon policy
      */
     public static CouponPolicy toCouponPolicy(CouponTypePercent couponTypePercent, CouponUsage couponUsage,
-                                              CreateStorePercentCouponPolicyRequestDto dto) {
+                                              CreatePercentCouponPolicyRequestDto dto) {
         return new CouponPolicy(couponTypePercent, couponUsage, dto.getName(), dto.getDescription(),
             dto.getExpirationTime());
     }
