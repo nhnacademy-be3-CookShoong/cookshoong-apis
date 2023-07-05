@@ -1,7 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.common.util;
 
 /**
- * 자주 쓰일 것 같은 정규표현식들
+ * 자주 쓰일 것 같은 정규표현식들.
  *
  * @author koesnam
  * @since 2023.07.05

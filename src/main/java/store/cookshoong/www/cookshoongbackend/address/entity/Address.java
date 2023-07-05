@@ -57,7 +57,7 @@ public class Address {
     }
 
     /**
-     * 상세 주소를 변경하는 메소드
+     * 상세 주소를 변경하는 메소드.
      *
      * @param requestDto    상세주소에 관한 Dto
      */
