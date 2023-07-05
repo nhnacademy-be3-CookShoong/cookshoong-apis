@@ -16,7 +16,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsage;
  */
 @Getter
 @AllArgsConstructor
-public class CreateCashCouponPolicyRequestDto {
+public class CreateCashCouponPolicyRequestDto implements CouponPolicyRequest {
     private String name;
 
     private String description;

@@ -17,7 +17,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsage;
  */
 @Getter
 @AllArgsConstructor
-public class CreatePercentCouponPolicyRequestDto {
+public class CreatePercentCouponPolicyRequestDto implements CouponPolicyRequest {
     private String name;
 
     private String description;
