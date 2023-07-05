@@ -33,7 +33,7 @@ public class CouponController {
      * @param dto     가게에서 쿠폰 금액 정책을 생성할 때 사용되는 dto
      * @return CREATED status 및 쿠폰 정책 id
      */
-    @PostMapping("/store/{storeId}/policy/cash")
+    @PostMapping("/stores/{storeId}/policies/cash")
     public ResponseEntity<Long> createStoreCashCouponPolicy(@PathVariable Long storeId,
                                                             CreateCashCouponPolicyRequestDto dto) {
         Long storeCashCouponPolicyId = couponService.createStoreCashCouponPolicy(storeId, dto);
@@ -50,7 +50,7 @@ public class CouponController {
      * @param dto     가게에서 쿠폰 포인트 정책을 생성할 때 사용되는 dto
      * @return CREATED status 및 쿠폰 정책 id
      */
-    @PostMapping("/store/{storeId}/policy/percent")
+    @PostMapping("/stores/{storeId}/policies/percent")
     public ResponseEntity<Long> createStorePercentCouponPolicy(@PathVariable Long storeId,
                                                             CreatePercentCouponPolicyRequestDto dto) {
         Long storePercentCouponPolicyId = couponService.createStorePercentCouponPolicy(storeId, dto);
