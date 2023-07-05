@@ -36,11 +36,7 @@ public class CouponService {
      * @return the long
      */
     public Long createStoreCashCouponPolicy(Long storeId, CreateCashCouponPolicyRequestDto dto) {
-        CouponTypeCash couponTypeCash =
-            couponTypeCashRepository.findByDiscountAmountAndMinimumPrice(dto.getDiscountAmount(), dto.getMinimumPrice())
-                .orElseGet(() -> couponTypeCashRepository.save(
-                    CreateCashCouponPolicyRequestDto.toCouponTypeCash(dto)));
-
+        CouponTypeCash couponTypeCash = getOrCreateCouponTypeCash(dto);
         CouponUsageStore couponUsageStore = getOrCreateCouponUsageStore(storeId);
 
         return couponPolicyRepository.save(
@@ -56,16 +52,26 @@ public class CouponService {
      * @return the long
      */
     public Long createStorePercentCouponPolicy(Long storeId, CreatePercentCouponPolicyRequestDto dto) {
-        CouponTypePercent couponTypePercent = couponTypePercentRepository.findByRateAndMinimumPriceAndMaximumPrice(
-                dto.getRate(), dto.getMinimumPrice(), dto.getMaximumPrice())
-            .orElseGet(() -> couponTypePercentRepository.save(
-                CreatePercentCouponPolicyRequestDto.toCouponTypePercent(dto)));
-
+        CouponTypePercent couponTypePercent = getOrCreateCouponTypePercent(dto);
         CouponUsageStore couponUsageStore = getOrCreateCouponUsageStore(storeId);
 
         return couponPolicyRepository.save(
                 CreatePercentCouponPolicyRequestDto.toCouponPolicy(couponTypePercent, couponUsageStore, dto))
             .getId();
+    }
+
+    private CouponTypeCash getOrCreateCouponTypeCash(CreateCashCouponPolicyRequestDto dto) {
+        return couponTypeCashRepository.findByDiscountAmountAndMinimumPrice(
+                dto.getDiscountAmount(), dto.getMinimumPrice())
+            .orElseGet(() -> couponTypeCashRepository.save(
+                CreateCashCouponPolicyRequestDto.toCouponTypeCash(dto)));
+    }
+
+    private CouponTypePercent getOrCreateCouponTypePercent(CreatePercentCouponPolicyRequestDto dto) {
+        return couponTypePercentRepository.findByRateAndMinimumPriceAndMaximumPrice(
+                dto.getRate(), dto.getMinimumPrice(), dto.getMaximumPrice())
+            .orElseGet(() -> couponTypePercentRepository.save(
+                CreatePercentCouponPolicyRequestDto.toCouponTypePercent(dto)));
     }
 
     private CouponUsageStore getOrCreateCouponUsageStore(Long storeId) {
