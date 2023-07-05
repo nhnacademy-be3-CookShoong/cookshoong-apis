@@ -94,32 +94,44 @@ class AccountAddressRepositoryTest {
 
         em.persist(account);
 
-        Address address = null;
-        AccountAddress accountAddress = null;
+        Address address1 = new Address("광주 광역시 서석동0", "조선대학교0", new BigDecimal("23.5757577"), new BigDecimal("24.8898989"));
+        Address address2 = new Address("광주 광역시 서석동1", "조선대학교1", new BigDecimal("23.5757577"), new BigDecimal("24.8898989"));
+        Address address3 = new Address("광주 광역시 서석동2", "조선대학교2", new BigDecimal("23.5757577"), new BigDecimal("24.8898989"));
 
-        for (int i=0; i<3; i++) {
-            address = new Address("광주 광역시 서석동" + i, "조선대학교" + i, new BigDecimal("23.5757577"), new BigDecimal("24.8898989"));
+        em.persist(address1);
+        AccountAddress accountAddress1 = new AccountAddress(
+            new AccountAddress.Pk(account.getId(), address1.getId()),
+            account,
+            address1,
+            "기본0");
+        accountAddressRepository.save(accountAddress1);
 
-            em.persist(address);
+        em.persist(address2);
+        AccountAddress accountAddress2 = new AccountAddress(
+            new AccountAddress.Pk(account.getId(), address2.getId()),
+            account,
+            address2,
+            "기본1");
+        accountAddressRepository.save(accountAddress2);
 
-            accountAddress = new AccountAddress(
-                new AccountAddress.Pk(account.getId(), address.getId()),
-                account,
-                address,
-                "기본" + i
-            );
-            accountAddressRepository.save(accountAddress);
-        }
+        em.persist(address3);
+        AccountAddress accountAddress3 = new AccountAddress(
+            new AccountAddress.Pk(account.getId(), address3.getId()),
+            account,
+            address3,
+            "기본2");
+        accountAddressRepository.save(accountAddress3);
+
 
         List<AccountAddressResponseDto> accountAddressList = accountAddressRepository.getByAccountIdAddress(account.getId());
 
         assertThat(accountAddressList).hasSize(3);
-        assertEquals("광주 광역시 서석동0", accountAddressList.get(0).getMainAddress());
-        assertEquals("기본0", accountAddressList.get(0).getAlias());
-        assertEquals("광주 광역시 서석동1", accountAddressList.get(1).getMainAddress());
-        assertEquals("기본1", accountAddressList.get(1).getAlias());
-        assertEquals("광주 광역시 서석동2", accountAddressList.get(2).getMainAddress());
-        assertEquals("기본2", accountAddressList.get(2).getAlias());
+        assertThat(accountAddressList.get(0).getMainAddress()).isEqualTo(address1.getMainPlace());
+        assertThat(accountAddressList.get(0).getAlias()).isEqualTo(accountAddress1.getAlias());
+        assertThat(accountAddressList.get(1).getMainAddress()).isEqualTo(address2.getMainPlace());
+        assertThat(accountAddressList.get(1).getAlias()).isEqualTo(accountAddress2.getAlias());
+        assertThat(accountAddressList.get(2).getMainAddress()).isEqualTo(address3.getMainPlace());
+        assertThat(accountAddressList.get(2).getAlias()).isEqualTo(accountAddress3.getAlias());
 
     }
 
