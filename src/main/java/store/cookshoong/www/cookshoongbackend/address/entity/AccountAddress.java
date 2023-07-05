@@ -43,7 +43,7 @@ public class AccountAddress {
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @Column(name = "alias", nullable = false, length = 10)
+    @Column(name = "alias", length = 10, nullable = false)
     private String alias;
 
     /**
