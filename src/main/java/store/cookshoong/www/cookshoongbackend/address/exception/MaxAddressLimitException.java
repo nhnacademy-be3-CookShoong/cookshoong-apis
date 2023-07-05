@@ -1,7 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.address.exception;
 
 /**
- * {설명을 작성해주세요}.
+ * 회원이 가지고 있는 주소가 10개 초과될 경우 발생하는 Exception.
  *
  * @author jeongjewan
  * @since 2023.07.05
