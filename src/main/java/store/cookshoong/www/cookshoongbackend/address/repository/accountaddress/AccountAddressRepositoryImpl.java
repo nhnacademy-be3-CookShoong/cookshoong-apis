@@ -37,7 +37,7 @@ public class AccountAddressRepositoryImpl implements AccountAddressRepositoryCus
             .select(Projections.constructor(AccountAddressResponseDto.class, accountAddress.alias, address.mainPlace))
             .from(accountAddress)
             .innerJoin(accountAddress.address, address)
-            .where(accountAddress.id.accountId.eq(accountId))
+            .where(accountAddress.pk.accountId.eq(accountId))
             .fetch();
     }
 }

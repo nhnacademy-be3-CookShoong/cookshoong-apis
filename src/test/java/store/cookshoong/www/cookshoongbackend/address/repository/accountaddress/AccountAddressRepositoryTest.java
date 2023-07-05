@@ -38,9 +38,6 @@ class AccountAddressRepositoryTest {
     @Autowired
     TestEntityManager em;
 
-    @Autowired
-    JPAQueryFactory jpaQueryFactory;
-
     @Test
     @DisplayName("회원으로 주소 등록")
     void createAccountAddress() {

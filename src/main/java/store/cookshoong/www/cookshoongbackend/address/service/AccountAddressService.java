@@ -6,7 +6,7 @@ import store.cookshoong.www.cookshoongbackend.address.repository.accountaddress.
 import store.cookshoong.www.cookshoongbackend.address.repository.address.AddressRepository;
 
 /**
- * {설명을 작성해주세요}.
+ * 회원과 주소 서비스를 구현하는 AccountAddressService
  *
  * @author jeongjewan
  * @since 2023.07.05
