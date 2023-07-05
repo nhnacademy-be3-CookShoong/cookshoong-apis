@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.coupon.repository;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
 
@@ -10,5 +11,5 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
  * @since 2023.07.04
  */
 public interface CouponTypeCashRepository extends JpaRepository<CouponTypeCash, Integer> {
-
+    Optional<CouponTypeCash> findByDiscountAmountAndMinimumPrice(int discountAmount, int minimumPrice);
 }
