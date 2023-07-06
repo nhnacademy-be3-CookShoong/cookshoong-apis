@@ -1,7 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.store.model.response;
 
 import java.time.LocalDate;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
@@ -11,7 +10,6 @@ import lombok.Getter;
  * @since 2023.07.06
  */
 @Getter
-@AllArgsConstructor
 public class StoreRegisterResponseDto {
     private String merchantName;
     private String businessLicenseNumber;
