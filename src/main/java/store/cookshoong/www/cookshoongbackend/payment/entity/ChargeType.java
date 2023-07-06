@@ -30,6 +30,11 @@ public class ChargeType {
     @Column(name = "name", nullable = false, length = 30)
     private String name;
 
+    /**
+     * 결제 타입 name 에 대한 생성자.
+     *
+     * @param name      결제 타입 이름
+     */
     public ChargeType(String name) {
         this.name = name;
     }

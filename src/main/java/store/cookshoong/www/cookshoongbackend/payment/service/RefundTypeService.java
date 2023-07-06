@@ -1,7 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.payment.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +12,7 @@ import store.cookshoong.www.cookshoongbackend.payment.model.response.TypeRespons
 import store.cookshoong.www.cookshoongbackend.payment.repository.refundtype.RefundTypeRepository;
 
 /**
- * 환불 타입에 Service.
+ * 환불 타입에 대한 Service.
  *
  * @author jeongjewan
  * @since 2023.07.06
@@ -38,7 +37,7 @@ public class RefundTypeService {
     }
 
     /**
-     * 환불 타입에 name 에 수정 메서드.
+     * 환불 타입에 name 수정 메서드.
      *
      * @param refundTypeId  환불 타입 아이디
      * @param requestDto    환불 타입 수정에 name에 대한 Dto

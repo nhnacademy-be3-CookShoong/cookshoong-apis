@@ -3,8 +3,8 @@ package store.cookshoong.www.cookshoongbackend.payment.model.request;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import store.cookshoong.www.cookshoongbackend.common.util.RegularExpressions;
 import store.cookshoong.www.cookshoongbackend.common.util.ValidationFailureMessages;
@@ -16,7 +16,7 @@ import store.cookshoong.www.cookshoongbackend.common.util.ValidationFailureMessa
  * @since 2023.07.06
  */
 @Getter
-@AllArgsConstructor
+@NoArgsConstructor
 public class CreateTypeRequestDto {
 
     @NotBlank
