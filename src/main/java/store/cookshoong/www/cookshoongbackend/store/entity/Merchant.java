@@ -25,4 +25,22 @@ public class Merchant {
 
     @Column(nullable = false, length = 20)
     private String name;
+
+    /**
+     * 가맹점 생성자.
+     *
+     * @param name 가맹점 이름.
+     */
+    public Merchant(String name) {
+        this.name = name;
+    }
+
+    /**
+     * 가맹점 수정을 위한 메소드.
+     *
+     * @param name 바뀔 이름.
+     */
+    public void modifyMerchant(String name) {
+        this.name = name;
+    }
 }
