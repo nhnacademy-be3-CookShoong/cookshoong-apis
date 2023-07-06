@@ -22,7 +22,8 @@ import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponUsageMerch
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponUsageStoreRepository;
 
 /**
- * 쿠폰 서비스.
+ * 쿠폰 정책 서비스.
+ * 쿠폰 타입과 사용처가 없다면 추가하여 정책을 만든다.
  *
  * @author eora21
  * @since 2023.07.04
