@@ -7,18 +7,5 @@ package store.cookshoong.www.cookshoongbackend.account.model.vo;
  * @since 2023.07.05
  */
 public enum RankCode {
-    LEVEL_1("프랜드"),
-    LEVEL_2("패밀리"),
-    LEVEL_3("마스터"),
-    LEVEL_4("VIP");
-
-    private final String description;
-
-    public String getDescription() {
-        return description;
-    }
-
-    RankCode(String description) {
-        this.description = description;
-    }
+    LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4;
 }

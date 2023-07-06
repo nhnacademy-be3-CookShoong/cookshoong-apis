@@ -7,16 +7,5 @@ package store.cookshoong.www.cookshoongbackend.account.model.vo;
  * @since 2023.07.05
  */
 public enum AccountStatusCode {
-    ACTIVE("활성"),
-    DORMANCY("휴면"),
-    WITHDRAWAL("탈퇴");
-    private final String description;
-
-    public String getDescription() {
-        return description;
-    }
-
-    AccountStatusCode(String description) {
-        this.description = description;
-    }
+    ACTIVE, DORMANCY, WITHDRAWAL;
 }
