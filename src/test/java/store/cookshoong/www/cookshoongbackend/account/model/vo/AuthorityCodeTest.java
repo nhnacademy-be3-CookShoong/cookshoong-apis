@@ -2,6 +2,7 @@ package store.cookshoong.www.cookshoongbackend.account.model.vo;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -22,41 +23,41 @@ class AuthorityCodeTest {
     @Test
     @DisplayName("권한은 CUSTOMER, BUSINESS, ADMIN 만 존재한다.")
     void matches() {
-        assertTrue(AuthorityCode.matches("CUSTOMER"));
-        assertTrue(AuthorityCode.matches("BUSINESS"));
-        assertTrue(AuthorityCode.matches("ADMIN"));
+        assertTrue(Authority.Code.matches("CUSTOMER"));
+        assertTrue(Authority.Code.matches("BUSINESS"));
+        assertTrue(Authority.Code.matches("ADMIN"));
     }
 
     @Test
     @DisplayName("권한은 CUSTOMER, BUSINESS, ADMIN 만 존재한다.")
     void matches_2() {
-        assertFalse(AuthorityCode.matches("MASTER"));
-        assertFalse(AuthorityCode.matches("MASTER"));
-        assertFalse(AuthorityCode.matches("KING"));
+        assertFalse(Authority.Code.matches("MASTER"));
+        assertFalse(Authority.Code.matches("MASTER"));
+        assertFalse(Authority.Code.matches("KING"));
     }
 
     @Test
     @DisplayName("권한은 대문자로만 구성되어있다.")
     void matches_3() {
-        assertFalse(AuthorityCode.matches("customer"));
-        assertFalse(AuthorityCode.matches("business"));
-        assertFalse(AuthorityCode.matches("admin"));
+        assertFalse(Authority.Code.matches("customer"));
+        assertFalse(Authority.Code.matches("business"));
+        assertFalse(Authority.Code.matches("admin"));
     }
 
     @Test
-    @DisplayName("권한 이름으로 AuthorityCode 객체를 얻을 수 있다.")
+    @DisplayName("권한 이름으로 권한코드 객체를 얻을 수 있다.")
     void extract() {
-        assertThat(AuthorityCode.ADMIN,
-            is(sameInstance(AuthorityCode.valueOf("ADMIN"))));
+        assertThat(Authority.Code.ADMIN,
+            is(sameInstance(Authority.Code.valueOf("ADMIN"))));
 
-        assertThat(AuthorityCode.ADMIN,
-            is(not(sameInstance(AuthorityCode.valueOf("CUSTOMER")))));
+        assertThat(Authority.Code.ADMIN,
+            is(not(sameInstance(Authority.Code.valueOf("CUSTOMER")))));
     }
 
     @Test
     @DisplayName("없는 권한이름으로 값을 얻으려고 하면 예외를 발생시킨다.")
     void extract_2() {
         assertThrows(IllegalArgumentException.class,
-            () -> AuthorityCode.valueOf("user"));
+            () -> Authority.Code.valueOf("user"));
     }
 }

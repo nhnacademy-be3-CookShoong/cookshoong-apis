@@ -30,4 +30,11 @@ public class Rank {
         this.rankCode = rankCode;
         this.name = name;
     }
+
+    /**
+     * 회원 등급코드들을 상수로 관리하기 위한 Enum.
+     */
+    public enum Code {
+        LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4;
+    }
 }
