@@ -6,8 +6,10 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 import store.cookshoong.www.cookshoongbackend.common.util.RegularExpressions;
@@ -21,7 +23,7 @@ import store.cookshoong.www.cookshoongbackend.common.util.ValidationFailureMessa
  */
 @Getter
 @ToString
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SignUpRequestDto {
     @NotBlank
     @Length(min = 1, max = 30)

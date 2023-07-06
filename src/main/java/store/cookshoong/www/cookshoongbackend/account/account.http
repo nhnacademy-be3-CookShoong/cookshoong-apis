@@ -1,0 +1,53 @@
+### 일반(+사업자) 회원가입
+POST localhost:8080/api/accounts?authorityCode=customer HTTP/1.1
+Content-Type: application/json
+
+{
+    "loginId": "user1",
+    "password": "1234",
+    "name": "유유저",
+    "nickname": "이름이유저래",
+    "email": "user@cookshoong.store",
+    "birthday": "1997-06-14",
+    "phoneNumber": "01012345678"
+}
+
+### 필수값 누락
+POST localhost:8080/api/accounts?authorityCode=customer HTTP/1.1
+Content-Type: application/json
+
+{
+  "loginId": "user1",
+  "password": "1234",
+  "name": "유유저",
+  "nickname": "이름이유저래",
+  "email": "user@cookshoong.store"
+}
+
+### 중복 아이디 생성
+POST localhost:8080/api/accounts?authorityCode=customer HTTP/1.1
+Content-Type: application/json
+
+{
+  "loginId": "user1",
+  "password": "1234",
+  "name": "유유저",
+  "nickname": "이름이유저래",
+  "email": "user@cookshoong.store",
+  "birthday": "1997-06-14",
+  "phoneNumber": "01012345678"
+}
+
+### 없는 권한 회원가입
+POST localhost:8080/api/accounts?authorityCode=user HTTP/1.1
+Content-Type: application/json
+
+{
+  "loginId": "user1",
+  "password": "1234",
+  "name": "유유저",
+  "nickname": "이름이유저래",
+  "email": "user@cookshoong.store",
+  "birthday": "1997-06-14",
+  "phoneNumber": "01012345678"
+}

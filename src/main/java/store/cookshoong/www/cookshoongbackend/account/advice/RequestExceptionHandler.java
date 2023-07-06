@@ -22,6 +22,7 @@ import store.cookshoong.www.cookshoongbackend.common.util.IpResolver;
 @Slf4j
 @RestControllerAdvice(basePackages = "store.cookshoong.www.cookshoongbackend.account")
 public class RequestExceptionHandler {
+    // TODO: 로깅에 AOP 적용하기
     private static final String CLIENT_IP_LOG = "Client ip : {}";
 
     /**
