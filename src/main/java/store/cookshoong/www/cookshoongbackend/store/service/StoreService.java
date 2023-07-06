@@ -14,6 +14,7 @@ import store.cookshoong.www.cookshoongbackend.store.entity.Store;
 import store.cookshoong.www.cookshoongbackend.store.entity.StoreStatus;
 import store.cookshoong.www.cookshoongbackend.store.model.request.StoreRegisterRequestDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.StoreListResponseDto;
+import store.cookshoong.www.cookshoongbackend.store.model.vo.StoreStatusCode;
 import store.cookshoong.www.cookshoongbackend.store.repository.BankTypeRepository;
 import store.cookshoong.www.cookshoongbackend.store.repository.MerchantRepository;
 import store.cookshoong.www.cookshoongbackend.store.repository.StoreRepository;
@@ -62,7 +63,7 @@ public class StoreService {
         Merchant merchant = merchantRepository.findMerchantByName(registerRequestDto.getMerchantName()).orElse(null);
         Account account = accountRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
         BankType bankType = bankTypeRepository.findBankTypeByDescription(registerRequestDto.getBankType()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 은행타입입니다."));
-        StoreStatus storeStatus = storeStatusRepository.findById("CLOSE").orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상태입니다."));
+        StoreStatus storeStatus = storeStatusRepository.getReferenceById(StoreStatusCode.CLOSE.name());
 
         Store store = new Store(merchant,
             account,
