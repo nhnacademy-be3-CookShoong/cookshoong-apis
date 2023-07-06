@@ -28,7 +28,7 @@ public class RefundType {
     @Column(name = "refund_type_id", nullable = false)
     private Long id;
 
-    @Column(nullable = false, length = 30)
+    @Column(name = "name", nullable = false, length = 30)
     private String name;
 
     public RefundType(String name) {

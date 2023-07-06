@@ -8,7 +8,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +24,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "refunds")
 public class Refund {
     @Id
-    @Size(max = 36)
     @Column(name = "refund_code", nullable = false, length = 36)
     private String refundCode;
 
