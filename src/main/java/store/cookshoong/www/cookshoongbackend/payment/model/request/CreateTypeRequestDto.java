@@ -1,6 +1,5 @@
 package store.cookshoong.www.cookshoongbackend.payment.model.request;
 
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import lombok.AccessLevel;
@@ -22,6 +21,7 @@ public class CreateTypeRequestDto {
 
     @NotBlank
     @Length(min = 1, max = 30)
-    @Pattern(regexp = RegularExpressions.LETTER_ONLY, message = ValidationFailureMessages.LETTER_ONLY)
+    @Pattern(regexp = RegularExpressions.LETTER_ONLY_WITH_BLANK, message = ValidationFailureMessages.LETTER_ONLY)
     private String name;
 }
+

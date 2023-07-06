@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.store.repository;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import store.cookshoong.www.cookshoongbackend.store.entity.Merchant;
 
@@ -9,5 +10,12 @@ import store.cookshoong.www.cookshoongbackend.store.entity.Merchant;
  * @author seungyeon
  * @since 2023.07.04
  */
-public interface MerchantRepository extends JpaRepository<Merchant, Long> {
+public interface MerchantRepository extends JpaRepository<Merchant, Long>, MerchantRepositoryCustom {
+    /**
+     * 이름으로 가맹점 객체 찾기.
+     *
+     * @param name 가맹점 이름
+     * @return 있으면 반환하고, 없으면 null 반환하도록 유도할 것
+     */
+    Optional<Merchant> findMerchantByName(String name);
 }

@@ -2,6 +2,7 @@ package store.cookshoong.www.cookshoongbackend.store.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,8 +15,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
 
 /**
@@ -38,11 +41,14 @@ public class Store {
     @JoinColumn(name = "merchant_id")
     private Merchant merchant;
 
-    @OneToOne(fetch = FetchType.LAZY)
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "address_id")
     private Address address;
 
-    //TODO 1.Account MayToOne 걸기
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id")
+    private Account account;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "bank_type_code", nullable = false)
@@ -81,4 +87,51 @@ public class Store {
 
     @Column(name = "bank_account_number", nullable = false, length = 20)
     private String bankAccountNumber;
+
+    /**
+     * 주소 생성자.
+     *
+     * @param merchant              가맹점
+     * @param account               회원
+     * @param bankTypeCode          은행타입
+     * @param storeStatus           가게 상태
+     * @param businessLicense       사업자등록증
+     * @param businessLicenseNumber 사업자등록번호
+     * @param representativeName    대표자 이름
+     * @param openingDate           개업일자
+     * @param name                  상호명
+     * @param phoneNumber           가게 번호
+     * @param defaultEarningRate    매장 별 기본 적립률
+     * @param description           매장 설명
+     * @param image                 매장 대표이미지
+     * @param bankAccountNumber     은행 계좌 번호
+     */
+    public Store(Merchant merchant, Account account, BankType bankTypeCode, StoreStatus storeStatus,
+                 String businessLicense, String businessLicenseNumber, String representativeName,
+                 LocalDate openingDate, String name, String phoneNumber, BigDecimal defaultEarningRate,
+                 String description, String image, String bankAccountNumber) {
+        this.merchant = merchant;
+        this.account = account;
+        this.bankTypeCode = bankTypeCode;
+        this.storeStatusCode = storeStatus;
+        this.businessLicense = businessLicense;
+        this.businessLicenseNumber = businessLicenseNumber;
+        this.representativeName = representativeName;
+        this.openingDate = openingDate;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.defaultEarningRate = defaultEarningRate;
+        this.description = description;
+        this.image = image;
+        this.bankAccountNumber = bankAccountNumber;
+    }
+
+    /**
+     * 주소 등록을 위해 사용.
+     *
+     * @param address 주소 값
+     */
+    public void modifyAddress(Address address) {
+        this.address = address;
+    }
 }

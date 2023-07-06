@@ -22,6 +22,6 @@ public class ModifyTypeRequestDto {
 
     @NotBlank
     @Length(min = 1, max = 30)
-    @Pattern(regexp = RegularExpressions.LETTER_ONLY, message = ValidationFailureMessages.LETTER_ONLY)
+    @Pattern(regexp = RegularExpressions.LETTER_ONLY_WITH_BLANK, message = ValidationFailureMessages.LETTER_ONLY)
     private String name;
 }
