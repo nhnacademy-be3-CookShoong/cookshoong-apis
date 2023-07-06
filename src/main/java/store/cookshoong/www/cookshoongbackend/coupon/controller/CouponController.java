@@ -94,4 +94,34 @@ public class CouponController {
             .status(HttpStatus.CREATED)
             .body(storePercentCouponPolicyId);
     }
+
+    /**
+     * 모든 범위 금액 쿠폰 정책 생성을 위한 엔드포인트.
+     *
+     * @param dto 쿠폰 금액 정책을 생성할 때 사용되는 dto
+     * @return CREATED status 및 쿠폰 정책 id
+     */
+    @PostMapping("/all/policies/cash")
+    public ResponseEntity<Long> createAllCashCouponPolicy(@RequestBody CreateCashCouponPolicyRequestDto dto) {
+        Long storePercentCouponPolicyId = couponService.createAllCashCouponPolicy(dto);
+
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(storePercentCouponPolicyId);
+    }
+
+    /**
+     * 모든 범위 포인트 쿠폰 정책 생성을 위한 엔드포인트.
+     *
+     * @param dto 쿠폰 포인트 정책을 생성할 때 사용되는 dto
+     * @return CREATED status 및 쿠폰 정책 id
+     */
+    @PostMapping("/all/policies/percent")
+    public ResponseEntity<Long> createAllPointCouponPolicy(@RequestBody CreatePercentCouponPolicyRequestDto dto) {
+        Long storePercentCouponPolicyId = couponService.createAllPercentCouponPolicy(dto);
+
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(storePercentCouponPolicyId);
+    }
 }
