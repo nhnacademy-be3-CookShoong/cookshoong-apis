@@ -29,4 +29,7 @@ public class ChargeType {
     @Column(name = "name", nullable = false, length = 30)
     private String name;
 
+    public ChargeType(String name) {
+        this.name = name;
+    }
 }

@@ -29,4 +29,8 @@ public class RefundType {
 
     @Column(nullable = false, length = 30)
     private String name;
+
+    public RefundType(String name) {
+        this.name = name;
+    }
 }
