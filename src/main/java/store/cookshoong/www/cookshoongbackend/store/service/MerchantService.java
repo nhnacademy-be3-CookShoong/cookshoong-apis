@@ -50,7 +50,8 @@ public class MerchantService {
      * @param merchantRegisterRequestDto 수정된 가맹점 이름 정보
      */
     public void updateMerchant(Long merchantId, MerchantRegisterRequestDto merchantRegisterRequestDto) {
-        Merchant merchant = merchantRepository.findById(merchantId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 가맹점입니다."));
+        Merchant merchant = merchantRepository.findById(merchantId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 가맹점입니다."));
         merchant.modifyMerchant(merchantRegisterRequestDto.getMerchantName());
     }
 

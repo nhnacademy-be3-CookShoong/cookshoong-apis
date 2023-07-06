@@ -3,6 +3,7 @@ package store.cookshoong.www.cookshoongbackend.store.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -16,17 +17,9 @@ import store.cookshoong.www.cookshoongbackend.store.model.response.MerchantRespo
  * @author seungyeon
  * @since 2023.07.06
  */
+@RequiredArgsConstructor
 public class MerchantRepositoryImpl implements MerchantRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
-
-    /**
-     * JpaQueryFactory.
-     *
-     * @param jpaQueryFactory the jpa query factory
-     */
-    public MerchantRepositoryImpl(JPAQueryFactory jpaQueryFactory) {
-        this.jpaQueryFactory = jpaQueryFactory;
-    }
 
     /**
      * {@inheritDoc}

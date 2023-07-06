@@ -3,6 +3,7 @@ package store.cookshoong.www.cookshoongbackend.store.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -18,18 +19,9 @@ import store.cookshoong.www.cookshoongbackend.store.model.response.StoreListResp
  * @author seungyeon
  * @since 2023.07.05
  */
+@RequiredArgsConstructor
 public class StoreRepositoryImpl implements StoreRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
-
-    /**
-     * StoreRepositoryImpl 생성자.
-     *
-     * @param jpaQueryFactory the jpa query factory
-     */
-    public StoreRepositoryImpl(JPAQueryFactory jpaQueryFactory) {
-        this.jpaQueryFactory = jpaQueryFactory;
-    }
-
 
     /**
      * {@inheritDoc}
@@ -76,9 +68,16 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
      */
     private Long getTotal(Long accountId) {
         QStore store = QStore.store;
+        QAccount account = QAccount.account;
+        QStoreStatus storeStatus = QStoreStatus.storeStatus;
+        QAddress address = QAddress.address;
+
         return jpaQueryFactory
             .select(store.count())
             .from(store)
+            .innerJoin(store.account, account)
+            .innerJoin(store.storeStatusCode, storeStatus)
+            .innerJoin(store.address, address)
             .where(store.account.id.eq(accountId))
             .fetchOne();
     }

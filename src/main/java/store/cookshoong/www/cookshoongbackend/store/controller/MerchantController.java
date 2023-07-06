@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import store.cookshoong.www.cookshoongbackend.store.model.request.MerchantRegisterRequestDto;
@@ -42,8 +43,7 @@ public class MerchantController {
     @GetMapping
     public ResponseEntity<Page<MerchantResponseDto>> searchMerchantList(Pageable pageable) {
         return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(merchantService.getMerchantList(pageable));
+            .ok(merchantService.getMerchantList(pageable));
     }
 
     /**
@@ -81,9 +81,7 @@ public class MerchantController {
             throw new ValidationException();
         }
         merchantService.updateMerchant(merchantId, merchantRegisterRequestDto);
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .build();
+        return ResponseEntity.ok().build();
     }
 
     /**
