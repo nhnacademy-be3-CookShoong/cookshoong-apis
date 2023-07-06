@@ -35,6 +35,11 @@ public class RefundType {
         this.name = name;
     }
 
+    /**
+     * 환불 타입에 대한 수정 메서드.
+     *
+     * @param requestDto    타입 수정에 대한 Dto
+     */
     public void modifyRefundType(ModifyTypeRequestDto requestDto) {
         this.name = requestDto.getName();
     }

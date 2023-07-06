@@ -34,6 +34,11 @@ public class ChargeType {
         this.name = name;
     }
 
+    /**
+     * 결제 타입에 대한 수정 메서드.
+     *
+     * @param requestDto    타입 수정에 대한 Dto
+     */
     public void modifyChargeType(ModifyTypeRequestDto requestDto) {
         this.name = requestDto.getName();
     }
