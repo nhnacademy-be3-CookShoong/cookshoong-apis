@@ -3,13 +3,10 @@ package store.cookshoong.www.cookshoongbackend.store.controller;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import store.cookshoong.www.cookshoongbackend.store.model.request.StoreRegisterRequestDto;
-import store.cookshoong.www.cookshoongbackend.store.model.response.StoreListResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.service.StoreService;
 
 /**
@@ -40,7 +36,7 @@ public class StoreController {
      * @return 201
      */
     @PostMapping
-    public ResponseEntity<Void> postStore(@RequestParam("account") String id,
+    public ResponseEntity<Void> postStore(@RequestParam("accountId") Long accountId,
                                           @RequestBody @Valid StoreRegisterRequestDto registerRequestDto,
                                           BindingResult bindingResult) {
         //TODO 1. 회원정보 어디서 가져와서 넣어줘야함.
@@ -50,7 +46,7 @@ public class StoreController {
             throw new ValidationException();
         }
         //TODO 9. ResponseEntity 수정 (Store 조회 페이지 구현 후 다시 작성)
-        storeService.createStore(id, registerRequestDto);
+        storeService.createStore(accountId, registerRequestDto);
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .build();

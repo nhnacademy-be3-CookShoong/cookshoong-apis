@@ -53,14 +53,14 @@ public class StoreService {
      *
      * @param registerRequestDto 매장 등록을 위한 정보
      */
-    public void createStore(String id, StoreRegisterRequestDto registerRequestDto) {
+    public void createStore(Long id, StoreRegisterRequestDto registerRequestDto) {
         if (storeRepository.existsStoreByBusinessLicenseNumber(registerRequestDto.getBusinessLicense())) {
             throw new IllegalArgumentException("이미 등록된 사업장입니다.");
         }
         // TODO 9. Exception 처리 한꺼번에 수정
 
         Merchant merchant = merchantRepository.findMerchantByName(registerRequestDto.getMerchantName()).orElse(null);
-        Account account = accountRepository.findByLoginId(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        Account account = accountRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
         BankType bankType = bankTypeRepository.findBankTypeByDescription(registerRequestDto.getBankType()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 은행타입입니다."));
         StoreStatus storeStatus = storeStatusRepository.findById("CLOSE").orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상태입니다."));
 
