@@ -9,5 +9,6 @@ import store.cookshoong.www.cookshoongbackend.store.entity.Store;
  * @author seungyeon
  * @since 2023.07.04
  */
-public interface StoreRepository extends JpaRepository<Store, Long> {
+public interface StoreRepository extends JpaRepository<Store, Long>, StoreRepositoryCustom {
+    boolean existsStoreByBusinessLicenseNumber(String businessLicenseNumber);
 }
