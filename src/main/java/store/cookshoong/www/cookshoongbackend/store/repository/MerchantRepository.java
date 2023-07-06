@@ -12,10 +12,10 @@ import store.cookshoong.www.cookshoongbackend.store.entity.Merchant;
  */
 public interface MerchantRepository extends JpaRepository<Merchant, Long>, MerchantRepositoryCustom {
     /**
-     * Find merchant by name optional.
+     * 이름으로 가맹점 객체 찾기.
      *
-     * @param name the name
-     * @return the optional
+     * @param name 가맹점 이름
+     * @return 있으면 반환하고, 없으면 null 반환하도록 유도할 것
      */
     Optional<Merchant> findMerchantByName(String name);
 }

@@ -54,21 +54,6 @@ public class StoreController {
             .build();
     }
 
-    /**
-     * 사업자 회원의 매장 리스트 조회, 페이지로 구현.
-     *
-     * @param accountId 회원 아이디
-     * @param pageable  페이지 정보
-     * @return 200, 매장 리스트(페이지 별)
-     */
-    @GetMapping("/{accountId}")
-    public ResponseEntity<Page<StoreListResponseDto>> getStoreList(@PathVariable("accountId") Long accountId,
-                                                                   Pageable pageable) {
-        return ResponseEntity
-            .ok(storeService.selectStoreList(accountId, pageable));
-    }
-
-
     //TODO 4. 수정이 아니라 추가 정보로 영업일, 휴무일을 넣을 수 있도록 하는건?
 
     /**

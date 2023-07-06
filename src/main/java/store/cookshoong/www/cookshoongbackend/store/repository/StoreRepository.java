@@ -11,10 +11,10 @@ import store.cookshoong.www.cookshoongbackend.store.entity.Store;
  */
 public interface StoreRepository extends JpaRepository<Store, Long>, StoreRepositoryCustom {
     /**
-     * Exists store by business license number boolean.
+     * 사업자 등록번호 이미 존재하는지 확인.
      *
-     * @param businessLicenseNumber the business license number
-     * @return the boolean
+     * @param businessLicenseNumber 사업자등록번호
+     * @return true : 이미 등록이 되어있음. false : 등록되지 않은 사업자 번호
      */
     boolean existsStoreByBusinessLicenseNumber(String businessLicenseNumber);
 }

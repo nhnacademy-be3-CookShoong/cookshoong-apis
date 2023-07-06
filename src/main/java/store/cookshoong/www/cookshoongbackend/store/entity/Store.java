@@ -31,7 +31,6 @@ import store.cookshoong.www.cookshoongbackend.address.entity.Address;
 @Entity
 @Table(name = "stores")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class Store {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
