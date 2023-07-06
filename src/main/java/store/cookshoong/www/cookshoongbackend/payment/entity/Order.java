@@ -5,10 +5,17 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
+/**
+ * 주문에 해당되는 Entity.
+ *
+ * @author jeongjewan
+ * @since 2023.07.06
+ */
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
 @Table(name = "orders")

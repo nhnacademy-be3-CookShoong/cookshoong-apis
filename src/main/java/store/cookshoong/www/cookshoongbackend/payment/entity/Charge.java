@@ -8,12 +8,19 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
+/**
+ * 결제에 해당되는 Entity.
+ *
+ * @author jeongjewan
+ * @since 2023.07.06
+ */
 @Getter
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "charges")
 public class Charge {
     @Id
@@ -35,3 +42,4 @@ public class Charge {
     private Integer chargedAmount;
 
 }
+
