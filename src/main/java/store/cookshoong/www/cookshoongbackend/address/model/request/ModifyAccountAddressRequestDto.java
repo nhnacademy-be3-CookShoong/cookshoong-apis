@@ -1,7 +1,11 @@
 package store.cookshoong.www.cookshoongbackend.address.model.request;
 
-import lombok.AllArgsConstructor;
+import javax.validation.constraints.Pattern;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
+import store.cookshoong.www.cookshoongbackend.common.util.RegularExpressions;
+import store.cookshoong.www.cookshoongbackend.common.util.ValidationFailureMessages;
 
 /**
  * 회원이 주문할 때 상세주소를 변경하는 경우 사용되는 Dto.
@@ -10,8 +14,10 @@ import lombok.Getter;
  * @since 2023.07.04
  */
 @Getter
-@AllArgsConstructor
+@NoArgsConstructor
 public class ModifyAccountAddressRequestDto {
 
+    @Length(min = 1, max = 80)
+    @Pattern(regexp = RegularExpressions.LETTER_WITH_NUMBER, message = ValidationFailureMessages.LETTER_WITH_NUMBER)
     private String detailPlace;
 }
