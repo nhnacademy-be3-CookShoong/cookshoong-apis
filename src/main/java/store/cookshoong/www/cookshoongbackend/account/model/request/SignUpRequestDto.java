@@ -8,6 +8,7 @@ import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 import store.cookshoong.www.cookshoongbackend.common.util.RegularExpressions;
 import store.cookshoong.www.cookshoongbackend.common.util.ValidationFailureMessages;
@@ -19,6 +20,7 @@ import store.cookshoong.www.cookshoongbackend.common.util.ValidationFailureMessa
  * @since 2023.07.05
  */
 @Getter
+@ToString
 @AllArgsConstructor
 public class SignUpRequestDto {
     @NotBlank
