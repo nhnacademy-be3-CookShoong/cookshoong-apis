@@ -10,9 +10,7 @@ import store.cookshoong.www.cookshoongbackend.account.entity.QAccount;
 import store.cookshoong.www.cookshoongbackend.address.entity.QAddress;
 import store.cookshoong.www.cookshoongbackend.store.entity.QStore;
 import store.cookshoong.www.cookshoongbackend.store.entity.QStoreStatus;
-import store.cookshoong.www.cookshoongbackend.store.model.request.StoreRegisterRequestDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.StoreListResponseDto;
-import store.cookshoong.www.cookshoongbackend.store.model.response.StoreRegisterResponseDto;
 
 /**
  * 매장 커스텀 레포지토리 구현.
@@ -24,7 +22,7 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     /**
-     * Instantiates a new Store repository.
+     * StoreRepositoryImpl 생성자.
      *
      * @param jpaQueryFactory the jpa query factory
      */
@@ -32,15 +30,12 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
         this.jpaQueryFactory = jpaQueryFactory;
     }
 
+
     /**
-     * 사업자 회원의 매장 조회시 pagination 구현.
-     *
-     * @param accountId 회원 아이디
-     * @param pageable  페이지 정보.
-     * @return 페이지 별 매장 리스트
+     * {@inheritDoc}
      */
     @Override
-    public Page<StoreListResponseDto> getStoresPage(Long accountId, Pageable pageable) {
+    public Page<StoreListResponseDto> lookupStoresPage(Long accountId, Pageable pageable) {
         List<StoreListResponseDto> responseDtoList = getStores(accountId, pageable);
         long total = getTotal(accountId);
         return new PageImpl<>(responseDtoList, pageable, total);

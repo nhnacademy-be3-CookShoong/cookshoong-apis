@@ -4,12 +4,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import javax.validation.constraints.NotBlank;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 매장 등록 및 수정 Dto.
+ * 매장 등록 Dto.
  *
  * @author seungyeon
  * @since 2023.07.05
