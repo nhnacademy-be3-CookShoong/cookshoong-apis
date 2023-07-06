@@ -10,7 +10,7 @@ import store.cookshoong.www.cookshoongbackend.payment.exception.ChargeTypeNotFou
 import store.cookshoong.www.cookshoongbackend.payment.model.request.CreateTypeRequestDto;
 import store.cookshoong.www.cookshoongbackend.payment.model.request.ModifyTypeRequestDto;
 import store.cookshoong.www.cookshoongbackend.payment.model.response.TypeResponseDto;
-import store.cookshoong.www.cookshoongbackend.payment.repository.ChargeTypeRepository;
+import store.cookshoong.www.cookshoongbackend.payment.repository.chargetype.ChargeTypeRepository;
 
 /**
  * 결제 타입에 Service.
@@ -49,8 +49,6 @@ public class ChargeTypeService {
             .orElseThrow(ChargeTypeNotFoundException::new);
 
         chargeType.modifyChargeType(requestDto);
-
-        chargeTypeRepository.save(chargeType);
     }
 
     /**
@@ -76,11 +74,7 @@ public class ChargeTypeService {
     @Transactional(readOnly = true)
     public List<TypeResponseDto> selectChargeTypeAll() {
 
-        List<ChargeType> chargeTypes = chargeTypeRepository.findAll();
-
-        return chargeTypes.stream()
-            .map(chargeType -> new TypeResponseDto(chargeType.getName()))
-            .collect(Collectors.toList());
+        return chargeTypeRepository.lookupChargeTypeAll();
     }
 
     /**

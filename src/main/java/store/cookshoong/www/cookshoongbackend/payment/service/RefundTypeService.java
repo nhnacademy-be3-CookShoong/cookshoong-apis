@@ -5,14 +5,12 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import store.cookshoong.www.cookshoongbackend.payment.entity.ChargeType;
 import store.cookshoong.www.cookshoongbackend.payment.entity.RefundType;
-import store.cookshoong.www.cookshoongbackend.payment.exception.ChargeTypeNotFoundException;
 import store.cookshoong.www.cookshoongbackend.payment.exception.RefundTypeNotFoundException;
 import store.cookshoong.www.cookshoongbackend.payment.model.request.CreateTypeRequestDto;
 import store.cookshoong.www.cookshoongbackend.payment.model.request.ModifyTypeRequestDto;
 import store.cookshoong.www.cookshoongbackend.payment.model.response.TypeResponseDto;
-import store.cookshoong.www.cookshoongbackend.payment.repository.RefundTypeRepository;
+import store.cookshoong.www.cookshoongbackend.payment.repository.refundtype.RefundTypeRepository;
 
 /**
  * 환불 타입에 Service.
@@ -51,8 +49,6 @@ public class RefundTypeService {
             .orElseThrow(RefundTypeNotFoundException::new);
 
         refundType.modifyRefundType(requestDto);
-
-        refundTypeRepository.save(refundType);
     }
 
     /**
@@ -78,11 +74,7 @@ public class RefundTypeService {
     @Transactional(readOnly = true)
     public List<TypeResponseDto> selectRefundTypeAll() {
 
-        List<RefundType> refundTypeAll = refundTypeRepository.findAll();
-
-        return refundTypeAll.stream()
-            .map(chargeType -> new TypeResponseDto(chargeType.getName()))
-            .collect(Collectors.toList());
+        return refundTypeRepository.lookupRefundTypeAll();
     }
 
     /**
