@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.account.exception;
+package store.cookshoong.www.cookshoongbackend.common.exception;
 
 import java.util.HashMap;
 import java.util.Map;
