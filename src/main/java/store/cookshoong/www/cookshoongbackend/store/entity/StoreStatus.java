@@ -26,4 +26,7 @@ public class StoreStatus {
     @Column(name = "description", length = 30)
     private String description;
 
+    public enum StoreStatusCode {
+        OPEN, CLOSE, OUTED
+    }
 }

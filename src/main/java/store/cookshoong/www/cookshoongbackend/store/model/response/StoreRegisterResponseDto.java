@@ -1,0 +1,23 @@
+package store.cookshoong.www.cookshoongbackend.store.model.response;
+
+import java.time.LocalDate;
+import lombok.Getter;
+
+/**
+ * 매장 조회를 위한 Dto.
+ *
+ * @author seungyeon
+ * @since 2023.07.06
+ */
+@Getter
+public class StoreRegisterResponseDto {
+    private String merchantName;
+    private String businessLicenseNumber;
+    private String representativeName;
+    private LocalDate openingDate;
+    private String storeName;
+    private String phoneNumber;
+    private String storeAddress;
+    private String businessLicense;
+    private String description;
+}

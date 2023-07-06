@@ -51,7 +51,7 @@ class AccountRepositoryTest {
 
         em.clear();
 
-        Account expect = accountRepository.findByLoginId("user1");
+        Account expect = accountRepository.findByLoginId("user1").orElseThrow();
 
         assertThat(expect.getId()).isEqualTo(actual.getId());
         assertThat(expect.getLoginId()).isEqualTo(actual.getLoginId());
