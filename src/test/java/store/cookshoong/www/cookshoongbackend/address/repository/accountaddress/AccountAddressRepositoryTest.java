@@ -107,6 +107,41 @@ class AccountAddressRepositoryTest {
 
     }
 
+    @Test
+    @DisplayName("회원으로로 조회한 주소")
+    void getFindByAccount() {
+
+        AccountsStatus status = new AccountsStatus("ACTIVE", "활성");
+        Authority authority = new Authority("USER", "일반회원");
+        Rank rank = new Rank("LEVEL_4", "VIP");
+
+        Account account = new Account(status, authority, rank, "user1", "1234", "유유저",
+            "이름이유저래", "user@cookshoong.store", LocalDate.of(1997, 6, 4),
+            "01012345678");
+
+        em.persist(status);
+        em.persist(authority);
+        em.persist(rank);
+        em.persist(account);
+
+        Address address = new Address("광주 광역시 서석동0", "조선대학교0", new BigDecimal("23.5757577"), new BigDecimal("24.8898989"));
+        em.persist(address);
+
+        AccountAddress accountAddress = new AccountAddress(
+            new AccountAddress.Pk(account.getId(), address.getId()),
+            account,
+            address,
+            "기본0");
+        accountAddressRepository.save(accountAddress);
+
+
+        List<AccountAddress> accountAddressList = accountAddressRepository.findByAccount(account);
+
+        assertThat(accountAddressList.get(0).getAddress().getMainPlace()).isEqualTo(accountAddress.getAddress().getMainPlace());
+        assertThat(accountAddressList.get(0).getAlias()).isEqualTo(accountAddress.getAlias());
+
+    }
+
 
 
 }
