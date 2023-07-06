@@ -1,6 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.address.model.request;
 
 import javax.validation.constraints.Pattern;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
@@ -14,7 +15,7 @@ import store.cookshoong.www.cookshoongbackend.common.util.ValidationFailureMessa
  * @since 2023.07.04
  */
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ModifyAccountAddressRequestDto {
 
     @Length(min = 1, max = 80)
