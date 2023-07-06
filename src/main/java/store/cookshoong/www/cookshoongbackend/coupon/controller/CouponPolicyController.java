@@ -22,8 +22,8 @@ import store.cookshoong.www.cookshoongbackend.coupon.service.CouponPolicyService
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/coupon")
-public class CouponController {
+@RequestMapping("/api/coupon/policies")
+public class CouponPolicyController {
     private final CouponPolicyService couponPolicyService;
 
     /**
@@ -33,7 +33,7 @@ public class CouponController {
      * @param dto     가게에서 쿠폰 금액 정책을 생성할 때 사용되는 dto
      * @return CREATED status 및 쿠폰 정책 id
      */
-    @PostMapping("/stores/{storeId}/policies/cash")
+    @PostMapping("/stores/{storeId}/cash")
     public ResponseEntity<Long> createStoreCashCouponPolicy(@PathVariable Long storeId,
                                                             @RequestBody CreateCashCouponPolicyRequestDto dto) {
         Long storeCashCouponPolicyId = couponPolicyService.createStoreCashCouponPolicy(storeId, dto);
@@ -50,7 +50,7 @@ public class CouponController {
      * @param dto     가게에서 쿠폰 포인트 정책을 생성할 때 사용되는 dto
      * @return CREATED status 및 쿠폰 정책 id
      */
-    @PostMapping("/stores/{storeId}/policies/percent")
+    @PostMapping("/stores/{storeId}/percent")
     public ResponseEntity<Long> createStorePercentCouponPolicy(@PathVariable Long storeId,
                                                                @RequestBody CreatePercentCouponPolicyRequestDto dto) {
         Long storePercentCouponPolicyId = couponPolicyService.createStorePercentCouponPolicy(storeId, dto);
@@ -67,7 +67,7 @@ public class CouponController {
      * @param dto        가맹점에서 쿠폰 금액 정책을 생성할 때 사용되는 dto
      * @return CREATED status 및 쿠폰 정책 id
      */
-    @PostMapping("/merchants/{merchantId}/policies/cash")
+    @PostMapping("/merchants/{merchantId}/cash")
     public ResponseEntity<Long> createMerchantCashCouponPolicy(@PathVariable Long merchantId,
                                                                @RequestBody CreateCashCouponPolicyRequestDto dto) {
         Long storePercentCouponPolicyId = couponPolicyService.createMerchantCashCouponPolicy(merchantId, dto);
@@ -84,7 +84,7 @@ public class CouponController {
      * @param dto        가맹점에서 쿠폰 포인트 정책을 생성할 때 사용되는 dto
      * @return CREATED status 및 쿠폰 정책 id
      */
-    @PostMapping("/merchants/{merchantId}/policies/percent")
+    @PostMapping("/merchants/{merchantId}/percent")
     public ResponseEntity<Long> createMerchantPointCouponPolicy(@PathVariable Long merchantId,
                                                                 @RequestBody CreatePercentCouponPolicyRequestDto dto) {
         Long storePercentCouponPolicyId = couponPolicyService.createMerchantPercentCouponPolicy(merchantId, dto);
@@ -100,7 +100,7 @@ public class CouponController {
      * @param dto 쿠폰 금액 정책을 생성할 때 사용되는 dto
      * @return CREATED status 및 쿠폰 정책 id
      */
-    @PostMapping("/all/policies/cash")
+    @PostMapping("/all/cash")
     public ResponseEntity<Long> createAllCashCouponPolicy(@RequestBody CreateCashCouponPolicyRequestDto dto) {
         Long storePercentCouponPolicyId = couponPolicyService.createAllCashCouponPolicy(dto);
 
@@ -115,7 +115,7 @@ public class CouponController {
      * @param dto 쿠폰 포인트 정책을 생성할 때 사용되는 dto
      * @return CREATED status 및 쿠폰 정책 id
      */
-    @PostMapping("/all/policies/percent")
+    @PostMapping("/all/percent")
     public ResponseEntity<Long> createAllPointCouponPolicy(@RequestBody CreatePercentCouponPolicyRequestDto dto) {
         Long storePercentCouponPolicyId = couponPolicyService.createAllPercentCouponPolicy(dto);
 
