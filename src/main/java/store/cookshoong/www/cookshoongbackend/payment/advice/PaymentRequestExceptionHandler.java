@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import store.cookshoong.www.cookshoongbackend.common.exception.ValidationFailureException;
 import store.cookshoong.www.cookshoongbackend.payment.exception.ChargeTypeNotFoundException;
+import store.cookshoong.www.cookshoongbackend.payment.exception.TypeValidationException;
 
 /**
  * payment 패키지 아래에서 RestController 내에서 일어나는 모든 예외들을 처리한다.
@@ -17,7 +18,7 @@ import store.cookshoong.www.cookshoongbackend.payment.exception.ChargeTypeNotFou
 @RestControllerAdvice(basePackages = "store.cookshoong.www.cookshoongbackend.payment")
 public class PaymentRequestExceptionHandler {
 
-    @ExceptionHandler({ValidationFailureException.class})
+    @ExceptionHandler({TypeValidationException.class})
     public ResponseEntity<Map<String, String>> handleValidationFailure(ValidationFailureException e) {
 
         return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(e.getErrors());
