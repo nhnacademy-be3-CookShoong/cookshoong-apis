@@ -49,6 +49,7 @@ public class StoreService {
 
     /**
      * 매장 등록 서비스 구현.
+     * 가맹점 등록시 찾아서 넣고, 없으면 null로 등록, 매장 등록시 바로 CLOSE(휴식중) 상태로 등록됨.
      *
      * @param registerRequestDto 매장 등록을 위한 정보
      */
@@ -62,7 +63,7 @@ public class StoreService {
         Merchant merchant = merchantRepository.findMerchantByName(registerRequestDto.getMerchantName()).orElse(null);
         Account account = accountRepository.findById(4L).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
         BankType bankType = bankTypeRepository.findBankTypeByDescription(registerRequestDto.getBankType()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 은행타입입니다."));
-        StoreStatus storeStatus = storeStatusRepository.findById("OPEN").orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상태입니다."));
+        StoreStatus storeStatus = storeStatusRepository.findById("CLOSE").orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상태입니다."));
 
         Store store = new Store(merchant,
             account,

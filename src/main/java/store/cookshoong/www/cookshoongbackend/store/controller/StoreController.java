@@ -32,7 +32,7 @@ public class StoreController {
     private final StoreService storeService;
 
     /**
-     * 매장 등록.
+     * 매장 등록을 위한 컨트롤러.
      *
      * @param registerRequestDto 매장 등록을 위한 Request Body
      * @param bindingResult      validation 결과
@@ -72,7 +72,7 @@ public class StoreController {
     //TODO 4. 수정이 아니라 추가 정보로 영업일, 휴무일을 넣을 수 있도록 하는건?
 
     /**
-     * 매장 삭제.
+     * 매장 삭제를 위한 컨트롤러.
      *
      * @param storeId 매장 아이디
      * @return 204

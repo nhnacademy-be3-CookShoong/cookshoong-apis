@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * {설명을 작성해주세요}.
+ * 매장 등록을 위한 Dto.
  *
  * @author seungyeon
  * @since 2023.07.06

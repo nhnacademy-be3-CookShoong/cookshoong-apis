@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * {설명을 작성해주세요}.
+ * 매장 리스트 응답을 위한 Dto.
  *
  * @author seungyeon
  * @since 2023.07.05
