@@ -13,9 +13,8 @@ import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreatePercent
 import store.cookshoong.www.cookshoongbackend.coupon.service.CouponPolicyService;
 
 /**
- * 쿠폰 RestController.
- * 쿠폰 타입, 사용처 지정과 전체 정책, 발행, 내역 확인을 담당한다.
- * 소유 쿠폰 조회가 가능하도록 작성하며, 페이징과 필터링 모두 가능하도록 한다.
+ * 쿠폰 정책 RestController.
+ * 쿠폰 타입, 사용처 지정과 전체 정책을 담당한다.
  *
  * @author eora21
  * @since 2023.07.04
