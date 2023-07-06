@@ -31,16 +31,16 @@ public class AccountController {
     private final AccountService accountService;
 
     /**
-     * 회원 가입처리 메서드.
+     * 회원 저장 메서드.
      *
      * @param authorityCode  ex) customer, business
      * @param signUpRequestDto 회원가입 Dto
      * @return 201
      */
     @PostMapping
-    public ResponseEntity<Void> registerAccount(@RequestBody @Valid SignUpRequestDto signUpRequestDto,
-                                                BindingResult bindingResult,
-                                                @RequestParam String authorityCode) {
+    public ResponseEntity<Void> postRegisterAccount(@RequestBody @Valid SignUpRequestDto signUpRequestDto,
+                                                    BindingResult bindingResult,
+                                                    @RequestParam String authorityCode) {
         log.info("client request : {}", signUpRequestDto);
         String authorityCodeUpperCase = authorityCode.toUpperCase();
         if (!Authority.Code.matches(authorityCodeUpperCase)) {
