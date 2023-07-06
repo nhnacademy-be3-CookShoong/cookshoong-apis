@@ -9,6 +9,7 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.cookshoong.www.cookshoongbackend.payment.model.request.ModifyTypeRequestDto;
 
 /**
  * 결제 타입에 해당되는 Entity.
@@ -31,5 +32,9 @@ public class ChargeType {
 
     public ChargeType(String name) {
         this.name = name;
+    }
+
+    public void modifyChargeType(ModifyTypeRequestDto requestDto) {
+        this.name = requestDto.getName();
     }
 }

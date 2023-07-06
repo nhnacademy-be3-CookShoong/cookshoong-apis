@@ -9,6 +9,7 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.cookshoong.www.cookshoongbackend.payment.model.request.ModifyTypeRequestDto;
 
 /**
  * 환불 타입에 해당되는 Entity.
@@ -32,5 +33,9 @@ public class RefundType {
 
     public RefundType(String name) {
         this.name = name;
+    }
+
+    public void modifyRefundType(ModifyTypeRequestDto requestDto) {
+        this.name = requestDto.getName();
     }
 }
