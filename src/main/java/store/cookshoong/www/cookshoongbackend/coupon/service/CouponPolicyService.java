@@ -30,7 +30,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponUsageStore
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class CouponService {
+public class CouponPolicyService {
     private final CouponTypeCashRepository couponTypeCashRepository;
     private final CouponTypePercentRepository couponTypePercentRepository;
     private final CouponUsageStoreRepository couponUsageStoreRepository;
