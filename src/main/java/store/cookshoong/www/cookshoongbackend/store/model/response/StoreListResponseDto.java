@@ -1,6 +1,5 @@
 package store.cookshoong.www.cookshoongbackend.store.model.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
@@ -10,7 +9,6 @@ import lombok.Getter;
  * @since 2023.07.05
  */
 @Getter
-@AllArgsConstructor
 public class StoreListResponseDto {
     private Long storeId;
     private String loginId;

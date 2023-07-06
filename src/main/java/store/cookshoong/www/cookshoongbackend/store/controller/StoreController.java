@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import store.cookshoong.www.cookshoongbackend.store.model.request.StoreRegisterRequestDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.StoreListResponseDto;
@@ -39,7 +40,8 @@ public class StoreController {
      * @return 201
      */
     @PostMapping
-    public ResponseEntity<Void> postStore(@RequestBody @Valid StoreRegisterRequestDto registerRequestDto,
+    public ResponseEntity<Void> postStore(@RequestParam("account") String id,
+                                          @RequestBody @Valid StoreRegisterRequestDto registerRequestDto,
                                           BindingResult bindingResult) {
         //TODO 1. 회원정보 어디서 가져와서 넣어줘야함.
         //TODO 2. 주소는 어떻게 가져와서 쓰나. 주소 테이블에서 어떻게 검색해서 가져와서 써야할지
@@ -48,7 +50,7 @@ public class StoreController {
             throw new ValidationException();
         }
         //TODO 9. ResponseEntity 수정 (Store 조회 페이지 구현 후 다시 작성)
-        storeService.createStore(registerRequestDto);
+        storeService.createStore(id, registerRequestDto);
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .build();
