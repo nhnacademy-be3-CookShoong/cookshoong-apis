@@ -1,8 +1,10 @@
 package store.cookshoong.www.cookshoongbackend.coupon.model.request;
 
 import java.time.LocalTime;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
 
@@ -13,7 +15,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
  * @since 2023.07.04
  */
 @Getter
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CreateCashCouponPolicyRequestDto implements CouponPolicyRequest {
     private String name;
 
