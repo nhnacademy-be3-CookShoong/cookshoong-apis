@@ -26,7 +26,6 @@ import store.cookshoong.www.cookshoongbackend.coupon.service.CouponService;
 public class CouponController {
     private final CouponService couponService;
 
-
     /**
      * 매장 금액 쿠폰 정책 생성을 위한 엔드포인트.
      *
