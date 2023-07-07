@@ -1,12 +1,10 @@
 package store.cookshoong.www.cookshoongbackend.store.controller;
 
 import javax.validation.Valid;
-import javax.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import store.cookshoong.www.cookshoongbackend.store.exception.StoreValidException;
 import store.cookshoong.www.cookshoongbackend.store.model.request.CreateStoreRequestDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.SelectStoreForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.service.StoreService;
@@ -58,7 +57,7 @@ public class StoreController {
         //TODO 2. 주소는 어떻게 가져와서 쓰나. 주소 테이블에서 어떻게 검색해서 가져와서 써야할지
 
         if (bindingResult.hasErrors()) {
-            throw new ValidationException();
+            throw new StoreValidException(bindingResult);
         }
         //TODO 9. status -> create로 바꾸고 안에 url 작성해야함. (추후)
         storeService.createStore(accountId, registerRequestDto);
@@ -69,15 +68,4 @@ public class StoreController {
 
     //TODO 4. 수정이 아니라 추가 정보로 영업일, 휴무일을 넣을 수 있도록 하는건?
 
-    /**
-     * 사업자 회원 : 매장 삭제를 위한 컨트롤러.
-     *
-     * @param storeId 매장 아이디
-     * @return 204 response entity
-     */
-    @DeleteMapping("/{storeId}")
-    public ResponseEntity<Void> deleteStore(@PathVariable("storeId") Long storeId) {
-        storeService.removeStore(storeId);
-        return ResponseEntity.noContent().build();
-    }
 }

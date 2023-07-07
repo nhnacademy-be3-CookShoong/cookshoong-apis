@@ -1,5 +1,8 @@
 package store.cookshoong.www.cookshoongbackend.address.repository.accountaddress;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,9 +21,6 @@ import store.cookshoong.www.cookshoongbackend.address.entity.AccountAddress;
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
 import store.cookshoong.www.cookshoongbackend.address.model.response.AccountAddressResponseDto;
 import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
-
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * AccountAddressRepository 에 대한 Test Code.
@@ -55,7 +55,8 @@ class AccountAddressRepositoryTest {
         em.persist(rank);
         em.persist(account);
 
-        Address address = new Address("광주 광역시 서석동", "조선대학교", new BigDecimal("23.5757577"), new BigDecimal("24.8898989"));
+        Address address = new Address("광주 광역시 서석동", "조선대학교",
+            new BigDecimal("23.5757577"), new BigDecimal("24.8898989"));
 
         em.persist(address);
 
@@ -89,7 +90,8 @@ class AccountAddressRepositoryTest {
         em.persist(rank);
         em.persist(account);
 
-        Address address = new Address("광주 광역시 서석동0", "조선대학교0", new BigDecimal("23.5757577"), new BigDecimal("24.8898989"));
+        Address address = new Address("광주 광역시 서석동0", "조선대학교0",
+            new BigDecimal("23.5757577"), new BigDecimal("24.8898989"));
         em.persist(address);
 
         AccountAddress accountAddress = new AccountAddress(
@@ -100,7 +102,8 @@ class AccountAddressRepositoryTest {
         accountAddressRepository.save(accountAddress);
 
 
-        List<AccountAddressResponseDto> accountAddressList = accountAddressRepository.getByAccountIdAddress(account.getId());
+        List<AccountAddressResponseDto> accountAddressList =
+            accountAddressRepository.getByAccountIdAddress(account.getId());
 
         assertThat(accountAddressList.get(0).getMainAddress()).isEqualTo(accountAddress.getAddress().getMainPlace());
         assertThat(accountAddressList.get(0).getAlias()).isEqualTo(accountAddress.getAlias());
@@ -124,7 +127,8 @@ class AccountAddressRepositoryTest {
         em.persist(rank);
         em.persist(account);
 
-        Address address = new Address("광주 광역시 서석동0", "조선대학교0", new BigDecimal("23.5757577"), new BigDecimal("24.8898989"));
+        Address address = new Address("광주 광역시 서석동0", "조선대학교0",
+            new BigDecimal("23.5757577"), new BigDecimal("24.8898989"));
         em.persist(address);
 
         AccountAddress accountAddress = new AccountAddress(
@@ -137,7 +141,8 @@ class AccountAddressRepositoryTest {
 
         List<AccountAddress> accountAddressList = accountAddressRepository.findByAccount(account);
 
-        assertThat(accountAddressList.get(0).getAddress().getMainPlace()).isEqualTo(accountAddress.getAddress().getMainPlace());
+        assertThat(accountAddressList.get(0).getAddress().getMainPlace())
+            .isEqualTo(accountAddress.getAddress().getMainPlace());
         assertThat(accountAddressList.get(0).getAlias()).isEqualTo(accountAddress.getAlias());
 
     }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import store.cookshoong.www.cookshoongbackend.store.exception.MerchantValidException;
 import store.cookshoong.www.cookshoongbackend.store.model.request.CreateMerchantRequestDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.SelectMerchantResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.UpdateMerchantResponseDto;
@@ -57,7 +58,7 @@ public class MerchantController {
     public ResponseEntity<Void> registerMerchant(@RequestBody @Valid CreateMerchantRequestDto createMerchantRequestDto,
                                                  BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            throw new ValidationException();
+            throw new MerchantValidException(bindingResult);
         }
         merchantService.saveMerchant(createMerchantRequestDto);
         return ResponseEntity
@@ -78,10 +79,12 @@ public class MerchantController {
                                                BindingResult bindingResult,
                                                @PathVariable("merchantId") Long merchantId) {
         if (bindingResult.hasErrors()) {
-            throw new ValidationException();
+            throw new MerchantValidException(bindingResult);
         }
         merchantService.updateMerchant(merchantId, updateMerchantResponseDto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity
+            .ok()
+            .build();
     }
 
     /**
@@ -94,6 +97,7 @@ public class MerchantController {
     public ResponseEntity<Void> removeStore(@PathVariable("merchantId") Long merchantId) {
         merchantService.deleteMerchant(merchantId);
         return ResponseEntity
-            .noContent().build();
+            .noContent()
+            .build();
     }
 }
