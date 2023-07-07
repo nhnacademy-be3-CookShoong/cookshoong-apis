@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.coupon.repository;
 
+import static store.cookshoong.www.cookshoongbackend.account.entity.QAccount.account;
 import static store.cookshoong.www.cookshoongbackend.coupon.entity.QCouponLog.couponLog;
 import static store.cookshoong.www.cookshoongbackend.coupon.entity.QCouponLogType.couponLogType;
 import static store.cookshoong.www.cookshoongbackend.coupon.entity.QCouponPolicy.couponPolicy;
@@ -11,6 +12,7 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import store.cookshoong.www.cookshoongbackend.account.entity.QAccount;
 import store.cookshoong.www.cookshoongbackend.coupon.model.temp.CouponResponseTempDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.temp.QCouponResponseTempDto;
 
@@ -41,6 +43,7 @@ public class IssueCouponRepositoryImpl implements IssueCouponRepositoryCustom {
             .innerJoin(issueCoupon.couponPolicy, couponPolicy)
             .innerJoin(couponPolicy.couponType, couponType)
             .innerJoin(couponPolicy.couponUsage, couponUsage)
+            .innerJoin(issueCoupon.account, account)
 
             .leftJoin(issueCoupon, couponLog.issueCoupon)
             .on(couponLog.id.eq(JPAExpressions
@@ -49,7 +52,7 @@ public class IssueCouponRepositoryImpl implements IssueCouponRepositoryCustom {
                 .where(couponLog.issueCoupon.eq(issueCoupon))))
             .leftJoin(couponLog.couponLogType, couponLogType)
 
-            .where(issueCoupon.accountId.eq(accountId))
+            .where(account.id.eq(accountId))
             .fetch();
     }
 
