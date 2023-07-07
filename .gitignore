@@ -214,3 +214,5 @@ buildNumber.properties
 .sonarlint/
 
 # End of https://www.toptal.com/developers/gitignore/api/java,macos,maven,intellij+iml,sonarqube
+
+*.http
