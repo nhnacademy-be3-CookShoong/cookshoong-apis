@@ -21,7 +21,7 @@ import store.cookshoong.www.cookshoongbackend.store.model.response.HolidayListRe
 import store.cookshoong.www.cookshoongbackend.store.service.BusinessHourService;
 
 /**
- * 매장 휴업일, 영업시간 컨트롤러 구현
+ * 매장 휴업일, 영업시간 컨트롤러 구현.
  *
  * @author papel
  * @since 2023.07.07
@@ -34,7 +34,7 @@ public class BusinessHourController {
 
 
     /**
-     *  휴업일 리스트 조회를 위한 컨트롤러 구현.
+     * 휴업일 리스트 조회를 위한 컨트롤러 구현.
      *
      * @param storeId  the store id
      * @param pageable the pageable
@@ -47,11 +47,11 @@ public class BusinessHourController {
     }
 
     /**
-     *  휴업일 등록을 위한 컨트롤러 구현.
+     * 휴업일 등록을 위한 컨트롤러 구현.
      *
-     * @param storeId  the store id
+     * @param storeId                 the store id
      * @param createHolidayRequestDto 휴업일 등록을 위한 Request Body
-     * @param bindingResult validation 결과
+     * @param bindingResult           validation 결과
      * @return 201
      */
     @PostMapping

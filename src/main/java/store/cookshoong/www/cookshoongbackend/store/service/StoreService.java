@@ -6,12 +6,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
+import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
 import store.cookshoong.www.cookshoongbackend.store.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.store.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.store.entity.Store;
 import store.cookshoong.www.cookshoongbackend.store.entity.StoreStatus;
+import store.cookshoong.www.cookshoongbackend.store.exception.BankTypeNotFoundException;
+import store.cookshoong.www.cookshoongbackend.store.exception.DuplicatedBusinessLicenseException;
+import store.cookshoong.www.cookshoongbackend.store.exception.SelectStoreNotFoundException;
 import store.cookshoong.www.cookshoongbackend.store.model.request.CreateStoreRequestDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.SelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.SelectStoreResponseDto;
@@ -59,7 +63,7 @@ public class StoreService {
     @Transactional(readOnly = true)
     public SelectStoreResponseDto selectStore(Long accountId, Long storeId) {
         return storeRepository.lookupStore(accountId, storeId)
-            .orElseThrow(() -> new IllegalArgumentException("해당하는 매장이 없습니다."));
+            .orElseThrow(() -> new SelectStoreNotFoundException(storeId));
     }
 
     /**
@@ -71,7 +75,7 @@ public class StoreService {
     @Transactional(readOnly = true)
     public SelectStoreForUserResponseDto selectStoreForUser(Long storeId) {
         return storeRepository.lookupStoreForUser(storeId)
-            .orElseThrow(() -> new IllegalArgumentException("해당하는 매장이 없습니다."));
+            .orElseThrow(() -> new SelectStoreNotFoundException(storeId));
     }
 
     /**
@@ -82,16 +86,16 @@ public class StoreService {
      * @param registerRequestDto 매장 등록을 위한 정보
      */
     public void createStore(Long accountId, CreateStoreRequestDto registerRequestDto) {
-        if (storeRepository.existsStoreByBusinessLicenseNumber(registerRequestDto.getBusinessLicense())) {
-            throw new IllegalArgumentException("이미 등록된 사업장입니다.");
+        if (storeRepository.existsStoreByBusinessLicenseNumber(registerRequestDto.getBusinessLicenseNumber())) {
+            throw new DuplicatedBusinessLicenseException(registerRequestDto.getBusinessLicenseNumber());
         }
         // TODO 9. Exception 처리 한꺼번에 수정
 
         Merchant merchant = merchantRepository.findMerchantByName(registerRequestDto.getMerchantName()).orElse(null);
         Account account = accountRepository.findById(accountId)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+            .orElseThrow(() -> new UserNotFoundException(accountId));
         BankType bankType = bankTypeRepository.findBankTypeByDescription(registerRequestDto.getBankType())
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 은행타입입니다."));
+            .orElseThrow(() -> new BankTypeNotFoundException(registerRequestDto.getBankType()));
         StoreStatus storeStatus = storeStatusRepository.getReferenceById(StoreStatus.StoreStatusCode.CLOSE.name());
 
         Store store = new Store(merchant,
@@ -126,7 +130,7 @@ public class StoreService {
      */
     public void removeStore(Long storeId) {
         if (!storeRepository.existsById(storeId)) {
-            throw new IllegalArgumentException("존재하지 않는 가게입니다.");
+            throw new SelectStoreNotFoundException(storeId);
         }
         storeRepository.deleteById(storeId);
     }

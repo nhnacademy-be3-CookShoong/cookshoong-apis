@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import store.cookshoong.www.cookshoongbackend.store.exception.StoreValidException;
 import store.cookshoong.www.cookshoongbackend.store.model.request.CreateStoreRequestDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.SelectStoreForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.service.StoreService;
@@ -58,7 +59,7 @@ public class StoreController {
         //TODO 2. 주소는 어떻게 가져와서 쓰나. 주소 테이블에서 어떻게 검색해서 가져와서 써야할지
 
         if (bindingResult.hasErrors()) {
-            throw new ValidationException();
+            throw new StoreValidException(bindingResult);
         }
         //TODO 9. status -> create로 바꾸고 안에 url 작성해야함. (추후)
         storeService.createStore(accountId, registerRequestDto);
