@@ -34,7 +34,7 @@ class MerchantRepositoryTest {
 
         merchantRepository.save(actual);
 
-        Merchant expect = merchantRepository.findMerchantByName("네네치킨").orElseThrow();
+        Merchant expect = merchantRepository.findMerchantByName(actual.getName()).orElseThrow();
         assertThat(expect.getId()).isEqualTo(actual.getId());
         assertThat(expect.getName()).isEqualTo(actual.getName());
     }
@@ -63,7 +63,7 @@ class MerchantRepositoryTest {
         Merchant expect = em.find(Merchant.class, actual.getId());
 
         assertThat(expect.getId()).isEqualTo(actual.getId());
-        assertThat(expect.getName()).isEqualTo("네네치킨");
+        assertThat(expect.getName()).isEqualTo(actual.getName());
     }
 
     @Test
@@ -72,7 +72,7 @@ class MerchantRepositoryTest {
         Merchant actual = new Merchant("땅땅치킨");
         merchantRepository.save(actual);
 
-        boolean expect = merchantRepository.existsMerchantByName("땅땅치킨");
+        boolean expect = merchantRepository.existsMerchantByName(actual.getName());
 
         assertThat(expect).isTrue();
     }
