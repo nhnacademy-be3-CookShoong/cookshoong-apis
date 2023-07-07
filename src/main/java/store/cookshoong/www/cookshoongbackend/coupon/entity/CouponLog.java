@@ -41,7 +41,7 @@ public class CouponLog {
     private CouponLogType couponLogType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "order_code", nullable = false)
+    @JoinColumn(name = "order_code", nullable = false)
     private Order order;
 
     @Column(name = "record_date", nullable = false)
