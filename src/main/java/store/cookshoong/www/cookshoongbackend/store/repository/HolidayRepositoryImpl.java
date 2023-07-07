@@ -5,6 +5,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.store.entity.QHoliday;
 import store.cookshoong.www.cookshoongbackend.store.entity.QStore;
@@ -27,7 +28,9 @@ public class HolidayRepositoryImpl implements HolidayRepositoryCustom {
      */
     @Override
     public Page<HolidayListResponseDto> lookupHolidayPage(Long storeId, Pageable pageable) {
-        return null;
+        List<HolidayListResponseDto> responseDtoList = getHolidays(storeId, pageable);
+        long total = getTotal(storeId);
+        return new PageImpl<>(responseDtoList, pageable, total);
     }
 
     /**
@@ -50,5 +53,23 @@ public class HolidayRepositoryImpl implements HolidayRepositoryCustom {
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
+    }
+
+    /**
+     * 매장의 휴업일 리스트의 총 개수.
+     *
+     * @param storeId 매장 아이디
+     * @return 매장이 등록한 휴업일의 총 개수
+     */
+    private Long getTotal(Long storeId) {
+        QHoliday holiday = QHoliday.holiday;
+        QStore store = QStore.store;
+
+        return jpaQueryFactory
+            .select(holiday.count())
+            .from(holiday)
+            .innerJoin(holiday.store, store)
+            .where(holiday.store.id.eq(storeId))
+            .fetchOne();
     }
 }
