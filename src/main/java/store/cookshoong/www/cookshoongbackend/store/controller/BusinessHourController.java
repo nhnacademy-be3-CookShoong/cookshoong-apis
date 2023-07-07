@@ -1,7 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.store.controller;
 
 import javax.validation.Valid;
-import javax.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import store.cookshoong.www.cookshoongbackend.store.exception.CreateHolidayValidationException;
 import store.cookshoong.www.cookshoongbackend.store.model.request.CreateHolidayRequestDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.HolidayListResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.service.BusinessHourService;
@@ -59,7 +59,7 @@ public class BusinessHourController {
                                             @RequestBody @Valid CreateHolidayRequestDto createHolidayRequestDto,
                                             BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            throw new ValidationException();
+            throw new CreateHolidayValidationException(bindingResult);
         }
 
         businessHourService.createHoliday(storeId, createHolidayRequestDto);
