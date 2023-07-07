@@ -20,6 +20,10 @@ import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponTypePercen
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponUsageAllRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponUsageMerchantRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponUsageStoreRepository;
+import store.cookshoong.www.cookshoongbackend.store.entity.Merchant;
+import store.cookshoong.www.cookshoongbackend.store.entity.Store;
+import store.cookshoong.www.cookshoongbackend.store.repository.MerchantRepository;
+import store.cookshoong.www.cookshoongbackend.store.repository.StoreRepository;
 
 /**
  * 쿠폰 정책 서비스.
@@ -38,6 +42,8 @@ public class CouponPolicyService {
     private final CouponUsageMerchantRepository couponUsageMerchantRepository;
     private final CouponUsageAllRepository couponUsageAllRepository;
     private final CouponPolicyRepository couponPolicyRepository;
+    private final StoreRepository storeRepository;
+    private final MerchantRepository merchantRepository;
 
     /**
      * 매장 금액 쿠폰 정책 생성.
@@ -139,12 +145,22 @@ public class CouponPolicyService {
 
     private CouponUsageStore getOrCreateCouponUsageStore(Long storeId) {
         return couponUsageStoreRepository.findByStoreId(storeId)
-            .orElseGet(() -> couponUsageStoreRepository.save(new CouponUsageStore(storeId)));
+            .orElseGet(() -> createCouponUsageStore(storeId));
+    }
+
+    private CouponUsageStore createCouponUsageStore(Long storeId) {
+        Store store = storeRepository.getReferenceById(storeId);
+        return couponUsageStoreRepository.save(new CouponUsageStore(store));
     }
 
     private CouponUsageMerchant getOrCreateCouponUsageMerchant(Long merchantId) {
         return couponUsageMerchantRepository.findByMerchantId(merchantId)
-            .orElseGet(() -> couponUsageMerchantRepository.save(new CouponUsageMerchant(merchantId)));
+            .orElseGet(() -> createCouponUsageMerchant(merchantId));
+    }
+
+    private CouponUsageMerchant createCouponUsageMerchant(Long merchantId) {
+        Merchant merchant = merchantRepository.getReferenceById(merchantId);
+        return couponUsageMerchantRepository.save(new CouponUsageMerchant(merchant));
     }
 
     private CouponPolicy createCouponPolicy(CouponType couponType, CouponUsage couponUsage, CouponPolicyRequest req) {
