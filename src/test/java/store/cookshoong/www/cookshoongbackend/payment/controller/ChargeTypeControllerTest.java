@@ -1,5 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.payment.controller;
 
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -176,6 +178,8 @@ class ChargeTypeControllerTest {
         mockMvc.perform(get("/api/payments/charges/{chargeTypeId}", chargeTypeId))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.name").value(responseDto.getName()));
+
+        verify(chargeTypeService, times(1)).selectChargeType(chargeTypeId);
     }
 
     @Test
@@ -189,6 +193,8 @@ class ChargeTypeControllerTest {
         mockMvc.perform(get("/api/payments/charges"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].name").value(responseDto.getName()));
+
+        verify(chargeTypeService, times(1)).selectChargeTypeAll();
     }
 
     @Test
@@ -198,5 +204,7 @@ class ChargeTypeControllerTest {
 
         mockMvc.perform(delete("/api/payments/charges/{chargeTypeId}", chargeTypeId))
             .andExpect(status().isNoContent());
+
+        verify(chargeTypeService, times(1)).removeChargeType(chargeTypeId);
     }
 }
