@@ -1,12 +1,10 @@
 package store.cookshoong.www.cookshoongbackend.store.controller;
 
 import javax.validation.Valid;
-import javax.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -70,15 +68,4 @@ public class StoreController {
 
     //TODO 4. 수정이 아니라 추가 정보로 영업일, 휴무일을 넣을 수 있도록 하는건?
 
-    /**
-     * 사업자 회원 : 매장 삭제를 위한 컨트롤러.
-     *
-     * @param storeId 매장 아이디
-     * @return 204 response entity
-     */
-    @DeleteMapping("/{storeId}")
-    public ResponseEntity<Void> deleteStore(@PathVariable("storeId") Long storeId) {
-        storeService.removeStore(storeId);
-        return ResponseEntity.noContent().build();
-    }
 }

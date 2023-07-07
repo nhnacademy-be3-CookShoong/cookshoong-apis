@@ -122,13 +122,4 @@ public class StoreService {
     }
 
     //TODO 5. 수정
-
-    /**
-     * 사업자 : 매장 삭제 구현.
-     *
-     * @param storeId 매장 아이디
-     */
-    public void removeStore(Long storeId) {
-        storeRepository.deleteById(storeId);
-    }
 }
