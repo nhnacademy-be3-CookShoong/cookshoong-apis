@@ -12,8 +12,10 @@ import store.cookshoong.www.cookshoongbackend.store.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.store.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.store.entity.Store;
 import store.cookshoong.www.cookshoongbackend.store.entity.StoreStatus;
-import store.cookshoong.www.cookshoongbackend.store.model.request.StoreRegisterRequestDto;
-import store.cookshoong.www.cookshoongbackend.store.model.response.StoreListResponseDto;
+import store.cookshoong.www.cookshoongbackend.store.model.request.CreateStoreRequestDto;
+import store.cookshoong.www.cookshoongbackend.store.model.response.SelectAllStoresResponseDto;
+import store.cookshoong.www.cookshoongbackend.store.model.response.SelectStoreResponseDto;
+import store.cookshoong.www.cookshoongbackend.store.model.response.SelectStoreForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.repository.BankTypeRepository;
 import store.cookshoong.www.cookshoongbackend.store.repository.MerchantRepository;
 import store.cookshoong.www.cookshoongbackend.store.repository.StoreRepository;
@@ -36,32 +38,60 @@ public class StoreService {
     private final StoreStatusRepository storeStatusRepository;
 
     /**
-     * 해당 회원의 매장을 pagination 으로 작성.
+     * 사업자 회원 : 매장을 pagination 으로 작성.
      *
      * @param accountId 회원아이디
      * @param pageable  페이지 정보
      * @return the page
      */
     @Transactional(readOnly = true)
-    public Page<StoreListResponseDto> selectStoreList(Long accountId, Pageable pageable) {
+    public Page<SelectAllStoresResponseDto> selectStoreList(Long accountId, Pageable pageable) {
         return storeRepository.lookupStoresPage(accountId, pageable);
     }
 
     /**
-     * 매장 등록 서비스 구현.
+     * 사업자 회원 : 매장 조회.
+     *
+     * @param accountId 회원 id
+     * @param storeId   매장 id
+     * @return 매장 정보
+     */
+    @Transactional(readOnly = true)
+    public SelectStoreResponseDto selectStore(Long accountId, Long storeId) {
+        return storeRepository.lookupStore(accountId, storeId)
+            .orElseThrow(() -> new IllegalArgumentException("해당하는 매장이 없습니다."));
+    }
+
+    /**
+     * 일반 유저 : 매장 정보 조회.
+     *
+     * @param storeId 매장 아이디
+     * @return 매장 정보 조회
+     */
+    @Transactional(readOnly = true)
+    public SelectStoreForUserResponseDto selectStoreForUser(Long storeId) {
+        return storeRepository.lookupStoreForUser(storeId)
+            .orElseThrow(() -> new IllegalArgumentException("해당하는 매장이 없습니다."));
+    }
+
+    /**
+     * 사업자 : 매장 등록 서비스 구현.
      * 가맹점 등록시 찾아서 넣고, 없으면 null로 등록, 매장 등록시 바로 CLOSE(휴식중) 상태로 등록됨.
      *
+     * @param accountId          회원 아이디
      * @param registerRequestDto 매장 등록을 위한 정보
      */
-    public void createStore(Long id, StoreRegisterRequestDto registerRequestDto) {
+    public void createStore(Long accountId, CreateStoreRequestDto registerRequestDto) {
         if (storeRepository.existsStoreByBusinessLicenseNumber(registerRequestDto.getBusinessLicense())) {
             throw new IllegalArgumentException("이미 등록된 사업장입니다.");
         }
         // TODO 9. Exception 처리 한꺼번에 수정
 
         Merchant merchant = merchantRepository.findMerchantByName(registerRequestDto.getMerchantName()).orElse(null);
-        Account account = accountRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
-        BankType bankType = bankTypeRepository.findBankTypeByDescription(registerRequestDto.getBankType()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 은행타입입니다."));
+        Account account = accountRepository.findById(accountId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        BankType bankType = bankTypeRepository.findBankTypeByDescription(registerRequestDto.getBankType())
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 은행타입입니다."));
         StoreStatus storeStatus = storeStatusRepository.getReferenceById(StoreStatus.StoreStatusCode.CLOSE.name());
 
         Store store = new Store(merchant,
@@ -87,11 +117,10 @@ public class StoreService {
         storeRepository.save(store);
     }
 
-
     //TODO 5. 수정
 
     /**
-     * 매장 삭제 구현.
+     * 사업자 : 매장 삭제 구현.
      *
      * @param storeId 매장 아이디
      */
@@ -101,5 +130,4 @@ public class StoreService {
         }
         storeRepository.deleteById(storeId);
     }
-
 }

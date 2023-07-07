@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.store.entity.QMerchant;
-import store.cookshoong.www.cookshoongbackend.store.model.response.MerchantResponseDto;
+import store.cookshoong.www.cookshoongbackend.store.model.response.SelectMerchantResponseDto;
 
 /**
  * 가맹점 Custom Repository.
@@ -25,16 +25,16 @@ public class MerchantRepositoryImpl implements MerchantRepositoryCustom {
      * {@inheritDoc}
      */
     @Override
-    public Page<MerchantResponseDto> lookupMerchantPage(Pageable pageable) {
-        List<MerchantResponseDto> responseDtoList = getMerchants(pageable);
+    public Page<SelectMerchantResponseDto> lookupMerchantPage(Pageable pageable) {
+        List<SelectMerchantResponseDto> responseDtoList = getMerchants(pageable);
         long total = getTotal();
         return new PageImpl<>(responseDtoList, pageable, total);
     }
 
-    private List<MerchantResponseDto> getMerchants(Pageable pageable) {
+    private List<SelectMerchantResponseDto> getMerchants(Pageable pageable) {
         QMerchant merchant = QMerchant.merchant;
         return jpaQueryFactory
-            .select(Projections.constructor(MerchantResponseDto.class, merchant.name))
+            .select(Projections.constructor(SelectMerchantResponseDto.class, merchant.name))
             .from(merchant)
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
