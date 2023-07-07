@@ -9,6 +9,7 @@ import store.cookshoong.www.cookshoongbackend.account.entity.AccountsStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypePercent;
 import store.cookshoong.www.cookshoongbackend.store.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.store.entity.Store;
 import store.cookshoong.www.cookshoongbackend.store.entity.StoreStatus;
@@ -34,6 +35,8 @@ public class TestEntity {
         STORE_STATUS_OPEN, "license", "123456", "김주호",
         LocalDate.of(2020, 2, 20), "주호타코", "01012345678", BigDecimal.ONE,
         null, null, "123456");
+    public static CouponTypePercent COUPON_TYPE_PERCENT_3_1000_10000 =
+        new CouponTypePercent(new BigDecimal("3"), 1_000, 10_000);
 
     private static BankType createTestBankType(String bankTypeCode, String description) {
         BankType bankType = createEntityUsingDeclared(BankType.class);
