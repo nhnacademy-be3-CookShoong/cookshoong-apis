@@ -9,9 +9,6 @@ import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.account.exception.DuplicatedUserException;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
-import store.cookshoong.www.cookshoongbackend.account.model.vo.AccountStatusCode;
-import store.cookshoong.www.cookshoongbackend.account.model.vo.AuthorityCode;
-import store.cookshoong.www.cookshoongbackend.account.model.vo.RankCode;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountsStatusRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.AuthorityRepository;
@@ -40,14 +37,14 @@ public class AccountService {
      * @return AccountId 저장하고 생성된 Sequence
      */
     @Transactional
-    public Long createAccount(SignUpRequestDto signUpRequestDto, AuthorityCode authorityCode) {
+    public Long createAccount(SignUpRequestDto signUpRequestDto, Authority.Code authorityCode) {
         String loginId = signUpRequestDto.getLoginId();
         if (accountRepository.existsByLoginId(loginId)) {
             throw new DuplicatedUserException(loginId);
         }
 
-        AccountsStatus status = accountsStatusRepository.getReferenceById(AccountStatusCode.ACTIVE.name());
-        Rank defaultRank = rankRepository.getReferenceById(RankCode.LEVEL_1.name());
+        AccountsStatus status = accountsStatusRepository.getReferenceById(AccountsStatus.Code.ACTIVE.name());
+        Rank defaultRank = rankRepository.getReferenceById(Rank.Code.LEVEL_1.name());
         Authority authority = authorityRepository.getReferenceById(authorityCode.name());
 
         Account account = new Account(status, authority, defaultRank, signUpRequestDto);

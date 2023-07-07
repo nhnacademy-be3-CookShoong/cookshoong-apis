@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.account.entity;
 
+import java.util.Arrays;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -29,5 +30,17 @@ public class Authority {
     public Authority(String authorityCode, String description) {
         this.authorityCode = authorityCode;
         this.description = description;
+    }
+
+    /**
+     * 권한 코드를 상수로 관리.
+     */
+    public enum Code {
+        CUSTOMER, BUSINESS, ADMIN;
+
+        public static boolean matches(String authorityCode) {
+            return Arrays.stream(Authority.Code.values())
+                .anyMatch(a -> a.name().equals(authorityCode));
+        }
     }
 }

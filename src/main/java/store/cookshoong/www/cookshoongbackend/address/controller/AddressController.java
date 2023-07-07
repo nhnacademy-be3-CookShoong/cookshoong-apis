@@ -41,7 +41,7 @@ public class AddressController {
      * @return              상태코드 201(CREATED)와 함께 응답을 반환
      */
     @PostMapping("/{accountId}")
-    public ResponseEntity<Void> createAccountAddress(@PathVariable("accountId") Long accountId,
+    public ResponseEntity<Void> postCreateAccountAddress(@PathVariable("accountId") Long accountId,
                                                      @RequestBody CreateAccountAddressRequestDto requestDto) {
 
         addressService.createAccountAddress(accountId, requestDto);
@@ -58,7 +58,7 @@ public class AddressController {
      * @return              상태코드 200(Ok)와 함께 응답을 반환
      */
     @PatchMapping("/{accountId}/{addressId}")
-    public ResponseEntity<Void> modifyAccountDetailAddress(@PathVariable("accountId") Long accountId,
+    public ResponseEntity<Void> patchModifyAccountDetailAddress(@PathVariable("accountId") Long accountId,
                                                            @PathVariable("addressId") Long addressId,
                                                            @RequestBody ModifyAccountAddressRequestDto requestDto) {
 

@@ -7,6 +7,7 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.aspectj.apache.bcel.classfile.Code;
 
 /**
  * 회원상태 엔티티.
@@ -29,5 +30,12 @@ public class AccountsStatus {
     public AccountsStatus(String statusCode, String description) {
         this.statusCode = statusCode;
         this.description = description;
+    }
+
+    /**
+     * 회원 상태코드들을 상수로 관리하기 위한 Enum.
+     */
+    public enum Code {
+        ACTIVE, DORMANCY, WITHDRAWAL;
     }
 }

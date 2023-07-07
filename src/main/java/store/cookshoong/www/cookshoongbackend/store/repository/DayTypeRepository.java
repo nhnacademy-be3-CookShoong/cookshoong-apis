@@ -10,4 +10,5 @@ import store.cookshoong.www.cookshoongbackend.store.entity.DayType;
  * @since 2023.07.04
  */
 public interface DayTypeRepository extends JpaRepository<DayType, String> {
+
 }

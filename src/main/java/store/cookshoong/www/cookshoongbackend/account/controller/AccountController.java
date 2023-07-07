@@ -6,15 +6,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
 import store.cookshoong.www.cookshoongbackend.account.exception.AuthorityNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.exception.SignUpValidationException;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
-import store.cookshoong.www.cookshoongbackend.account.model.vo.AuthorityCode;
 import store.cookshoong.www.cookshoongbackend.account.service.AccountService;
 
 /**
@@ -31,19 +31,19 @@ public class AccountController {
     private final AccountService accountService;
 
     /**
-     * 회원 가입처리 메서드.
+     * 회원 저장 메서드.
      *
-     * @param authorityCode  ex) customer, business
+     * @param authorityCode    ex) customer, business
      * @param signUpRequestDto 회원가입 Dto
      * @return 201
      */
-    @PostMapping("{authorityCode}")
-    public ResponseEntity<Void> registerAccount(@RequestBody @Valid SignUpRequestDto signUpRequestDto,
-                                                BindingResult bindingResult,
-                                                @PathVariable String authorityCode) {
-        log.info("client request : {}", signUpRequestDto);
+    @PostMapping
+    public ResponseEntity<Void> postRegisterAccount(@RequestBody @Valid SignUpRequestDto signUpRequestDto,
+                                                    BindingResult bindingResult,
+                                                    @RequestParam String authorityCode) {
+        // TODO: Admin으로 가입시 어떻게 할 것인가. 현재는 Admin을 파라미터로 넣으면 가입가능.
         String authorityCodeUpperCase = authorityCode.toUpperCase();
-        if (!AuthorityCode.matches(authorityCodeUpperCase)) {
+        if (!Authority.Code.matches(authorityCodeUpperCase)) {
             throw new AuthorityNotFoundException(authorityCodeUpperCase);
         }
 
@@ -51,7 +51,7 @@ public class AccountController {
             throw new SignUpValidationException(bindingResult);
         }
 
-        accountService.createAccount(signUpRequestDto, AuthorityCode.valueOf(authorityCodeUpperCase));
+        accountService.createAccount(signUpRequestDto, Authority.Code.valueOf(authorityCodeUpperCase));
 
         return ResponseEntity.status(HttpStatus.CREATED)
             .build();
