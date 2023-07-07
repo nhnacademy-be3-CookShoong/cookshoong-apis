@@ -1,14 +1,18 @@
 package store.cookshoong.www.cookshoongbackend.coupon.entity;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 
 /**
  * 쿠폰 발행 entity.
@@ -19,25 +23,25 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Table(name = "issue_coupons")
 public class IssueCoupon {
 
     @Id
     @Column(name = "issue_coupon_code", nullable = false)
-    private String code;
+    private UUID code;
 
-    // TODO: 회원 entity 추가 후 @ManyToOne 작성할 것.
-    @Column(name = "account_id")
-    private Long accountId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "coupon_policy_id")
+    private CouponPolicy couponPolicy;
 
-    @Column(name = "coupon_id", nullable = false)
-    private Long couponId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id")
+    private Account account;
 
     @Column(name = "issue_at", nullable = false)
-    private Date issueAt;
+    private LocalDateTime issueAt;
 
     @Column(name = "expiration_at")
-    private Date expirationAt;
+    private LocalDateTime expirationAt;
 
 }
