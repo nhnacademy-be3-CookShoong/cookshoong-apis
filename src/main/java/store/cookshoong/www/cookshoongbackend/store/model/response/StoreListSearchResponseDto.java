@@ -9,7 +9,7 @@ import lombok.Getter;
  * @since 2023.07.05
  */
 @Getter
-public class StoreListResponseDto {
+public class StoreListSearchResponseDto {
     private Long storeId;
     private String loginId;
     private String storeName;

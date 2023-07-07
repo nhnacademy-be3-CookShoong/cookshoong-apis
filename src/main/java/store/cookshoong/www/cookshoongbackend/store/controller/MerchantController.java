@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import store.cookshoong.www.cookshoongbackend.store.model.request.MerchantRegisterRequestDto;
-import store.cookshoong.www.cookshoongbackend.store.model.response.MerchantResponseDto;
+import store.cookshoong.www.cookshoongbackend.store.model.response.MerchantSelectResponseDto;
+import store.cookshoong.www.cookshoongbackend.store.model.response.MerchantUpdateResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.service.MerchantService;
 
 /**
@@ -41,7 +41,7 @@ public class MerchantController {
      * @return the response entity
      */
     @GetMapping
-    public ResponseEntity<Page<MerchantResponseDto>> searchMerchantList(Pageable pageable) {
+    public ResponseEntity<Page<MerchantSelectResponseDto>> searchMerchantList(Pageable pageable) {
         return ResponseEntity
             .ok(merchantService.getMerchantList(pageable));
     }
@@ -74,27 +74,26 @@ public class MerchantController {
      * @return the response entity
      */
     @PatchMapping("/{merchantId}")
-    public ResponseEntity<Void> modifyMerchant(@RequestBody @Valid MerchantRegisterRequestDto merchantRegisterRequestDto,
+    public ResponseEntity<Void> modifyMerchant(@RequestBody @Valid MerchantUpdateResponseDto merchantUpdateResponseDto,
                                                BindingResult bindingResult,
                                                @PathVariable("merchantId") Long merchantId) {
         if (bindingResult.hasErrors()) {
             throw new ValidationException();
         }
-        merchantService.updateMerchant(merchantId, merchantRegisterRequestDto);
+        merchantService.updateMerchant(merchantId, merchantUpdateResponseDto);
         return ResponseEntity.ok().build();
     }
 
     /**
-     * 가맹점 삭제를 위한 컨트롤러.
+     * 관리자 : 가맹점 삭제를 위한 컨트롤러.
      *
-     * @param merchantId the merchant id
-     * @return the response entity
+     * @param merchantId 가맹점 id
+     * @return 204
      */
     @DeleteMapping("/{merchantId}")
     public ResponseEntity<Void> removeStore(@PathVariable("merchantId") Long merchantId) {
         merchantService.deleteMerchant(merchantId);
         return ResponseEntity
-            .status(HttpStatus.OK)
-            .build();
+            .noContent().build();
     }
 }
