@@ -37,4 +37,17 @@ public class BusinessAccountController {
         return ResponseEntity
             .ok(storeService.selectStoreList(accountId, pageable));
     }
+
+    /**
+     * 사업자 : 해당 매장 조회.
+     *
+     * @param storeId 매장 아이디
+     * @return 매장 정보 반환
+     */
+    @GetMapping("/stores/{storeId}")
+    public ResponseEntity<StoreSearchResponseDto> getStore(@PathVariable("accountId") Long accountId,
+                                                           @PathVariable("storeId") Long storeId) {
+        return ResponseEntity
+            .ok(storeService.selectStore(accountId, storeId));
+    }
 }
