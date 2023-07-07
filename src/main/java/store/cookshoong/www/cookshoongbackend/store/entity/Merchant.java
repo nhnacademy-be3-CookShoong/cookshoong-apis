@@ -1,8 +1,10 @@
 package store.cookshoong.www.cookshoongbackend.store.entity;
 
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -25,6 +27,8 @@ public class Merchant {
 
     @Column(nullable = false, length = 20)
     private String name;
+    @OneToMany(mappedBy = "merchant", orphanRemoval = true)
+    private List<Store> store;
 
     /**
      * 가맹점 생성자.

@@ -40,8 +40,9 @@ public class ChargeTypeController {
      * @return              상태코드 201(CREATED)와 함께 응답을 반환
      */
     @PostMapping("/charges")
-    public ResponseEntity<CreateTypeRequestDto> postCreateChargeType(@RequestBody @Valid CreateTypeRequestDto requestDto,
-                                                                     BindingResult bindingResult) {
+    public ResponseEntity<CreateTypeRequestDto> postCreateChargeType(
+        @RequestBody @Valid CreateTypeRequestDto requestDto,
+        BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new TypeValidationException(bindingResult);
