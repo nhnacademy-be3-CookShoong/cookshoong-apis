@@ -9,8 +9,8 @@ import store.cookshoong.www.cookshoongbackend.common.exception.ValidationFailure
  * @author papel
  * @since 2023.07.07
  */
-public class CreateHolidayValidationException extends ValidationFailureException {
-    public CreateHolidayValidationException(BindingResult bindingResult) {
+public class HolidayValidationException extends ValidationFailureException {
+    public HolidayValidationException(BindingResult bindingResult) {
         super(bindingResult);
     }
 }

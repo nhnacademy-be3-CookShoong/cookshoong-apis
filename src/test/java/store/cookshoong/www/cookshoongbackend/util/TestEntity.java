@@ -12,6 +12,7 @@ import store.cookshoong.www.cookshoongbackend.address.entity.Address;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypePercent;
 import store.cookshoong.www.cookshoongbackend.store.entity.BankType;
+import store.cookshoong.www.cookshoongbackend.store.entity.Holiday;
 import store.cookshoong.www.cookshoongbackend.store.entity.Store;
 import store.cookshoong.www.cookshoongbackend.store.entity.StoreStatus;
 
@@ -40,6 +41,7 @@ public class TestEntity {
         new CouponTypePercent(new BigDecimal("3"), 1_000, 10_000);
     public static CouponTypeCash COUPON_TYPE_CASH_1000_10000 =
         new CouponTypeCash(1_000, 10_000);
+    public static Holiday HOLIDAY = new Holiday(STORE_OPEN, LocalDate.of(2020, 2, 20));
 
     private static BankType createTestBankType(String bankTypeCode, String description) {
         BankType bankType = createEntityUsingDeclared(BankType.class);
