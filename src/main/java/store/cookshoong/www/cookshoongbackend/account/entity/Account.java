@@ -102,9 +102,9 @@ public class Account {
     /**
      * Dto 를 포함하는 회원 생성자.
      *
-     * @param status      회원 상태
-     * @param authority   회원 권한
-     * @param rank        회원 등급
+     * @param status           회원 상태
+     * @param authority        회원 권한
+     * @param rank             회원 등급
      * @param signUpRequestDto 회원가입 요청 Dto
      */
     public Account(AccountsStatus status, Authority authority, Rank rank,
