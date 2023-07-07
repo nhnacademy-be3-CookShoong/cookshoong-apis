@@ -22,7 +22,7 @@ import lombok.Getter;
 @Table(name = "coupon_types")
 @DiscriminatorColumn(name = "sub_type")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class CouponType {
+public abstract class CouponType {
 
     @Id
     @Column(name = "coupon_type_id", nullable = false)
