@@ -93,7 +93,7 @@ public class StoreService {
 
         Merchant merchant = merchantRepository.findMerchantByName(registerRequestDto.getMerchantName()).orElse(null);
         Account account = accountRepository.findById(accountId)
-            .orElseThrow(() -> new UserNotFoundException(accountId));
+            .orElseThrow(UserNotFoundException::new);
         BankType bankType = bankTypeRepository.findBankTypeByDescription(registerRequestDto.getBankType())
             .orElseThrow(BankTypeNotFoundException::new);
         StoreStatus storeStatus = storeStatusRepository.getReferenceById(StoreStatus.StoreStatusCode.CLOSE.name());
