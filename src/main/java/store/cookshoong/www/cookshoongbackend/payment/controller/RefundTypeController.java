@@ -40,8 +40,9 @@ public class RefundTypeController {
      * @return              상태코드 201(CREATED)와 함께 응답을 반환
      */
     @PostMapping("/refunds")
-    public ResponseEntity<CreateTypeRequestDto> postCreateRefundType(@RequestBody @Valid CreateTypeRequestDto requestDto,
-                                                                     BindingResult bindingResult) {
+    public ResponseEntity<CreateTypeRequestDto> postCreateRefundType(
+        @RequestBody @Valid CreateTypeRequestDto requestDto,
+        BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new TypeValidationException(bindingResult);

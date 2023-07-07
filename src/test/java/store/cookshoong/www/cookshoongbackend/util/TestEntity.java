@@ -44,8 +44,8 @@ public class TestEntity {
 
     private static StoreStatus createTestStoreStatus(String storeStatusCode, String description) {
         StoreStatus storeStatus = createEntityUsingDeclared(StoreStatus.class);
-        ReflectionTestUtils.setField(storeStatus, "storeStatusCode", "ssc");
-        ReflectionTestUtils.setField(storeStatus, "description", "desc");
+        ReflectionTestUtils.setField(storeStatus, "storeStatusCode", storeStatusCode);
+        ReflectionTestUtils.setField(storeStatus, "description", description);
         return storeStatus;
     }
 

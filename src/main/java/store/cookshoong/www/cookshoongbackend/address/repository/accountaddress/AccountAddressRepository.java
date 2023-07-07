@@ -12,6 +12,6 @@ import store.cookshoong.www.cookshoongbackend.address.entity.AccountAddress;
  * @since 2023.07.04
  */
 public interface AccountAddressRepository extends JpaRepository<AccountAddress, AccountAddress.Pk>,
-                                                                        AccountAddressRepositoryCustom{
+                                                                        AccountAddressRepositoryCustom {
     List<AccountAddress> findByAccount(Account account);
 }
