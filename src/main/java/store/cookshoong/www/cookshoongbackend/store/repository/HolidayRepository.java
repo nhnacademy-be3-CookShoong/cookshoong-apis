@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.store.repository;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import store.cookshoong.www.cookshoongbackend.store.entity.Holiday;
 
@@ -10,4 +11,5 @@ import store.cookshoong.www.cookshoongbackend.store.entity.Holiday;
  * @since 2023.07.04
  */
 public interface HolidayRepository extends JpaRepository<Holiday, Long>, HolidayRepositoryCustom {
+    List<Holiday> findByStore_Id(Long storeId);
 }
