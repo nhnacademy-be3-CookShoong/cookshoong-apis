@@ -10,7 +10,9 @@ import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException
 import store.cookshoong.www.cookshoongbackend.common.exception.ValidationFailureException;
 import store.cookshoong.www.cookshoongbackend.store.exception.BankTypeNotFoundException;
 import store.cookshoong.www.cookshoongbackend.store.exception.DuplicatedBusinessLicenseException;
+import store.cookshoong.www.cookshoongbackend.store.exception.MerchantValidException;
 import store.cookshoong.www.cookshoongbackend.store.exception.SelectStoreNotFoundException;
+import store.cookshoong.www.cookshoongbackend.store.exception.StoreValidException;
 
 /**
  * store 패키지 아래에서 RestController 내에서 일어나는 모든 예외들을 처리한다.
@@ -24,8 +26,8 @@ public class StoreExceptionHandler {
     /**
      * 이미 존재하는 것에 대한 예외처리.
      *
-     * @param e the e
-     * @return the response entity
+     * @param e 없을 때 예외
+     * @return 예외처리 메시지 반환
      */
     @ExceptionHandler(value = {SelectStoreNotFoundException.class, BankTypeNotFoundException.class})
     public ResponseEntity<String> somethingNotFoundError(NotFoundException e) {
@@ -37,10 +39,10 @@ public class StoreExceptionHandler {
     /**
      * valid 에러에 대한 예외처리.
      *
-     * @param e the e
-     * @return the response entity
+     * @param e valid 예외
+     * @return 예외처리 메시지 반환
      */
-    @ExceptionHandler(value = {ValidationFailureException.class})
+    @ExceptionHandler(value = {StoreValidException.class, MerchantValidException.class})
     public ResponseEntity<Map<String, String>> validFailure(ValidationFailureException e) {
         return ResponseEntity
             .badRequest()
@@ -50,8 +52,8 @@ public class StoreExceptionHandler {
     /**
      * 이미 존재하는 것에 대한 예외처리.
      *
-     * @param e Exception
-     * @return 에러 처리 결과메시
+     * @param e 중복에 대한 예외
+     * @return 에러 처리 메시지 반환
      */
     @ExceptionHandler(value = {DuplicatedBusinessLicenseException.class})
     public ResponseEntity<String> alreadySomethingExistsError(Exception e) {
