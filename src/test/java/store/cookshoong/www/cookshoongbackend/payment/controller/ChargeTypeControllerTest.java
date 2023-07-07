@@ -59,7 +59,7 @@ class ChargeTypeControllerTest {
     }
 
     @Test
-    @DisplayName("POST 결제 타입 등록: null 값이 들어갈 때 오류 테스트")
+    @DisplayName("POST 결제 타입 등록 실패: null 값이 들어갈 때 오류 테스트")
     void postCreateChargeTypeNotBlank_1() throws Exception {
         CreateTypeRequestDto requestDto = ReflectionUtils.newInstance(CreateTypeRequestDto.class);
         ReflectionTestUtils.setField(requestDto, "name", null);
@@ -73,7 +73,7 @@ class ChargeTypeControllerTest {
     }
 
     @Test
-    @DisplayName("POST 결제 타입 등록: 빈 값이 들어갈 때 오류 테스트")
+    @DisplayName("POST 결제 타입 등록 실패: 빈 값이 들어갈 때 오류 테스트")
     void postCreateChargeTypeNotBlank_2() throws Exception {
         CreateTypeRequestDto requestDto = ReflectionUtils.newInstance(CreateTypeRequestDto.class);
         ReflectionTestUtils.setField(requestDto, "name", "");
@@ -87,7 +87,7 @@ class ChargeTypeControllerTest {
     }
 
     @Test
-    @DisplayName("POST 결제 타입 등록: 숫자 값이 들어갈 때 오류 테스트")
+    @DisplayName("POST 결제 타입 등록 실패: 숫자 값이 들어갈 때 오류 테스트")
     void postCreateChargeTypeNotNumber() throws Exception {
         CreateTypeRequestDto requestDto = ReflectionUtils.newInstance(CreateTypeRequestDto.class);
         ReflectionTestUtils.setField(requestDto, "name", "1234");
@@ -118,7 +118,7 @@ class ChargeTypeControllerTest {
     }
 
     @Test
-    @DisplayName("PUT 결제 타입 수정 : null 값이 들어갈 때 오류 테스트")
+    @DisplayName("PUT 결제 타입 수정 실패: null 값이 들어갈 때 오류 테스트")
     void putModifyChargeTypeNotBlank_1() throws Exception {
         ModifyTypeRequestDto requestDto = ReflectionUtils.newInstance(ModifyTypeRequestDto.class);
         ReflectionTestUtils.setField(requestDto, "name", null);
@@ -134,7 +134,7 @@ class ChargeTypeControllerTest {
     }
 
     @Test
-    @DisplayName("PUT 결제 타입 수정 : 빈 값이 들어갈 때 오류 테스트")
+    @DisplayName("PUT 결제 타입 수정 살퍄: 빈 값이 들어갈 때 오류 테스트")
     void putModifyChargeTypeNotBlank_2() throws Exception {
         ModifyTypeRequestDto requestDto = ReflectionUtils.newInstance(ModifyTypeRequestDto.class);
         ReflectionTestUtils.setField(requestDto, "name", "");
@@ -150,7 +150,7 @@ class ChargeTypeControllerTest {
     }
 
     @Test
-    @DisplayName("PUT 결제 타입 수정 : 숫자 값이 들어갈 때 오류 테스트")
+    @DisplayName("PUT 결제 타입 수정 실패: 숫자 값이 들어갈 때 오류 테스트")
     void putModifyChargeTypeNotNumber() throws Exception {
         ModifyTypeRequestDto requestDto = ReflectionUtils.newInstance(ModifyTypeRequestDto.class);
         ReflectionTestUtils.setField(requestDto, "name", "1234");
