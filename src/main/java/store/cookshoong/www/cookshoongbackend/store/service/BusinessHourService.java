@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.store.entity.Holiday;
 import store.cookshoong.www.cookshoongbackend.store.entity.Store;
-import store.cookshoong.www.cookshoongbackend.store.exception.SelectHolidayNotFoundException;
 import store.cookshoong.www.cookshoongbackend.store.exception.SelectStoreNotFoundException;
 import store.cookshoong.www.cookshoongbackend.store.model.request.CreateHolidayRequestDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.HolidayListResponseDto;
@@ -49,7 +48,7 @@ public class BusinessHourService {
      */
     public void createHoliday(Long storeId, CreateHolidayRequestDto createHolidayRequestDto) {
         Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new SelectStoreNotFoundException(storeId));
+                .orElseThrow(SelectStoreNotFoundException::new);
         holidayRepository.save(new Holiday(store, createHolidayRequestDto.getHolidayDate()));
     }
 

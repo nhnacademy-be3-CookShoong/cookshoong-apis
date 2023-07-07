@@ -82,7 +82,9 @@ public class MerchantController {
             throw new MerchantValidException(bindingResult);
         }
         merchantService.updateMerchant(merchantId, updateMerchantResponseDto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity
+            .ok()
+            .build();
     }
 
     /**

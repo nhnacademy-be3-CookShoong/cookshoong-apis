@@ -63,7 +63,7 @@ public class StoreService {
     @Transactional(readOnly = true)
     public SelectStoreResponseDto selectStore(Long accountId, Long storeId) {
         return storeRepository.lookupStore(accountId, storeId)
-            .orElseThrow(() -> new SelectStoreNotFoundException(storeId));
+            .orElseThrow(SelectStoreNotFoundException::new);
     }
 
     /**
@@ -75,7 +75,7 @@ public class StoreService {
     @Transactional(readOnly = true)
     public SelectStoreForUserResponseDto selectStoreForUser(Long storeId) {
         return storeRepository.lookupStoreForUser(storeId)
-            .orElseThrow(() -> new SelectStoreNotFoundException(storeId));
+            .orElseThrow(SelectStoreNotFoundException::new);
     }
 
     /**
@@ -95,7 +95,7 @@ public class StoreService {
         Account account = accountRepository.findById(accountId)
             .orElseThrow(() -> new UserNotFoundException(accountId));
         BankType bankType = bankTypeRepository.findBankTypeByDescription(registerRequestDto.getBankType())
-            .orElseThrow(() -> new BankTypeNotFoundException(registerRequestDto.getBankType()));
+            .orElseThrow(BankTypeNotFoundException::new);
         StoreStatus storeStatus = storeStatusRepository.getReferenceById(StoreStatus.StoreStatusCode.CLOSE.name());
 
         Store store = new Store(merchant,

@@ -57,7 +57,7 @@ public class MerchantService {
      */
     public void updateMerchant(Long merchantId, UpdateMerchantResponseDto merchantUpdateRequestDto) {
         Merchant merchant = merchantRepository.findById(merchantId)
-            .orElseThrow(() -> new MerchantNotFoundException(merchantId));
+            .orElseThrow(MerchantNotFoundException::new);
         merchant.modifyMerchant(merchantUpdateRequestDto.getMerchantName());
     }
 
