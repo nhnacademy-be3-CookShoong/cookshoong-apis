@@ -1,7 +1,9 @@
 package store.cookshoong.www.cookshoongbackend.coupon.repository;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.math.BigDecimal;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,9 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypePercent;
-
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import store.cookshoong.www.cookshoongbackend.util.TestEntity;
 
 @DataJpaTest
 class CouponTypePercentRepositoryTest {
@@ -21,27 +21,27 @@ class CouponTypePercentRepositoryTest {
     @Autowired
     CouponTypePercentRepository couponTypePercentRepository;
 
-    BigDecimal rate = new BigDecimal("1.5");
-
-    int discountAmount = 1_000;
-
-    int minimumPrice = 10_000;
-
     @Test
     @DisplayName("할인금액 및 최대금액, 최소금액으로 쿠폰 타입 획득 - 성공")
     void findByRateDiscountAmountAndMinimumPriceSuccess() throws Exception {
-        couponTypePercentRepository.saveAndFlush(new CouponTypePercent(rate, discountAmount, minimumPrice));
 
-        assertDoesNotThrow(() ->
-            couponTypePercentRepository.findByRateAndMinimumPriceAndMaximumPrice(rate, discountAmount, minimumPrice))
+        CouponTypePercent couponTypePercent = TestEntity.COUPON_TYPE_PERCENT_3_1000_10000;
+        couponTypePercentRepository.saveAndFlush(couponTypePercent);
+
+        assertDoesNotThrow(() -> couponTypePercentRepository.findByRateAndMinimumPriceAndMaximumPrice(
+            couponTypePercent.getRate(), couponTypePercent.getMinimumPrice(), couponTypePercent.getMaximumPrice()))
             .orElseThrow(IllegalArgumentException::new);
     }
 
     @Test
     @DisplayName("할인금액 및 최대금액, 최소금액으로 쿠폰 타입 획득 - 실패")
     void findByRateDiscountAmountAndMinimumPriceFail() throws Exception {
+        CouponTypePercent couponTypePercent = TestEntity.COUPON_TYPE_PERCENT_3_1000_10000;
+
         Optional<CouponTypePercent> byRateAndMinimumPriceAndMaximumPrice =
-            couponTypePercentRepository.findByRateAndMinimumPriceAndMaximumPrice(rate, discountAmount, minimumPrice);
+            couponTypePercentRepository.findByRateAndMinimumPriceAndMaximumPrice(
+                couponTypePercent.getRate(), couponTypePercent.getMinimumPrice(), couponTypePercent.getMaximumPrice()
+            );
         assertThrows(IllegalArgumentException.class,
             () -> byRateAndMinimumPriceAndMaximumPrice.orElseThrow(IllegalArgumentException::new));
     }
