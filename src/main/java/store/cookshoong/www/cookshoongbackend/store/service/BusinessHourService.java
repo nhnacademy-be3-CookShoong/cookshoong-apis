@@ -59,9 +59,6 @@ public class BusinessHourService {
      * @param holidayId 휴업일 아이디
      */
     public void removeHoliday(Long holidayId) {
-        if(!holidayRepository.existsById(holidayId)) {
-            throw new SelectHolidayNotFoundException(holidayId);
-        }
         holidayRepository.deleteById(holidayId);
     }
 

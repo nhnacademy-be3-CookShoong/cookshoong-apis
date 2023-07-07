@@ -129,9 +129,6 @@ public class StoreService {
      * @param storeId 매장 아이디
      */
     public void removeStore(Long storeId) {
-        if (!storeRepository.existsById(storeId)) {
-            throw new SelectStoreNotFoundException(storeId);
-        }
         storeRepository.deleteById(storeId);
     }
 }

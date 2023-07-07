@@ -67,9 +67,6 @@ public class MerchantService {
      * @param merchantId 가맹점 아이디
      */
     public void deleteMerchant(Long merchantId) {
-        if (!merchantRepository.existsById(merchantId)) {
-            throw new MerchantNotFoundException(merchantId);
-        }
         merchantRepository.deleteById(merchantId);
     }
 
