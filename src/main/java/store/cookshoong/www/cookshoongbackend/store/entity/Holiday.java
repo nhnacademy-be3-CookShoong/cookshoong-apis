@@ -36,4 +36,15 @@ public class Holiday {
 
     @Column(name = "holiday_date", nullable = false)
     private LocalDate holidayDate;
+
+    /**
+     * 휴업일 생성자.
+     *
+     * @param store 매장
+     * @param holidayDate 휴업일
+     */
+    public Holiday(Store store, LocalDate holidayDate) {
+        this.store = store;
+        this.holidayDate = holidayDate;
+    }
 }

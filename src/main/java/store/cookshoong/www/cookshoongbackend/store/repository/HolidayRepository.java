@@ -9,5 +9,5 @@ import store.cookshoong.www.cookshoongbackend.store.entity.Holiday;
  * @author seungyeon
  * @since 2023.07.04
  */
-public interface HolidayRepository extends JpaRepository<Holiday, Long> {
+public interface HolidayRepository extends JpaRepository<Holiday, Long>, HolidayRepositoryCustom {
 }
