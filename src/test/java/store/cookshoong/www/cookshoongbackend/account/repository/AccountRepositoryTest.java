@@ -81,11 +81,11 @@ class AccountRepositoryTest {
         em.persist(authority);
         em.persist(rank);
 
-        accountRepository.save(actual);
+        Long accountId = accountRepository.save(actual).getId();
 
         em.clear();
 
-        Account expect = accountRepository.findById(1L).orElseThrow();
+        Account expect = accountRepository.findById(accountId).orElseThrow();
 
         assertThat(expect.getId()).isEqualTo(actual.getId());
         assertThat(expect.getLoginId()).isEqualTo(actual.getLoginId());
