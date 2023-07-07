@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.store.entity.Merchant;
+import store.cookshoong.www.cookshoongbackend.store.exception.DuplicatedMerchantException;
+import store.cookshoong.www.cookshoongbackend.store.exception.MerchantNotFoundException;
 import store.cookshoong.www.cookshoongbackend.store.model.request.CreateMerchantRequestDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.SelectMerchantResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.UpdateMerchantResponseDto;
@@ -41,6 +43,9 @@ public class MerchantService {
      * @param createMerchantRequestDto 가맹점 이름 정보
      */
     public void saveMerchant(CreateMerchantRequestDto createMerchantRequestDto) {
+        if (merchantRepository.existsMerchantByName(createMerchantRequestDto.getMerchantName())) {
+            throw new DuplicatedMerchantException(createMerchantRequestDto.getMerchantName());
+        }
         merchantRepository.save(new Merchant(createMerchantRequestDto.getMerchantName()));
     }
 
@@ -52,7 +57,7 @@ public class MerchantService {
      */
     public void updateMerchant(Long merchantId, UpdateMerchantResponseDto merchantUpdateRequestDto) {
         Merchant merchant = merchantRepository.findById(merchantId)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 가맹점입니다."));
+            .orElseThrow(MerchantNotFoundException::new);
         merchant.modifyMerchant(merchantUpdateRequestDto.getMerchantName());
     }
 
@@ -62,9 +67,6 @@ public class MerchantService {
      * @param merchantId 가맹점 아이디
      */
     public void deleteMerchant(Long merchantId) {
-        if (!merchantRepository.existsById(merchantId)) {
-            throw new IllegalArgumentException("존재하지 않는 가맹점입니다.");
-        }
         merchantRepository.deleteById(merchantId);
     }
 
