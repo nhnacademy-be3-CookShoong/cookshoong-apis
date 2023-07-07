@@ -1,6 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.coupon.entity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,6 +13,7 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.cookshoong.www.cookshoongbackend.payment.entity.Order;
 
 /**
  * 쿠폰 내역 entity.
@@ -39,11 +40,11 @@ public class CouponLog {
     @JoinColumn(name = "coupon_log_type_id", nullable = false)
     private CouponLogType couponLogType;
 
-    // TODO: 주문 entity 추가 후 @ManyToOne 작성할 것.
+    @ManyToOne(fetch = FetchType.LAZY)
     @Column(name = "order_code", nullable = false)
-    private String orderCode;
+    private Order order;
 
     @Column(name = "record_date", nullable = false)
-    private LocalDate recordDate;
+    private LocalDateTime recordDate;
 
 }
