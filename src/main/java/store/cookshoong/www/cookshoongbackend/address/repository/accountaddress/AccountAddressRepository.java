@@ -1,6 +1,8 @@
 package store.cookshoong.www.cookshoongbackend.address.repository.accountaddress;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.address.entity.AccountAddress;
 
 /**
@@ -11,5 +13,5 @@ import store.cookshoong.www.cookshoongbackend.address.entity.AccountAddress;
  */
 public interface AccountAddressRepository extends JpaRepository<AccountAddress, AccountAddress.Pk>,
                                                                         AccountAddressRepositoryCustom{
-
+    List<AccountAddress> findByAccount(Account account);
 }

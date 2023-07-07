@@ -13,5 +13,12 @@ import store.cookshoong.www.cookshoongbackend.address.model.response.AccountAddr
 @NoRepositoryBean
 public interface AccountAddressRepositoryCustom {
 
+
+    /**
+     * 회원의 주소 리스트를 조회 합니다.
+     *
+     * @param accountId 회원 아이디
+     * @return 회원 주소 목록
+     */
     List<AccountAddressResponseDto> getByAccountIdAddress(Long accountId);
 }

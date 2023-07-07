@@ -3,7 +3,6 @@ package store.cookshoong.www.cookshoongbackend.address.repository.accountaddress
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import store.cookshoong.www.cookshoongbackend.address.entity.QAccountAddress;
 import store.cookshoong.www.cookshoongbackend.address.entity.QAddress;
 import store.cookshoong.www.cookshoongbackend.address.model.response.AccountAddressResponseDto;
@@ -23,10 +22,7 @@ public class AccountAddressRepositoryImpl implements AccountAddressRepositoryCus
     }
 
     /**
-     * 회원의 주소 리스트를 조회 합니다.
-     *
-     * @param accountId 회원 아이디
-     * @return 회원 주소 목록
+     * {@inheritDoc}
      */
     @Override
     public List<AccountAddressResponseDto> getByAccountIdAddress(Long accountId) {

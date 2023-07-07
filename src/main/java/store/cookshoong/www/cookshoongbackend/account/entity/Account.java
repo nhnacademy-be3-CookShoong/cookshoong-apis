@@ -44,7 +44,7 @@ public class Account {
     @JoinColumn(name = "rank_code", nullable = false)
     private Rank rank;
 
-    @Column(nullable = false, length = 30)
+    @Column(name = "login_id", nullable = false, length = 30)
     private String loginId;
 
     @Column(nullable = false, length = 60)
@@ -99,6 +99,14 @@ public class Account {
         this.lastLoginAt = LocalDateTime.now();
     }
 
+    /**
+     * Dto 를 포함하는 회원 생성자.
+     *
+     * @param status      회원 상태
+     * @param authority   회원 권한
+     * @param rank        회원 등급
+     * @param signUpRequestDto 회원가입 요청 Dto
+     */
     public Account(AccountsStatus status, Authority authority, Rank rank,
                    SignUpRequestDto signUpRequestDto) {
         this(status, authority, rank,
