@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.store.entity.Holiday;
 import store.cookshoong.www.cookshoongbackend.store.entity.Store;
 import store.cookshoong.www.cookshoongbackend.store.model.request.CreateHolidayRequestDto;
-import store.cookshoong.www.cookshoongbackend.store.model.response.HolidayResponseDto;
+import store.cookshoong.www.cookshoongbackend.store.model.response.HolidayListResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.repository.HolidayRepository;
 import store.cookshoong.www.cookshoongbackend.store.repository.StoreRepository;
 
@@ -35,7 +35,7 @@ public class BusinessHourService {
      * @return 휴업일 리스트
      */
     @Transactional(readOnly = true)
-    public Page<HolidayResponseDto> selectHolidayList(Long storeId, Pageable pageable) {
+    public Page<HolidayListResponseDto> selectHolidayList(Long storeId, Pageable pageable) {
         return holidayRepository.lookupHolidayPage(storeId, pageable);
     }
 

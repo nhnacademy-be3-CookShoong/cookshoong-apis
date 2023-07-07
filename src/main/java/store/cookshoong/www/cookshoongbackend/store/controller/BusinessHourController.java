@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import store.cookshoong.www.cookshoongbackend.store.model.request.CreateHolidayRequestDto;
-import store.cookshoong.www.cookshoongbackend.store.model.response.HolidayResponseDto;
+import store.cookshoong.www.cookshoongbackend.store.model.response.HolidayListResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.service.BusinessHourService;
 
 /**
@@ -34,14 +34,14 @@ public class BusinessHourController {
 
 
     /**
-     *  리스트 조회를 위한 컨트롤러 구현.
+     *  휴업일 리스트 조회를 위한 컨트롤러 구현.
      *
      * @param storeId  the store id
      * @param pageable the pageable
      * @return 200
      */
     @GetMapping
-    public ResponseEntity<Page<HolidayResponseDto>> getHolidayList(Long storeId, Pageable pageable) {
+    public ResponseEntity<Page<HolidayListResponseDto>> getHolidayList(Long storeId, Pageable pageable) {
         return ResponseEntity
             .ok(businessHourService.selectHolidayList(storeId, pageable));
     }

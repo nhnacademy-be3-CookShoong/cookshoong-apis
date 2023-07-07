@@ -10,6 +10,6 @@ import lombok.Getter;
  * @since 2023.07.07
  */
 @Getter
-public class HolidayResponseDto {
+public class HolidayListResponseDto {
     private LocalDate holidayDate;
 }

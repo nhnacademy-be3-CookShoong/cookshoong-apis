@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import store.cookshoong.www.cookshoongbackend.store.entity.Holiday;
 
 /**
- * 휴무일 레포지토리.
+ * 휴업일 레포지토리.
  *
  * @author seungyeon
  * @since 2023.07.04
