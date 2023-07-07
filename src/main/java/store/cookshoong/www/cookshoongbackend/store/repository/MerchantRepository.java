@@ -18,4 +18,12 @@ public interface MerchantRepository extends JpaRepository<Merchant, Long>, Merch
      * @return 있으면 반환하고, 없으면 null 반환하도록 유도할 것
      */
     Optional<Merchant> findMerchantByName(String name);
+
+    /**
+     * 가맹잠 존재 여부.
+     *
+     * @param name 가맹점 이름
+     * @return true : 이미 등록되어있음. false : 등록이 안되어있음.
+     */
+    boolean existsMerchantByName(String name);
 }
