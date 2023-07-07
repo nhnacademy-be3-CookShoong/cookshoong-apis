@@ -9,7 +9,7 @@ import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException
  * @since 2023.07.05
  */
 public class SelectStoreNotFoundException extends NotFoundException {
-    public SelectStoreNotFoundException(Long storeId) {
-        super(storeId + "와 일치하는 매장을 찾을 수 없습니다.");
+    public SelectStoreNotFoundException() {
+        super("매장이 존재하지 않습니다.");
     }
 }
