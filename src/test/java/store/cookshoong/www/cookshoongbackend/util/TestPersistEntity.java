@@ -1,11 +1,8 @@
 package store.cookshoong.www.cookshoongbackend.util;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.TestComponent;
-import org.springframework.stereotype.Component;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.entity.AccountsStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
@@ -34,6 +31,7 @@ public class TestPersistEntity {
         Rank rank = em.persist(TestEntity.RANK_LEVEL_ONE);
         return em.persist(TestEntity.ACCOUNT_ACTIVE_CUSTOMER_LEVEL_ONE);
     }
+
     public Store getOpenStore() {
         Account account = getLevelOneCustomer();
         BankType bankType = em.persist(TestEntity.BANK_TYPE_KB);
