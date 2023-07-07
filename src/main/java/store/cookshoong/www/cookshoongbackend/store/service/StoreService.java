@@ -50,7 +50,30 @@ public class StoreService {
     }
 
     /**
-     * 매장 등록 서비스 구현.
+     * 사업자 회원 : 매장 조회.
+     *
+     * @param accountId 회원 id
+     * @param storeId   매장 id
+     * @return 매장 정보
+     */
+    @Transactional(readOnly = true)
+    public StoreSearchResponseDto selectStore(Long accountId, Long storeId) {
+        return storeRepository.lookupStore(accountId, storeId)
+            .orElseThrow(() -> new IllegalArgumentException("해당하는 매장이 없습니다."));
+    }
+
+    /**
+     * 일반 유저 : 매장 정보 조회.
+     *
+     * @param storeId 매장 아이디
+     * @return 매장 정보 조회
+     */
+    @Transactional(readOnly = true)
+    public UserStoreSearchResponseDto selectStoreForUser(Long storeId) {
+        return storeRepository.lookupStoreForUser(storeId)
+            .orElseThrow(() -> new IllegalArgumentException("해당하는 매장이 없습니다."));
+    }
+
      * 가맹점 등록시 찾아서 넣고, 없으면 null로 등록, 매장 등록시 바로 CLOSE(휴식중) 상태로 등록됨.
      *
      * @param registerRequestDto 매장 등록을 위한 정보

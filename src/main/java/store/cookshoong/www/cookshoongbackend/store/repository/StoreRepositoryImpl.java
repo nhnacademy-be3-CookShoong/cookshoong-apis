@@ -87,4 +87,45 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
             .fetchOne();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<StoreSearchResponseDto> lookupStore(Long accountId, Long storeId) {
+        QAccount account = QAccount.account;
+        QStore store = QStore.store;
+        QAddress address = QAddress.address;
+        QBankType bankType = QBankType.bankType;
+
+        return Optional.ofNullable(jpaQueryFactory
+            .select(Projections.constructor(StoreSearchResponseDto.class, account.loginId, store.businessLicenseNumber,
+                store.representativeName, store.openingDate, store.name, store.phoneNumber,
+                address.mainPlace, address.detailPlace, store.defaultEarningRate,
+                store.description, bankType.description, store.bankAccountNumber))
+            .from(store)
+            .innerJoin(store.account, account)
+            .innerJoin(store.address, address)
+            .innerJoin(store.bankTypeCode, bankType)
+            .where(store.id.eq(storeId))
+            .fetchOne());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<UserStoreSearchResponseDto> lookupStoreForUser(Long storeId) {
+        QStore store = QStore.store;
+        QAddress address = QAddress.address;
+
+        return Optional.ofNullable(jpaQueryFactory
+            .select(Projections.constructor(UserStoreSearchResponseDto.class,
+                store.businessLicenseNumber, store.representativeName, store.openingDate, store.name,
+                store.phoneNumber, address.mainPlace, address.detailPlace, store.description))
+            .from(store)
+            .innerJoin(store.address, address)
+            .where(store.id.eq(storeId))
+            .fetchOne());
+    }
+
 }
