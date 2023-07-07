@@ -44,4 +44,27 @@ public class IssueCoupon {
     @Column(name = "expiration_at")
     private LocalDateTime expirationAt;
 
+    /**
+     * 쿠폰 발행 생성자.
+     * 쿠폰 식별번호 랜덤 생성, 쿠폰 정책과 발행일 지정.
+     *
+     * @param couponPolicy 쿠폰 정책
+     * @param issueAt      쿠폰 발행일
+     */
+    public IssueCoupon(CouponPolicy couponPolicy, LocalDateTime issueAt) {
+        this.code = UUID.randomUUID();
+        this.couponPolicy = couponPolicy;
+        this.issueAt = issueAt;
+    }
+
+    /**
+     * 발행된 쿠폰을 사용자에게 제공.
+     *
+     * @param account      쿠폰을 제공받을 사용자
+     * @param expirationAt 쿠폰 만료일자
+     */
+    public void provideToUser(Account account, LocalDateTime expirationAt) {
+        this.account = account;
+        this.expirationAt = expirationAt;
+    }
 }
