@@ -14,7 +14,7 @@ import store.cookshoong.www.cookshoongbackend.payment.model.response.TypeRespons
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * 환불의 ChargeType Repository 테스트.
+ * 환불 타입에 ChargeType Repository 테스트.
  *
  * @author jeongjewan
  * @since 2023.07.07

@@ -6,7 +6,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
 import store.cookshoong.www.cookshoongbackend.payment.entity.ChargeType;
@@ -15,7 +14,7 @@ import store.cookshoong.www.cookshoongbackend.payment.model.response.TypeRespons
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * 결제의 ChargeType Repository 테스트.
+ * 결제 타입에 ChargeType Repository 테스트.
  *
  * @author jeongjewan
  * @since 2023.07.07
