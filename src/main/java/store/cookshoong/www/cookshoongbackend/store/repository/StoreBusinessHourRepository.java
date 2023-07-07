@@ -10,4 +10,5 @@ import store.cookshoong.www.cookshoongbackend.store.entity.StoreBusinessHour;
  * @since 2023.07.04
  */
 public interface StoreBusinessHourRepository extends JpaRepository<StoreBusinessHour, Long> {
+
 }
