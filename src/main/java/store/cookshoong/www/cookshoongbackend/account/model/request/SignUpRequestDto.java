@@ -21,7 +21,6 @@ import store.cookshoong.www.cookshoongbackend.common.util.ValidationFailureMessa
  * @since 2023.07.05
  */
 @Getter
-@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SignUpRequestDto {
     @NotBlank
