@@ -21,7 +21,7 @@ public class PaymentRequestExceptionHandler {
     @ExceptionHandler({TypeValidationException.class})
     public ResponseEntity<Map<String, String>> handleValidationFailure(ValidationFailureException e) {
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getErrors());
+        return ResponseEntity.badRequest().body(e.getErrors());
     }
 
     @ExceptionHandler({ChargeTypeNotFoundException.class})
