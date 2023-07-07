@@ -35,7 +35,7 @@ public class MerchantController {
     private final MerchantService merchantService;
 
     /**
-     * 가맹점 리스트 조회를 위한 컨트롤러 구현.
+     * 관리자 : 가맹점 리스트 조회를 위한 컨트롤러 구현.
      *
      * @param pageable the pageable
      * @return the response entity
@@ -47,11 +47,11 @@ public class MerchantController {
     }
 
     /**
-     * 가맹점 등록을 위한 컨트롤러.
+     * 관리자 : 가맹점 등록을 위한 컨트롤러.
      *
-     * @param merchantRegisterRequestDto the merchant register request dto
-     * @param bindingResult              the binding result
-     * @return the response entity
+     * @param merchantRegisterRequestDto 가맹점 등록 정보
+     * @param bindingResult              valid 결과
+     * @return 201
      */
     @PostMapping
     public ResponseEntity<Void> registerMerchant(@RequestBody @Valid MerchantRegisterRequestDto merchantRegisterRequestDto,
@@ -66,12 +66,12 @@ public class MerchantController {
     }
 
     /**
-     * 해당 가맹점 이름 수정을 위한 컨트롤러.
+     * 관리자 : 해당 가맹점 이름 수정을 위한 컨트롤러.
      *
-     * @param merchantRegisterRequestDto the merchant register request dto
-     * @param bindingResult              the binding result
-     * @param merchantId                 the merchant id
-     * @return the response entity
+     * @param merchantUpdateResponseDto 가맹점 수정을 위한 정보
+     * @param bindingResult             valid 결과
+     * @param merchantId                가맹점 id
+     * @return 200
      */
     @PatchMapping("/{merchantId}")
     public ResponseEntity<Void> modifyMerchant(@RequestBody @Valid MerchantUpdateResponseDto merchantUpdateResponseDto,

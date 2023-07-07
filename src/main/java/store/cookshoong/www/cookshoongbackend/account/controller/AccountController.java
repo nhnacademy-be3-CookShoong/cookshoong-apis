@@ -33,7 +33,7 @@ public class AccountController {
     /**
      * 회원 저장 메서드.
      *
-     * @param authorityCode  ex) customer, business
+     * @param authorityCode    ex) customer, business
      * @param signUpRequestDto 회원가입 Dto
      * @return 201
      */

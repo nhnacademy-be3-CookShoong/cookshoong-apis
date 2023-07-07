@@ -38,7 +38,7 @@ public class StoreService {
     private final StoreStatusRepository storeStatusRepository;
 
     /**
-     * 해당 회원의 매장을 pagination 으로 작성.
+     * 사업자 회원 : 매장을 pagination 으로 작성.
      *
      * @param accountId 회원아이디
      * @param pageable  페이지 정보
@@ -74,8 +74,11 @@ public class StoreService {
             .orElseThrow(() -> new IllegalArgumentException("해당하는 매장이 없습니다."));
     }
 
+    /**
+     * 사업자 : 매장 등록 서비스 구현.
      * 가맹점 등록시 찾아서 넣고, 없으면 null로 등록, 매장 등록시 바로 CLOSE(휴식중) 상태로 등록됨.
      *
+     * @param accountId          회원 아이디
      * @param registerRequestDto 매장 등록을 위한 정보
      */
     public void createStore(Long accountId, StoreRegisterRequestDto registerRequestDto) {
@@ -117,7 +120,7 @@ public class StoreService {
     //TODO 5. 수정
 
     /**
-     * 매장 삭제 구현.
+     * 사업자 : 매장 삭제 구현.
      *
      * @param storeId 매장 아이디
      */
