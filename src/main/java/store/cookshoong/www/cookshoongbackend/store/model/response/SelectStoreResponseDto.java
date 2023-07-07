@@ -11,7 +11,7 @@ import lombok.Getter;
  * @since 2023.07.06
  */
 @Getter
-public class StoreSearchResponseDto {
+public class SelectStoreResponseDto {
     private String loginId;
     private String businessLicenseNumber;
     private String representativeName;

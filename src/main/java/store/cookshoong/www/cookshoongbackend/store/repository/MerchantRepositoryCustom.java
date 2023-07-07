@@ -3,7 +3,7 @@ package store.cookshoong.www.cookshoongbackend.store.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;
-import store.cookshoong.www.cookshoongbackend.store.model.response.MerchantSelectResponseDto;
+import store.cookshoong.www.cookshoongbackend.store.model.response.SelectMerchantResponseDto;
 
 /**
  * 가맹점 Custom 레포지토리.
@@ -20,5 +20,5 @@ public interface MerchantRepositoryCustom {
      * @param pageable 페이지 정보
      * @return 각 페이지별 가맹점 리스트
      */
-    Page<MerchantSelectResponseDto> lookupMerchantPage(Pageable pageable);
+    Page<SelectMerchantResponseDto> lookupMerchantPage(Pageable pageable);
 }

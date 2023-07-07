@@ -10,7 +10,7 @@ import lombok.Getter;
  * @since 2023.07.07
  */
 @Getter
-public class UserStoreSearchResponseDto {
+public class SelectStoreForUserResponseDto {
     private String businessLicenseNumber;
     private String representativeName;
     private LocalDate openingDate;

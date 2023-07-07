@@ -6,9 +6,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.store.entity.Merchant;
-import store.cookshoong.www.cookshoongbackend.store.model.request.MerchantRegisterRequestDto;
-import store.cookshoong.www.cookshoongbackend.store.model.response.MerchantSelectResponseDto;
-import store.cookshoong.www.cookshoongbackend.store.model.response.MerchantUpdateResponseDto;
+import store.cookshoong.www.cookshoongbackend.store.model.request.CreateMerchantRequestDto;
+import store.cookshoong.www.cookshoongbackend.store.model.response.SelectMerchantResponseDto;
+import store.cookshoong.www.cookshoongbackend.store.model.response.UpdateMerchantResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.repository.MerchantRepository;
 
 /**
@@ -31,17 +31,17 @@ public class MerchantService {
      * @return 가맹점 리스트
      */
     @Transactional(readOnly = true)
-    public Page<MerchantSelectResponseDto> getMerchantList(Pageable pageable) {
+    public Page<SelectMerchantResponseDto> getMerchantList(Pageable pageable) {
         return merchantRepository.lookupMerchantPage(pageable);
     }
 
     /**
      * 관리자 : 가맹점 등록을 위한 서비스 구현.
      *
-     * @param merchantRegisterRequestDto 가맹점 이름 정보
+     * @param createMerchantRequestDto 가맹점 이름 정보
      */
-    public void saveMerchant(MerchantRegisterRequestDto merchantRegisterRequestDto) {
-        merchantRepository.save(new Merchant(merchantRegisterRequestDto.getMerchantName()));
+    public void saveMerchant(CreateMerchantRequestDto createMerchantRequestDto) {
+        merchantRepository.save(new Merchant(createMerchantRequestDto.getMerchantName()));
     }
 
     /**
@@ -50,7 +50,7 @@ public class MerchantService {
      * @param merchantId               가맹점 아이디
      * @param merchantUpdateRequestDto 수정된 가맹점 이름 정보
      */
-    public void updateMerchant(Long merchantId, MerchantUpdateResponseDto merchantUpdateRequestDto) {
+    public void updateMerchant(Long merchantId, UpdateMerchantResponseDto merchantUpdateRequestDto) {
         Merchant merchant = merchantRepository.findById(merchantId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 가맹점입니다."));
         merchant.modifyMerchant(merchantUpdateRequestDto.getMerchantName());

@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class StoreRegisterRequestDto {
+public class CreateStoreRequestDto {
     //TODO 2. validation 재작성
     private String merchantName;
     @NotBlank

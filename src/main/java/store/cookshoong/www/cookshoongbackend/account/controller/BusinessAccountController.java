@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import store.cookshoong.www.cookshoongbackend.store.model.response.StoreListSearchResponseDto;
-import store.cookshoong.www.cookshoongbackend.store.model.response.StoreSearchResponseDto;
+import store.cookshoong.www.cookshoongbackend.store.model.response.SelectAllStoresResponseDto;
+import store.cookshoong.www.cookshoongbackend.store.model.response.SelectStoreResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.service.StoreService;
 
 /**
@@ -32,7 +32,7 @@ public class BusinessAccountController {
      * @return 200, 매장 리스트(페이지 별)
      */
     @GetMapping("/stores")
-    public ResponseEntity<Page<StoreListSearchResponseDto>> getStoreList(@PathVariable("accountId") Long accountId,
+    public ResponseEntity<Page<SelectAllStoresResponseDto>> getStoreList(@PathVariable("accountId") Long accountId,
                                                                          Pageable pageable) {
         return ResponseEntity
             .ok(storeService.selectStoreList(accountId, pageable));
@@ -45,7 +45,7 @@ public class BusinessAccountController {
      * @return 매장 정보 반환
      */
     @GetMapping("/stores/{storeId}")
-    public ResponseEntity<StoreSearchResponseDto> getStore(@PathVariable("accountId") Long accountId,
+    public ResponseEntity<SelectStoreResponseDto> getStore(@PathVariable("accountId") Long accountId,
                                                            @PathVariable("storeId") Long storeId) {
         return ResponseEntity
             .ok(storeService.selectStore(accountId, storeId));

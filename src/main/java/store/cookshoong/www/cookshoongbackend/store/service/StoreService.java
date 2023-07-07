@@ -12,10 +12,10 @@ import store.cookshoong.www.cookshoongbackend.store.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.store.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.store.entity.Store;
 import store.cookshoong.www.cookshoongbackend.store.entity.StoreStatus;
-import store.cookshoong.www.cookshoongbackend.store.model.request.StoreRegisterRequestDto;
-import store.cookshoong.www.cookshoongbackend.store.model.response.StoreListSearchResponseDto;
-import store.cookshoong.www.cookshoongbackend.store.model.response.StoreSearchResponseDto;
-import store.cookshoong.www.cookshoongbackend.store.model.response.UserStoreSearchResponseDto;
+import store.cookshoong.www.cookshoongbackend.store.model.request.CreateStoreRequestDto;
+import store.cookshoong.www.cookshoongbackend.store.model.response.SelectAllStoresResponseDto;
+import store.cookshoong.www.cookshoongbackend.store.model.response.SelectStoreResponseDto;
+import store.cookshoong.www.cookshoongbackend.store.model.response.SelectStoreForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.repository.BankTypeRepository;
 import store.cookshoong.www.cookshoongbackend.store.repository.MerchantRepository;
 import store.cookshoong.www.cookshoongbackend.store.repository.StoreRepository;
@@ -45,7 +45,7 @@ public class StoreService {
      * @return the page
      */
     @Transactional(readOnly = true)
-    public Page<StoreListSearchResponseDto> selectStoreList(Long accountId, Pageable pageable) {
+    public Page<SelectAllStoresResponseDto> selectStoreList(Long accountId, Pageable pageable) {
         return storeRepository.lookupStoresPage(accountId, pageable);
     }
 
@@ -57,7 +57,7 @@ public class StoreService {
      * @return 매장 정보
      */
     @Transactional(readOnly = true)
-    public StoreSearchResponseDto selectStore(Long accountId, Long storeId) {
+    public SelectStoreResponseDto selectStore(Long accountId, Long storeId) {
         return storeRepository.lookupStore(accountId, storeId)
             .orElseThrow(() -> new IllegalArgumentException("해당하는 매장이 없습니다."));
     }
@@ -69,7 +69,7 @@ public class StoreService {
      * @return 매장 정보 조회
      */
     @Transactional(readOnly = true)
-    public UserStoreSearchResponseDto selectStoreForUser(Long storeId) {
+    public SelectStoreForUserResponseDto selectStoreForUser(Long storeId) {
         return storeRepository.lookupStoreForUser(storeId)
             .orElseThrow(() -> new IllegalArgumentException("해당하는 매장이 없습니다."));
     }
@@ -81,7 +81,7 @@ public class StoreService {
      * @param accountId          회원 아이디
      * @param registerRequestDto 매장 등록을 위한 정보
      */
-    public void createStore(Long accountId, StoreRegisterRequestDto registerRequestDto) {
+    public void createStore(Long accountId, CreateStoreRequestDto registerRequestDto) {
         if (storeRepository.existsStoreByBusinessLicenseNumber(registerRequestDto.getBusinessLicense())) {
             throw new IllegalArgumentException("이미 등록된 사업장입니다.");
         }

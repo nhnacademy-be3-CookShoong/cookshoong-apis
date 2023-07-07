@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import store.cookshoong.www.cookshoongbackend.store.model.request.StoreRegisterRequestDto;
-import store.cookshoong.www.cookshoongbackend.store.model.response.UserStoreSearchResponseDto;
+import store.cookshoong.www.cookshoongbackend.store.model.request.CreateStoreRequestDto;
+import store.cookshoong.www.cookshoongbackend.store.model.response.SelectStoreForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.service.StoreService;
 
 /**
@@ -37,7 +37,7 @@ public class StoreController {
      * @return 매장 정보
      */
     @GetMapping("/{storeId}/info")
-    public ResponseEntity<UserStoreSearchResponseDto> getStore(@PathVariable("storeId") Long storeId) {
+    public ResponseEntity<SelectStoreForUserResponseDto> getStore(@PathVariable("storeId") Long storeId) {
         return ResponseEntity.ok(storeService.selectStoreForUser(storeId));
     }
 
@@ -52,7 +52,7 @@ public class StoreController {
      */
     @PostMapping
     public ResponseEntity<Void> postStore(@RequestParam("accountId") Long accountId,
-                                          @RequestBody @Valid StoreRegisterRequestDto registerRequestDto,
+                                          @RequestBody @Valid CreateStoreRequestDto registerRequestDto,
                                           BindingResult bindingResult) {
         //TODO 1. 회원정보 어디서 가져와서 넣어줘야함.
         //TODO 2. 주소는 어떻게 가져와서 쓰나. 주소 테이블에서 어떻게 검색해서 가져와서 써야할지

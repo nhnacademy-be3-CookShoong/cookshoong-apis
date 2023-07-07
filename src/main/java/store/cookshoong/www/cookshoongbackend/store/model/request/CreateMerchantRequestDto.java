@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MerchantRegisterRequestDto {
+public class CreateMerchantRequestDto {
     @NotBlank
     @Size(min = 1, max = 20, message = "1~20자 이내로 입력해주세요")
     private String merchantName;
