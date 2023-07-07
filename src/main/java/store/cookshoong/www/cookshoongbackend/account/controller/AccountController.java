@@ -41,7 +41,7 @@ public class AccountController {
     public ResponseEntity<Void> postRegisterAccount(@RequestBody @Valid SignUpRequestDto signUpRequestDto,
                                                     BindingResult bindingResult,
                                                     @RequestParam String authorityCode) {
-        log.info("client request : {}", signUpRequestDto);
+        // TODO: Admin으로 가입시 어떻게 할 것인가. 현재는 Admin을 파라미터로 넣으면 가입가능.
         String authorityCodeUpperCase = authorityCode.toUpperCase();
         if (!Authority.Code.matches(authorityCodeUpperCase)) {
             throw new AuthorityNotFoundException(authorityCodeUpperCase);
