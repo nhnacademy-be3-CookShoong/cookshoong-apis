@@ -31,17 +31,17 @@ public class AccountController {
     private final AccountService accountService;
 
     /**
-     * 회원 가입처리 메서드.
+     * 회원 저장 메서드.
      *
      * @param authorityCode  ex) customer, business
      * @param signUpRequestDto 회원가입 Dto
      * @return 201
      */
     @PostMapping
-    public ResponseEntity<Void> registerAccount(@RequestBody @Valid SignUpRequestDto signUpRequestDto,
-                                                BindingResult bindingResult,
-                                                @RequestParam String authorityCode) {
-        log.info("client request : {}", signUpRequestDto);
+    public ResponseEntity<Void> postRegisterAccount(@RequestBody @Valid SignUpRequestDto signUpRequestDto,
+                                                    BindingResult bindingResult,
+                                                    @RequestParam String authorityCode) {
+        // TODO: Admin으로 가입시 어떻게 할 것인가. 현재는 Admin을 파라미터로 넣으면 가입가능.
         String authorityCodeUpperCase = authorityCode.toUpperCase();
         if (!Authority.Code.matches(authorityCodeUpperCase)) {
             throw new AuthorityNotFoundException(authorityCodeUpperCase);

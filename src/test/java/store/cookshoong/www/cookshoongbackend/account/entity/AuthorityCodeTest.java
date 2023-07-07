@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.account.model.vo;
+package store.cookshoong.www.cookshoongbackend.account.entity;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

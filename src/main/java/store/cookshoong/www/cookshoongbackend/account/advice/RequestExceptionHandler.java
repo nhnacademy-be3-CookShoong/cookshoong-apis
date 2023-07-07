@@ -7,7 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import store.cookshoong.www.cookshoongbackend.account.exception.AuthorityNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.exception.DuplicatedUserException;
+import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException;
 import store.cookshoong.www.cookshoongbackend.common.exception.ValidationFailureException;
 import store.cookshoong.www.cookshoongbackend.common.util.IpResolver;
 
@@ -20,20 +22,8 @@ import store.cookshoong.www.cookshoongbackend.common.util.IpResolver;
 @Slf4j
 @RestControllerAdvice(basePackages = "store.cookshoong.www.cookshoongbackend.account")
 public class RequestExceptionHandler {
-
-
-    /**
-     * (409) 서버의 상태와 충돌시에 대한 응답(중복값 충돌, ...).
-     *
-     * @param e 예외
-     * @return 예외메세지
-     */
-    @ExceptionHandler({DuplicatedUserException.class})
-    public  ResponseEntity<String> handleConflictStatus(Exception e, HttpServletRequest request) {
-        log.error("Client ip : {}", IpResolver.getClientIp(request));
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-            .body(e.getMessage());
-    }
+    // TODO: 로깅에 AOP 적용하기
+    private static final String CLIENT_IP_LOG = "Client ip : {}";
 
     /**
      * (400) 검증 실패에 대한 응답.
@@ -44,8 +34,34 @@ public class RequestExceptionHandler {
     @ExceptionHandler({ValidationFailureException.class})
     public ResponseEntity<Map<String, String>> handleValidationFailure(ValidationFailureException e,
                                                                        HttpServletRequest request) {
-        log.error("Client ip : {}", IpResolver.getClientIp(request));
+        log.error(CLIENT_IP_LOG, IpResolver.getClientIp(request));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(e.getErrors());
+    }
+
+    /**
+     * (404) 객체 조회 실패에 대한 예외.
+     *
+     * @param e 조회실패 예외
+     * @return 조회실패 필드와 메세지
+     */
+    @ExceptionHandler({AuthorityNotFoundException.class})
+    public ResponseEntity<String> handleValidationFailure(NotFoundException e, HttpServletRequest request) {
+        log.error(CLIENT_IP_LOG, IpResolver.getClientIp(request));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(e.getMessage());
+    }
+
+    /**
+     * (409) 서버의 상태와 충돌시에 대한 응답(중복값 충돌, ...).
+     *
+     * @param e 예외
+     * @return 예외메세지
+     */
+    @ExceptionHandler({DuplicatedUserException.class})
+    public  ResponseEntity<String> handleConflictStatus(Exception e, HttpServletRequest request) {
+        log.error(CLIENT_IP_LOG, IpResolver.getClientIp(request));
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+            .body(e.getMessage());
     }
 }
