@@ -1,5 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.payment.repository.refundtype;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,8 +12,6 @@ import org.springframework.context.annotation.Import;
 import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
 import store.cookshoong.www.cookshoongbackend.payment.entity.RefundType;
 import store.cookshoong.www.cookshoongbackend.payment.model.response.TypeResponseDto;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * 환불 타입에 ChargeType Repository 테스트.

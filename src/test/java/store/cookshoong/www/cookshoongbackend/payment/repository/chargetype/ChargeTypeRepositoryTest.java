@@ -1,5 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.payment.repository.chargetype;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,8 +12,6 @@ import org.springframework.context.annotation.Import;
 import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
 import store.cookshoong.www.cookshoongbackend.payment.entity.ChargeType;
 import store.cookshoong.www.cookshoongbackend.payment.model.response.TypeResponseDto;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * 결제 타입에 ChargeType Repository 테스트.
