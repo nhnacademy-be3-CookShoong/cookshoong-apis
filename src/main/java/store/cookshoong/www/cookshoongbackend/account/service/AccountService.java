@@ -24,10 +24,10 @@ import store.cookshoong.www.cookshoongbackend.account.repository.RankRepository;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class AccountService {
-    public final AccountRepository accountRepository;
-    public final RankRepository rankRepository;
-    public final AccountsStatusRepository accountsStatusRepository;
-    public final AuthorityRepository authorityRepository;
+    private final AccountRepository accountRepository;
+    private final RankRepository rankRepository;
+    private final AccountsStatusRepository accountsStatusRepository;
+    private final AuthorityRepository authorityRepository;
 
     /**
      * 올바른 데이터가 들어왔는지 확인하고 회원을 DB에 저장 시킨다.
@@ -47,9 +47,8 @@ public class AccountService {
         Rank defaultRank = rankRepository.getReferenceById(Rank.Code.LEVEL_1.name());
         Authority authority = authorityRepository.getReferenceById(authorityCode.name());
 
-        Account account = new Account(status, authority, defaultRank, signUpRequestDto);
-
-        return accountRepository.save(account).getId();
+        return accountRepository.save(new Account(status, authority, defaultRank, signUpRequestDto))
+            .getId();
     }
 
 }
