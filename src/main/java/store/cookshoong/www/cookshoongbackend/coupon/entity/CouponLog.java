@@ -47,4 +47,18 @@ public class CouponLog {
     @Column(name = "record_date", nullable = false)
     private LocalDateTime recordDate;
 
+    /**
+     * 쿠폰 내역 생성자.
+     *
+     * @param issueCoupon   the issue coupon
+     * @param couponLogType the coupon log type
+     * @param order         the order
+     * @param recordDate    the record date
+     */
+    public CouponLog(IssueCoupon issueCoupon, CouponLogType couponLogType, Order order, LocalDateTime recordDate) {
+        this.issueCoupon = issueCoupon;
+        this.couponLogType = couponLogType;
+        this.order = order;
+        this.recordDate = recordDate;
+    }
 }
