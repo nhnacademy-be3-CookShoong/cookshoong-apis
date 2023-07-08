@@ -35,7 +35,7 @@ public class CreateCashCouponPolicyRequestDto implements CouponPolicyRequest {
     private LocalTime expirationTime;
 
     @NotNull
-    @Min(value = 5_000)
+    @Min(value = 1_000)
     @Max(value = 50_000)
     private Integer discountAmount;
 
