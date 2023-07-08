@@ -25,7 +25,7 @@ class CouponTypeCashRepositoryTest {
     @DisplayName("할인금액 및 최소금액으로 쿠폰 타입 획득 - 성공")
     void findByDiscountAmountAndMinimumPriceSuccess() throws Exception {
         CouponTypeCash couponTypeCash = TestEntity.COUPON_TYPE_CASH_1000_10000;
-        couponTypeCashRepository.saveAndFlush(couponTypeCash);
+        couponTypeCashRepository.save(couponTypeCash);
 
         assertDoesNotThrow(() ->
             couponTypeCashRepository.findByDiscountAmountAndMinimumPrice(

@@ -31,7 +31,7 @@ class CouponUsageStoreRepositoryTest {
     @DisplayName("매장 id로 쿠폰 매장 사용처 획득 - 성공")
     void findByStoreIdSuccessTest() throws Exception {
         Store store = testPersistEntity.getOpenStore();
-        couponUsageStoreRepository.saveAndFlush(new CouponUsageStore(store));
+        couponUsageStoreRepository.save(new CouponUsageStore(store));
         assertDoesNotThrow(() -> couponUsageStoreRepository.findByStoreId(store.getId())
             .orElseThrow(IllegalArgumentException::new));
     }

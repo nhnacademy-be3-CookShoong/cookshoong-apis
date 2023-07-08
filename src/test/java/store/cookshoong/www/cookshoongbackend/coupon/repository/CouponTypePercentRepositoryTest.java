@@ -26,7 +26,7 @@ class CouponTypePercentRepositoryTest {
     void findByRateDiscountAmountAndMinimumPriceSuccess() throws Exception {
 
         CouponTypePercent couponTypePercent = TestEntity.COUPON_TYPE_PERCENT_3_1000_10000;
-        couponTypePercentRepository.saveAndFlush(couponTypePercent);
+        couponTypePercentRepository.save(couponTypePercent);
 
         assertDoesNotThrow(() -> couponTypePercentRepository.findByRateAndMinimumPriceAndMaximumPrice(
             couponTypePercent.getRate(), couponTypePercent.getMinimumPrice(), couponTypePercent.getMaximumPrice()))
