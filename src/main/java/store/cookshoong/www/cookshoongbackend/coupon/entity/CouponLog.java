@@ -36,7 +36,7 @@ public class CouponLog {
     @JoinColumn(name = "issue_coupon_code", nullable = false)
     private IssueCoupon issueCoupon;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "coupon_log_type_id", nullable = false)
     private CouponLogType couponLogType;
 
