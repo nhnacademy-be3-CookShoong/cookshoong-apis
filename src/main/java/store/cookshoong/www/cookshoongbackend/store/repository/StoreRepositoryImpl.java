@@ -34,9 +34,9 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
      */
     @Override
     public Page<SelectAllStoresResponseDto> lookupStoresPage(Long accountId, Pageable pageable) {
-        List<SelectAllStoresResponseDto> responseDtoList = lookupStores(accountId, pageable);
+        List<SelectAllStoresResponseDto> responseDtos = lookupStores(accountId, pageable);
         long total = lookupTotal(accountId);
-        return new PageImpl<>(responseDtoList, pageable, total);
+        return new PageImpl<>(responseDtos, pageable, total);
     }
 
     /**

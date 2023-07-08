@@ -26,9 +26,9 @@ public class MerchantRepositoryImpl implements MerchantRepositoryCustom {
      */
     @Override
     public Page<SelectMerchantResponseDto> lookupMerchantPage(Pageable pageable) {
-        List<SelectMerchantResponseDto> responseDtoList = lookupMerchants(pageable);
+        List<SelectMerchantResponseDto> responseDtos = lookupMerchants(pageable);
         long total = lookupTotal();
-        return new PageImpl<>(responseDtoList, pageable, total);
+        return new PageImpl<>(responseDtos, pageable, total);
     }
 
     private List<SelectMerchantResponseDto> lookupMerchants(Pageable pageable) {

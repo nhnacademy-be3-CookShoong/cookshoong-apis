@@ -26,9 +26,9 @@ public class StoreCategoryRepositoryImpl implements StoreCategoryRepositoryCusto
      */
     @Override
     public Page<SelectAllCategoriesResponseDto> lookupStoreCategoriesPage(Pageable pageable) {
-        List<SelectAllCategoriesResponseDto> responseDtoList = lookupStoreCategories(pageable);
+        List<SelectAllCategoriesResponseDto> responseDtos = lookupStoreCategories(pageable);
         long total = lookupTotal();
-        return new PageImpl<>(responseDtoList, pageable, total);
+        return new PageImpl<>(responseDtos, pageable, total);
     }
 
     private List<SelectAllCategoriesResponseDto> lookupStoreCategories(Pageable pageable) {
