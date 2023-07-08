@@ -1,13 +1,16 @@
 package store.cookshoong.www.cookshoongbackend.coupon.controller;
 
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponPolicyRequestValidationException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateCashCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreatePercentCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.service.CouponPolicyService;
@@ -34,7 +37,9 @@ public class CouponPolicyController {
      */
     @PostMapping("/stores/{storeId}/cash")
     public ResponseEntity<Long> postStoreCashCouponPolicy(@PathVariable Long storeId,
-                                                          @RequestBody CreateCashCouponPolicyRequestDto dto) {
+                                                          @RequestBody @Valid CreateCashCouponPolicyRequestDto dto,
+                                                          BindingResult bindingResult) {
+        validPolicyRequest(bindingResult);
         Long storeCashCouponPolicyId = couponPolicyService.createStoreCashCouponPolicy(storeId, dto);
 
         return ResponseEntity
@@ -51,7 +56,10 @@ public class CouponPolicyController {
      */
     @PostMapping("/stores/{storeId}/percent")
     public ResponseEntity<Long> postStorePercentCouponPolicy(@PathVariable Long storeId,
-                                                             @RequestBody CreatePercentCouponPolicyRequestDto dto) {
+                                                             @RequestBody @Valid
+                                                             CreatePercentCouponPolicyRequestDto dto,
+                                                             BindingResult bindingResult) {
+        validPolicyRequest(bindingResult);
         Long storePercentCouponPolicyId = couponPolicyService.createStorePercentCouponPolicy(storeId, dto);
 
         return ResponseEntity
@@ -68,7 +76,9 @@ public class CouponPolicyController {
      */
     @PostMapping("/merchants/{merchantId}/cash")
     public ResponseEntity<Long> postMerchantCashCouponPolicy(@PathVariable Long merchantId,
-                                                             @RequestBody CreateCashCouponPolicyRequestDto dto) {
+                                                             @RequestBody @Valid CreateCashCouponPolicyRequestDto dto,
+                                                             BindingResult bindingResult) {
+        validPolicyRequest(bindingResult);
         Long storePercentCouponPolicyId = couponPolicyService.createMerchantCashCouponPolicy(merchantId, dto);
 
         return ResponseEntity
@@ -85,7 +95,10 @@ public class CouponPolicyController {
      */
     @PostMapping("/merchants/{merchantId}/percent")
     public ResponseEntity<Long> postMerchantPointCouponPolicy(@PathVariable Long merchantId,
-                                                              @RequestBody CreatePercentCouponPolicyRequestDto dto) {
+                                                              @RequestBody @Valid
+                                                              CreatePercentCouponPolicyRequestDto dto,
+                                                              BindingResult bindingResult) {
+        validPolicyRequest(bindingResult);
         Long storePercentCouponPolicyId = couponPolicyService.createMerchantPercentCouponPolicy(merchantId, dto);
 
         return ResponseEntity
@@ -100,7 +113,9 @@ public class CouponPolicyController {
      * @return CREATED status 및 쿠폰 정책 id
      */
     @PostMapping("/all/cash")
-    public ResponseEntity<Long> postAllCashCouponPolicy(@RequestBody CreateCashCouponPolicyRequestDto dto) {
+    public ResponseEntity<Long> postAllCashCouponPolicy(@RequestBody @Valid CreateCashCouponPolicyRequestDto dto,
+                                                        BindingResult bindingResult) {
+        validPolicyRequest(bindingResult);
         Long storePercentCouponPolicyId = couponPolicyService.createAllCashCouponPolicy(dto);
 
         return ResponseEntity
@@ -115,11 +130,19 @@ public class CouponPolicyController {
      * @return CREATED status 및 쿠폰 정책 id
      */
     @PostMapping("/all/percent")
-    public ResponseEntity<Long> postAllPointCouponPolicy(@RequestBody CreatePercentCouponPolicyRequestDto dto) {
+    public ResponseEntity<Long> postAllPointCouponPolicy(@RequestBody @Valid CreatePercentCouponPolicyRequestDto dto,
+                                                         BindingResult bindingResult) {
+        validPolicyRequest(bindingResult);
         Long storePercentCouponPolicyId = couponPolicyService.createAllPercentCouponPolicy(dto);
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(storePercentCouponPolicyId);
+    }
+
+    private static void validPolicyRequest(BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new CouponPolicyRequestValidationException(bindingResult);
+        }
     }
 }
