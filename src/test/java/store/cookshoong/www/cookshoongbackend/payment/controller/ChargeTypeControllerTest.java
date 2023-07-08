@@ -171,7 +171,7 @@ class ChargeTypeControllerTest {
     @DisplayName("GET 해당 아이디에 대한 결제 타입 조회")
     void getChargeType() throws Exception {
         Long chargeTypeId = 1L;
-        TypeResponseDto responseDto = new TypeResponseDto("토스결제");
+        TypeResponseDto responseDto = new TypeResponseDto(1L, "토스결제");
 
         when(chargeTypeService.selectChargeType(chargeTypeId)).thenReturn(responseDto);
 
@@ -185,7 +185,7 @@ class ChargeTypeControllerTest {
     @Test
     @DisplayName("GET 모든 결제애 대한 결제 타입 조회")
     void getChargeTypeAll() throws Exception {
-        TypeResponseDto responseDto = new TypeResponseDto("토스결제");
+        TypeResponseDto responseDto = new TypeResponseDto(1L, "토스결제");
         List<TypeResponseDto> responseDtoList = Collections.singletonList(responseDto);
 
         when(chargeTypeService.selectChargeTypeAll()).thenReturn(responseDtoList);
