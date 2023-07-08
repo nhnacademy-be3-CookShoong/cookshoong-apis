@@ -12,7 +12,6 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import store.cookshoong.www.cookshoongbackend.account.entity.QAccount;
 import store.cookshoong.www.cookshoongbackend.coupon.model.temp.CouponResponseTempDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.temp.QCouponResponseTempDto;
 
@@ -27,6 +26,9 @@ import store.cookshoong.www.cookshoongbackend.coupon.model.temp.QCouponResponseT
 public class IssueCouponRepositoryImpl implements IssueCouponRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<CouponResponseTempDto> lookupAllOwnCoupons(Long accountId) {
         return queryFactory
