@@ -41,7 +41,7 @@ public class MerchantController {
      * @return the response entity
      */
     @GetMapping
-    public ResponseEntity<Page<SelectMerchantResponseDto>> getMerchantList(Pageable pageable) {
+    public ResponseEntity<Page<SelectMerchantResponseDto>> getMerchants(Pageable pageable) {
         return ResponseEntity
             .ok(merchantService.selectAllMerchants(pageable));
     }
