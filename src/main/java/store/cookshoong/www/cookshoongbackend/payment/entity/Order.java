@@ -1,6 +1,8 @@
 package store.cookshoong.www.cookshoongbackend.payment.entity;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -22,10 +24,10 @@ import lombok.NoArgsConstructor;
 public class Order {
     @Id
     @Column(name = "order_code", nullable = false, length = 36)
-    private String orderCode;
+    private UUID orderCode;
 
     @Column(name = "ordered_at", nullable = false)
-    private Instant orderedAt;
+    private LocalDateTime orderedAt;
 
     @Column(name = "memo", length = 100)
     private String memo;
