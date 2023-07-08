@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.store.exception;
+package store.cookshoong.www.cookshoongbackend.store.exception.merchant;
 
 /**
  * 중복된 가맹점 등록에 대한 예외.

@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.store.exception;
+package store.cookshoong.www.cookshoongbackend.store.exception.store;
 
 /**
  * 사업자등록번 중복 시 발생하는 예외.
