@@ -62,7 +62,7 @@ public class RefundTypeService {
         RefundType refundType = refundTypeRepository.findById(refundTypeId)
             .orElseThrow(RefundTypeNotFoundException::new);
 
-        return new TypeResponseDto(refundType.getName());
+        return new TypeResponseDto(refundType.getId(), refundType.getName());
     }
 
     /**
