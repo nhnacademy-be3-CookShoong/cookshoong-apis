@@ -126,7 +126,7 @@ class RefundTypeServiceTest {
     @DisplayName("모든 환불 타입 조회")
     void selectRefundTypeAll() {
         List<TypeResponseDto> responseDtoList = new ArrayList<>();
-        responseDtoList.add(new TypeResponseDto("개인적인 이유로 인한 환불"));
+        responseDtoList.add(new TypeResponseDto(1L, "개인적인 이유로 인한 환불"));
 
         when(refundTypeRepository.lookupRefundTypeAll()).thenReturn(responseDtoList);
 

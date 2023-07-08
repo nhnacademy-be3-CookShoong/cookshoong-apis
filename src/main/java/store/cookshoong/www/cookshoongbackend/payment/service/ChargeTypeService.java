@@ -62,7 +62,7 @@ public class ChargeTypeService {
         ChargeType chargeType = chargeTypeRepository.findById(chargeTypeId)
             .orElseThrow(ChargeTypeNotFoundException::new);
 
-        return new TypeResponseDto(chargeType.getName());
+        return new TypeResponseDto(chargeType.getId(), chargeType.getName());
     }
 
     /**
