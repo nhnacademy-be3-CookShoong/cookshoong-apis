@@ -1,6 +1,5 @@
-package store.cookshoong.www.cookshoongbackend.store.repository;
+package store.cookshoong.www.cookshoongbackend.store.repository.merchant;
 
-import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.store.entity.QMerchant;
+import store.cookshoong.www.cookshoongbackend.store.model.response.QSelectMerchantResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.SelectMerchantResponseDto;
 
 /**
@@ -26,22 +26,22 @@ public class MerchantRepositoryImpl implements MerchantRepositoryCustom {
      */
     @Override
     public Page<SelectMerchantResponseDto> lookupMerchantPage(Pageable pageable) {
-        List<SelectMerchantResponseDto> responseDtoList = getMerchants(pageable);
-        long total = getTotal();
-        return new PageImpl<>(responseDtoList, pageable, total);
+        List<SelectMerchantResponseDto> responseDtos = lookupMerchants(pageable);
+        long total = lookupTotal();
+        return new PageImpl<>(responseDtos, pageable, total);
     }
 
-    private List<SelectMerchantResponseDto> getMerchants(Pageable pageable) {
+    private List<SelectMerchantResponseDto> lookupMerchants(Pageable pageable) {
         QMerchant merchant = QMerchant.merchant;
         return jpaQueryFactory
-            .select(Projections.constructor(SelectMerchantResponseDto.class, merchant.name))
+            .select(new QSelectMerchantResponseDto(merchant.name))
             .from(merchant)
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
     }
 
-    private Long getTotal() {
+    private Long lookupTotal() {
         QMerchant merchant = QMerchant.merchant;
         return jpaQueryFactory
             .select(merchant.count())

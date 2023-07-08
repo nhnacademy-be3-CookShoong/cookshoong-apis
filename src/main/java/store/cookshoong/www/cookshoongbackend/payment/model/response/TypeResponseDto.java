@@ -12,6 +12,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class TypeResponseDto {
-
+    private Long id;
     private String name;
 }

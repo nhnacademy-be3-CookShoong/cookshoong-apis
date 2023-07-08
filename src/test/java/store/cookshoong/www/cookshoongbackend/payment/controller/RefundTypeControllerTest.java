@@ -172,7 +172,7 @@ class RefundTypeControllerTest {
     @DisplayName("GET 해당 아이디에 대한 환불 타입 조회")
     void getRefundType() throws Exception {
         Long refundTypeId = 1L;
-        TypeResponseDto responseDto = new TypeResponseDto("개인 변심으로 인한 환불");
+        TypeResponseDto responseDto = new TypeResponseDto(1L, "개인 변심으로 인한 환불");
 
         when(refundTypeService.selectRefundType(refundTypeId)).thenReturn(responseDto);
 
@@ -186,7 +186,7 @@ class RefundTypeControllerTest {
     @Test
     @DisplayName("GET 모든 결제애 대한 환불 타입 조회")
     void getRefundTypeAll() throws Exception {
-        TypeResponseDto responseDto = new TypeResponseDto("개인 변심으로 인한 환불");
+        TypeResponseDto responseDto = new TypeResponseDto(1L, "개인 변심으로 인한 환불");
         List<TypeResponseDto> responseDtoList = Collections.singletonList(responseDto);
 
         when(refundTypeService.selectRefundTypeAll()).thenReturn(responseDtoList);

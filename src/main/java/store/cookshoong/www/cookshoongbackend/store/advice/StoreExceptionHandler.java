@@ -8,11 +8,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException;
 import store.cookshoong.www.cookshoongbackend.common.exception.ValidationFailureException;
-import store.cookshoong.www.cookshoongbackend.store.exception.BankTypeNotFoundException;
-import store.cookshoong.www.cookshoongbackend.store.exception.DuplicatedBusinessLicenseException;
-import store.cookshoong.www.cookshoongbackend.store.exception.MerchantValidException;
-import store.cookshoong.www.cookshoongbackend.store.exception.SelectStoreNotFoundException;
-import store.cookshoong.www.cookshoongbackend.store.exception.StoreValidException;
+import store.cookshoong.www.cookshoongbackend.store.exception.banktype.BankTypeNotFoundException;
+import store.cookshoong.www.cookshoongbackend.store.exception.category.DuplicatedStoreCategoryException;
+import store.cookshoong.www.cookshoongbackend.store.exception.category.StoreCategoryValidException;
+import store.cookshoong.www.cookshoongbackend.store.exception.merchant.DuplicatedMerchantException;
+import store.cookshoong.www.cookshoongbackend.store.exception.merchant.MerchantValidException;
+import store.cookshoong.www.cookshoongbackend.store.exception.store.DuplicatedBusinessLicenseException;
+import store.cookshoong.www.cookshoongbackend.store.exception.store.SelectStoreNotFoundException;
+import store.cookshoong.www.cookshoongbackend.store.exception.store.StoreValidException;
 
 /**
  * store 패키지 아래에서 RestController 내에서 일어나는 모든 예외들을 처리한다.
@@ -42,7 +45,8 @@ public class StoreExceptionHandler {
      * @param e valid 예외
      * @return 예외처리 메시지 반환
      */
-    @ExceptionHandler(value = {StoreValidException.class, MerchantValidException.class})
+    @ExceptionHandler(value = {StoreValidException.class, MerchantValidException.class,
+        StoreCategoryValidException.class})
     public ResponseEntity<Map<String, String>> validFailure(ValidationFailureException e) {
         return ResponseEntity
             .badRequest()
@@ -55,7 +59,8 @@ public class StoreExceptionHandler {
      * @param e 중복에 대한 예외
      * @return 에러 처리 메시지 반환
      */
-    @ExceptionHandler(value = {DuplicatedBusinessLicenseException.class})
+    @ExceptionHandler(value = {DuplicatedBusinessLicenseException.class, DuplicatedMerchantException.class,
+        DuplicatedStoreCategoryException.class})
     public ResponseEntity<String> alreadySomethingExistsError(Exception e) {
         return ResponseEntity
             .status(HttpStatus.CONFLICT)

@@ -1,6 +1,5 @@
-package store.cookshoong.www.cookshoongbackend.store.repository;
+package store.cookshoong.www.cookshoongbackend.store.repository.store;
 
-import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import java.util.Optional;
@@ -13,9 +12,12 @@ import store.cookshoong.www.cookshoongbackend.address.entity.QAddress;
 import store.cookshoong.www.cookshoongbackend.store.entity.QBankType;
 import store.cookshoong.www.cookshoongbackend.store.entity.QStore;
 import store.cookshoong.www.cookshoongbackend.store.entity.QStoreStatus;
+import store.cookshoong.www.cookshoongbackend.store.model.response.QSelectAllStoresResponseDto;
+import store.cookshoong.www.cookshoongbackend.store.model.response.QSelectStoreForUserResponseDto;
+import store.cookshoong.www.cookshoongbackend.store.model.response.QSelectStoreResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.SelectAllStoresResponseDto;
-import store.cookshoong.www.cookshoongbackend.store.model.response.SelectStoreResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.SelectStoreForUserResponseDto;
+import store.cookshoong.www.cookshoongbackend.store.model.response.SelectStoreResponseDto;
 
 /**
  * 매장 커스텀 레포지토리 구현.
@@ -32,9 +34,9 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
      */
     @Override
     public Page<SelectAllStoresResponseDto> lookupStoresPage(Long accountId, Pageable pageable) {
-        List<SelectAllStoresResponseDto> responseDtoList = getStores(accountId, pageable);
-        long total = getTotal(accountId);
-        return new PageImpl<>(responseDtoList, pageable, total);
+        List<SelectAllStoresResponseDto> responseDtos = lookupStores(accountId, pageable);
+        long total = lookupTotal(accountId);
+        return new PageImpl<>(responseDtos, pageable, total);
     }
 
     /**
@@ -44,14 +46,14 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
      * @param pageable  페이지 정보
      * @return 각 페이지에 해당하는 매장 리스트
      */
-    private List<SelectAllStoresResponseDto> getStores(Long accountId, Pageable pageable) {
+    private List<SelectAllStoresResponseDto> lookupStores(Long accountId, Pageable pageable) {
         QStore store = QStore.store;
         QAccount account = QAccount.account;
         QStoreStatus storeStatus = QStoreStatus.storeStatus;
         QAddress address = QAddress.address;
 
         return jpaQueryFactory
-            .select(Projections.constructor(SelectAllStoresResponseDto.class,
+            .select(new QSelectAllStoresResponseDto(
                 store.id, account.loginId, store.name,
                 address.mainPlace, address.detailPlace, storeStatus.description))
             .from(store)
@@ -70,7 +72,7 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
      * @param accountId 회원 아이디
      * @return 회원이 가지고 있는 매장의 총 개수
      */
-    private Long getTotal(Long accountId) {
+    private Long lookupTotal(Long accountId) {
         QStore store = QStore.store;
         QAccount account = QAccount.account;
         QStoreStatus storeStatus = QStoreStatus.storeStatus;
@@ -97,8 +99,12 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
         QBankType bankType = QBankType.bankType;
 
         return Optional.ofNullable(jpaQueryFactory
-            .select(Projections.constructor(SelectStoreResponseDto.class, account.loginId, store.businessLicenseNumber,
-                store.representativeName, store.openingDate, store.name, store.phoneNumber,
+            .select(new QSelectStoreResponseDto(
+                account.loginId,
+                store.businessLicenseNumber,
+                store.representativeName,
+                store.openingDate,
+                store.name, store.phoneNumber,
                 address.mainPlace, address.detailPlace, store.defaultEarningRate,
                 store.description, bankType.description, store.bankAccountNumber))
             .from(store)
@@ -118,7 +124,7 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
         QAddress address = QAddress.address;
 
         return Optional.ofNullable(jpaQueryFactory
-            .select(Projections.constructor(SelectStoreForUserResponseDto.class,
+            .select(new QSelectStoreForUserResponseDto(
                 store.businessLicenseNumber, store.representativeName, store.openingDate, store.name,
                 store.phoneNumber, address.mainPlace, address.detailPlace, store.description))
             .from(store)

@@ -130,7 +130,7 @@ class ChargeTypeServiceTest {
     @DisplayName("모든 결제 타입 조회")
     void selectChargeTypeAll() {
         List<TypeResponseDto> chargeTypeList = new ArrayList<>();
-        chargeTypeList.add(new TypeResponseDto("카드결제"));
+        chargeTypeList.add(new TypeResponseDto(1L, "카드결제"));
 
         when(chargeTypeRepository.lookupChargeTypeAll()).thenReturn(chargeTypeList);
 
