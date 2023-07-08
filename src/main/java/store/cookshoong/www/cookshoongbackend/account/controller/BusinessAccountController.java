@@ -20,7 +20,7 @@ import store.cookshoong.www.cookshoongbackend.store.service.StoreService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/accounts/{accountId}")
+@RequestMapping("/api/accounts/{accountId}")
 public class BusinessAccountController {
     private final StoreService storeService;
 
@@ -32,10 +32,10 @@ public class BusinessAccountController {
      * @return 200, 매장 리스트(페이지 별)
      */
     @GetMapping("/stores")
-    public ResponseEntity<Page<SelectAllStoresResponseDto>> getStoreList(@PathVariable("accountId") Long accountId,
+    public ResponseEntity<Page<SelectAllStoresResponseDto>> getStores(@PathVariable("accountId") Long accountId,
                                                                          Pageable pageable) {
         return ResponseEntity
-            .ok(storeService.selectStoreList(accountId, pageable));
+            .ok(storeService.selectAllStores(accountId, pageable));
     }
 
     /**
@@ -45,7 +45,7 @@ public class BusinessAccountController {
      * @return 매장 정보 반환
      */
     @GetMapping("/stores/{storeId}")
-    public ResponseEntity<SelectStoreResponseDto> getStore(@PathVariable("accountId") Long accountId,
+    public ResponseEntity<SelectStoreResponseDto> getStoreForUser(@PathVariable("accountId") Long accountId,
                                                            @PathVariable("storeId") Long storeId) {
         return ResponseEntity
             .ok(storeService.selectStore(accountId, storeId));

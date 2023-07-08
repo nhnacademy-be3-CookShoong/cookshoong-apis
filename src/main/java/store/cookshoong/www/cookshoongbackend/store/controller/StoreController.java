@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import store.cookshoong.www.cookshoongbackend.store.exception.StoreValidException;
+import store.cookshoong.www.cookshoongbackend.store.exception.store.StoreValidException;
 import store.cookshoong.www.cookshoongbackend.store.model.request.CreateStoreRequestDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.SelectStoreForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.service.StoreService;
@@ -28,6 +28,8 @@ import store.cookshoong.www.cookshoongbackend.store.service.StoreService;
 @RequiredArgsConstructor
 public class StoreController {
     private final StoreService storeService;
+
+    //TODO 5. 일반 회원 입장에서 OPEN, 혹은 CLOSE된 매장들만 볼 수 있도록 해야함.
 
     /**
      * 일반 유저 : 매장 정보 조회 페이지.
@@ -54,7 +56,6 @@ public class StoreController {
                                           @RequestBody @Valid CreateStoreRequestDto registerRequestDto,
                                           BindingResult bindingResult) {
         //TODO 1. 회원정보 어디서 가져와서 넣어줘야함.
-        //TODO 2. 주소는 어떻게 가져와서 쓰나. 주소 테이블에서 어떻게 검색해서 가져와서 써야할지
 
         if (bindingResult.hasErrors()) {
             throw new StoreValidException(bindingResult);
@@ -68,4 +69,5 @@ public class StoreController {
 
     //TODO 4. 수정이 아니라 추가 정보로 영업일, 휴무일을 넣을 수 있도록 하는건?
 
+    //TODO 8. 매장 삭제가 아니라 상태를 폐업으로 바꾸도록
 }

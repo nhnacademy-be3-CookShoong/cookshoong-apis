@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.store.entity.Holiday;
 import store.cookshoong.www.cookshoongbackend.store.entity.Store;
-import store.cookshoong.www.cookshoongbackend.store.exception.SelectStoreNotFoundException;
+import store.cookshoong.www.cookshoongbackend.store.exception.store.SelectStoreNotFoundException;
 import store.cookshoong.www.cookshoongbackend.store.model.request.CreateHolidayRequestDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.HolidayListResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.repository.HolidayRepository;
