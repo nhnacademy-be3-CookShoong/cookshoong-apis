@@ -17,5 +17,5 @@ public interface BankTypeRepository extends JpaRepository<BankType, String> {
      * @param description 은행 이름
      * @return 은행 객체
      */
-    Optional<BankType> findBankTypeByDescription(String description);
+    Optional<BankType> findByDescription(String description);
 }

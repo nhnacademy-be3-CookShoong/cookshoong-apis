@@ -28,9 +28,9 @@ public class HolidayRepositoryImpl implements HolidayRepositoryCustom {
      */
     @Override
     public Page<HolidayListResponseDto> lookupHolidayPage(Long storeId, Pageable pageable) {
-        List<HolidayListResponseDto> responseDtoList = getHolidays(storeId, pageable);
+        List<HolidayListResponseDto> responseDtos = getHolidays(storeId, pageable);
         long total = getTotal(storeId);
-        return new PageImpl<>(responseDtoList, pageable, total);
+        return new PageImpl<>(responseDtos, pageable, total);
     }
 
     /**

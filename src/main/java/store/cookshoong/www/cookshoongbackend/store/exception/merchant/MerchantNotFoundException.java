@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.store.exception;
+package store.cookshoong.www.cookshoongbackend.store.exception.merchant;
 
 import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException;
 

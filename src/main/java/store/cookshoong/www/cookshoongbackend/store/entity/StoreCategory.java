@@ -26,4 +26,21 @@ public class StoreCategory {
     @Column(name = "description", nullable = false, length = 30)
     private String description;
 
+    /**
+     * 매장 카테고리 생성자.
+     *
+     * @param description 이름넣고 StoreCategory 생성
+     */
+    public StoreCategory(String description) {
+        this.description = description;
+    }
+
+    /**
+     * StoreCategory 이름 수정.
+     *
+     * @param description 카테고리 이름
+     */
+    public void updateStoreCategory(String description) {
+        this.description = description;
+    }
 }
