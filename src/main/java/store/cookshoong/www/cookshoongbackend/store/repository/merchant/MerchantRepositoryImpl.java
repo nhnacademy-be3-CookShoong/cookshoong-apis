@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.store.repository;
+package store.cookshoong.www.cookshoongbackend.store.repository.merchant;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;

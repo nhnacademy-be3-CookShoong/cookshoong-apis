@@ -13,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import store.cookshoong.www.cookshoongbackend.store.entity.Holiday;
 import store.cookshoong.www.cookshoongbackend.store.entity.Store;
+import store.cookshoong.www.cookshoongbackend.store.repository.holiday.HolidayRepository;
 import store.cookshoong.www.cookshoongbackend.util.TestPersistEntity;
 
 @DataJpaTest
