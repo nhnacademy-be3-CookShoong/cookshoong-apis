@@ -12,5 +12,11 @@ import store.cookshoong.www.cookshoongbackend.coupon.model.temp.CouponResponseTe
  */
 @NoRepositoryBean
 public interface IssueCouponRepositoryCustom {
+    /**
+     * 소유한 모든 쿠폰 목록을 출력하는 메서드.
+     *
+     * @param accountId the account id
+     * @return 쿠폰 목록
+     */
     List<CouponResponseTempDto> lookupAllOwnCoupons(Long accountId);
 }
