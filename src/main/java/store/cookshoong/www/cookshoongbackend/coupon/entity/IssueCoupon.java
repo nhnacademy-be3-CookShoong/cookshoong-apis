@@ -1,17 +1,21 @@
 package store.cookshoong.www.cookshoongbackend.coupon.entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 
 /**
@@ -27,7 +31,9 @@ import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 public class IssueCoupon {
 
     @Id
-    @Column(name = "issue_coupon_code", nullable = false)
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(name = "issue_coupon_code", columnDefinition = "BINARY(16)", nullable = false)
     private UUID code;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -52,7 +58,6 @@ public class IssueCoupon {
      * @param issueAt      쿠폰 발행일
      */
     public IssueCoupon(CouponPolicy couponPolicy, LocalDateTime issueAt) {
-        this.code = UUID.randomUUID();
         this.couponPolicy = couponPolicy;
         this.issueAt = issueAt;
     }
