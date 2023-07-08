@@ -22,8 +22,8 @@ import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponUsageMerch
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponUsageStoreRepository;
 import store.cookshoong.www.cookshoongbackend.store.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.store.entity.Store;
-import store.cookshoong.www.cookshoongbackend.store.repository.MerchantRepository;
-import store.cookshoong.www.cookshoongbackend.store.repository.StoreRepository;
+import store.cookshoong.www.cookshoongbackend.store.repository.merchant.MerchantRepository;
+import store.cookshoong.www.cookshoongbackend.store.repository.store.StoreRepository;
 
 /**
  * 쿠폰 정책 서비스.
@@ -165,8 +165,8 @@ public class CouponPolicyService {
 
     private CouponPolicy createCouponPolicy(CouponType couponType, CouponUsage couponUsage, CouponPolicyRequest req) {
         return couponPolicyRepository.save(
-                new CouponPolicy(couponType, couponUsage, req.getName(), req.getDescription(),
-                    req.getExpirationTime()));
+            new CouponPolicy(couponType, couponUsage, req.getName(), req.getDescription(),
+                req.getExpirationTime()));
     }
 
     /**
