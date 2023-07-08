@@ -24,24 +24,54 @@ import store.cookshoong.www.cookshoongbackend.store.entity.StoreStatus;
  * @since 2023.07.07
  */
 public class TestEntity {
-    public static Address ADDRESS = new Address("main", "detail", BigDecimal.ONE, BigDecimal.ZERO);
-    public static AccountsStatus ACCOUNTS_STATUS_ACTIVE = new AccountsStatus("ACTIVE", "활성");
-    public static Authority AUTHORITY_CUSTOMER = new Authority("CUSTOMER", "일반회원");
-    public static Rank RANK_LEVEL_ONE = new Rank("LEVEL_1", "프렌드");
-    public static Account ACCOUNT_ACTIVE_CUSTOMER_LEVEL_ONE = new Account(ACCOUNTS_STATUS_ACTIVE, AUTHORITY_CUSTOMER,
-        RANK_LEVEL_ONE, "eora21", "pwd", "김주호", "말비묵", "test@test.com",
-        LocalDate.of(1996, 4, 1), "01012345678");
-    public static BankType BANK_TYPE_KB = createTestBankType("KB", "국민은행");
-    public static StoreStatus STORE_STATUS_OPEN = createTestStoreStatus("OPEN", "영업중");
-    public static Store STORE_OPEN = new Store(null, ACCOUNT_ACTIVE_CUSTOMER_LEVEL_ONE, BANK_TYPE_KB,
-        STORE_STATUS_OPEN, "license", "123456", "김주호",
-        LocalDate.of(2020, 2, 20), "주호타코", "01012345678", BigDecimal.ONE,
-        null, null, "123456");
-    public static CouponTypePercent COUPON_TYPE_PERCENT_3_1000_10000 =
-        new CouponTypePercent(new BigDecimal("3"), 1_000, 10_000);
-    public static CouponTypeCash COUPON_TYPE_CASH_1000_10000 =
-        new CouponTypeCash(1_000, 10_000);
-    public static Holiday HOLIDAY = new Holiday(STORE_OPEN, LocalDate.of(2020, 2, 20));
+    public static Address getAddress() {
+        return new Address("main", "detail", BigDecimal.ONE, BigDecimal.ZERO);
+    }
+
+    public static AccountsStatus getAccountStatusActive() {
+        return new AccountsStatus("ACTIVE", "활성");
+    }
+
+    public static Authority getAuthorityCustomer() {
+        return new Authority("CUSTOMER", "일반회원");
+    }
+
+    public static Rank getRankLevelOne() {
+        return new Rank("LEVEL_1", "프렌드");
+    }
+
+    public static Account getAccount(AccountsStatus accountsStatus, Authority authority, Rank rank) {
+        return new Account(accountsStatus, authority, rank, "eora21", "pwd", "김주호",
+            "말비묵", "test@test.com", LocalDate.of(1996, 4, 1),
+            "01012345678");
+    }
+
+    public static BankType getBankTypeKb() {
+        return createTestBankType("KB", "국민은행");
+    }
+
+    public static StoreStatus getStoreStatusOpen() {
+        return createTestStoreStatus("OPEN", "영업중");
+    }
+
+    public static Store getStore(Account account, BankType bankType, StoreStatus storeStatus) {
+        return new Store(null, account, bankType,
+            storeStatus, "license", "123456", "김주호",
+            LocalDate.of(2020, 2, 20), "주호타코", "01012345678", BigDecimal.ONE,
+            null, null, "123456");
+    }
+
+    public static CouponTypePercent getCouponTypePercent_3_1000_10000() {
+        return new CouponTypePercent(new BigDecimal("3"), 1_000, 10_000);
+    }
+
+    public static CouponTypeCash getCouponTypeCash_1000_10000() {
+        return new CouponTypeCash(1_000, 10_000);
+    }
+
+    public static Holiday getHoliday(Store store) {
+        return new Holiday(store, LocalDate.of(2020, 2, 20));
+    }
 
     private static BankType createTestBankType(String bankTypeCode, String description) {
         BankType bankType = createEntityUsingDeclared(BankType.class);

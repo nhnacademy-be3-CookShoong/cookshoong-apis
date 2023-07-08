@@ -11,7 +11,7 @@ import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException
  */
 public class UserNotFoundException extends NotFoundException {
 
-    public UserNotFoundException(Long id) {
-        super(id + "는 존재하지 않는 회원입니다.");
+    public UserNotFoundException() {
+        super("존재하지 않는 회원입니다.");
     }
 }

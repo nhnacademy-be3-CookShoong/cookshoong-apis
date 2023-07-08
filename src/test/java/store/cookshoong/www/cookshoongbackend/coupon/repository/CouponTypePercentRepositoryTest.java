@@ -24,8 +24,7 @@ class CouponTypePercentRepositoryTest {
     @Test
     @DisplayName("할인금액 및 최대금액, 최소금액으로 쿠폰 타입 획득 - 성공")
     void findByRateDiscountAmountAndMinimumPriceSuccess() throws Exception {
-
-        CouponTypePercent couponTypePercent = TestEntity.COUPON_TYPE_PERCENT_3_1000_10000;
+        CouponTypePercent couponTypePercent = TestEntity.getCouponTypePercent_3_1000_10000();
         couponTypePercentRepository.save(couponTypePercent);
 
         assertDoesNotThrow(() -> couponTypePercentRepository.findByRateAndMinimumPriceAndMaximumPrice(
@@ -36,7 +35,7 @@ class CouponTypePercentRepositoryTest {
     @Test
     @DisplayName("할인금액 및 최대금액, 최소금액으로 쿠폰 타입 획득 - 실패")
     void findByRateDiscountAmountAndMinimumPriceFail() throws Exception {
-        CouponTypePercent couponTypePercent = TestEntity.COUPON_TYPE_PERCENT_3_1000_10000;
+        CouponTypePercent couponTypePercent = TestEntity.getCouponTypePercent_3_1000_10000();
 
         Optional<CouponTypePercent> byRateAndMinimumPriceAndMaximumPrice =
             couponTypePercentRepository.findByRateAndMinimumPriceAndMaximumPrice(

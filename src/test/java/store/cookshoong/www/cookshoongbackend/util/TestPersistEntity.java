@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.util;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.TestComponent;
@@ -25,17 +26,16 @@ public class TestPersistEntity {
     TestEntityManager em;
 
     public Account getLevelOneCustomer() {
-        Address address = em.persist(TestEntity.ADDRESS);
-        AccountsStatus accountsStatus = em.persist(TestEntity.ACCOUNTS_STATUS_ACTIVE);
-        Authority authority = em.persist(TestEntity.AUTHORITY_CUSTOMER);
-        Rank rank = em.persist(TestEntity.RANK_LEVEL_ONE);
-        return em.persist(TestEntity.ACCOUNT_ACTIVE_CUSTOMER_LEVEL_ONE);
+        AccountsStatus accountsStatus = em.persist(TestEntity.getAccountStatusActive());
+        Authority authority = em.persist(TestEntity.getAuthorityCustomer());
+        Rank rank = em.persist(TestEntity.getRankLevelOne());
+        return em.persist(TestEntity.getAccount(accountsStatus, authority, rank));
     }
 
     public Store getOpenStore() {
         Account account = getLevelOneCustomer();
-        BankType bankType = em.persist(TestEntity.BANK_TYPE_KB);
-        StoreStatus storeStatus = em.persist(TestEntity.STORE_STATUS_OPEN);
-        return em.persist(TestEntity.STORE_OPEN);
+        BankType bankType = em.persist(TestEntity.getBankTypeKb());
+        StoreStatus storeStatus = em.persist(TestEntity.getStoreStatusOpen());
+        return em.persist(TestEntity.getStore(account, bankType, storeStatus));
     }
 }
