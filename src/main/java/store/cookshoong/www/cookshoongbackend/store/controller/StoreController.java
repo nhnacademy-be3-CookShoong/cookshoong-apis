@@ -43,29 +43,6 @@ public class StoreController {
     }
 
 
-    /**
-     * 사업자 회원 : 매장 등록을 위한 컨트롤러.
-     *
-     * @param accountId          the account id
-     * @param registerRequestDto 매장 등록을 위한 Request Body
-     * @param bindingResult      validation 결과
-     * @return 201 response entity
-     */
-    @PostMapping
-    public ResponseEntity<Void> postStore(@RequestParam("accountId") Long accountId,
-                                          @RequestBody @Valid CreateStoreRequestDto registerRequestDto,
-                                          BindingResult bindingResult) {
-        //TODO 1. 회원정보 어디서 가져와서 넣어줘야함.
-
-        if (bindingResult.hasErrors()) {
-            throw new StoreValidException(bindingResult);
-        }
-        //TODO 9. status -> create로 바꾸고 안에 url 작성해야함. (추후)
-        storeService.createStore(accountId, registerRequestDto);
-        return ResponseEntity
-            .status(HttpStatus.CREATED)
-            .build();
-    }
 
     //TODO 4. 수정이 아니라 추가 정보로 영업일, 휴무일을 넣을 수 있도록 하는건?
 
