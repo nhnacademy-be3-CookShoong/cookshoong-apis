@@ -10,8 +10,8 @@ import store.cookshoong.www.cookshoongbackend.store.entity.Store;
 import store.cookshoong.www.cookshoongbackend.store.exception.store.SelectStoreNotFoundException;
 import store.cookshoong.www.cookshoongbackend.store.model.request.CreateHolidayRequestDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.HolidayListResponseDto;
-import store.cookshoong.www.cookshoongbackend.store.repository.HolidayRepository;
-import store.cookshoong.www.cookshoongbackend.store.repository.StoreRepository;
+import store.cookshoong.www.cookshoongbackend.store.repository.holiday.HolidayRepository;
+import store.cookshoong.www.cookshoongbackend.store.repository.store.StoreRepository;
 
 /**
  * 관리자가 가맹점의 휴업일, 영업시간을 관리.

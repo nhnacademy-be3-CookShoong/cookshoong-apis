@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.store.repository;
+package store.cookshoong.www.cookshoongbackend.store.repository.bank;
 
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,7 +10,7 @@ import store.cookshoong.www.cookshoongbackend.store.entity.BankType;
  * @author seungyeon
  * @since 2023.07.04
  */
-public interface BankTypeRepository extends JpaRepository<BankType, String> {
+public interface BankTypeRepository extends JpaRepository<BankType, String>, BankTypeRepositoryCustom {
     /**
      * 은행 이름으로 은행 객체 반환.
      *

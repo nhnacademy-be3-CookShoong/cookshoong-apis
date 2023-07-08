@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.store.repository;
+package store.cookshoong.www.cookshoongbackend.store.repository.holiday;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;

@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.store.repository;
+package store.cookshoong.www.cookshoongbackend.store.repository.holiday;
 
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;

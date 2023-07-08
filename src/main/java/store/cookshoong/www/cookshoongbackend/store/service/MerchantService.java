@@ -11,7 +11,7 @@ import store.cookshoong.www.cookshoongbackend.store.exception.merchant.MerchantN
 import store.cookshoong.www.cookshoongbackend.store.model.request.CreateMerchantRequestDto;
 import store.cookshoong.www.cookshoongbackend.store.model.request.UpdateMerchantRequestDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.SelectMerchantResponseDto;
-import store.cookshoong.www.cookshoongbackend.store.repository.MerchantRepository;
+import store.cookshoong.www.cookshoongbackend.store.repository.merchant.MerchantRepository;
 
 /**
  * 관리자가 가맹점 관리.

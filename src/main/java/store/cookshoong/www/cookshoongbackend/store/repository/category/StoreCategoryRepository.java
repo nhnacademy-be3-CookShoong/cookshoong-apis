@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.store.repository;
+package store.cookshoong.www.cookshoongbackend.store.repository.category;
 
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -20,9 +20,9 @@ import store.cookshoong.www.cookshoongbackend.store.model.request.CreateStoreReq
 import store.cookshoong.www.cookshoongbackend.store.model.response.SelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.SelectStoreForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.SelectStoreResponseDto;
-import store.cookshoong.www.cookshoongbackend.store.repository.BankTypeRepository;
-import store.cookshoong.www.cookshoongbackend.store.repository.MerchantRepository;
-import store.cookshoong.www.cookshoongbackend.store.repository.StoreRepository;
+import store.cookshoong.www.cookshoongbackend.store.repository.bank.BankTypeRepository;
+import store.cookshoong.www.cookshoongbackend.store.repository.merchant.MerchantRepository;
+import store.cookshoong.www.cookshoongbackend.store.repository.store.StoreRepository;
 import store.cookshoong.www.cookshoongbackend.store.repository.StoreStatusRepository;
 
 /**
