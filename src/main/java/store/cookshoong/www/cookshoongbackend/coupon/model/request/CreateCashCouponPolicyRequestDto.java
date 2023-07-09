@@ -1,10 +1,15 @@
 package store.cookshoong.www.cookshoongbackend.coupon.model.request;
 
 import java.time.LocalTime;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
 
@@ -17,16 +22,27 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CreateCashCouponPolicyRequestDto implements CouponPolicyRequest {
+    @NotBlank
+    @Length(max = 20)
     private String name;
 
+    @NotBlank
+    @Length(max = 50)
     private String description;
 
+    @NotNull
     @DateTimeFormat(pattern = "HH:mm:ss")
     private LocalTime expirationTime;
 
-    private int discountAmount;
+    @NotNull
+    @Min(value = 1_000)
+    @Max(value = 50_000)
+    private Integer discountAmount;
 
-    private int minimumPrice;
+    @NotNull
+    @Min(value = 0)
+    @Max(value = 20_000)
+    private Integer minimumPrice;
 
     /**
      * dto 값을 이용하여 CouponTypeCash 엔티티를 생성하는 static method.

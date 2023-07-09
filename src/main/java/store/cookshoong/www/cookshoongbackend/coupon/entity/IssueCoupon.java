@@ -1,14 +1,22 @@
 package store.cookshoong.www.cookshoongbackend.coupon.entity;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
+import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 
 /**
  * 쿠폰 발행 entity.
@@ -19,25 +27,49 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Table(name = "issue_coupons")
 public class IssueCoupon {
 
     @Id
-    @Column(name = "issue_coupon_code", nullable = false)
-    private String code;
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(name = "issue_coupon_code", columnDefinition = "BINARY(16)", nullable = false)
+    private UUID code;
 
-    // TODO: 회원 entity 추가 후 @ManyToOne 작성할 것.
-    @Column(name = "account_id")
-    private Long accountId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "coupon_policy_id")
+    private CouponPolicy couponPolicy;
 
-    @Column(name = "coupon_id", nullable = false)
-    private Long couponId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id")
+    private Account account;
 
     @Column(name = "issue_at", nullable = false)
-    private Date issueAt;
+    private LocalDateTime issueAt;
 
     @Column(name = "expiration_at")
-    private Date expirationAt;
+    private LocalDateTime expirationAt;
 
+    /**
+     * 쿠폰 발행 생성자.
+     * 쿠폰 식별번호 랜덤 생성, 쿠폰 정책과 발행일 지정.
+     *
+     * @param couponPolicy 쿠폰 정책
+     * @param issueAt      쿠폰 발행일
+     */
+    public IssueCoupon(CouponPolicy couponPolicy, LocalDateTime issueAt) {
+        this.couponPolicy = couponPolicy;
+        this.issueAt = issueAt;
+    }
+
+    /**
+     * 발행된 쿠폰을 사용자에게 제공.
+     *
+     * @param account      쿠폰을 제공받을 사용자
+     * @param expirationAt 쿠폰 만료일자
+     */
+    public void provideToUser(Account account, LocalDateTime expirationAt) {
+        this.account = account;
+        this.expirationAt = expirationAt;
+    }
 }

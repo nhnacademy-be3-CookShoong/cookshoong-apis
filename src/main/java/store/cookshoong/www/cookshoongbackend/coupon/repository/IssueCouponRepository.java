@@ -9,6 +9,6 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
  * @author eora21
  * @since 2023.07.04
  */
-public interface IssueCouponRepository extends JpaRepository<IssueCoupon, String> {
+public interface IssueCouponRepository extends JpaRepository<IssueCoupon, String>, IssueCouponRepositoryCustom {
 
 }
