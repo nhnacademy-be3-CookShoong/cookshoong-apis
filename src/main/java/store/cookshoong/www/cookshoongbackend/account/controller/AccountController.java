@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +17,7 @@ import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
 import store.cookshoong.www.cookshoongbackend.account.exception.AuthorityNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.exception.SignUpValidationException;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
+import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.service.AccountService;
 
 /**
@@ -31,20 +34,20 @@ public class AccountController {
     private final AccountService accountService;
 
     /**
-     * 회원 저장 메서드.
+     * 회원 정보를 전달받아 DB에 저장 요청하는 메서드.
      *
      * @param authorityCode    ex) customer, business
      * @param signUpRequestDto 회원가입 Dto
      * @return 201
      */
     @PostMapping
-    public ResponseEntity<Void> postRegisterAccount(@RequestBody @Valid SignUpRequestDto signUpRequestDto,
+    public ResponseEntity<Void> postAccount(@RequestBody @Valid SignUpRequestDto signUpRequestDto,
                                                     BindingResult bindingResult,
                                                     @RequestParam String authorityCode) {
         // TODO: Admin으로 가입시 어떻게 할 것인가. 현재는 Admin을 파라미터로 넣으면 가입가능.
         String authorityCodeUpperCase = authorityCode.toUpperCase();
         if (!Authority.Code.matches(authorityCodeUpperCase)) {
-            throw new AuthorityNotFoundException(authorityCodeUpperCase);
+            throw new AuthorityNotFoundException();
         }
 
         if (bindingResult.hasErrors()) {
@@ -55,5 +58,12 @@ public class AccountController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
             .build();
+    }
+
+    @GetMapping("/{accountId}")
+    public ResponseEntity<SelectAccountResponseDto> getAccount(@PathVariable Long accountId) {
+        SelectAccountResponseDto response = accountService.selectAccount(accountId);
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(response);
     }
 }
