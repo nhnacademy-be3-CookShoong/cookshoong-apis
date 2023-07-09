@@ -13,6 +13,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class AccountAddressResponseDto {
 
+    private Long id;
     private String alias;
     private String mainAddress;
 }
