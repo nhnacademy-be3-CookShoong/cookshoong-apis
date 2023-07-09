@@ -25,7 +25,20 @@
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
         <sonar.language>java</sonar.language>
+
+        <!-- restdocs + swaggerUI -->
+        <restdocs-api-spec.version>0.10.0</restdocs-api-spec.version>
+        <restdocs-spec.version>0.19</restdocs-spec.version>
     </properties>
+
+    <!-- restdocs + swaggerUI -->
+    <repositories>
+        <repository>
+            <id>jcenter</id>
+            <url>https://jcenter.bintray.com</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -79,7 +92,29 @@
             <artifactId>querydsl-jpa</artifactId>
             <version>5.0.0</version>
         </dependency>
+
+        <!-- restdocs + swaggerUI -->
+        <dependency>
+            <groupId>com.epages</groupId>
+            <artifactId>restdocs-api-spec</artifactId>
+            <version>${restdocs-api-spec.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.epages</groupId>
+            <artifactId>restdocs-api-spec-mockmvc</artifactId>
+            <version>${restdocs-api-spec.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
+    <!-- restdocs + swaggerUI -->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>jcenter</id>
+            <url>https://jcenter.bintray.com</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <build>
         <plugins>
@@ -173,6 +208,27 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- restdocs + swaggerUI -->
+            <plugin>
+                <groupId>com.github.berkleytechnologyservices.restdocs-spec</groupId>
+                <artifactId>restdocs-spec-maven-plugin</artifactId>
+                <version>${restdocs-spec.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <specification>OPENAPI_V3</specification>
+                            <format>JSON</format>
+                            <host>localhost:8080</host>
+                            <outputDirectory>${project.build.directory}/classes/static/swagger-ui/.</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 
