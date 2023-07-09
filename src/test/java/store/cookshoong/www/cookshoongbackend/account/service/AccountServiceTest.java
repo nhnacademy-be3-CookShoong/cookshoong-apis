@@ -3,6 +3,7 @@ package store.cookshoong.www.cookshoongbackend.account.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.times;
@@ -10,6 +11,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,17 +21,22 @@ import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.entity.AccountsStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.account.exception.DuplicatedUserException;
+import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
+import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountsStatusRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.AuthorityRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.RankRepository;
+import store.cookshoong.www.cookshoongbackend.util.TestEntity;
 
 /**
  * 회원 서비스 테스트.
@@ -74,9 +82,11 @@ class AccountServiceTest {
     @Test
     @DisplayName("회원 저장 - 중복되는 ID로 저장하는 경우")
     void createAccount() {
+        Authority.Code authorityCode = Authority.Code.valueOf(testAuthority.getAuthorityCode());
+
         when(accountRepository.existsByLoginId(testDto.getLoginId())).thenReturn(true);
 
-        assertThatThrownBy(() -> accountService.createAccount(testDto, Authority.Code.valueOf(testAuthority.getAuthorityCode())))
+        assertThatThrownBy(() -> accountService.createAccount(testDto, authorityCode))
             .isInstanceOf(DuplicatedUserException.class)
             .hasMessageContaining("이미 존재하는 아이디");
 
@@ -103,6 +113,45 @@ class AccountServiceTest {
         verify(rankRepository, times(1)).getReferenceById(anyString());
         verify(authorityRepository, times(1)).getReferenceById(anyString());
         verify(accountRepository, times(1)).save(any(Account.class));
+    }
+
+    @Test
+    @DisplayName("회원 조회 - accountId 이용한 회원 조회중 없는 회원을 조회")
+    void selectAccount() {
+        when(accountRepository.lookupAccount(anyLong())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> accountService.selectAccount(Long.MAX_VALUE))
+            .isInstanceOf(UserNotFoundException.class)
+            .hasMessageContaining("존재하지 않는 회원");
+
+        verify(accountRepository, times(1)).lookupAccount(anyLong());
+    }
+
+    @Test
+    @DisplayName("회원 조회 - accountId 이용한 회원 정보 조회")
+    void selectAccount_2() {
+        SelectAccountResponseDto expect = new SelectAccountResponseDto(
+            1L, testAccountsStatus.getDescription(), testAuthority.getDescription(),
+            testRank.getName(), testDto.getLoginId(), testDto.getName(),
+            testDto.getNickname(), testDto.getEmail(), testDto.getBirthday(),
+            testDto.getPhoneNumber(), LocalDateTime.now()
+        );
+
+        when(accountRepository.lookupAccount(expect.getId())).thenReturn(Optional.of(expect));
+
+        SelectAccountResponseDto actual = accountService.selectAccount(expect.getId());
+
+        assertThat(actual.getId()).isEqualTo(expect.getId());
+        assertThat(actual.getStatus()).isEqualTo(expect.getStatus());
+        assertThat(actual.getAuthority()).isEqualTo(expect.getAuthority());
+        assertThat(actual.getRank()).isEqualTo(expect.getRank());
+        assertThat(actual.getName()).isEqualTo(expect.getName());
+        assertThat(actual.getNickname()).isEqualTo(expect.getNickname());
+        assertThat(actual.getEmail()).isEqualTo(expect.getEmail());
+        assertThat(actual.getBirthday()).isEqualTo(expect.getBirthday());
+        assertThat(actual.getPhoneNumber()).isEqualTo(expect.getPhoneNumber());
+
+        verify(accountRepository, times(1)).lookupAccount(anyLong());
     }
 }
 
