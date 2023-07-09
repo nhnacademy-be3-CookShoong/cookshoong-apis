@@ -9,7 +9,7 @@ import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException
  * @since 2023.07.05
  */
 public class AuthorityNotFoundException extends NotFoundException {
-    public AuthorityNotFoundException(String authority) {
-        super(authority + "는 없는 권한입니다");
+    public AuthorityNotFoundException() {
+        super("권한");
     }
 }

@@ -1,21 +1,24 @@
 package store.cookshoong.www.cookshoongbackend.account.repository;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.hamcrest.CoreMatchers.is;
+
 import java.time.LocalDate;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.entity.AccountsStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
+import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
 
 /**
  * 회원 CRU 에 관한 테스트.
@@ -24,10 +27,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
  * @since 2023.07.04
  */
 @DataJpaTest
+@Import(QueryDslConfig.class)
 class AccountRepositoryTest {
-    @MockBean
-    JPAQueryFactory jpaQueryFactory;
-
     @Autowired
     TestEntityManager em;
 
@@ -41,29 +42,29 @@ class AccountRepositoryTest {
         Authority authority = new Authority("USER", "일반회원");
         Rank rank = new Rank("LEVEL_4", "VIP");
 
-        Account actual = new Account(status, authority, rank, "user1", "1234", "유유저",
-                "이름이유저래", "user@cookshoong.store", LocalDate.of(1997, 6, 4),
-                "01012345678");
+        Account expected = new Account(status, authority, rank, "user1", "1234", "유유저",
+            "이름이유저래", "user@cookshoong.store", LocalDate.of(1997, 6, 4),
+            "01012345678");
 
         em.persist(status);
         em.persist(authority);
         em.persist(rank);
 
-        accountRepository.save(actual);
+        accountRepository.save(expected);
 
         em.clear();
 
-        Account expect = accountRepository.findByLoginId("user1").orElseThrow();
+        Account actual = accountRepository.findByLoginId("user1").orElseThrow();
 
-        assertThat(expect.getId()).isEqualTo(actual.getId());
-        assertThat(expect.getLoginId()).isEqualTo(actual.getLoginId());
-        assertThat(expect.getName()).isEqualTo(actual.getName());
-        assertThat(expect.getBirthday()).isEqualTo(actual.getBirthday());
-        assertThat(expect.getEmail()).isEqualTo(actual.getEmail());
-        assertThat(expect.getNickname()).isEqualTo(actual.getNickname());
-        assertThat(expect.getPassword()).isEqualTo(actual.getPassword());
-        assertThat(expect.getLastLoginAt()).isEqualTo(actual.getLastLoginAt());
-        assertThat(expect.getPhoneNumber()).isEqualTo(actual.getPhoneNumber());
+        assertThat(actual.getId()).isEqualTo(expected.getId());
+        assertThat(actual.getLoginId()).isEqualTo(expected.getLoginId());
+        assertThat(actual.getName()).isEqualTo(expected.getName());
+        assertThat(actual.getBirthday()).isEqualTo(expected.getBirthday());
+        assertThat(actual.getEmail()).isEqualTo(expected.getEmail());
+        assertThat(actual.getNickname()).isEqualTo(expected.getNickname());
+        assertThat(actual.getPassword()).isEqualTo(expected.getPassword());
+        assertThat(actual.getLastLoginAt()).isEqualTo(expected.getLastLoginAt());
+        assertThat(actual.getPhoneNumber()).isEqualTo(expected.getPhoneNumber());
     }
 
     @Test
@@ -73,7 +74,7 @@ class AccountRepositoryTest {
         Authority authority = new Authority("USER", "일반회원");
         Rank rank = new Rank("LEVEL_4", "VIP");
 
-        Account actual = new Account(status, authority, rank, "user1", "1234", "유유저",
+        Account expected = new Account(status, authority, rank, "user1", "1234", "유유저",
             "이름이유저래", "user@cookshoong.store", LocalDate.of(1997, 6, 4),
             "01012345678");
 
@@ -81,21 +82,21 @@ class AccountRepositoryTest {
         em.persist(authority);
         em.persist(rank);
 
-        Long accountId = accountRepository.save(actual).getId();
+        Long accountId = accountRepository.save(expected).getId();
 
         em.clear();
 
-        Account expect = accountRepository.findById(accountId).orElseThrow();
+        Account actual = accountRepository.findById(accountId).orElseThrow();
 
-        assertThat(expect.getId()).isEqualTo(actual.getId());
-        assertThat(expect.getLoginId()).isEqualTo(actual.getLoginId());
-        assertThat(expect.getName()).isEqualTo(actual.getName());
-        assertThat(expect.getBirthday()).isEqualTo(actual.getBirthday());
-        assertThat(expect.getEmail()).isEqualTo(actual.getEmail());
-        assertThat(expect.getNickname()).isEqualTo(actual.getNickname());
-        assertThat(expect.getPassword()).isEqualTo(actual.getPassword());
-        assertThat(expect.getLastLoginAt()).isEqualTo(actual.getLastLoginAt());
-        assertThat(expect.getPhoneNumber()).isEqualTo(actual.getPhoneNumber());
+        assertThat(actual.getId()).isEqualTo(expected.getId());
+        assertThat(actual.getLoginId()).isEqualTo(expected.getLoginId());
+        assertThat(actual.getName()).isEqualTo(expected.getName());
+        assertThat(actual.getBirthday()).isEqualTo(expected.getBirthday());
+        assertThat(actual.getEmail()).isEqualTo(expected.getEmail());
+        assertThat(actual.getNickname()).isEqualTo(expected.getNickname());
+        assertThat(actual.getPassword()).isEqualTo(expected.getPassword());
+        assertThat(actual.getLastLoginAt()).isEqualTo(expected.getLastLoginAt());
+        assertThat(actual.getPhoneNumber()).isEqualTo(expected.getPhoneNumber());
     }
 
     @Test
@@ -123,7 +124,7 @@ class AccountRepositoryTest {
         Authority authority = new Authority("USER", "일반회원");
         Rank rank = new Rank("LEVEL_4", "VIP");
 
-        Account actual = new Account(status, authority, rank, "user1", "1234", "유유저",
+        Account expected = new Account(status, authority, rank, "user1", "1234", "유유저",
             "이름이유저래", "user@cookshoong.store", LocalDate.of(1997, 6, 4),
             "01012345678");
 
@@ -131,19 +132,61 @@ class AccountRepositoryTest {
         em.persist(authority);
         em.persist(rank);
 
-        Long accountId = accountRepository.save(actual).getId();
+        Long accountId = accountRepository.save(expected).getId();
 
-        Account expect = em.find(Account.class, accountId);
+        Account actual = em.find(Account.class, accountId);
 
-        assertThat(expect.getId()).isEqualTo(actual.getId());
-        assertThat(expect.getLoginId()).isEqualTo(actual.getLoginId());
-        assertThat(expect.getName()).isEqualTo(actual.getName());
-        assertThat(expect.getBirthday()).isEqualTo(actual.getBirthday());
-        assertThat(expect.getEmail()).isEqualTo(actual.getEmail());
-        assertThat(expect.getNickname()).isEqualTo(actual.getNickname());
-        assertThat(expect.getPassword()).isEqualTo(actual.getPassword());
-        assertThat(expect.getLastLoginAt()).isEqualTo(actual.getLastLoginAt());
-        assertThat(expect.getPhoneNumber()).isEqualTo(actual.getPhoneNumber());
+        assertThat(actual.getId()).isEqualTo(expected.getId());
+        assertThat(actual.getLoginId()).isEqualTo(expected.getLoginId());
+        assertThat(actual.getName()).isEqualTo(expected.getName());
+        assertThat(actual.getBirthday()).isEqualTo(expected.getBirthday());
+        assertThat(actual.getEmail()).isEqualTo(expected.getEmail());
+        assertThat(actual.getNickname()).isEqualTo(expected.getNickname());
+        assertThat(actual.getPassword()).isEqualTo(expected.getPassword());
+        assertThat(actual.getLastLoginAt()).isEqualTo(expected.getLastLoginAt());
+        assertThat(actual.getPhoneNumber()).isEqualTo(expected.getPhoneNumber());
+    }
+
+    @Test
+    @DisplayName("회원 조회 - accountId를 이용한 모든 정보 조회")
+    void lookup() {
+        AccountsStatus status = new AccountsStatus("ACTIVE", "활성");
+        Authority authority = new Authority("USER", "일반회원");
+        Rank rank = new Rank("LEVEL_4", "VIP");
+
+        Account expected = new Account(status, authority, rank, "user1", "1234", "유유저",
+            "이름이유저래", "user@cookshoong.store", LocalDate.of(1997, 6, 4),
+            "01012345678");
+
+        em.persist(status);
+        em.persist(authority);
+        em.persist(rank);
+
+        Long accountId = accountRepository.save(expected).getId();
+
+        SelectAccountResponseDto actual = accountRepository.lookupAccount(accountId).orElseThrow();
+
+        assertThat(actual.getStatus()).isEqualTo(status.getDescription());
+        assertThat(actual.getAuthority()).isEqualTo(authority.getDescription());
+        assertThat(actual.getRank()).isEqualTo(rank.getName());
+        assertThat(actual.getId()).isEqualTo(expected.getId());
+        assertThat(actual.getLoginId()).isEqualTo(expected.getLoginId());
+        assertThat(actual.getName()).isEqualTo(expected.getName());
+        assertThat(actual.getBirthday()).isEqualTo(expected.getBirthday());
+        assertThat(actual.getEmail()).isEqualTo(expected.getEmail());
+        assertThat(actual.getNickname()).isEqualTo(expected.getNickname());
+        assertThat(actual.getLastLoginAt()).isEqualTo(expected.getLastLoginAt());
+        assertThat(actual.getPhoneNumber()).isEqualTo(expected.getPhoneNumber());
+    }
+
+    @Test
+    @DisplayName("회원 조회 - accountId를 이용한 모든 정보 조회 중 없는 회원일 때")
+    void lookup_2() {
+        Optional<SelectAccountResponseDto> expected = Optional.empty();
+
+        Optional<SelectAccountResponseDto> actual = accountRepository.lookupAccount(Long.MAX_VALUE);
+
+        assertThat(actual).isEqualTo(expected);
     }
 
 

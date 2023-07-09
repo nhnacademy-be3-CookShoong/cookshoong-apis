@@ -10,7 +10,7 @@ import store.cookshoong.www.cookshoongbackend.account.entity.Account;
  * @author koesnam
  * @since 2023.07.04
  */
-public interface AccountRepository extends JpaRepository<Account, Long> {
+public interface AccountRepository extends JpaRepository<Account, Long>, AccountRepositoryCustom {
     Optional<Account> findByLoginId(String loginId);
 
     boolean existsByLoginId(String loginId);

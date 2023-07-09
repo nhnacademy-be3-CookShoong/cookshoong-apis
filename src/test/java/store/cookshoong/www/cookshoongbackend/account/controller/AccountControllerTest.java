@@ -2,11 +2,13 @@ package store.cookshoong.www.cookshoongbackend.account.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -32,7 +34,9 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
 import store.cookshoong.www.cookshoongbackend.account.exception.AuthorityNotFoundException;
+import store.cookshoong.www.cookshoongbackend.account.exception.DuplicatedUserException;
 import store.cookshoong.www.cookshoongbackend.account.exception.SignUpValidationException;
+import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.service.AccountService;
 
@@ -148,14 +152,14 @@ class AccountControllerTest {
             .andExpect(status().isNotFound())
             .andExpect(result -> assertThat(result.getResolvedException())
                 .isInstanceOf(AuthorityNotFoundException.class)
-                .hasMessageContaining("없는 권한입니다")
+                .hasMessageContaining("존재하지 않는 권한")
             );
 
         verify(accountService, times(0)).createAccount(any(SignUpRequestDto.class), eq(Authority.Code.CUSTOMER));
     }
 
     @Test
-    @DisplayName("회원 등록 - 이름이 숫자값으로만 이뤄져있는 경우")
+    @DisplayName("회원 등록 - 이름이 숫자값으로만 이뤄져있는 경우(검증 실패)")
     void registerAccount_5() throws Exception {
         ReflectionTestUtils.setField(signUpRequestDto, "name", "1234");
 
@@ -175,5 +179,48 @@ class AccountControllerTest {
         verify(accountService, times(0)).createAccount(any(SignUpRequestDto.class), eq(Authority.Code.CUSTOMER));
     }
 
+    @Test
+    @DisplayName("회원 등록 - 중복된 아이디")
+    void registerAccount_6() throws Exception {
+        DuplicatedUserException exception = new DuplicatedUserException("mocked id");
+        when(accountService.createAccount(any(SignUpRequestDto.class), any(Authority.Code.class)))
+            .thenThrow(exception);
 
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .post("/api/accounts")
+            .param("authorityCode", Authority.Code.CUSTOMER.name())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(signUpRequestDto));
+
+        mockMvc.perform(request)
+            .andDo(print())
+            .andExpect(status().isConflict())
+            .andExpect(result -> assertThat(result.getResolvedException())
+                .isInstanceOf(DuplicatedUserException.class)
+                .hasStackTraceContaining("이미 존재하는 아이디")
+            );
+
+        verify(accountService, times(1)).createAccount(any(SignUpRequestDto.class), any(Authority.Code.class));
+    }
+
+    @Test
+    @DisplayName("회원 조회 - 없는 회원 조회")
+    void findAccount() throws Exception {
+        UserNotFoundException exception = new UserNotFoundException();
+        when(accountService.selectAccount(anyLong())).thenThrow(exception);
+
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .get("/api/accounts/{accountId}", Long.MAX_VALUE)
+            .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(request)
+            .andDo(print())
+            .andExpect(status().isNotFound())
+            .andExpect(result -> assertThat(result.getResolvedException())
+                .isInstanceOf(UserNotFoundException.class)
+                .hasMessageContaining("존재하지 않는 회원")
+            );
+
+        verify(accountService, times(1)).selectAccount(Long.MAX_VALUE);
+    }
 }

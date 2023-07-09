@@ -8,7 +8,9 @@ import store.cookshoong.www.cookshoongbackend.account.entity.AccountsStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.account.exception.DuplicatedUserException;
+import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
+import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountsStatusRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.AuthorityRepository;
@@ -51,4 +53,8 @@ public class AccountService {
             .getId();
     }
 
+    public SelectAccountResponseDto selectAccount(Long accountId) {
+        return accountRepository.lookupAccount(accountId)
+            .orElseThrow(UserNotFoundException::new);
+    }
 }
