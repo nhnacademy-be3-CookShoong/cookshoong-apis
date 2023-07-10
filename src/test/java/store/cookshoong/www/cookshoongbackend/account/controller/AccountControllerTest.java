@@ -6,11 +6,16 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper;
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
+import com.epages.restdocs.apispec.Schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,13 +23,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
 import store.cookshoong.www.cookshoongbackend.account.exception.AuthorityNotFoundException;
@@ -40,6 +46,7 @@ import store.cookshoong.www.cookshoongbackend.account.service.AccountService;
  * @author koesnam
  * @since 2023.07.06
  */
+@AutoConfigureRestDocs
 @WebMvcTest(AccountController.class)
 class AccountControllerTest {
     @Autowired
@@ -67,7 +74,7 @@ class AccountControllerTest {
     @Test
     @DisplayName("회원 등록 - 성공")
     void registerAccount() throws Exception {
-        RequestBuilder request = MockMvcRequestBuilders
+        RequestBuilder request = RestDocumentationRequestBuilders
             .post("/api/accounts")
             .param("authorityCode", "customer")
             .contentType(MediaType.APPLICATION_JSON)
@@ -75,7 +82,19 @@ class AccountControllerTest {
 
         mockMvc.perform(request)
             .andDo(print())
-            .andExpect(status().isCreated());
+            .andExpect(status().isCreated())
+            .andDo(MockMvcRestDocumentationWrapper.document("registerAccount",
+                ResourceSnippetParameters.builder()
+                    .requestSchema(Schema.schema("account.Post")),
+                requestFields(
+                    fieldWithPath("loginId").description("로그인 때 사용되는 id"),
+                    fieldWithPath("password").description("비밀번호"),
+                    fieldWithPath("name").description("이름"),
+                    fieldWithPath("nickname").description("별명"),
+                    fieldWithPath("email").description("이메일"),
+                    fieldWithPath("birthday").description("생일"),
+                    fieldWithPath("phoneNumber").description("핸드폰 번호")
+                )));
 
         verify(accountService, times(1)).createAccount(any(SignUpRequestDto.class), eq(Authority.Code.CUSTOMER));
     }
@@ -85,7 +104,7 @@ class AccountControllerTest {
     void registerAccount_2() throws Exception {
         ReflectionTestUtils.setField(signUpRequestDto, "loginId", null);
 
-        RequestBuilder request = MockMvcRequestBuilders
+        RequestBuilder request = RestDocumentationRequestBuilders
             .post("/api/accounts")
             .param("authorityCode", "customer")
             .contentType(MediaType.APPLICATION_JSON)
@@ -101,7 +120,7 @@ class AccountControllerTest {
     @Test
     @DisplayName("회원 등록 - 권한 코드가 입력값에 없는 경우")
     void registerAccount_3() throws Exception {
-        RequestBuilder request = MockMvcRequestBuilders
+        RequestBuilder request = RestDocumentationRequestBuilders
             .post("/api/accounts")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(signUpRequestDto));
@@ -122,7 +141,7 @@ class AccountControllerTest {
     void registerAccount_4() throws Exception {
         String invalidAuthorityCode = "user";
 
-        RequestBuilder request = MockMvcRequestBuilders
+        RequestBuilder request = RestDocumentationRequestBuilders
             .post("/api/accounts")
             .param("authorityCode", invalidAuthorityCode)
             .contentType(MediaType.APPLICATION_JSON)
@@ -144,7 +163,7 @@ class AccountControllerTest {
     void registerAccount_5() throws Exception {
         ReflectionTestUtils.setField(signUpRequestDto, "name", "1234");
 
-        RequestBuilder request = MockMvcRequestBuilders
+        RequestBuilder request = RestDocumentationRequestBuilders
             .post("/api/accounts")
             .param("authorityCode", Authority.Code.CUSTOMER.name())
             .contentType(MediaType.APPLICATION_JSON)
@@ -167,7 +186,7 @@ class AccountControllerTest {
         when(accountService.createAccount(any(SignUpRequestDto.class), any(Authority.Code.class)))
             .thenThrow(exception);
 
-        RequestBuilder request = MockMvcRequestBuilders
+        RequestBuilder request = RestDocumentationRequestBuilders
             .post("/api/accounts")
             .param("authorityCode", Authority.Code.CUSTOMER.name())
             .contentType(MediaType.APPLICATION_JSON)
@@ -190,7 +209,7 @@ class AccountControllerTest {
         UserNotFoundException exception = new UserNotFoundException();
         when(accountService.selectAccount(anyLong())).thenThrow(exception);
 
-        RequestBuilder request = MockMvcRequestBuilders
+        RequestBuilder request = RestDocumentationRequestBuilders
             .get("/api/accounts/{accountId}", Long.MAX_VALUE)
             .contentType(MediaType.APPLICATION_JSON);
 
