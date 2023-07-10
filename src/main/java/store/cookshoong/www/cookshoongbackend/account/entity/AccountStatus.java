@@ -7,7 +7,6 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.aspectj.apache.bcel.classfile.Code;
 
 /**
  * 회원상태 엔티티.
@@ -18,8 +17,8 @@ import org.aspectj.apache.bcel.classfile.Code;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "accounts_status")
-public class AccountsStatus {
+@Table(name = "account_status")
+public class AccountStatus {
     @Id
     @Column(name = "status_code", nullable = false, length = 10)
     private String statusCode;
@@ -27,7 +26,7 @@ public class AccountsStatus {
     @Column(nullable = false, length = 10)
     private String description;
 
-    public AccountsStatus(String statusCode, String description) {
+    public AccountStatus(String statusCode, String description) {
         this.statusCode = statusCode;
         this.description = description;
     }

@@ -4,7 +4,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.account.entity.QAccount;
-import store.cookshoong.www.cookshoongbackend.account.entity.QAccountsStatus;
+import store.cookshoong.www.cookshoongbackend.account.entity.QAccountStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.QAuthority;
 import store.cookshoong.www.cookshoongbackend.account.entity.QRank;
 import store.cookshoong.www.cookshoongbackend.account.model.response.QSelectAccountResponseDto;
@@ -26,7 +26,7 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
     @Override
     public Optional<SelectAccountResponseDto> lookupAccount(Long accountId) {
         QAccount account = QAccount.account;
-        QAccountsStatus status = QAccountsStatus.accountsStatus;
+        QAccountStatus status = QAccountStatus.accountStatus;
         QAuthority authority = QAuthority.authority;
         QRank rank = QRank.rank;
 

@@ -21,11 +21,9 @@ import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
-import store.cookshoong.www.cookshoongbackend.account.entity.AccountsStatus;
+import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.account.exception.DuplicatedUserException;
@@ -33,10 +31,9 @@ import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundExce
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
-import store.cookshoong.www.cookshoongbackend.account.repository.AccountsStatusRepository;
+import store.cookshoong.www.cookshoongbackend.account.repository.AccountStatusRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.AuthorityRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.RankRepository;
-import store.cookshoong.www.cookshoongbackend.util.TestEntity;
 
 /**
  * 회원 서비스 테스트.
@@ -51,7 +48,7 @@ class AccountServiceTest {
     @Mock
     RankRepository rankRepository;
     @Mock
-    AccountsStatusRepository accountsStatusRepository;
+    AccountStatusRepository accountStatusRepository;
     @Mock
     AuthorityRepository authorityRepository;
     @InjectMocks
@@ -59,7 +56,7 @@ class AccountServiceTest {
 
     static SignUpRequestDto testDto;
     static Authority testAuthority;
-    static AccountsStatus testAccountsStatus;
+    static AccountStatus testAccountStatus;
     static Rank testRank;
 
 
@@ -75,7 +72,7 @@ class AccountServiceTest {
         ReflectionTestUtils.setField(testDto, "phoneNumber", "01012345678");
 
         testAuthority = new Authority("CUSTOMER", "일반 회원");
-        testAccountsStatus = new AccountsStatus("ACTIVE", "활성");
+        testAccountStatus = new AccountStatus("ACTIVE", "활성");
         testRank = new Rank("LEVEL_1", "프랜드");
     }
 
@@ -96,12 +93,12 @@ class AccountServiceTest {
     @Test
     @DisplayName("회원 저장 - 정상 저장")
     void createAccount_2() {
-        Account testAccountAfterPersist = new Account(testAccountsStatus, testAuthority, testRank, testDto);
+        Account testAccountAfterPersist = new Account(testAccountStatus, testAuthority, testRank, testDto);
         ReflectionTestUtils.setField(testAccountAfterPersist, "id", 1L);
 
         when(accountRepository.existsByLoginId(testDto.getLoginId())).thenReturn(false);
         when(accountRepository.save(any(Account.class))).thenReturn(testAccountAfterPersist);
-        when(accountsStatusRepository.getReferenceById(anyString())).thenReturn(testAccountsStatus);
+        when(accountStatusRepository.getReferenceById(anyString())).thenReturn(testAccountStatus);
         when(rankRepository.getReferenceById(anyString())).thenReturn(testRank);
         when(authorityRepository.getReferenceById(anyString())).thenReturn(testAuthority);
 
@@ -109,7 +106,7 @@ class AccountServiceTest {
         assertThat(actual).isEqualTo(1L);
 
         verify(accountRepository, times(1)).existsByLoginId(anyString());
-        verify(accountsStatusRepository, times(1)).getReferenceById(anyString());
+        verify(accountStatusRepository, times(1)).getReferenceById(anyString());
         verify(rankRepository, times(1)).getReferenceById(anyString());
         verify(authorityRepository, times(1)).getReferenceById(anyString());
         verify(accountRepository, times(1)).save(any(Account.class));
@@ -131,7 +128,7 @@ class AccountServiceTest {
     @DisplayName("회원 조회 - accountId 이용한 회원 정보 조회")
     void selectAccount_2() {
         SelectAccountResponseDto expect = new SelectAccountResponseDto(
-            1L, testAccountsStatus.getDescription(), testAuthority.getDescription(),
+            1L, testAccountStatus.getDescription(), testAuthority.getDescription(),
             testRank.getName(), testDto.getLoginId(), testDto.getName(),
             testDto.getNickname(), testDto.getEmail(), testDto.getBirthday(),
             testDto.getPhoneNumber(), LocalDateTime.now()

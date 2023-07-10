@@ -5,7 +5,7 @@ import org.springframework.boot.test.context.TestComponent;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
-import store.cookshoong.www.cookshoongbackend.account.entity.AccountsStatus;
+import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponPolicy;
@@ -30,7 +30,7 @@ public class TestPersistEntity {
     TestEntity testEntity;
 
     public Account getLevelOneActiveCustomer() {
-        AccountsStatus accountStatusActive = testEntity.getAccountStatusActive();
+        AccountStatus accountStatusActive = testEntity.getAccountStatusActive();
         Authority authorityCustomer = testEntity.getAuthorityCustomer();
         Rank rankLevelOne = testEntity.getRankLevelOne();
         return testEntity.getAccount(accountStatusActive, authorityCustomer, rankLevelOne);

@@ -13,7 +13,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
-import store.cookshoong.www.cookshoongbackend.account.entity.AccountsStatus;
+import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
@@ -38,7 +38,7 @@ class AccountRepositoryTest {
     @Test
     @DisplayName("회원 조회 - 성공 로그인아이디 기준으로 조회")
     void findAccount() {
-        AccountsStatus status = new AccountsStatus("ACTIVE", "활성");
+        AccountStatus status = new AccountStatus("ACTIVE", "활성");
         Authority authority = new Authority("USER", "일반회원");
         Rank rank = new Rank("LEVEL_4", "VIP");
 
@@ -70,7 +70,7 @@ class AccountRepositoryTest {
     @Test
     @DisplayName("회원 조회 - 성공 accountId 기준으로 조회")
     void findAccount_2() {
-        AccountsStatus status = new AccountsStatus("ACTIVE", "활성");
+        AccountStatus status = new AccountStatus("ACTIVE", "활성");
         Authority authority = new Authority("USER", "일반회원");
         Rank rank = new Rank("LEVEL_4", "VIP");
 
@@ -120,7 +120,7 @@ class AccountRepositoryTest {
     @Test
     @DisplayName("회원 저장 - 성공")
     void saveAccount() {
-        AccountsStatus status = new AccountsStatus("ACTIVE", "활성");
+        AccountStatus status = new AccountStatus("ACTIVE", "활성");
         Authority authority = new Authority("USER", "일반회원");
         Rank rank = new Rank("LEVEL_4", "VIP");
 
@@ -150,7 +150,7 @@ class AccountRepositoryTest {
     @Test
     @DisplayName("회원 조회 - accountId를 이용한 모든 정보 조회")
     void lookup() {
-        AccountsStatus status = new AccountsStatus("ACTIVE", "활성");
+        AccountStatus status = new AccountStatus("ACTIVE", "활성");
         Authority authority = new Authority("USER", "일반회원");
         Rank rank = new Rank("LEVEL_4", "VIP");
 
