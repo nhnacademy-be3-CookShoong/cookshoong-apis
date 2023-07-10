@@ -11,7 +11,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @since 2023.07.09
  */
 @Configuration
-public class StaticRoutingConfig implements WebMvcConfigurer {
+public class SwaggerRoutingConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/swagger-ui/");
