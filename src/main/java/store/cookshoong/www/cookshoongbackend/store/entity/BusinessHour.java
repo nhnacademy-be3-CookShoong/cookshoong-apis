@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
  */
 @Entity
 @Getter
-@Table(name = "store_business_hours")
+@Table(name = "business_hours")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BusinessHour {
     @Id
