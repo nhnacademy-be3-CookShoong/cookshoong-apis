@@ -3,7 +3,6 @@ package store.cookshoong.www.cookshoongbackend.address.repository.accountaddress
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -14,7 +13,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
-import store.cookshoong.www.cookshoongbackend.account.entity.AccountsStatus;
+import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.address.entity.AccountAddress;
@@ -42,7 +41,7 @@ class AccountAddressRepositoryTest {
     @DisplayName("회원으로 주소 등록")
     void createAccountAddress() {
 
-        AccountsStatus status = new AccountsStatus("ACTIVE", "활성");
+        AccountStatus status = new AccountStatus("ACTIVE", "활성");
         Authority authority = new Authority("USER", "일반회원");
         Rank rank = new Rank("LEVEL_4", "VIP");
 
@@ -77,7 +76,7 @@ class AccountAddressRepositoryTest {
     @DisplayName("회원 아이디로 조회한 주소")
     void getFindAccountByAccountId() {
 
-        AccountsStatus status = new AccountsStatus("ACTIVE", "활성");
+        AccountStatus status = new AccountStatus("ACTIVE", "활성");
         Authority authority = new Authority("USER", "일반회원");
         Rank rank = new Rank("LEVEL_4", "VIP");
 
@@ -114,7 +113,7 @@ class AccountAddressRepositoryTest {
     @DisplayName("회원으로로 조회한 주소")
     void getFindByAccount() {
 
-        AccountsStatus status = new AccountsStatus("ACTIVE", "활성");
+        AccountStatus status = new AccountStatus("ACTIVE", "활성");
         Authority authority = new Authority("USER", "일반회원");
         Rank rank = new Rank("LEVEL_4", "VIP");
 
