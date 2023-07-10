@@ -46,7 +46,7 @@ public class HolidayRepositoryImpl implements HolidayRepositoryCustom {
 
         return jpaQueryFactory
             .select(Projections.constructor(SelectHolidayResponseDto.class,
-                holiday.id, store.id, holiday.holidayDate))
+                holiday.id, store.id, holiday.holidayStartDate, holiday.holidayEndDate))
             .from(holiday)
             .innerJoin(holiday.store, store)
             .where(holiday.store.id.eq(storeId))
