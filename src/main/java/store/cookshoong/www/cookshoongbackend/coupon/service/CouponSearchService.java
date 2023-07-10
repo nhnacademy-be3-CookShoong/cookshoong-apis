@@ -3,6 +3,9 @@ package store.cookshoong.www.cookshoongbackend.coupon.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.CouponResponseDto;
@@ -30,13 +33,21 @@ public class CouponSearchService {
      * 사용자 소유 쿠폰을 탐색 후 반환하는 메서드.
      *
      * @param accountId the account id
-     * @return the own coupons
+     * @param pageable  페이징 설정
+     * @param useCond   사용 가능 여부 컨디션(null = 조건없음, true = 사용 가능, false = 사용 불가)
+     * @param storeId   the store id
+     * @return 소유 쿠폰 중 사용 가능 등 필터링한 결과
      */
-    public List<CouponResponseDto> getOwnCoupons(Long accountId) {
-        return issueCouponRepository.lookupAllOwnCoupons(accountId)
-            .stream()
+    public Page<CouponResponseDto> getOwnCoupons(Long accountId, Pageable pageable, Boolean useCond, Long storeId) {
+        Page<CouponResponseTempDto> couponResponseTemps =
+            issueCouponRepository.lookupAllOwnCoupons(accountId, pageable, useCond, storeId);
+
+        List<CouponResponseDto> couponResponses = couponResponseTemps.stream()
             .map(this::tempToPermanent)
             .collect(Collectors.toList());
+
+        return new PageImpl<>(
+            couponResponses, couponResponseTemps.getPageable(), couponResponseTemps.getTotalElements());
     }
 
     private CouponResponseDto tempToPermanent(CouponResponseTempDto couponResponseTempDto) {
@@ -46,6 +57,6 @@ public class CouponSearchService {
         return new CouponResponseDto(
             couponResponseTempDto.getIssueCouponCode(), couponTypeResponse, couponUsageName,
             couponResponseTempDto.getName(), couponResponseTempDto.getDescription(),
-            couponResponseTempDto.getExpirationAt());
+            couponResponseTempDto.getExpirationAt(), couponResponseTempDto.getLogTypeDescription());
     }
 }
