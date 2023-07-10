@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.store.repository.holiday;
+package store.cookshoong.www.cookshoongbackend.store.repository.businesshour;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -9,7 +9,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.store.entity.QHoliday;
 import store.cookshoong.www.cookshoongbackend.store.entity.QStore;
-import store.cookshoong.www.cookshoongbackend.store.model.response.HolidayListResponseDto;
+import store.cookshoong.www.cookshoongbackend.store.model.response.SelectHolidayResponseDto;
 
 /**
  * 휴업일 커스텀 레포지토리 구현
@@ -27,8 +27,8 @@ public class HolidayRepositoryImpl implements HolidayRepositoryCustom {
      * {@inheritDoc}
      */
     @Override
-    public Page<HolidayListResponseDto> lookupHolidayPage(Long storeId, Pageable pageable) {
-        List<HolidayListResponseDto> responseDtos = getHolidays(storeId, pageable);
+    public Page<SelectHolidayResponseDto> lookupHolidayPage(Long storeId, Pageable pageable) {
+        List<SelectHolidayResponseDto> responseDtos = getHolidays(storeId, pageable);
         long total = getTotal(storeId);
         return new PageImpl<>(responseDtos, pageable, total);
     }
@@ -40,12 +40,12 @@ public class HolidayRepositoryImpl implements HolidayRepositoryCustom {
      * @param pageable  페이지 정보
      * @return 각 페이지에 해당하는 휴업일 리스트
      */
-    private List<HolidayListResponseDto> getHolidays(Long storeId, Pageable pageable) {
+    private List<SelectHolidayResponseDto> getHolidays(Long storeId, Pageable pageable) {
         QHoliday holiday = QHoliday.holiday;
         QStore store = QStore.store;
 
         return jpaQueryFactory
-            .select(Projections.constructor(HolidayListResponseDto.class,
+            .select(Projections.constructor(SelectHolidayResponseDto.class,
                 holiday.id, store.id, holiday.holidayDate))
             .from(holiday)
             .innerJoin(holiday.store, store)

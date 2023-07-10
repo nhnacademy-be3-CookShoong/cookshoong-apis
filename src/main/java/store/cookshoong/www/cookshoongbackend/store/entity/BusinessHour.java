@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "store_business_hours")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class StoreBusinessHour {
+public class BusinessHour {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "business_hours_id", nullable = false)
@@ -44,4 +44,18 @@ public class StoreBusinessHour {
     @Column(name = "close_hour", nullable = false)
     private LocalTime closeHour;
 
+    /**
+     * 영업시간 생성자.
+     *
+     * @param store 매장
+     * @param dayCode 요일
+     * @param openHour 영업시작시간
+     * @param closeHour 영업종료시간
+     */
+    public BusinessHour(Store store, DayType dayCode, LocalTime openHour, LocalTime closeHour) {
+        this.store = store;
+        this.dayCode = dayCode;
+        this.openHour = openHour;
+        this.closeHour = closeHour;
+    }
 }

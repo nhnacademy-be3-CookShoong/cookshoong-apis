@@ -2,13 +2,11 @@ package store.cookshoong.www.cookshoongbackend.util;
 
 import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 import org.springframework.boot.test.context.TestComponent;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
@@ -113,7 +111,7 @@ public class TestEntity {
     }
 
     public Holiday getHoliday(Store store) {
-        return new Holiday(store, LocalDate.of(2020, 2, 20));
+        return new Holiday(store, LocalDate.of(2020, 2, 20), LocalDate.of(2020, 2, 22));
     }
 
     public Order getOrder() {
