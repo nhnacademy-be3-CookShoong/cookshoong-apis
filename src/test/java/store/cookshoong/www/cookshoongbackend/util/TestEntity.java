@@ -111,7 +111,7 @@ public class TestEntity {
     }
 
     public Holiday getHoliday(Store store) {
-        return new Holiday(store, LocalDate.of(2020, 2, 20));
+        return new Holiday(store, LocalDate.of(2020, 2, 20), LocalDate.of(2020, 2, 22));
     }
 
     public Order getOrder() {

@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.store.exception;
+package store.cookshoong.www.cookshoongbackend.store.exception.businesshour;
 
 import org.springframework.validation.BindingResult;
 import store.cookshoong.www.cookshoongbackend.common.exception.ValidationFailureException;
