@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
+import org.junit.platform.commons.util.ReflectionUtils;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
@@ -23,11 +24,14 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponType;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypePercent;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsage;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageAll;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.payment.entity.Order;
 import store.cookshoong.www.cookshoongbackend.store.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.store.entity.Holiday;
+import store.cookshoong.www.cookshoongbackend.store.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.store.entity.Store;
 import store.cookshoong.www.cookshoongbackend.store.entity.StoreStatus;
 
@@ -71,9 +75,13 @@ public class TestEntity {
         return createTestStoreStatus("OPEN", "영업중");
     }
 
-    public Store getStore(Account account, BankType bankType, StoreStatus storeStatus) {
-        return new Store(null, account, bankType,
-            storeStatus, "license", "123456", "김주호",
+    public Merchant getMerchant() {
+        return new Merchant("네네치킨");
+    }
+
+    public Store getStore(Merchant merchant, Account account, BankType bankType, StoreStatus storeStatus) {
+        return new Store(merchant, account, bankType,
+            storeStatus, UUID.randomUUID() + ".jpg", "123456", "김주호",
             LocalDate.of(2020, 2, 20), "주호타코", "01012345678", BigDecimal.ONE,
             null, null, "123456");
     }
@@ -90,6 +98,14 @@ public class TestEntity {
         return new CouponUsageStore(store);
     }
 
+    public CouponUsageMerchant getCouponUsageMerchant(Merchant merchant) {
+        return new CouponUsageMerchant(merchant);
+    }
+
+    public CouponUsageAll getCouponUsageAll() {
+        return new CouponUsageAll();
+    }
+
     public CouponPolicy getCouponPolicy(CouponType couponType, CouponUsage couponUsage) {
         return new CouponPolicy(couponType, couponUsage, "testCoupon", "just Test",
             LocalTime.of(1, 0, 0));
@@ -104,8 +120,8 @@ public class TestEntity {
                 .plusSeconds(expirationTime.getSecond()));
     }
 
-    public CouponLogType getCouponLogType() {
-        return createTestCouponLogType();
+    public CouponLogType getCouponLogType(String code, String description) {
+        return createTestCouponLogType(code, description);
     }
 
     public CouponLog getCouponLog(IssueCoupon issueCoupon, CouponLogType couponLogType, Order order) {
@@ -134,9 +150,10 @@ public class TestEntity {
         return storeStatus;
     }
 
-    private CouponLogType createTestCouponLogType() {
+    private CouponLogType createTestCouponLogType(String code, String description) {
         CouponLogType couponLogType = createEntityUsingDeclared(CouponLogType.class);
-        ReflectionTestUtils.setField(couponLogType, "name", "USE");
+        ReflectionTestUtils.setField(couponLogType, "code", code);
+        ReflectionTestUtils.setField(couponLogType, "description", description);
         return couponLogType;
     }
 

@@ -13,6 +13,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.store.entity.BankType;
+import store.cookshoong.www.cookshoongbackend.store.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.store.entity.Store;
 import store.cookshoong.www.cookshoongbackend.store.entity.StoreStatus;
 
@@ -40,7 +41,15 @@ public class TestPersistEntity {
         Account account = getLevelOneActiveCustomer();
         BankType bankTypeKb = testEntity.getBankTypeKb();
         StoreStatus storeStatusOpen = testEntity.getStoreStatusOpen();
-        return testEntity.getStore(account, bankTypeKb, storeStatusOpen);
+        return testEntity.getStore(null, account, bankTypeKb, storeStatusOpen);
+    }
+
+    public Store getOpenMerchantStore() {
+        Merchant merchant = testEntity.getMerchant();
+        Account account = getLevelOneActiveCustomer();
+        BankType bankTypeKb = testEntity.getBankTypeKb();
+        StoreStatus storeStatusOpen = testEntity.getStoreStatusOpen();
+        return testEntity.getStore(merchant, account, bankTypeKb, storeStatusOpen);
     }
 
     public IssueCoupon getIssueCoupon() {
