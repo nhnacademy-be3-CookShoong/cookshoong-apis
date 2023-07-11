@@ -22,5 +22,6 @@ public interface IssueCouponRepositoryCustom {
      * @param storeId   the store id
      * @return 소유 쿠폰 중 사용 가능 등 필터링한 결과
      */
-    Page<SelectOwnCouponResponseTempDto> lookupAllOwnCoupons(Long accountId, Pageable pageable, Boolean usable, Long storeId);
+    Page<SelectOwnCouponResponseTempDto> lookupAllOwnCoupons(Long accountId, Pageable pageable, Boolean usable,
+                                                             Long storeId);
 }

@@ -23,8 +23,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectOwnCouponResponseTempDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.temp.QCouponResponseTempDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectOwnCouponResponseTempDto;
 
 /**
  * QueryDSL IssueCouponRepository.
@@ -50,8 +50,8 @@ public class IssueCouponRepositoryImpl implements IssueCouponRepositoryCustom {
 
     }
 
-    private List<SelectOwnCouponResponseTempDto> getCouponResponseTemps(Long accountId, Pageable pageable, Boolean usable,
-                                                                        Long storeId) {
+    private List<SelectOwnCouponResponseTempDto> getCouponResponseTemps(Long accountId, Pageable pageable,
+                                                                        Boolean usable, Long storeId) {
         JPQLQuery<String> couponLogTypeDescription = getCouponLogTypeDescription();
 
         return queryFactory

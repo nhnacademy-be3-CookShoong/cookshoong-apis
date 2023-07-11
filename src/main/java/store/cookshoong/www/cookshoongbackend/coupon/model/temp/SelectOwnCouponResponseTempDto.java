@@ -36,8 +36,9 @@ public class SelectOwnCouponResponseTempDto {
      * @param logTypeDescription 쿠폰 기록 정보
      */
     @QueryProjection
-    public SelectOwnCouponResponseTempDto(UUID issueCouponCode, CouponType couponType, CouponUsage couponUsage, String name,
-                                          String description, LocalTime expirationAt, String logTypeDescription) {
+    public SelectOwnCouponResponseTempDto(UUID issueCouponCode, CouponType couponType, CouponUsage couponUsage,
+                                          String name, String description, LocalTime expirationAt,
+                                          String logTypeDescription) {
         this.issueCouponCode = issueCouponCode;
         this.couponType = couponType;
         this.couponUsage = couponUsage;

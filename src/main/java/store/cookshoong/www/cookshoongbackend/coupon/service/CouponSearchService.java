@@ -9,8 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectOwnCouponResponseDto;
-import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeResponse;
 import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectOwnCouponResponseTempDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeResponse;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.IssueCouponRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.util.CouponTypeConverter;
 import store.cookshoong.www.cookshoongbackend.coupon.util.CouponUsageConverter;
@@ -34,7 +34,7 @@ public class CouponSearchService {
      *
      * @param accountId the account id
      * @param pageable  페이징 설정
-     * @param usable   사용 가능 여부 컨디션(null = 조건없음, true = 사용 가능, false = 사용 불가)
+     * @param usable    사용 가능 여부 컨디션(null = 조건없음, true = 사용 가능, false = 사용 불가)
      * @param storeId   the store id
      * @return 소유 쿠폰 중 사용 가능 등 필터링한 결과
      */
