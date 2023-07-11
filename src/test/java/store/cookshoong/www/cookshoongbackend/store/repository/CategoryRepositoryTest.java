@@ -78,7 +78,7 @@ class CategoryRepositoryTest {
     @Test
     @DisplayName("매장 카테고리 리스트 조회(페이지) - 성공")
     void select_categories_page() {
-        for (int i = 1; i < 20; i++) {
+        for (int i = 1; i < 10; i++) {
             StoreCategory storeCategory = new StoreCategory("Code" + i, "카테고리" + i);
             storeCategoryRepository.save(storeCategory);
         }

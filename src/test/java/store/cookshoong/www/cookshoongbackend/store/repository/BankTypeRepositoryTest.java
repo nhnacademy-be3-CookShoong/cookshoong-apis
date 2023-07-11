@@ -80,17 +80,17 @@ class BankTypeRepositoryTest {
     @Test
     @DisplayName("은행 리스트 조회(페이지) - 성공")
     void select_banks_page() {
-        for (int i = 1; i < 20; i++) {
+        for (int i = 1; i < 10; i++) {
             BankType bankType = new BankType("Code" + i, "은행" + i);
             bankTypeRepository.save(bankType);
         }
         bankTypeRepository.flush();
 
-        Pageable pageable = PageRequest.of(3, 4);
+        Pageable pageable = PageRequest.of(1, 4);
         Page<SelectAllBanksResponseDto> expects = bankTypeRepository.lookupBanksPage(pageable);
 
         assertThat(expects.get().count()).isEqualTo(4);
-        assertThat(expects.get().findFirst().get().getBankName()).isEqualTo("은행13");
+        assertThat(expects.get().findFirst().get().getBankName()).isEqualTo("은행5");
     }
 
     @Test
