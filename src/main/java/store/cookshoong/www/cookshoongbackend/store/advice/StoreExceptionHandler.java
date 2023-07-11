@@ -8,10 +8,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException;
 import store.cookshoong.www.cookshoongbackend.common.exception.ValidationFailureException;
+import store.cookshoong.www.cookshoongbackend.store.exception.HolidayValidationException;
+import store.cookshoong.www.cookshoongbackend.store.exception.SelectHolidayNotFoundException;
 import store.cookshoong.www.cookshoongbackend.store.exception.banktype.BankTypeNotFoundException;
+import store.cookshoong.www.cookshoongbackend.store.exception.banktype.DuplicatedBankException;
 import store.cookshoong.www.cookshoongbackend.store.exception.category.DuplicatedStoreCategoryException;
+import store.cookshoong.www.cookshoongbackend.store.exception.category.StoreCategoryNotFoundException;
 import store.cookshoong.www.cookshoongbackend.store.exception.category.StoreCategoryValidException;
 import store.cookshoong.www.cookshoongbackend.store.exception.merchant.DuplicatedMerchantException;
+import store.cookshoong.www.cookshoongbackend.store.exception.merchant.MerchantNotFoundException;
 import store.cookshoong.www.cookshoongbackend.store.exception.merchant.MerchantValidException;
 import store.cookshoong.www.cookshoongbackend.store.exception.store.DuplicatedBusinessLicenseException;
 import store.cookshoong.www.cookshoongbackend.store.exception.store.SelectStoreNotFoundException;
@@ -32,7 +37,8 @@ public class StoreExceptionHandler {
      * @param e 없을 때 예외
      * @return 예외처리 메시지 반환
      */
-    @ExceptionHandler(value = {SelectStoreNotFoundException.class, BankTypeNotFoundException.class})
+    @ExceptionHandler(value = {SelectStoreNotFoundException.class, BankTypeNotFoundException.class,
+        StoreCategoryNotFoundException.class, MerchantNotFoundException.class, SelectHolidayNotFoundException.class})
     public ResponseEntity<String> somethingNotFoundError(NotFoundException e) {
         return ResponseEntity
             .status(HttpStatus.NOT_FOUND)
@@ -46,7 +52,7 @@ public class StoreExceptionHandler {
      * @return 예외처리 메시지 반환
      */
     @ExceptionHandler(value = {StoreValidException.class, MerchantValidException.class,
-        StoreCategoryValidException.class})
+        StoreCategoryValidException.class, HolidayValidationException.class})
     public ResponseEntity<Map<String, String>> validFailure(ValidationFailureException e) {
         return ResponseEntity
             .badRequest()
@@ -60,7 +66,7 @@ public class StoreExceptionHandler {
      * @return 에러 처리 메시지 반환
      */
     @ExceptionHandler(value = {DuplicatedBusinessLicenseException.class, DuplicatedMerchantException.class,
-        DuplicatedStoreCategoryException.class})
+        DuplicatedStoreCategoryException.class, DuplicatedBankException.class})
     public ResponseEntity<String> alreadySomethingExistsError(Exception e) {
         return ResponseEntity
             .status(HttpStatus.CONFLICT)

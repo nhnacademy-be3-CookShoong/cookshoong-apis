@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import store.cookshoong.www.cookshoongbackend.store.exception.businesshour.BusinessHourValidationException;
-import store.cookshoong.www.cookshoongbackend.store.exception.businesshour.HolidayValidationException;
+import store.cookshoong.www.cookshoongbackend.store.exception.HolidayValidationException;
 import store.cookshoong.www.cookshoongbackend.store.model.request.CreateBusinessHourRequestDto;
 import store.cookshoong.www.cookshoongbackend.store.model.request.CreateHolidayRequestDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.SelectBusinessHourResponseDto;
