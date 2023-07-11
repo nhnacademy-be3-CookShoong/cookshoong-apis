@@ -28,9 +28,4 @@ public class CouponUsageMerchant extends CouponUsage {
     @ManyToOne
     @JoinColumn(name = "merchant_id", nullable = false)
     private Merchant merchant;
-
-    @Override
-    public String getTypeName() {
-        return "MERCHANT";
-    }
 }

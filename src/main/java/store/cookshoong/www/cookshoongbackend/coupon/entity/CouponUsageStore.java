@@ -28,9 +28,4 @@ public class CouponUsageStore extends CouponUsage {
     @ManyToOne
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
-
-    @Override
-    public String getTypeName() {
-        return "STORE";
-    }
 }
