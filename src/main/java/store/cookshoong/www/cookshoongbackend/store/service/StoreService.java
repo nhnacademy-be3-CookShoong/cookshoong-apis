@@ -23,7 +23,7 @@ import store.cookshoong.www.cookshoongbackend.store.model.response.SelectStoreRe
 import store.cookshoong.www.cookshoongbackend.store.repository.bank.BankTypeRepository;
 import store.cookshoong.www.cookshoongbackend.store.repository.merchant.MerchantRepository;
 import store.cookshoong.www.cookshoongbackend.store.repository.store.StoreRepository;
-import store.cookshoong.www.cookshoongbackend.store.repository.StoreStatusRepository;
+import store.cookshoong.www.cookshoongbackend.store.repository.store.StoreStatusRepository;
 
 /**
  * 매장리스트 조회, 등록, 삭제, 수정 서비스 구현.

@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.store.repository;
+package store.cookshoong.www.cookshoongbackend.store.repository.store;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import store.cookshoong.www.cookshoongbackend.store.entity.StoreStatus;
