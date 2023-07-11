@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.payment.service;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -150,7 +151,7 @@ class RefundTypeServiceTest {
 
         refundTypeService.removeRefundType(refundTypeId);
 
+        assertThat(refundType.isDeleted()).isTrue();
         verify(refundTypeRepository, times(1)).findById(refundTypeId);
-        verify(refundTypeRepository, times(1)).delete(refundType);
     }
 }
