@@ -2,7 +2,6 @@ package store.cookshoong.www.cookshoongbackend.account.repository;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.hamcrest.CoreMatchers.is;
 
 import java.time.LocalDate;
 import java.util.Optional;
