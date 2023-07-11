@@ -11,6 +11,7 @@ import lombok.Getter;
  */
 @Getter
 public class SelectAllBanksResponseDto {
+    private final String bankCode;
     private final String bankName;
 
     /**
@@ -19,7 +20,8 @@ public class SelectAllBanksResponseDto {
      * @param bankName 은행 이름
      */
     @QueryProjection
-    public SelectAllBanksResponseDto(String bankName) {
+    public SelectAllBanksResponseDto(String bankCode, String bankName) {
+        this.bankCode = bankCode;
         this.bankName = bankName;
     }
 }

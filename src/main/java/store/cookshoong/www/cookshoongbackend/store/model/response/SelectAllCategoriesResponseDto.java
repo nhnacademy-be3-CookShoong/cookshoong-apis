@@ -11,6 +11,7 @@ import lombok.Getter;
  */
 @Getter
 public class SelectAllCategoriesResponseDto {
+    private final String categoryCode;
     private final String categoryName;
 
     /**
@@ -19,7 +20,8 @@ public class SelectAllCategoriesResponseDto {
      * @param categoryName the category name
      */
     @QueryProjection
-    public SelectAllCategoriesResponseDto(String categoryName) {
+    public SelectAllCategoriesResponseDto(String categoryCode, String categoryName) {
+        this.categoryCode = categoryCode;
         this.categoryName = categoryName;
     }
 }

@@ -7,18 +7,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 매장 카테고리 등록을 위한 dto.
+ * 은행 추가 dto.
  *
  * @author seungyeon
  * @since 2023.07.08
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CreateStoreCategoryRequestDto {
+public class CreateBankRequestDto {
     @NotBlank
-    @Size(min = 1, max = 10)
-    private String storeCategoryCode;
+    private String bankCode;
+
     @NotBlank
-    @Size(min = 1, max = 10)
-    private String storeCategoryName;
+    @Size(min = 1, max = 30)
+    private String bankName;
 }

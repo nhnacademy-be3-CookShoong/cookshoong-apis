@@ -11,6 +11,7 @@ import lombok.Getter;
  */
 @Getter
 public class SelectMerchantResponseDto {
+    private final Long merchantId;
     private final String merchantName;
 
     /**
@@ -19,7 +20,8 @@ public class SelectMerchantResponseDto {
      * @param merchantName 가맹점 이름
      */
     @QueryProjection
-    public SelectMerchantResponseDto(String merchantName) {
+    public SelectMerchantResponseDto(Long merchantId, String merchantName) {
+        this.merchantId = merchantId;
         this.merchantName = merchantName;
     }
 }
