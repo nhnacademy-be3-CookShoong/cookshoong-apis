@@ -37,15 +37,15 @@ public class CouponLog {
     private IssueCoupon issueCoupon;
 
     @ManyToOne
-    @JoinColumn(name = "coupon_log_type_id", nullable = false)
+    @JoinColumn(name = "coupon_log_type_code", nullable = false)
     private CouponLogType couponLogType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_code", nullable = false)
     private Order order;
 
-    @Column(name = "record_date", nullable = false)
-    private LocalDateTime recordDate;
+    @Column(name = "record_at", nullable = false)
+    private LocalDateTime recordAt;
 
     /**
      * 쿠폰 내역 생성자.
@@ -53,12 +53,12 @@ public class CouponLog {
      * @param issueCoupon   the issue coupon
      * @param couponLogType the coupon log type
      * @param order         the order
-     * @param recordDate    the record date
+     * @param recordAt    the record date
      */
-    public CouponLog(IssueCoupon issueCoupon, CouponLogType couponLogType, Order order, LocalDateTime recordDate) {
+    public CouponLog(IssueCoupon issueCoupon, CouponLogType couponLogType, Order order, LocalDateTime recordAt) {
         this.issueCoupon = issueCoupon;
         this.couponLogType = couponLogType;
         this.order = order;
-        this.recordDate = recordDate;
+        this.recordAt = recordAt;
     }
 }

@@ -18,4 +18,5 @@ public class CouponResponseDto {
     private String name;
     private String description;
     private LocalTime expirationAt;
+    private String logTypeDescription;
 }

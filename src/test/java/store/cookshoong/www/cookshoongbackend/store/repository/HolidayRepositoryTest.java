@@ -13,7 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import store.cookshoong.www.cookshoongbackend.store.entity.Holiday;
 import store.cookshoong.www.cookshoongbackend.store.entity.Store;
-import store.cookshoong.www.cookshoongbackend.store.repository.holiday.HolidayRepository;
+import store.cookshoong.www.cookshoongbackend.store.repository.businesshour.HolidayRepository;
 import store.cookshoong.www.cookshoongbackend.util.TestPersistEntity;
 
 @DataJpaTest
@@ -36,7 +36,7 @@ class HolidayRepositoryTest {
     @DisplayName("휴업일 조회 - 성공")
     void find_holiday() {
         Store store = tpe.getOpenStore();
-        Holiday actual = new Holiday(store, LocalDate.of(2020, 2, 20));
+        Holiday actual = new Holiday(store, LocalDate.of(2020, 2, 20), LocalDate.of(2020, 2, 22));
         holidayRepository.save(actual);
 
         em.clear();
