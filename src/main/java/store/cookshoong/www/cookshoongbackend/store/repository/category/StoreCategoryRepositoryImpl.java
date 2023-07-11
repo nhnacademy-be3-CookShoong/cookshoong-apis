@@ -34,7 +34,7 @@ public class StoreCategoryRepositoryImpl implements StoreCategoryRepositoryCusto
     private List<SelectAllCategoriesResponseDto> lookupStoreCategories(Pageable pageable) {
         QStoreCategory storeCategory = QStoreCategory.storeCategory;
         return jpaQueryFactory
-            .select(new QSelectAllCategoriesResponseDto(storeCategory.description))
+            .select(new QSelectAllCategoriesResponseDto(storeCategory.categoryCode, storeCategory.description))
             .from(storeCategory)
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())

@@ -34,7 +34,7 @@ public class BankTypeRepositoryImpl implements BankTypeRepositoryCustom {
         QBankType bankType = QBankType.bankType;
 
         return jpaQueryFactory
-            .select(new QSelectAllBanksResponseDto(bankType.description))
+            .select(new QSelectAllBanksResponseDto(bankType.bankTypeCode, bankType.description))
             .from(bankType)
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
