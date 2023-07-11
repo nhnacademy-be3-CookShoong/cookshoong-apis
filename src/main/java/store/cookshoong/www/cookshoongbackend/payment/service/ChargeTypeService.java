@@ -78,6 +78,7 @@ public class ChargeTypeService {
 
     /**
      * 환불 타입 아이디에 대한 삭제 메서드.
+     * 호출 시 해당 타입은 deleted 상태로 변경됨.
      *
      * @param chargeTypeId  결제 타입 아이디
      */
@@ -86,6 +87,6 @@ public class ChargeTypeService {
         ChargeType chargeType = chargeTypeRepository.findById(chargeTypeId)
             .orElseThrow(ChargeTypeNotFoundException::new);
 
-        chargeTypeRepository.delete(chargeType);
+        chargeType.modifyDeleteCharge(true);
     }
 }

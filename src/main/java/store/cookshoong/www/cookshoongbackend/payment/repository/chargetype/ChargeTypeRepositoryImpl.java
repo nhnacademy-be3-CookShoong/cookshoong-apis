@@ -30,6 +30,7 @@ public class ChargeTypeRepositoryImpl implements ChargeTypeRepositoryCustom {
         return jpaQueryFactory
             .select(Projections.constructor(TypeResponseDto.class, chargeType.id, chargeType.name))
             .from(chargeType)
+            .where(chargeType.isDeleted.eq(false))
             .fetch();
     }
 }

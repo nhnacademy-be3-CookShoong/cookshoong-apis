@@ -30,6 +30,7 @@ public class RefundTypeRepositoryImpl implements RefundTypeRepositoryCustom {
         return jpaQueryFactory
             .select(Projections.constructor(TypeResponseDto.class, refundType.id, refundType.name))
             .from(refundType)
+            .where(refundType.isDeleted.eq(false))
             .fetch();
     }
 }

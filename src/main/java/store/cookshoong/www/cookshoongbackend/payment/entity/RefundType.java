@@ -2,12 +2,9 @@ package store.cookshoong.www.cookshoongbackend.payment.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.payment.model.request.ModifyTypeRequestDto;
@@ -37,7 +34,9 @@ public class RefundType {
     /**
      * 환불 타입 name 에 대한 생성.
      *
+     * @param id        the id
      * @param name      환불 타입 이름
+     * @param isDeleted the is deleted
      */
     public RefundType(String id, String name, boolean isDeleted) {
         this.id = id;
@@ -48,9 +47,18 @@ public class RefundType {
     /**
      * 환불 타입에 대한 수정 메서드.
      *
-     * @param requestDto    타입 수정에 대한 Dto
+     * @param requestDto 타입 수정에 대한 Dto
      */
     public void modifyRefundType(ModifyTypeRequestDto requestDto) {
         this.name = requestDto.getName();
+    }
+
+    /**
+     * 호출 시 해당 타입 상태 변경됨.
+     *
+     * @param isDeleted the is deleted
+     */
+    public void modifyDeleteType(boolean isDeleted) {
+        this.isDeleted = isDeleted;
     }
 }

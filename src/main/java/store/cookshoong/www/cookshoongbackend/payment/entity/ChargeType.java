@@ -2,12 +2,9 @@ package store.cookshoong.www.cookshoongbackend.payment.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.payment.model.request.ModifyTypeRequestDto;
@@ -36,7 +33,9 @@ public class ChargeType {
     /**
      * 결제 타입 name 에 대한 생성자.
      *
+     * @param id        the id
      * @param name      결제 타입 이름
+     * @param isDeleted the is deleted
      */
     public ChargeType(String id, String name, boolean isDeleted) {
         this.id = id;
@@ -47,9 +46,19 @@ public class ChargeType {
     /**
      * 결제 타입에 대한 수정 메서드.
      *
-     * @param requestDto    타입 수정에 대한 Dto
+     * @param requestDto 타입 수정에 대한 Dto
      */
     public void modifyChargeType(ModifyTypeRequestDto requestDto) {
         this.name = requestDto.getName();
+    }
+
+    /**
+     * 결제 타입에 대한 삭제 메서드.
+     * 호출 시 해당 타입은 deleted 상태로 변경됨.
+     *
+     * @param isDeleted the is deleted
+     */
+    public void modifyDeleteCharge(boolean isDeleted) {
+        this.isDeleted = isDeleted;
     }
 }

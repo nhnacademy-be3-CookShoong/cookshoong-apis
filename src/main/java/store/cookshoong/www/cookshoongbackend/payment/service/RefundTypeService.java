@@ -78,6 +78,7 @@ public class RefundTypeService {
 
     /**
      * 환불 타입 아이디에 대한 삭제 메서드.
+     * 삭제 시 deleted 상태로 변경됨.
      *
      * @param refundTypeId  환불 타입 아이디
      */
@@ -85,7 +86,6 @@ public class RefundTypeService {
 
         RefundType refundType = refundTypeRepository.findById(refundTypeId)
             .orElseThrow(RefundTypeNotFoundException::new);
-
-        refundTypeRepository.delete(refundType);
+        refundType.modifyDeleteType(true);
     }
 }
