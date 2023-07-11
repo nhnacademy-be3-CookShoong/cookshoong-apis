@@ -54,12 +54,17 @@ public class DatabaseConfig {
     @Bean
     @Profile("!default")
     public DataSource dataSource(DatabaseProperties databaseProperties) {
-        return DataSourceBuilder.create()
-            .driverClassName(databaseProperties.getDriverClassName())
-            .url(databaseProperties.getUrl())
-            .username(databaseProperties.getUsername())
-            .password(databaseProperties.getPassword())
-            .build();
+        HikariConfig hikariConfig = new HikariConfig();
+        hikariConfig.setConnectionTestQuery("SELECT 1");
+        hikariConfig.setMaximumPoolSize(10);
+        hikariConfig.setMinimumIdle(10);
+        hikariConfig.setConnectionTimeout(3000);
+        hikariConfig.setDriverClassName(databaseProperties.getDriverClassName());
+        hikariConfig.setJdbcUrl(databaseProperties.getUrl());
+        hikariConfig.setUsername(databaseProperties.getUsername());
+        hikariConfig.setPassword(databaseProperties.getPassword());
+
+        return new HikariDataSource(hikariConfig);
     }
 
     /**
