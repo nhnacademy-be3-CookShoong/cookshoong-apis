@@ -28,7 +28,7 @@ public class RefundTypeRepositoryImpl implements RefundTypeRepositoryCustom {
         QRefundType refundType = QRefundType.refundType;
 
         return jpaQueryFactory
-            .select(Projections.constructor(TypeResponseDto.class, refundType.id, refundType.name))
+            .select(Projections.constructor(TypeResponseDto.class, refundType.code, refundType.name))
             .from(refundType)
             .where(refundType.isDeleted.eq(false))
             .fetch();
