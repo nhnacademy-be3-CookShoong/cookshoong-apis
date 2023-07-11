@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.config;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
@@ -108,13 +109,19 @@ public class DatabaseConfig {
             .toUri();
 
         String response = Objects.requireNonNull(restTemplate
-            .getForEntity(uri, SecureKeyManagerResponseDto.class).getBody()
+                .getForEntity(uri, SecureKeyManagerResponseDto.class).getBody()
             )
             .getResponseBody()
             .getSecrets();
 
+        return extractDatabasePropertiesFrom(response);
+    }
+
+    private  DatabaseProperties extractDatabasePropertiesFrom(String response) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readValue(response, DatabaseProperties.class);
     }
 }
+
+
 
