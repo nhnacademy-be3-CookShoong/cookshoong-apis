@@ -10,7 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
 import store.cookshoong.www.cookshoongbackend.store.entity.Merchant;
+import store.cookshoong.www.cookshoongbackend.store.entity.StoreCategory;
+import store.cookshoong.www.cookshoongbackend.store.model.response.SelectAllCategoriesResponseDto;
+import store.cookshoong.www.cookshoongbackend.store.model.response.SelectMerchantResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.repository.merchant.MerchantRepository;
 
 /**
@@ -20,12 +28,14 @@ import store.cookshoong.www.cookshoongbackend.store.repository.merchant.Merchant
  * @since 2023.07.07
  */
 @DataJpaTest
+@Import(QueryDslConfig.class)
 class MerchantRepositoryTest {
-    @MockBean
+    @Autowired
     JPAQueryFactory jpaQueryFactory;
 
     @Autowired
     TestEntityManager em;
+
     @Autowired
     MerchantRepository merchantRepository;
 
@@ -77,6 +87,22 @@ class MerchantRepositoryTest {
         boolean expect = merchantRepository.existsMerchantByName(actual.getName());
 
         assertThat(expect).isTrue();
+    }
+
+    @Test
+    @DisplayName("가맹점 리스트 조회(페이지) - 성공")
+    void select_categories_page() {
+        for (int i = 1; i < 10; i++) {
+            Merchant merchant = new Merchant("카테고리" + i);
+            merchantRepository.save(merchant);
+        }
+        merchantRepository.flush();
+
+        Pageable pageable = PageRequest.of(2, 3);
+        Page<SelectMerchantResponseDto> expects = merchantRepository.lookupMerchantPage(pageable);
+
+        assertThat(expects.get().count()).isEqualTo(3);
+        assertThat(expects.get().findFirst().get().getMerchantName()).isEqualTo("카테고리7");
     }
 
 }
