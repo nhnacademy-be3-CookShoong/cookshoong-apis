@@ -23,7 +23,7 @@ public class RefundType {
 
     @Id
     @Column(name = "refund_type_code", nullable = false)
-    private String id;
+    private String code;
 
     @Column(name = "name", nullable = false, length = 30)
     private String name;
@@ -34,12 +34,12 @@ public class RefundType {
     /**
      * 환불 타입 name 에 대한 생성.
      *
-     * @param id        the id
+     * @param code       the code
      * @param name      환불 타입 이름
      * @param isDeleted the is deleted
      */
-    public RefundType(String id, String name, boolean isDeleted) {
-        this.id = id;
+    public RefundType(String code, String name, boolean isDeleted) {
+        this.code = code;
         this.name = name;
         this.isDeleted = isDeleted;
     }

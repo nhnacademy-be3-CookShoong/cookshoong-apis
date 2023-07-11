@@ -48,7 +48,7 @@ class ChargeTypeRepositoryTest {
 
         ChargeType saveChargeType = chargeTypeRepository.save(chargeType);
 
-        ChargeType actual = chargeTypeRepository.findById(saveChargeType.getId()).orElse(null);
+        ChargeType actual = chargeTypeRepository.findById(saveChargeType.getCode()).orElse(null);
 
         assert actual != null;
         assertEquals(saveChargeType.getName(), actual.getName());

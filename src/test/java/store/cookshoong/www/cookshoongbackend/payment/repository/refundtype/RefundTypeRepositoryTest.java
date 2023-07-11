@@ -48,7 +48,7 @@ class RefundTypeRepositoryTest {
 
         RefundType saveRefundType = refundTypeRepository.save(refundType);
 
-        RefundType actual = refundTypeRepository.findById(saveRefundType.getId()).orElse(null);
+        RefundType actual = refundTypeRepository.findById(saveRefundType.getCode()).orElse(null);
 
         assert actual != null;
         assertEquals(saveRefundType.getName(), actual.getName());

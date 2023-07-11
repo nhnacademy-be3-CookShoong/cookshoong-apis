@@ -22,7 +22,7 @@ import store.cookshoong.www.cookshoongbackend.payment.model.request.ModifyTypeRe
 public class ChargeType {
     @Id
     @Column(name = "charge_type_code", nullable = false)
-    private String id;
+    private String code;
 
     @Column(name = "name", nullable = false, length = 30)
     private String name;
@@ -33,12 +33,12 @@ public class ChargeType {
     /**
      * 결제 타입 name 에 대한 생성자.
      *
-     * @param id        the id
+     * @param code        the code
      * @param name      결제 타입 이름
-     * @param isDeleted the is deleted
+     * @param isDeleted 타입 삭제 상태
      */
-    public ChargeType(String id, String name, boolean isDeleted) {
-        this.id = id;
+    public ChargeType(String code, String name, boolean isDeleted) {
+        this.code = code;
         this.name = name;
         this.isDeleted = isDeleted;
     }
@@ -56,7 +56,7 @@ public class ChargeType {
      * 결제 타입에 대한 삭제 메서드.
      * 호출 시 해당 타입은 deleted 상태로 변경됨.
      *
-     * @param isDeleted the is deleted
+     * @param isDeleted 삭제 상태 변경
      */
     public void modifyDeleteCharge(boolean isDeleted) {
         this.isDeleted = isDeleted;
