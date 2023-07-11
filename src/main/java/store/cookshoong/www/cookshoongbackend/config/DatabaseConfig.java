@@ -23,6 +23,7 @@ import org.apache.http.ssl.SSLContextBuilder;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
@@ -50,6 +51,7 @@ public class DatabaseConfig {
      * @return the data source
      */
     @Bean
+    @Profile("!default")
     public DataSource dataSource(DatabaseProperties databaseProperties) {
         return DataSourceBuilder.create()
             .driverClassName(databaseProperties.getDriverClassName())
@@ -72,6 +74,7 @@ public class DatabaseConfig {
      * @throws KeyManagementException    the key management exception
      */
     @Bean
+    @Profile("!default")
     public DatabaseProperties databaseProperties(SecureKeyManagerProperties secureKeyManagerProperties)
         throws KeyStoreException, CertificateException, IOException,
         NoSuchAlgorithmException, UnrecoverableKeyException, KeyManagementException {
