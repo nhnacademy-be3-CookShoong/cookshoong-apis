@@ -2,11 +2,13 @@ package store.cookshoong.www.cookshoongbackend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 /**
  * The type Cookshoong backend application.
  */
 @SpringBootApplication
+@ConfigurationPropertiesScan
 public class CookshoongBackendApplication {
 
     /**
