@@ -41,10 +41,4 @@ public class StoreController {
     public ResponseEntity<SelectStoreForUserResponseDto> getStore(@PathVariable("storeId") Long storeId) {
         return ResponseEntity.ok(storeService.selectStoreForUser(storeId));
     }
-
-
-
-    //TODO 4. 수정이 아니라 추가 정보로 영업일, 휴무일을 넣을 수 있도록 하는건?
-
-    //TODO 8. 매장 삭제가 아니라 상태를 폐업으로 바꾸도록
 }
