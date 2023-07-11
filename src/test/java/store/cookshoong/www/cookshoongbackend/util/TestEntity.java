@@ -31,6 +31,7 @@ import store.cookshoong.www.cookshoongbackend.store.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.store.entity.Holiday;
 import store.cookshoong.www.cookshoongbackend.store.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.store.entity.Store;
+import store.cookshoong.www.cookshoongbackend.store.entity.StoreCategory;
 import store.cookshoong.www.cookshoongbackend.store.entity.StoreStatus;
 
 /**
@@ -86,6 +87,10 @@ public class TestEntity {
             storeStatus, UUID.randomUUID() + ".jpg", "123456", "김주호",
             LocalDate.of(2020, 2, 20), "주호타코", "01012345678", BigDecimal.ONE,
             null, null, "123456");
+    }
+
+    public StoreCategory getStoreCategory() {
+        return new StoreCategory("CHK", "치킨");
     }
 
     public CouponTypePercent getCouponTypePercent_3_1000_10000() {
