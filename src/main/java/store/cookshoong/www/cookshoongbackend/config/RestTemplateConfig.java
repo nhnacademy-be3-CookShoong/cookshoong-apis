@@ -16,6 +16,11 @@ import org.springframework.web.client.RestTemplate;
  */
 @Configuration
 public class RestTemplateConfig {
+    /**
+     * 공통 RestTemplate 등록.
+     *
+     * @return the rest template
+     */
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(5))
