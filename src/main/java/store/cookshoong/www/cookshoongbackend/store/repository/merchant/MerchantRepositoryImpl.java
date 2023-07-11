@@ -34,7 +34,7 @@ public class MerchantRepositoryImpl implements MerchantRepositoryCustom {
     private List<SelectMerchantResponseDto> lookupMerchants(Pageable pageable) {
         QMerchant merchant = QMerchant.merchant;
         return jpaQueryFactory
-            .select(new QSelectMerchantResponseDto(merchant.id, merchant.name))
+            .select(new QSelectMerchantResponseDto(merchant.name))
             .from(merchant)
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())

@@ -36,6 +36,7 @@ public class StoreCategoryRepositoryImpl implements StoreCategoryRepositoryCusto
         return jpaQueryFactory
             .select(new QSelectAllCategoriesResponseDto(storeCategory.categoryCode, storeCategory.description))
             .from(storeCategory)
+            .orderBy(storeCategory.description.asc())
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();

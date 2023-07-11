@@ -36,6 +36,7 @@ public class BankTypeRepositoryImpl implements BankTypeRepositoryCustom {
         return jpaQueryFactory
             .select(new QSelectAllBanksResponseDto(bankType.bankTypeCode, bankType.description))
             .from(bankType)
+            .orderBy(bankType.description.asc())
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
