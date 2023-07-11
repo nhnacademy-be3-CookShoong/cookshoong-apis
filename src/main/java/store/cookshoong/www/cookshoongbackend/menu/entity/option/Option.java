@@ -38,7 +38,7 @@ public class Option {
     private String name;
 
     @Column(name = "price", nullable = false)
-    private Long price;
+    private Integer price;
 
     @Column(name = "option_sequence", nullable = false)
     private Integer optionSequence;
