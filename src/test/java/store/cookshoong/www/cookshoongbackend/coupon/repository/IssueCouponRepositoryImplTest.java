@@ -26,7 +26,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageAll;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
-import store.cookshoong.www.cookshoongbackend.coupon.model.temp.CouponResponseTempDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectOwnCouponResponseTempDto;
 import store.cookshoong.www.cookshoongbackend.payment.entity.Order;
 import store.cookshoong.www.cookshoongbackend.store.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.store.entity.Store;
@@ -166,7 +166,7 @@ class IssueCouponRepositoryImplTest {
             "쿠폰없음", hasNoCoupon.getId()
         );
 
-        Page<CouponResponseTempDto> couponResponseTemps =
+        Page<SelectOwnCouponResponseTempDto> couponResponseTemps =
             issueCouponRepository.lookupAllOwnCoupons(
                 customer.getId(), Pageable.ofSize(20), usable,
                 searchStoreId.getOrDefault(store, null));

@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import store.cookshoong.www.cookshoongbackend.coupon.model.temp.CouponResponseTempDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectOwnCouponResponseTempDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.temp.QCouponResponseTempDto;
 
 /**
@@ -42,16 +42,16 @@ public class IssueCouponRepositoryImpl implements IssueCouponRepositoryCustom {
      * {@inheritDoc}
      */
     @Override
-    public Page<CouponResponseTempDto> lookupAllOwnCoupons(Long accountId, Pageable pageable, Boolean useCond,
-                                                           Long storeId) {
-        List<CouponResponseTempDto> content = getCouponResponseTemps(accountId, pageable, useCond, storeId);
+    public Page<SelectOwnCouponResponseTempDto> lookupAllOwnCoupons(Long accountId, Pageable pageable, Boolean useCond,
+                                                                    Long storeId) {
+        List<SelectOwnCouponResponseTempDto> content = getCouponResponseTemps(accountId, pageable, useCond, storeId);
         Long total = getTotal(accountId, useCond, storeId);
         return new PageImpl<>(content, pageable, total);
 
     }
 
-    private List<CouponResponseTempDto> getCouponResponseTemps(Long accountId, Pageable pageable, Boolean usable,
-                                                               Long storeId) {
+    private List<SelectOwnCouponResponseTempDto> getCouponResponseTemps(Long accountId, Pageable pageable, Boolean usable,
+                                                                        Long storeId) {
         JPQLQuery<String> couponLogTypeDescription = getCouponLogTypeDescription();
 
         return queryFactory
