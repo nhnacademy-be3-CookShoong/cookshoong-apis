@@ -6,6 +6,7 @@ import java.net.URI;
 import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -18,6 +19,7 @@ import store.cookshoong.www.cookshoongbackend.common.property.SecureKeyManagerPr
  * @author koesnam
  * @since 2023.07.11
  */
+@Profile("!default")
 @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 @Service
 @RequiredArgsConstructor

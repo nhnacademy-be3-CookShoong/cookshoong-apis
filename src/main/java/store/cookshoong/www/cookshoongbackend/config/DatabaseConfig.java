@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import javax.sql.DataSource;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,10 +19,7 @@ import store.cookshoong.www.cookshoongbackend.common.service.SKMService;
  * @since 2023.07.10
  */
 @Configuration
-@RequiredArgsConstructor
 public class DatabaseConfig {
-    private final SKMService skmService;
-
     /**
      * DB 설정을 마친 Datasource.
      *
@@ -55,11 +51,10 @@ public class DatabaseConfig {
      */
     @Bean
     @Profile("!default")
-    public DatabaseProperties databaseProperties(@Value("${cookshoong.skm.keyid.mysql}") String mysqlKeyid)
-        throws JsonProcessingException {
+    public DatabaseProperties databaseProperties(@Value("${cookshoong.skm.keyid.mysql}") String mysqlKeyid,
+                                                 SKMService skmService) throws JsonProcessingException {
         return skmService.fetchSecrets(mysqlKeyid, DatabaseProperties.class);
     }
 }
-
 
 
