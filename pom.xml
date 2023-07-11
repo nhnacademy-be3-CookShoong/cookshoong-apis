@@ -29,6 +29,9 @@
         <!-- restdocs + swaggerUI -->
         <restdocs-api-spec.version>0.10.0</restdocs-api-spec.version>
         <restdocs-spec.version>0.19</restdocs-spec.version>
+
+        <!-- spring cloud for eureka -->
+        <spring-cloud.version>2021.0.8</spring-cloud.version>
     </properties>
 
     <!-- restdocs + swaggerUI -->
@@ -38,6 +41,19 @@
             <url>https://jcenter.bintray.com</url>
         </repository>
     </repositories>
+
+    <!-- spring cloud for eureka -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -115,6 +131,20 @@
             <artifactId>restdocs-api-spec-mockmvc</artifactId>
             <version>${restdocs-api-spec.version}</version>
             <scope>test</scope>
+        </dependency>
+
+        <!-- spring cloud for eureka -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
     </dependencies>
 
