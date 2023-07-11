@@ -5,6 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import store.cookshoong.www.cookshoongbackend.store.entity.BankType;
+import store.cookshoong.www.cookshoongbackend.store.exception.banktype.DuplicatedBankException;
+import store.cookshoong.www.cookshoongbackend.store.model.request.CreateBankRequestDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.SelectAllBanksResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.repository.bank.BankTypeRepository;
 
@@ -29,4 +32,20 @@ public class BankTypeService {
     public Page<SelectAllBanksResponseDto> selectBanks(Pageable pageable) {
         return bankTypeRepository.lookupBanksPage(pageable);
     }
+
+    /**
+     * 은행명 추가.
+     *
+     * @param requestDto 은행 이름 request dto
+     */
+    public void createBank(CreateBankRequestDto requestDto) {
+        if (bankTypeRepository.existsById(requestDto.getBankCode())) {
+            throw new DuplicatedBankException(requestDto.getBankCode());
+        }
+        if (bankTypeRepository.existsByDescription(requestDto.getBankName())) {
+            throw new DuplicatedBankException(requestDto.getBankName());
+        }
+        bankTypeRepository.save(new BankType(requestDto.getBankCode(), requestDto.getBankName()));
+    }
+
 }
