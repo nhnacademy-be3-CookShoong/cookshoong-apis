@@ -26,23 +26,16 @@ public class SecureKeyManagerResponseDto {
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class SecureKeyManagerResponseBody {
-        @JsonProperty("secret")
-        private String secrets;
-
         /**
          * ex)
          * "secret" : {
-         *     "datasource" : {
+         *     "blah (ex_ datasource)" : {
          *         ...
          *     }
          * }
          */
-        @Getter
-        @NoArgsConstructor(access = AccessLevel.PROTECTED)
-        public static class Secrets {
-            @JsonProperty("datasource")
-            private String databaseProperties;
-        }
+        @JsonProperty("secret")
+        private String secrets;
     }
 }
 
