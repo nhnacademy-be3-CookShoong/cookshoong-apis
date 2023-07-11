@@ -81,6 +81,7 @@ public class StoreCategoryController {
         if (bindingResult.hasErrors()) {
             throw new StoreCategoryValidException(bindingResult);
         }
+        storeCategoryService.updateStoreCategory(categoryCode, requestDto);
         return ResponseEntity
             .ok()
             .build();
