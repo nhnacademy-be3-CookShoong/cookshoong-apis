@@ -30,7 +30,7 @@ class RefundTypeRepositoryTest {
 
     @BeforeEach
     void setup() {
-        refundType = new RefundType("개인 변심으로 인한 환불");
+        refundType = new RefundType("INPERSON", "개인 변심으로 인한 환불", false);
     }
 
     @Test

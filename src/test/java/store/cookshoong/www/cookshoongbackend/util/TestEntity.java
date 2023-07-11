@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
-import org.junit.platform.commons.util.ReflectionUtils;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -26,6 +25,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageAll;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
+import store.cookshoong.www.cookshoongbackend.payment.entity.ChargeType;
 import store.cookshoong.www.cookshoongbackend.payment.entity.Order;
 import store.cookshoong.www.cookshoongbackend.store.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.store.entity.Holiday;
@@ -67,6 +67,10 @@ public class TestEntity {
 
     public BankType getBankTypeKb() {
         return createTestBankType("KB", "국민은행");
+    }
+
+    public ChargeType getChargeType() {
+        return new ChargeType("KAKAO", "카카오결제", false);
     }
 
     public StoreStatus getStoreStatusOpen() {

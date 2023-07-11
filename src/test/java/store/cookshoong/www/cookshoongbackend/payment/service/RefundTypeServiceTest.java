@@ -60,9 +60,9 @@ class RefundTypeServiceTest {
     @Test
     @DisplayName("환불 타입 수정")
     void modifyRefundType() {
-        RefundType refundType = new RefundType("전액환불");
+        RefundType refundType = new RefundType("ALLREFUND", "전액환불", false);
 
-        Long refundTypeId = 1L;
+        String refundTypeId = "INPERSON";
 
         ModifyTypeRequestDto modifyTypeRequestDto = ReflectionUtils.newInstance(ModifyTypeRequestDto.class);
         ReflectionTestUtils.setField(modifyTypeRequestDto, "name", "개인적인 이유로 인한 환불");
@@ -79,7 +79,7 @@ class RefundTypeServiceTest {
     @Test
     @DisplayName("환불 타입 수정: 아이디가 존재하지 않을 때")
     void modifyChargeTypeChargeTypeIdNotFound() {
-        Long nonExistChargeTypeId = 100L;
+        String nonExistChargeTypeId = "NOTYPE";
 
         ModifyTypeRequestDto modifyTypeRequestDto = ReflectionUtils.newInstance(ModifyTypeRequestDto.class);
         ReflectionTestUtils.setField(modifyTypeRequestDto, "name", "만나서결제");
@@ -96,9 +96,9 @@ class RefundTypeServiceTest {
     @Test
     @DisplayName("해당 아이디에 대한 환불 타입 조회")
     void selectRefundType() {
-        RefundType refundType = new RefundType("전액환불");
+        RefundType refundType = new RefundType("ALLREFUND", "전액환불", false);
 
-        Long refundTypeId = 1L;
+        String refundTypeId = "ALLREFUND";
 
         when(refundTypeRepository.findById(refundTypeId)).thenReturn(Optional.of(refundType));
 
@@ -113,7 +113,7 @@ class RefundTypeServiceTest {
     @DisplayName("해당 아이디에 대한 환불 타입 조회: 아이디가 존재하지 않을 때")
     void selectChargeTypeNotFound() {
 
-        Long nonExistChargeTypeId = 100L;
+        String nonExistChargeTypeId = "NOREASON";
 
         when(refundTypeRepository.findById(nonExistChargeTypeId)).thenReturn(Optional.empty());
 
@@ -126,7 +126,7 @@ class RefundTypeServiceTest {
     @DisplayName("모든 환불 타입 조회")
     void selectRefundTypeAll() {
         List<TypeResponseDto> responseDtoList = new ArrayList<>();
-        responseDtoList.add(new TypeResponseDto(1L, "개인적인 이유로 인한 환불"));
+        responseDtoList.add(new TypeResponseDto("INPERSON", "개인적인 이유로 인한 환불"));
 
         when(refundTypeRepository.lookupRefundTypeAll()).thenReturn(responseDtoList);
 
@@ -142,9 +142,9 @@ class RefundTypeServiceTest {
     @Test
     @DisplayName("해당 아이디에 대한 환불 타입 삭제")
     void removeRefundType() {
-        RefundType refundType = new RefundType("전액환불");
+        RefundType refundType = new RefundType("ALLREFUND", "전액환불", false);
 
-        Long refundTypeId = 1L;
+        String refundTypeId = "ALLREFUND";
 
         when(refundTypeRepository.findById(refundTypeId)).thenReturn(Optional.of(refundType));
 

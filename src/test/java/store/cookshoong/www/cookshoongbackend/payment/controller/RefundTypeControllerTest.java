@@ -50,6 +50,7 @@ class RefundTypeControllerTest {
     @DisplayName("POST 환불 타입 등록")
     void postCreateRefundType() throws Exception {
         CreateTypeRequestDto requestDto = ReflectionUtils.newInstance(CreateTypeRequestDto.class);
+        ReflectionTestUtils.setField(requestDto, "id", "INPERSON");
         ReflectionTestUtils.setField(requestDto, "name", "개인 변심으로 인한 환불");
 
         String requestBody = objectMapper.writeValueAsString(requestDto);
@@ -58,6 +59,7 @@ class RefundTypeControllerTest {
                 .contentType(APPLICATION_JSON)
                 .content(requestBody))
             .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.id").value(requestDto.getId()))
             .andExpect(jsonPath("$.name").value(requestDto.getName()));
     }
 
@@ -171,8 +173,8 @@ class RefundTypeControllerTest {
     @Test
     @DisplayName("GET 해당 아이디에 대한 환불 타입 조회")
     void getRefundType() throws Exception {
-        Long refundTypeId = 1L;
-        TypeResponseDto responseDto = new TypeResponseDto(1L, "개인 변심으로 인한 환불");
+        String refundTypeId = "INPERSON";
+        TypeResponseDto responseDto = new TypeResponseDto("INPERSON", "개인 변심으로 인한 환불");
 
         when(refundTypeService.selectRefundType(refundTypeId)).thenReturn(responseDto);
 
@@ -186,7 +188,7 @@ class RefundTypeControllerTest {
     @Test
     @DisplayName("GET 모든 결제애 대한 환불 타입 조회")
     void getRefundTypeAll() throws Exception {
-        TypeResponseDto responseDto = new TypeResponseDto(1L, "개인 변심으로 인한 환불");
+        TypeResponseDto responseDto = new TypeResponseDto("INPERSON", "개인 변심으로 인한 환불");
         List<TypeResponseDto> responseDtoList = Collections.singletonList(responseDto);
 
         when(refundTypeService.selectRefundTypeAll()).thenReturn(responseDtoList);
@@ -201,7 +203,7 @@ class RefundTypeControllerTest {
     @Test
     @DisplayName("DELETE 해당 아이디에 대한 환불 타입 삭제")
     void deleteRefundType() throws Exception {
-        Long refundTypeId = 1L;
+        String refundTypeId = "INPERSON";
 
         mockMvc.perform(delete("/api/payments/refunds/{refundTypeId}", refundTypeId))
             .andExpect(status().isNoContent());

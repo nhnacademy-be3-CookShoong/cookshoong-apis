@@ -24,13 +24,13 @@ import store.cookshoong.www.cookshoongbackend.payment.model.response.TypeRespons
 class ChargeTypeRepositoryTest {
 
     @Autowired
-    private ChargeTypeRepository chargeTypeRepository;
+    ChargeTypeRepository chargeTypeRepository;
 
     ChargeType chargeType;
 
     @BeforeEach
     void setup() {
-        chargeType = new ChargeType("토스결제");
+        chargeType = new ChargeType("KAKAO", "카카오결제", false);
     }
 
     @Test
