@@ -112,12 +112,7 @@ public class TestEntity {
     }
 
     public IssueCoupon getIssueCoupon(CouponPolicy couponPolicy) {
-        LocalTime expirationTime = couponPolicy.getExpirationTime();
-        return new IssueCoupon(couponPolicy,
-            LocalDateTime.now()
-                .plusHours(expirationTime.getHour())
-                .plusMinutes(expirationTime.getMinute())
-                .plusSeconds(expirationTime.getSecond()));
+        return new IssueCoupon(couponPolicy);
     }
 
     public CouponLogType getCouponLogType(String code, String description) {
