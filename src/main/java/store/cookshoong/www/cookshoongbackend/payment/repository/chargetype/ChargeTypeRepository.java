@@ -9,5 +9,5 @@ import store.cookshoong.www.cookshoongbackend.payment.entity.ChargeType;
  * @author jeongjewan
  * @since 2023.07.06
  */
-public interface ChargeTypeRepository extends JpaRepository<ChargeType, Long>, ChargeTypeRepositoryCustom {
+public interface ChargeTypeRepository extends JpaRepository<ChargeType, String>, ChargeTypeRepositoryCustom {
 }

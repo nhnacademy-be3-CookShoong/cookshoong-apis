@@ -18,6 +18,9 @@ import store.cookshoong.www.cookshoongbackend.common.util.ValidationFailureMessa
 @Getter
 @NoArgsConstructor(access =  AccessLevel.PROTECTED)
 public class CreateTypeRequestDto {
+    @NotBlank
+    @Length(min = 1, max = 10)
+    private String id;
 
     @NotBlank
     @Length(min = 1, max = 30)

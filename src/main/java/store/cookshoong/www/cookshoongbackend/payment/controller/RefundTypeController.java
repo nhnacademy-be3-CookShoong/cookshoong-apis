@@ -61,7 +61,7 @@ public class RefundTypeController {
      * @return              상태코드 200(Ok)와 함께 응답을 반환
      */
     @PutMapping("/refunds/{refundTypeId}")
-    public ResponseEntity<ModifyTypeRequestDto> putModifyRefundType(@PathVariable("refundTypeId") Long refundTypeId,
+    public ResponseEntity<ModifyTypeRequestDto> putModifyRefundType(@PathVariable("refundTypeId") String refundTypeId,
                                                                     @RequestBody @Valid ModifyTypeRequestDto requestDto,
                                                                     BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -80,7 +80,7 @@ public class RefundTypeController {
      * @return              상태코드 200(Ok)와 함께 응답을 반환
      */
     @GetMapping("/refunds/{refundTypeId}")
-    public ResponseEntity<TypeResponseDto> getRefundType(@PathVariable("refundTypeId") Long refundTypeId) {
+    public ResponseEntity<TypeResponseDto> getRefundType(@PathVariable("refundTypeId") String refundTypeId) {
 
         TypeResponseDto chargeType = refundTypeService.selectRefundType(refundTypeId);
 
@@ -107,7 +107,7 @@ public class RefundTypeController {
      * @return              상태코드 204(No_CONTENT)와 함께 응답을 반환
      */
     @DeleteMapping("/refunds/{refundTypeId}")
-    public ResponseEntity<Void> deleteRefundType(@PathVariable("refundTypeId") Long refundTypeId) {
+    public ResponseEntity<Void> deleteRefundType(@PathVariable("refundTypeId") String refundTypeId) {
 
         refundTypeService.removeRefundType(refundTypeId);
 

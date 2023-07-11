@@ -31,7 +31,7 @@ public class RefundTypeService {
      */
     public void createRefundType(CreateTypeRequestDto requestDto) {
 
-        RefundType refundType = new RefundType(requestDto.getName());
+        RefundType refundType = new RefundType(requestDto.getId(), requestDto.getName(), false);
 
         refundTypeRepository.save(refundType);
     }
@@ -42,7 +42,7 @@ public class RefundTypeService {
      * @param refundTypeId  환불 타입 아이디
      * @param requestDto    환불 타입 수정에 name에 대한 Dto
      */
-    public void modifyRefundType(Long refundTypeId, ModifyTypeRequestDto requestDto) {
+    public void modifyRefundType(String refundTypeId, ModifyTypeRequestDto requestDto) {
 
         RefundType refundType = refundTypeRepository.findById(refundTypeId)
             .orElseThrow(RefundTypeNotFoundException::new);
@@ -57,7 +57,7 @@ public class RefundTypeService {
      * @return              환불 타입 name 을 반환
      */
     @Transactional(readOnly = true)
-    public TypeResponseDto selectRefundType(Long refundTypeId) {
+    public TypeResponseDto selectRefundType(String refundTypeId) {
 
         RefundType refundType = refundTypeRepository.findById(refundTypeId)
             .orElseThrow(RefundTypeNotFoundException::new);
@@ -81,7 +81,7 @@ public class RefundTypeService {
      *
      * @param refundTypeId  환불 타입 아이디
      */
-    public void removeRefundType(Long refundTypeId) {
+    public void removeRefundType(String refundTypeId) {
 
         RefundType refundType = refundTypeRepository.findById(refundTypeId)
             .orElseThrow(RefundTypeNotFoundException::new);

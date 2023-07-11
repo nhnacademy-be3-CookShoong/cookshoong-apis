@@ -9,5 +9,5 @@ import store.cookshoong.www.cookshoongbackend.payment.entity.RefundType;
  * @author jeongjewan
  * @since 2023.07.06
  */
-public interface RefundTypeRepository extends JpaRepository<RefundType, Long>, RefundTypeRepositoryCustom {
+public interface RefundTypeRepository extends JpaRepository<RefundType, String>, RefundTypeRepositoryCustom {
 }

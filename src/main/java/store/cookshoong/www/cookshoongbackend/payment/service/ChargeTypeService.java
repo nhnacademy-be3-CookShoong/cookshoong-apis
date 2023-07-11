@@ -31,7 +31,7 @@ public class ChargeTypeService {
      */
     public void createChargeType(CreateTypeRequestDto requestDto) {
 
-        ChargeType chargeType = new ChargeType(requestDto.getName());
+        ChargeType chargeType = new ChargeType(requestDto.getId(), requestDto.getName(), false);
 
         chargeTypeRepository.save(chargeType);
     }
@@ -42,7 +42,7 @@ public class ChargeTypeService {
      * @param chargeTypeId  결제 타입 아이디
      * @param requestDto    결제 타입 수정에 name에 대한 Dto
      */
-    public void modifyChargeType(Long chargeTypeId, ModifyTypeRequestDto requestDto) {
+    public void modifyChargeType(String chargeTypeId, ModifyTypeRequestDto requestDto) {
 
         ChargeType chargeType = chargeTypeRepository.findById(chargeTypeId)
             .orElseThrow(ChargeTypeNotFoundException::new);
@@ -57,7 +57,7 @@ public class ChargeTypeService {
      * @return              결제 타입 name 을 반환
      */
     @Transactional(readOnly = true)
-    public TypeResponseDto selectChargeType(Long chargeTypeId) {
+    public TypeResponseDto selectChargeType(String chargeTypeId) {
 
         ChargeType chargeType = chargeTypeRepository.findById(chargeTypeId)
             .orElseThrow(ChargeTypeNotFoundException::new);
@@ -81,7 +81,7 @@ public class ChargeTypeService {
      *
      * @param chargeTypeId  결제 타입 아이디
      */
-    public void removeChargeType(Long chargeTypeId) {
+    public void removeChargeType(String chargeTypeId) {
 
         ChargeType chargeType = chargeTypeRepository.findById(chargeTypeId)
             .orElseThrow(ChargeTypeNotFoundException::new);
