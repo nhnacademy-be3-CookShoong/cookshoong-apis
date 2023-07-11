@@ -25,7 +25,7 @@ import store.cookshoong.www.cookshoongbackend.menu.entity.menu.Menu;
  */
 @Getter
 @Entity
-@Table(name = "menu_has_option_group")
+@Table(name = "menu_has_option_groups")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MenuHasOptionGroup {
     @EmbeddedId
@@ -40,9 +40,6 @@ public class MenuHasOptionGroup {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "option_group_id", nullable = false)
     private OptionGroup optionGroup;
-
-    @Column(name = "price", columnDefinition = "int UNSIGNED not null")
-    private Long price;
 
     @Column(name = "option_sequence", nullable = false)
     private Integer optionSequence;

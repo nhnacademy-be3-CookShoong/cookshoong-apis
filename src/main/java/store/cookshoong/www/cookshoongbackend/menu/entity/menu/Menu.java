@@ -43,7 +43,7 @@ public class Menu {
     @Column(name = "name", nullable = false, length = 30)
     private String name;
 
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     private Long price;
 
     @Lob

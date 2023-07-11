@@ -37,6 +37,9 @@ public class Option {
     @Column(name = "name", nullable = false, length = 20)
     private String name;
 
+    @Column(name = "price", nullable = false)
+    private Long price;
+
     @Column(name = "option_sequence", nullable = false)
     private Integer optionSequence;
 
