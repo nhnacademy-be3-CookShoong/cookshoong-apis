@@ -26,4 +26,15 @@ public class DayType {
     @Column(nullable = false, length = 3)
     private String description;
 
+    public DayType(String dayCode, String description) {
+        this.dayCode = dayCode;
+        this.description = description;
+    }
+
+    /**
+     * 요일 코드들을 상수로 관리하기 위한 Enum.
+     */
+    public enum Code {
+        MON, TUE, WED, THU, FRI, SAT, SUN;
+    }
 }

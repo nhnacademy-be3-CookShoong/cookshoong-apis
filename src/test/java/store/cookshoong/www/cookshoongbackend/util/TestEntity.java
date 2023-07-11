@@ -25,7 +25,6 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.payment.entity.Order;
 import store.cookshoong.www.cookshoongbackend.store.entity.BankType;
-import store.cookshoong.www.cookshoongbackend.store.entity.Holiday;
 import store.cookshoong.www.cookshoongbackend.store.entity.Store;
 import store.cookshoong.www.cookshoongbackend.store.entity.StoreStatus;
 
@@ -108,10 +107,6 @@ public class TestEntity {
 
     public CouponLog getCouponLog(IssueCoupon issueCoupon, CouponLogType couponLogType, Order order) {
         return new CouponLog(issueCoupon, couponLogType, order, LocalDateTime.now());
-    }
-
-    public Holiday getHoliday(Store store) {
-        return new Holiday(store, LocalDate.of(2020, 2, 20), LocalDate.of(2020, 2, 22));
     }
 
     public Order getOrder() {
