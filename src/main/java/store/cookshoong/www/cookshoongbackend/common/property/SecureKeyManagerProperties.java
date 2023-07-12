@@ -16,5 +16,4 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class SecureKeyManagerProperties {
     private String password;
     private String appkey;
-    private String mysqlKeyid;
 }
