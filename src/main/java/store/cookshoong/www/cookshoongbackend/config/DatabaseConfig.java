@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import javax.sql.DataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -29,17 +31,13 @@ public class DatabaseConfig {
     @Bean
     @Profile("!default")
     public DataSource dataSource(DatabaseProperties databaseProperties) {
-        HikariConfig hikariConfig = new HikariConfig();
-        hikariConfig.setConnectionTestQuery("SELECT 1");
-        hikariConfig.setMaximumPoolSize(10);
-        hikariConfig.setMinimumIdle(10);
-        hikariConfig.setConnectionTimeout(3000);
-        hikariConfig.setDriverClassName(databaseProperties.getDriverClassName());
-        hikariConfig.setJdbcUrl(databaseProperties.getUrl());
-        hikariConfig.setUsername(databaseProperties.getUsername());
-        hikariConfig.setPassword(databaseProperties.getPassword());
-
-        return new HikariDataSource(hikariConfig);
+        return DataSourceBuilder.create()
+            .driverClassName(databaseProperties.getDriverClassName())
+            .url(databaseProperties.getUrl())
+            .username(databaseProperties.getUsername())
+            .password(databaseProperties.getPassword())
+            .type(BasicDataSource.class)
+            .build();
     }
 
     /**
