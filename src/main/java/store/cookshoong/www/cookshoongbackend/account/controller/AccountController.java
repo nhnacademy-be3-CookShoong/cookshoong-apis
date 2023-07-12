@@ -60,6 +60,12 @@ public class AccountController {
             .build();
     }
 
+    /**
+     * accountId 기준으로 회원의 모든 정보(password 제외)를 조회.
+     *
+     * @param accountId the account id
+     * @return the account
+     */
     @GetMapping("/{accountId}")
     public ResponseEntity<SelectAccountResponseDto> getAccount(@PathVariable Long accountId) {
         SelectAccountResponseDto response = accountService.selectAccount(accountId);
