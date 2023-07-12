@@ -62,7 +62,7 @@ public class AddressController {
                                                            @PathVariable("addressId") Long addressId,
                                                            @RequestBody ModifyAccountAddressRequestDto requestDto) {
 
-        addressService.modifyAccountDetailAddress(accountId, addressId, requestDto);
+        addressService.updateAccountDetailAddress(accountId, addressId, requestDto);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -75,7 +75,7 @@ public class AddressController {
      */
     @GetMapping("/{accountId}")
     public ResponseEntity<List<AccountAddressResponseDto>> getAccountAddressList(@PathVariable Long accountId) {
-        List<AccountAddressResponseDto> addressList = addressService.getAccountAddressList(accountId);
+        List<AccountAddressResponseDto> addressList = addressService.selectAccountAddressList(accountId);
         return ResponseEntity.status(HttpStatus.OK).body(addressList);
     }
 
@@ -90,7 +90,7 @@ public class AddressController {
     public ResponseEntity<AddressResponseDto> getAccountAddressForPayment(@PathVariable("accountId") Long accountId,
                                                                           @PathVariable("addressId") Long addressId) {
 
-        AddressResponseDto address = addressService.getAccountAddressForPayment(accountId, addressId);
+        AddressResponseDto address = addressService.selectAccountAddressForPayment(accountId, addressId);
 
         return ResponseEntity.status(HttpStatus.OK).body(address);
     }
