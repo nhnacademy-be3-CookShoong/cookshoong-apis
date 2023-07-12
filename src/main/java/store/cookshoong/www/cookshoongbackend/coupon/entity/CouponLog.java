@@ -1,6 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.coupon.entity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,6 +13,7 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.cookshoong.www.cookshoongbackend.payment.entity.Order;
 
 /**
  * 쿠폰 내역 entity.
@@ -35,15 +36,29 @@ public class CouponLog {
     @JoinColumn(name = "issue_coupon_code", nullable = false)
     private IssueCoupon issueCoupon;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "coupon_log_type_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "coupon_log_type_code", nullable = false)
     private CouponLogType couponLogType;
 
-    // TODO: 주문 entity 추가 후 @ManyToOne 작성할 것.
-    @Column(name = "order_code", nullable = false)
-    private String orderCode;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_code", nullable = false)
+    private Order order;
 
-    @Column(name = "record_date", nullable = false)
-    private LocalDate recordDate;
+    @Column(name = "record_at", nullable = false)
+    private LocalDateTime recordAt;
 
+    /**
+     * 쿠폰 내역 생성자.
+     *
+     * @param issueCoupon   the issue coupon
+     * @param couponLogType the coupon log type
+     * @param order         the order
+     * @param recordAt    the record date
+     */
+    public CouponLog(IssueCoupon issueCoupon, CouponLogType couponLogType, Order order, LocalDateTime recordAt) {
+        this.issueCoupon = issueCoupon;
+        this.couponLogType = couponLogType;
+        this.order = order;
+        this.recordAt = recordAt;
+    }
 }

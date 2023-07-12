@@ -6,12 +6,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.store.entity.Merchant;
-import store.cookshoong.www.cookshoongbackend.store.exception.DuplicatedMerchantException;
-import store.cookshoong.www.cookshoongbackend.store.exception.MerchantNotFoundException;
+import store.cookshoong.www.cookshoongbackend.store.exception.merchant.DuplicatedMerchantException;
+import store.cookshoong.www.cookshoongbackend.store.exception.merchant.MerchantNotFoundException;
 import store.cookshoong.www.cookshoongbackend.store.model.request.CreateMerchantRequestDto;
+import store.cookshoong.www.cookshoongbackend.store.model.request.UpdateMerchantRequestDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.SelectMerchantResponseDto;
-import store.cookshoong.www.cookshoongbackend.store.model.response.UpdateMerchantResponseDto;
-import store.cookshoong.www.cookshoongbackend.store.repository.MerchantRepository;
+import store.cookshoong.www.cookshoongbackend.store.repository.merchant.MerchantRepository;
 
 /**
  * 관리자가 가맹점 관리.
@@ -33,7 +33,7 @@ public class MerchantService {
      * @return 가맹점 리스트
      */
     @Transactional(readOnly = true)
-    public Page<SelectMerchantResponseDto> getMerchantList(Pageable pageable) {
+    public Page<SelectMerchantResponseDto> selectAllMerchants(Pageable pageable) {
         return merchantRepository.lookupMerchantPage(pageable);
     }
 
@@ -42,7 +42,7 @@ public class MerchantService {
      *
      * @param createMerchantRequestDto 가맹점 이름 정보
      */
-    public void saveMerchant(CreateMerchantRequestDto createMerchantRequestDto) {
+    public void createMerchant(CreateMerchantRequestDto createMerchantRequestDto) {
         if (merchantRepository.existsMerchantByName(createMerchantRequestDto.getMerchantName())) {
             throw new DuplicatedMerchantException(createMerchantRequestDto.getMerchantName());
         }
@@ -55,9 +55,12 @@ public class MerchantService {
      * @param merchantId               가맹점 아이디
      * @param merchantUpdateRequestDto 수정된 가맹점 이름 정보
      */
-    public void updateMerchant(Long merchantId, UpdateMerchantResponseDto merchantUpdateRequestDto) {
+    public void updateMerchant(Long merchantId, UpdateMerchantRequestDto merchantUpdateRequestDto) {
         Merchant merchant = merchantRepository.findById(merchantId)
             .orElseThrow(MerchantNotFoundException::new);
+        if (merchantRepository.existsMerchantByName(merchantUpdateRequestDto.getMerchantName())) {
+            throw new DuplicatedMerchantException(merchantUpdateRequestDto.getMerchantName());
+        }
         merchant.modifyMerchant(merchantUpdateRequestDto.getMerchantName());
     }
 
@@ -66,7 +69,7 @@ public class MerchantService {
      *
      * @param merchantId 가맹점 아이디
      */
-    public void deleteMerchant(Long merchantId) {
+    public void removeMerchant(Long merchantId) {
         merchantRepository.deleteById(merchantId);
     }
 

@@ -34,7 +34,7 @@ public class Account {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "status_code", nullable = false)
-    private AccountsStatus status;
+    private AccountStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "authority_code", nullable = false)
@@ -82,7 +82,7 @@ public class Account {
      * @param birthday    생년월일
      * @param phoneNumber 전화번호
      */
-    public Account(AccountsStatus status, Authority authority, Rank rank,
+    public Account(AccountStatus status, Authority authority, Rank rank,
                    String loginId, String password, String name,
                    String nickname, String email, LocalDate birthday,
                    String phoneNumber) {
@@ -107,7 +107,7 @@ public class Account {
      * @param rank             회원 등급
      * @param signUpRequestDto 회원가입 요청 Dto
      */
-    public Account(AccountsStatus status, Authority authority, Rank rank,
+    public Account(AccountStatus status, Authority authority, Rank rank,
                    SignUpRequestDto signUpRequestDto) {
         this(status, authority, rank,
             signUpRequestDto.getLoginId(), signUpRequestDto.getPassword(), signUpRequestDto.getName(),
@@ -119,7 +119,7 @@ public class Account {
         this.rank = rank;
     }
 
-    public void updateStatus(AccountsStatus status) {
+    public void updateStatus(AccountStatus status) {
         this.status = status;
     }
 

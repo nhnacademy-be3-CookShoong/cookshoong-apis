@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.address.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -51,7 +52,7 @@ public class AddressService {
         }
 
         Address address = new Address(requestDto.getMainPlace(), requestDto.getDetailPlace(),
-            requestDto.getLatitude(), requestDto.getLongitude());
+            new BigDecimal(requestDto.getLatitude()), new BigDecimal(requestDto.getLongitude()));
 
         addressRepository.save(address);
 

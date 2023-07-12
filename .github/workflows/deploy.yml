@@ -18,6 +18,9 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    env:
+      SECURE_KEY_MANAGER_PASSWORD: ${{ secrets.SECURE_KEY_MANAGER_PASSWORD }}
+      SECURE_KEY_MANAGER_APP_KEY: ${{ secrets.SECURE_KEY_MANAGER_APP_KEY }}
 
     steps:
       - uses: actions/checkout@v3
@@ -41,17 +44,50 @@ jobs:
 
       # 이미지 생성
       - name: Build Docker Image
-        run: docker build -t jeongjewan/cookshoong-back .
+        run: docker build -t jeongjewan/cookshoong-back --build-arg SECURE_KEY_MANAGER_PASSWORD=${{ secrets.SECURE_KEY_MANAGER_PASSWORD }} --build-arg SECURE_KEY_MANAGER_APP_KEY=${{ secrets.SECURE_KEY_MANAGER_APP_KEY }} .
 
       # 도커 허브 푸시
       - name: Docker Image Push
         run: docker push jeongjewan/cookshoong-back
+
+      # 첫번째 Back 배포
+      - name: shell Stop First Back Health Check
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_IP }}
+          username: ${{ secrets.SSH_ID }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script_stop: true
+          script: "./stop.sh"
 
       # 쉘 스크립트 실행
       - name: execute shell script
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_IP }}
+          username: ${{ secrets.SSH_ID }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script_stop: true
+          script: "./startup.sh"
+
+      # 두번째 Back 배포
+      - name: shell Stop Second Back Health Check
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_IP_2 }}
+          username: ${{ secrets.SSH_ID }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script_stop: true
+          script: "./stop.sh"
+
+      # 쉘 스크립트 실행
+      - name: execute shell script
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_IP_2 }}
           username: ${{ secrets.SSH_ID }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}

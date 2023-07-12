@@ -4,13 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
-import store.cookshoong.www.cookshoongbackend.account.entity.AccountsStatus;
+import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.account.exception.DuplicatedUserException;
+import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
+import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
-import store.cookshoong.www.cookshoongbackend.account.repository.AccountsStatusRepository;
+import store.cookshoong.www.cookshoongbackend.account.repository.AccountStatusRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.AuthorityRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.RankRepository;
 
@@ -26,7 +28,7 @@ import store.cookshoong.www.cookshoongbackend.account.repository.RankRepository;
 public class AccountService {
     private final AccountRepository accountRepository;
     private final RankRepository rankRepository;
-    private final AccountsStatusRepository accountsStatusRepository;
+    private final AccountStatusRepository accountStatusRepository;
     private final AuthorityRepository authorityRepository;
 
     /**
@@ -43,7 +45,7 @@ public class AccountService {
             throw new DuplicatedUserException(loginId);
         }
 
-        AccountsStatus status = accountsStatusRepository.getReferenceById(AccountsStatus.Code.ACTIVE.name());
+        AccountStatus status = accountStatusRepository.getReferenceById(AccountStatus.Code.ACTIVE.name());
         Rank defaultRank = rankRepository.getReferenceById(Rank.Code.LEVEL_1.name());
         Authority authority = authorityRepository.getReferenceById(authorityCode.name());
 
@@ -51,4 +53,8 @@ public class AccountService {
             .getId();
     }
 
+    public SelectAccountResponseDto selectAccount(Long accountId) {
+        return accountRepository.lookupAccount(accountId)
+            .orElseThrow(UserNotFoundException::new);
+    }
 }

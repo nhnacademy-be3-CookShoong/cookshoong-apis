@@ -31,6 +31,6 @@ public class CreateStoreRequestDto {
     private String businessLicense;
     private String description;
     private BigDecimal earningRate;
-    private String bankType;
+    private String bankName;
     private String bankAccount;
 }

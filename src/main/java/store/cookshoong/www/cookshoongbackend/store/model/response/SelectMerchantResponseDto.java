@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.store.model.response;
 
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 
 /**
@@ -10,5 +11,15 @@ import lombok.Getter;
  */
 @Getter
 public class SelectMerchantResponseDto {
-    private String merchantName;
+    private final String merchantName;
+
+    /**
+     * 가맹점 리스트 조회 dto.
+     *
+     * @param merchantName 가맹점 이름
+     */
+    @QueryProjection
+    public SelectMerchantResponseDto(String merchantName) {
+        this.merchantName = merchantName;
+    }
 }

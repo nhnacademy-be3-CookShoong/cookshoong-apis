@@ -1,6 +1,5 @@
 package store.cookshoong.www.cookshoongbackend.address.model.request;
 
-import java.math.BigDecimal;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import lombok.AccessLevel;
@@ -30,8 +29,8 @@ public class CreateAddressRequestDto {
     private String detailPlace;
 
     @NotBlank
-    private BigDecimal latitude;
+    private String latitude;
 
     @NotBlank
-    private BigDecimal longitude;
+    private String longitude;
 }

@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import store.cookshoong.www.cookshoongbackend.account.exception.AuthorityNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.exception.DuplicatedUserException;
+import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
+import store.cookshoong.www.cookshoongbackend.common.exception.ErrorMessage;
 import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException;
 import store.cookshoong.www.cookshoongbackend.common.exception.ValidationFailureException;
 import store.cookshoong.www.cookshoongbackend.common.util.IpResolver;
@@ -45,11 +47,13 @@ public class RequestExceptionHandler {
      * @param e 조회실패 예외
      * @return 조회실패 필드와 메세지
      */
-    @ExceptionHandler({AuthorityNotFoundException.class})
-    public ResponseEntity<String> handleValidationFailure(NotFoundException e, HttpServletRequest request) {
+    @ExceptionHandler({AuthorityNotFoundException.class, UserNotFoundException.class})
+    public ResponseEntity<ErrorMessage> handleValidationFailure(NotFoundException e,
+                                                                HttpServletRequest request) {
         log.error(CLIENT_IP_LOG, IpResolver.getClientIp(request));
+        System.out.println(e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(e.getMessage());
+            .body(new ErrorMessage(e));
     }
 
     /**
@@ -59,9 +63,9 @@ public class RequestExceptionHandler {
      * @return 예외메세지
      */
     @ExceptionHandler({DuplicatedUserException.class})
-    public  ResponseEntity<String> handleConflictStatus(Exception e, HttpServletRequest request) {
+    public  ResponseEntity<ErrorMessage> handleConflictStatus(Exception e, HttpServletRequest request) {
         log.error(CLIENT_IP_LOG, IpResolver.getClientIp(request));
         return ResponseEntity.status(HttpStatus.CONFLICT)
-            .body(e.getMessage());
+            .body(new ErrorMessage(e));
     }
 }

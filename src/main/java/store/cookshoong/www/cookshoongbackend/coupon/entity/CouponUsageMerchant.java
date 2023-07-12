@@ -1,13 +1,15 @@
 package store.cookshoong.www.cookshoongbackend.coupon.entity;
 
-import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.cookshoong.www.cookshoongbackend.store.entity.Merchant;
 
 /**
  * 쿠폰 사용처 가맹점 entity.
@@ -23,9 +25,9 @@ import lombok.NoArgsConstructor;
 @DiscriminatorValue("MERCHANT")
 public class CouponUsageMerchant extends CouponUsage {
 
-    // TODO: 가맹점 entity 추가 후 @ManyToOne 작성할 것.
-    @Column(name = "merchant_id", nullable = false)
-    private Long merchantId;
+    @ManyToOne
+    @JoinColumn(name = "merchant_id", nullable = false)
+    private Merchant merchant;
 
     @Override
     public String getTypeName() {

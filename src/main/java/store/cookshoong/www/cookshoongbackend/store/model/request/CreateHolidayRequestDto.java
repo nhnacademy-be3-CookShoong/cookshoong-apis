@@ -1,7 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.store.model.request;
 
 import java.time.LocalDate;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,9 +16,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CreateHolidayRequestDto {
 
-    @NotBlank
-    private LocalDate holidayDate;
+    @NotNull
+    private LocalDate holidayStartDate;
 
-    @NotBlank
-    private Long storeId;
+    @NotNull
+    private LocalDate holidayEndDate;
 }
