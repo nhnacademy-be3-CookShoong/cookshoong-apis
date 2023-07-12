@@ -7,7 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.store.entity.QMerchant;
+import store.cookshoong.www.cookshoongbackend.store.model.response.QSelectAllMerchantsForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.QSelectMerchantResponseDto;
+import store.cookshoong.www.cookshoongbackend.store.model.response.SelectAllMerchantsForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.SelectMerchantResponseDto;
 
 /**
@@ -47,5 +49,14 @@ public class MerchantRepositoryImpl implements MerchantRepositoryCustom {
             .select(merchant.count())
             .from(merchant)
             .fetchOne();
+    }
+
+    @Override
+    public List<SelectAllMerchantsForUserResponseDto> lookupMerchants() {
+        QMerchant merchant = QMerchant.merchant;
+        return jpaQueryFactory
+            .select(new QSelectAllMerchantsForUserResponseDto(merchant.id, merchant.name))
+            .from(merchant)
+            .fetch();
     }
 }
