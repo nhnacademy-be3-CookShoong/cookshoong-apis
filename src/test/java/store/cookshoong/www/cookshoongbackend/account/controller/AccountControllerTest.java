@@ -95,16 +95,16 @@ class AccountControllerTest {
             .andExpect(status().isCreated())
             .andDo(MockMvcRestDocumentationWrapper.document("registerAccount",
                 ResourceSnippetParameters.builder()
-                    .requestSchema(Schema.schema("account.Post")),
-                requestFields(
-                    fieldWithPath("loginId").description("로그인 때 사용되는 id"),
-                    fieldWithPath("password").description("비밀번호"),
-                    fieldWithPath("name").description("이름"),
-                    fieldWithPath("nickname").description("별명"),
-                    fieldWithPath("email").description("이메일"),
-                    fieldWithPath("birthday").description("생일"),
-                    fieldWithPath("phoneNumber").description("핸드폰 번호")
-                )));
+                    .requestSchema(Schema.schema("account.Post"))
+                    .requestFields(
+                        fieldWithPath("loginId").description("로그인 때 사용되는 id"),
+                        fieldWithPath("password").description("비밀번호"),
+                        fieldWithPath("name").description("이름"),
+                        fieldWithPath("nickname").description("별명"),
+                        fieldWithPath("email").description("이메일"),
+                        fieldWithPath("birthday").description("생일"),
+                        fieldWithPath("phoneNumber").description("핸드폰 번호")
+                    )));
 
         verify(accountService, times(1)).createAccount(any(SignUpRequestDto.class), eq(Authority.Code.CUSTOMER));
     }
@@ -250,13 +250,10 @@ class AccountControllerTest {
                 .hasMessageContaining("존재하지 않는 회원"))
             .andDo(MockMvcRestDocumentationWrapper.document("findAccount",
                 ResourceSnippetParameters.builder()
-                    .requestSchema(Schema.schema("UserNotFoundException")),
-                requestFields(
-                    fieldWithPath("loginId").description("로그인 때 사용되는 id")
-                ),
-                responseFields(
-                    fieldWithPath("UserNotFoundException").description("존재하지 않는 회원입니다")
-                ))
+                    .requestSchema(Schema.schema("UserNotFoundException"))
+                    .pathParameters(parameterWithName("loginId").description("로그인할 때 사용자 아이디"))
+                    .responseFields(fieldWithPath("message").description("에러 메세지"))
+                )
             );
     }
 
@@ -285,17 +282,16 @@ class AccountControllerTest {
             .andExpect(jsonPath("$.attributes.status").value(testAuthDto.getStatus().getStatusCode()))
             .andDo(MockMvcRestDocumentationWrapper.document("findAccount",
                 ResourceSnippetParameters.builder()
-                    .requestSchema(Schema.schema("SelectAccountAuthResponseDto")),
-                pathParameters(
-                    parameterWithName("loginId").description("로그인할 때 사용자 아이디")
-                ),
-                responseFields(
-                    fieldWithPath("username").description("사용자 아이디(loginId)"),
-                    fieldWithPath("password").description("사용자 비밀번호"),
-                    fieldWithPath("attributes.accountId").description("사용자 시퀀스"),
-                    fieldWithPath("attributes.status").description("사용자 상태"),
-                    fieldWithPath("attributes.authority").description("사용자 권한")
-                ))
+                    .requestSchema(Schema.schema("SelectAccountAuthResponseDto"))
+                    .pathParameters(
+                        parameterWithName("loginId").description("로그인할 때 사용자 아이디"))
+                    .responseFields(
+                        fieldWithPath("username").description("사용자 아이디(loginId)"),
+                        fieldWithPath("password").description("사용자 비밀번호"),
+                        fieldWithPath("attributes.accountId").description("사용자 시퀀스"),
+                        fieldWithPath("attributes.status").description("사용자 상태"),
+                        fieldWithPath("attributes.authority").description("사용자 권한")
+                    ))
             );
     }
 }
