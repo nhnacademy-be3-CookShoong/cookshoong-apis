@@ -3,15 +3,14 @@ package store.cookshoong.www.cookshoongbackend.common.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
-import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 import store.cookshoong.www.cookshoongbackend.common.model.response.SecureKeyManagerResponseDto;
 import store.cookshoong.www.cookshoongbackend.common.property.SecureKeyManagerProperties;
+import store.cookshoong.www.cookshoongbackend.common.property.SecureKeyManagerUri;
 
 /**
  * Secure Key Manager 서비스를 호출하기 위한 서비스 클래스.
@@ -39,15 +38,10 @@ public class SKMService {
     public <T> T fetchSecrets(String keyid, Class<T> valueType) throws JsonProcessingException {
         String appkey = secureKeyManagerProperties.getAppkey();
 
-        URI uri = UriComponentsBuilder
-            .fromUriString("https://api-keymanager.nhncloudservice.com/keymanager/v1.0/appkey/{appkey}/secrets/{keyid}")
-            .uriVariables(Map.of("appkey", appkey, "keyid", keyid))
-            .encode()
-            .build()
-            .toUri();
+        URI secretUri = SecureKeyManagerUri.getSecretUri(appkey, keyid);
 
         String response = Objects.requireNonNull(sslRestTemplate
-                .getForEntity(uri, SecureKeyManagerResponseDto.class).getBody()
+                .getForEntity(secretUri, SecureKeyManagerResponseDto.class).getBody()
             )
             .getResponseBody()
             .getSecrets();
