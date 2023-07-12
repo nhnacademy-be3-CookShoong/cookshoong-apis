@@ -110,7 +110,7 @@ class AccountAddressRepositoryTest {
     }
 
     @Test
-    @DisplayName("회원으로로 조회한 주소")
+    @DisplayName("회원으로 조회한 주소")
     void getFindByAccount() {
 
         AccountStatus status = new AccountStatus("ACTIVE", "활성");
@@ -145,7 +145,4 @@ class AccountAddressRepositoryTest {
         assertThat(accountAddressList.get(0).getAlias()).isEqualTo(accountAddress.getAlias());
 
     }
-
-
-
 }
