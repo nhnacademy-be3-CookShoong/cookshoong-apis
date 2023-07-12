@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.store.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +11,7 @@ import store.cookshoong.www.cookshoongbackend.store.exception.category.Duplicate
 import store.cookshoong.www.cookshoongbackend.store.exception.category.StoreCategoryNotFoundException;
 import store.cookshoong.www.cookshoongbackend.store.model.request.CreateStoreCategoryRequestDto;
 import store.cookshoong.www.cookshoongbackend.store.model.request.UpdateStoreCategoryRequestDto;
+import store.cookshoong.www.cookshoongbackend.store.model.response.SelectAllCategoriesForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.SelectAllCategoriesResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.repository.category.StoreCategoryRepository;
 
@@ -62,6 +64,10 @@ public class StoreCategoryService {
             throw new DuplicatedStoreCategoryException(requestDto.getStoreCategoryName());
         }
         storeCategory.updateStoreCategory(requestDto.getStoreCategoryName());
+    }
+
+    public List<SelectAllCategoriesForUserResponseDto> selectAllCategoriesForUser(){
+        return storeCategoryRepository.lookupStoreCategories();
     }
 
     //TODO 10. 카테고리 삭제는 오늘 작성.

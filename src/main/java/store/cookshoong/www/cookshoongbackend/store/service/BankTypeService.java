@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.store.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.store.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.store.exception.banktype.DuplicatedBankException;
 import store.cookshoong.www.cookshoongbackend.store.model.request.CreateBankRequestDto;
+import store.cookshoong.www.cookshoongbackend.store.model.response.SelectAllBanksForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.SelectAllBanksResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.repository.bank.BankTypeRepository;
 
@@ -46,6 +48,11 @@ public class BankTypeService {
             throw new DuplicatedBankException(requestDto.getBankName());
         }
         bankTypeRepository.save(new BankType(requestDto.getBankCode(), requestDto.getBankName()));
+    }
+
+    @Transactional(readOnly = true)
+    public List<SelectAllBanksForUserResponseDto> selectBanksForUser(){
+        return bankTypeRepository.lookupBanks();
     }
 
 }

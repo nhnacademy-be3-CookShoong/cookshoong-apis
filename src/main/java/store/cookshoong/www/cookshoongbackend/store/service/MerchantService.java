@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.store.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +11,7 @@ import store.cookshoong.www.cookshoongbackend.store.exception.merchant.Duplicate
 import store.cookshoong.www.cookshoongbackend.store.exception.merchant.MerchantNotFoundException;
 import store.cookshoong.www.cookshoongbackend.store.model.request.CreateMerchantRequestDto;
 import store.cookshoong.www.cookshoongbackend.store.model.request.UpdateMerchantRequestDto;
+import store.cookshoong.www.cookshoongbackend.store.model.response.SelectAllMerchantsForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.model.response.SelectMerchantResponseDto;
 import store.cookshoong.www.cookshoongbackend.store.repository.merchant.MerchantRepository;
 
@@ -71,6 +73,15 @@ public class MerchantService {
      */
     public void removeMerchant(Long merchantId) {
         merchantRepository.deleteById(merchantId);
+    }
+
+    /**
+     * 사업자 : 가맹점 셀렉트 박스를 위한.
+     *
+     * @return the list
+     */
+    public List<SelectAllMerchantsForUserResponseDto> selectAllMerchantsForUser() {
+        return merchantRepository.lookupMerchants();
     }
 
 }
