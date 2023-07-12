@@ -89,7 +89,7 @@ public class AddressService {
     @Transactional(readOnly = true)
     public List<AccountAddressResponseDto> getAccountAddressList(Long accountId) {
 
-        return accountAddressRepository.getByAccountIdAddress(accountId);
+        return accountAddressRepository.lookupByAccountIdAddressAll(accountId);
     }
 
     /**
