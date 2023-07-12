@@ -4,13 +4,18 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper;
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
+import com.epages.restdocs.apispec.Schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
 import java.util.List;
@@ -18,6 +23,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -33,14 +39,15 @@ import store.cookshoong.www.cookshoongbackend.payment.service.ChargeTypeService;
  * @author jeongjewan
  * @since 2023.07.07
  */
+@AutoConfigureRestDocs
 @WebMvcTest(ChargeTypeController.class)
 class ChargeTypeControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    private ObjectMapper objectMapper;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    MockMvc mockMvc;
 
     @MockBean
     private ChargeTypeService chargeTypeService;
@@ -54,10 +61,16 @@ class ChargeTypeControllerTest {
         String requestBody = objectMapper.writeValueAsString(requestDto);
 
         mockMvc.perform(post("/api/payments/charges")
-            .contentType(APPLICATION_JSON)
-            .content(requestBody))
+                .contentType(APPLICATION_JSON)
+                .content(requestBody))
             .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.name").value(requestDto.getName()));
+            .andExpect(jsonPath("$.name").value(requestDto.getName()))
+            .andDo(MockMvcRestDocumentationWrapper.document("post-charge",
+                ResourceSnippetParameters.builder()
+                    .requestSchema(Schema.schema("MainRequest.Post")),
+                requestFields(
+                    fieldWithPath("name").description("결제 이름")
+                )));
     }
 
     @Test
@@ -113,8 +126,8 @@ class ChargeTypeControllerTest {
         Long chargeTypeId = 1L;
 
         mockMvc.perform(put("/api/payments/charges/{chargeTypeId}", chargeTypeId)
-            .contentType(APPLICATION_JSON)
-            .content(requestBody))
+                .contentType(APPLICATION_JSON)
+                .content(requestBody))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.name").value(requestDto.getName()));
     }

@@ -2,18 +2,16 @@ package store.cookshoong.www.cookshoongbackend.util;
 
 import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.springframework.boot.test.context.TestComponent;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
-import store.cookshoong.www.cookshoongbackend.account.entity.AccountsStatus;
+import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
@@ -49,8 +47,8 @@ public class TestEntity {
         return new Address("main", "detail", BigDecimal.ONE, BigDecimal.ZERO);
     }
 
-    public AccountsStatus getAccountStatusActive() {
-        return new AccountsStatus("ACTIVE", "활성");
+    public AccountStatus getAccountStatusActive() {
+        return new AccountStatus("ACTIVE", "활성");
     }
 
     public Authority getAuthorityCustomer() {
@@ -61,8 +59,8 @@ public class TestEntity {
         return new Rank("LEVEL_1", "프렌드");
     }
 
-    public Account getAccount(AccountsStatus accountsStatus, Authority authority, Rank rank) {
-        return new Account(accountsStatus, authority, rank, "eora21", "pwd", "김주호",
+    public Account getAccount(AccountStatus accountStatus, Authority authority, Rank rank) {
+        return new Account(accountStatus, authority, rank, "eora21", "pwd", "김주호",
             "말비묵", "test@test.com", LocalDate.of(1996, 4, 1),
             "01012345678");
     }
@@ -124,7 +122,7 @@ public class TestEntity {
     }
 
     public Holiday getHoliday(Store store) {
-        return new Holiday(store, LocalDate.of(2020, 2, 20));
+        return new Holiday(store, LocalDate.of(2020, 2, 20), LocalDate.of(2020, 2, 22));
     }
 
     public Order getOrder() {

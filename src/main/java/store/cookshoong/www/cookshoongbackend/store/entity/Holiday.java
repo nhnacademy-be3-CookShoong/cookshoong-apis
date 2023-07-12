@@ -34,17 +34,22 @@ public class Holiday {
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
-    @Column(name = "holiday_date", nullable = false)
-    private LocalDate holidayDate;
+    @Column(name = "holiday_start_date", nullable = false)
+    private LocalDate holidayStartDate;
+
+    @Column(name = "holiday_end_date", nullable = false)
+    private LocalDate holidayEndDate;
 
     /**
      * 휴업일 생성자.
      *
      * @param store 매장
-     * @param holidayDate 휴업일
+     * @param holidayStartDate 휴업 시작일
+     * @param holidayEndDate 휴업 종료일
      */
-    public Holiday(Store store, LocalDate holidayDate) {
+    public Holiday(Store store, LocalDate holidayStartDate, LocalDate holidayEndDate) {
         this.store = store;
-        this.holidayDate = holidayDate;
+        this.holidayStartDate = holidayStartDate;
+        this.holidayEndDate = holidayEndDate;
     }
 }

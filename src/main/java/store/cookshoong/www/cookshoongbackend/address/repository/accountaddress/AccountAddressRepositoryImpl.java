@@ -30,7 +30,8 @@ public class AccountAddressRepositoryImpl implements AccountAddressRepositoryCus
         QAddress address = QAddress.address;
 
         return jpaQueryFactory
-            .select(Projections.constructor(AccountAddressResponseDto.class, accountAddress.alias, address.mainPlace))
+            .select(Projections.constructor(AccountAddressResponseDto.class,
+                accountAddress.account.id, accountAddress.alias, address.mainPlace))
             .from(accountAddress)
             .innerJoin(accountAddress.address, address)
             .where(accountAddress.pk.accountId.eq(accountId))
