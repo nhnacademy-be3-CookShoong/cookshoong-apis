@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountAuthDto;
 
 /**
@@ -22,6 +23,14 @@ public class SelectAccountAuthResponseDto {
     private String password;
     private Attributes attributes;
 
+    private void setUsername(String username) {
+        this.username = username;
+    }
+
+    private void setPassword(String password) {
+        this.password = password;
+    }
+
     /**
      * 저장된 정보에서 전송용 응답정보로 변환시켜주는 메서드.
      *
@@ -30,8 +39,8 @@ public class SelectAccountAuthResponseDto {
      */
     public static SelectAccountAuthResponseDto responseDtoFrom(SelectAccountAuthDto authDto) {
         SelectAccountAuthResponseDto authResponseDto = new SelectAccountAuthResponseDto();
-        authResponseDto.username = authDto.getLoginId();
-        authResponseDto.password = authDto.getPassword();
+        authResponseDto.setUsername(authDto.getLoginId());
+        authResponseDto.setPassword(authDto.getPassword());
         authResponseDto.attributes = Attributes.builder()
             .accountId(authDto.getId())
             .authority(authDto.getAuthority().getAuthorityCode())
