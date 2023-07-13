@@ -1,11 +1,11 @@
 package store.cookshoong.www.cookshoongbackend.address.service;
 
-import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
+import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.address.entity.AccountAddress;
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
@@ -44,7 +44,7 @@ public class AddressService {
     public void createAccountAddress(Long accountId, CreateAccountAddressRequestDto requestDto) {
 
         Account account = accountRepository.findById(accountId)
-            .orElseThrow(() -> new IllegalArgumentException("계정이 존재하지 않습니다."));
+            .orElseThrow(UserNotFoundException::new);
 
         List<AccountAddress> accountAddressList = accountAddressRepository.findByAccount(account);
         if (accountAddressList.size() >= MAX_ADDRESS_COUNT) {
@@ -89,7 +89,10 @@ public class AddressService {
     @Transactional(readOnly = true)
     public List<AccountAddressResponseDto> selectAccountAddressList(Long accountId) {
 
-        return accountAddressRepository.lookupByAccountIdAddressAll(accountId);
+        Account account = accountRepository.findById(accountId)
+            .orElseThrow(UserNotFoundException::new);
+
+        return accountAddressRepository.lookupByAccountIdAddressAll(account.getId());
     }
 
     /**
@@ -98,23 +101,15 @@ public class AddressService {
      * 회원이 주소를 등록할 때 지도에 위도와 경도를 가지고 위치를 보여주는 메서드
      *
      * @param accountId     회원 아이디
-     * @param addressId     주소 아이디
      * @return              회원이 가지고 있는 주소와 좌표를 반환
      */
     @Transactional(readOnly = true)
-    public AddressResponseDto selectAccountAddress(Long accountId, Long addressId) {
+    public AddressResponseDto selectAccountAddressRecentRegistration(Long accountId) {
 
-        AccountAddress.Pk pk = new AccountAddress.Pk(accountId, addressId);
+        Account account = accountRepository.findById(accountId)
+            .orElseThrow(UserNotFoundException::new);
 
-        AccountAddress accountAddress = accountAddressRepository.findById(pk)
-            .orElseThrow(AccountAddressNotFoundException::new);
-
-        String mainPlace = accountAddress.getAddress().getMainPlace();
-        String detailPlace = accountAddress.getAddress().getDetailPlace();
-        BigDecimal latitude = accountAddress.getAddress().getLatitude();
-        BigDecimal longitude = accountAddress.getAddress().getLongitude();
-
-        return new AddressResponseDto(mainPlace, detailPlace, latitude, longitude);
+        return accountAddressRepository.lookupByAccountIdAddressRecentRegistration(account.getId());
     }
 
     /**
