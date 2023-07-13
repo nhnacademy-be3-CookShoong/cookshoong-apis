@@ -27,12 +27,12 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.payment.entity.ChargeType;
 import store.cookshoong.www.cookshoongbackend.payment.entity.Order;
-import store.cookshoong.www.cookshoongbackend.store.entity.BankType;
-import store.cookshoong.www.cookshoongbackend.store.entity.Holiday;
-import store.cookshoong.www.cookshoongbackend.store.entity.Merchant;
-import store.cookshoong.www.cookshoongbackend.store.entity.Store;
-import store.cookshoong.www.cookshoongbackend.store.entity.StoreCategory;
-import store.cookshoong.www.cookshoongbackend.store.entity.StoreStatus;
+import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
+import store.cookshoong.www.cookshoongbackend.shop.entity.Holiday;
+import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
+import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
+import store.cookshoong.www.cookshoongbackend.shop.entity.StoreCategory;
+import store.cookshoong.www.cookshoongbackend.shop.entity.StoreStatus;
 
 /**
  * 테스트 환경에서 원하는 entity 미리 만들어두는 클래스.
