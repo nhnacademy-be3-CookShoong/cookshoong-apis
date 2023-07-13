@@ -15,7 +15,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsage;
  * @since 2023.07.06
  */
 @Getter
-public class CouponResponseTempDto {
+public class SelectOwnCouponResponseTempDto {
     private final UUID issueCouponCode;
     private final CouponType couponType;
     private final CouponUsage couponUsage;
@@ -36,8 +36,9 @@ public class CouponResponseTempDto {
      * @param logTypeDescription 쿠폰 기록 정보
      */
     @QueryProjection
-    public CouponResponseTempDto(UUID issueCouponCode, CouponType couponType, CouponUsage couponUsage, String name,
-                                 String description, LocalTime expirationAt, String logTypeDescription) {
+    public SelectOwnCouponResponseTempDto(UUID issueCouponCode, CouponType couponType, CouponUsage couponUsage,
+                                          String name, String description, LocalTime expirationAt,
+                                          String logTypeDescription) {
         this.issueCouponCode = issueCouponCode;
         this.couponType = couponType;
         this.couponUsage = couponUsage;

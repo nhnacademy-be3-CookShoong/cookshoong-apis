@@ -36,15 +36,15 @@ public class CouponPolicyController {
      * @return CREATED status 및 쿠폰 정책 id
      */
     @PostMapping("/stores/{storeId}/cash")
-    public ResponseEntity<Long> postStoreCashCouponPolicy(@PathVariable Long storeId,
+    public ResponseEntity<Void> postStoreCashCouponPolicy(@PathVariable Long storeId,
                                                           @RequestBody @Valid CreateCashCouponPolicyRequestDto dto,
                                                           BindingResult bindingResult) {
         validPolicyRequest(bindingResult);
-        Long storeCashCouponPolicyId = couponPolicyService.createStoreCashCouponPolicy(storeId, dto);
+        couponPolicyService.createStoreCashCouponPolicy(storeId, dto);
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(storeCashCouponPolicyId);
+            .build();
     }
 
     /**
@@ -55,16 +55,16 @@ public class CouponPolicyController {
      * @return CREATED status 및 쿠폰 정책 id
      */
     @PostMapping("/stores/{storeId}/percent")
-    public ResponseEntity<Long> postStorePercentCouponPolicy(@PathVariable Long storeId,
+    public ResponseEntity<Void> postStorePercentCouponPolicy(@PathVariable Long storeId,
                                                              @RequestBody @Valid
                                                              CreatePercentCouponPolicyRequestDto dto,
                                                              BindingResult bindingResult) {
         validPolicyRequest(bindingResult);
-        Long storePercentCouponPolicyId = couponPolicyService.createStorePercentCouponPolicy(storeId, dto);
+        couponPolicyService.createStorePercentCouponPolicy(storeId, dto);
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(storePercentCouponPolicyId);
+            .build();
     }
 
     /**
@@ -75,15 +75,15 @@ public class CouponPolicyController {
      * @return CREATED status 및 쿠폰 정책 id
      */
     @PostMapping("/merchants/{merchantId}/cash")
-    public ResponseEntity<Long> postMerchantCashCouponPolicy(@PathVariable Long merchantId,
+    public ResponseEntity<Void> postMerchantCashCouponPolicy(@PathVariable Long merchantId,
                                                              @RequestBody @Valid CreateCashCouponPolicyRequestDto dto,
                                                              BindingResult bindingResult) {
         validPolicyRequest(bindingResult);
-        Long storePercentCouponPolicyId = couponPolicyService.createMerchantCashCouponPolicy(merchantId, dto);
+        couponPolicyService.createMerchantCashCouponPolicy(merchantId, dto);
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(storePercentCouponPolicyId);
+            .build();
     }
 
     /**
@@ -94,16 +94,16 @@ public class CouponPolicyController {
      * @return CREATED status 및 쿠폰 정책 id
      */
     @PostMapping("/merchants/{merchantId}/percent")
-    public ResponseEntity<Long> postMerchantPointCouponPolicy(@PathVariable Long merchantId,
+    public ResponseEntity<Void> postMerchantPointCouponPolicy(@PathVariable Long merchantId,
                                                               @RequestBody @Valid
                                                               CreatePercentCouponPolicyRequestDto dto,
                                                               BindingResult bindingResult) {
         validPolicyRequest(bindingResult);
-        Long storePercentCouponPolicyId = couponPolicyService.createMerchantPercentCouponPolicy(merchantId, dto);
+        couponPolicyService.createMerchantPercentCouponPolicy(merchantId, dto);
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(storePercentCouponPolicyId);
+            .build();
     }
 
     /**
@@ -113,14 +113,14 @@ public class CouponPolicyController {
      * @return CREATED status 및 쿠폰 정책 id
      */
     @PostMapping("/all/cash")
-    public ResponseEntity<Long> postAllCashCouponPolicy(@RequestBody @Valid CreateCashCouponPolicyRequestDto dto,
+    public ResponseEntity<Void> postAllCashCouponPolicy(@RequestBody @Valid CreateCashCouponPolicyRequestDto dto,
                                                         BindingResult bindingResult) {
         validPolicyRequest(bindingResult);
-        Long storePercentCouponPolicyId = couponPolicyService.createAllCashCouponPolicy(dto);
+        couponPolicyService.createAllCashCouponPolicy(dto);
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(storePercentCouponPolicyId);
+            .build();
     }
 
     /**
@@ -130,14 +130,14 @@ public class CouponPolicyController {
      * @return CREATED status 및 쿠폰 정책 id
      */
     @PostMapping("/all/percent")
-    public ResponseEntity<Long> postAllPointCouponPolicy(@RequestBody @Valid CreatePercentCouponPolicyRequestDto dto,
+    public ResponseEntity<Void> postAllPointCouponPolicy(@RequestBody @Valid CreatePercentCouponPolicyRequestDto dto,
                                                          BindingResult bindingResult) {
         validPolicyRequest(bindingResult);
-        Long storePercentCouponPolicyId = couponPolicyService.createAllPercentCouponPolicy(dto);
+        couponPolicyService.createAllPercentCouponPolicy(dto);
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(storePercentCouponPolicyId);
+            .build();
     }
 
     private static void validPolicyRequest(BindingResult bindingResult) {

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import store.cookshoong.www.cookshoongbackend.coupon.model.response.CouponResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectOwnCouponResponseDto;
 import store.cookshoong.www.cookshoongbackend.coupon.service.CouponSearchService;
 
 /**
@@ -30,14 +30,14 @@ public class CouponSearchController {
      *
      * @param accountId the account id
      * @param pageable  페이징 설정
-     * @param useCond   사용 가능 여부 컨디션(null = 조건없음, true = 사용 가능, false = 사용 불가)
+     * @param useCond   사용 가능 여부 컨디션(null = 사용 가능•불가 쿠폰 모두, true = 사용 가능, false = 사용 불가)
      * @param storeId   the store id
      * @return 소유 쿠폰 중 사용 가능 등 필터링한 결과
      */
     @GetMapping("/{accountId}")
-    public ResponseEntity<Page<CouponResponseDto>> getOwnCoupons(@PathVariable Long accountId, Pageable pageable,
-                                                                 @RequestParam Boolean useCond,
-                                                                 @RequestParam Long storeId) {
+    public ResponseEntity<Page<SelectOwnCouponResponseDto>> getOwnCoupons(
+        @PathVariable Long accountId, Pageable pageable, @RequestParam Boolean useCond, @RequestParam Long storeId) {
+
         return ResponseEntity.ok(couponSearchService.getOwnCoupons(accountId, pageable, useCond, storeId));
     }
 }
