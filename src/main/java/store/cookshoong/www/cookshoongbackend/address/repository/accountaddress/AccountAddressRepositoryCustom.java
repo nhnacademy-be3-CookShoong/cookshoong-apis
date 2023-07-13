@@ -20,5 +20,5 @@ public interface AccountAddressRepositoryCustom {
      * @param accountId 회원 아이디
      * @return 회원 주소 목록
      */
-    List<AccountAddressResponseDto> getByAccountIdAddress(Long accountId);
+    List<AccountAddressResponseDto> lookupByAccountIdAddressAll(Long accountId);
 }

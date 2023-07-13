@@ -59,10 +59,8 @@ public class AccountAddress {
     @AllArgsConstructor
     public static class Pk implements Serializable {
 
-        @Column(name = "account_id")
         private Long accountId;
 
-        @Column(name = "address_id")
         private Long addressId;
     }
 
