@@ -102,7 +102,7 @@ public class AddressService {
      * @return              회원이 가지고 있는 주소와 좌표를 반환
      */
     @Transactional(readOnly = true)
-    public AddressResponseDto selectAccountAddressForPayment(Long accountId, Long addressId) {
+    public AddressResponseDto selectAccountAddress(Long accountId, Long addressId) {
 
         AccountAddress.Pk pk = new AccountAddress.Pk(accountId, addressId);
 

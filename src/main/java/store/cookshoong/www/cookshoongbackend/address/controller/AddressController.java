@@ -90,7 +90,7 @@ public class AddressController {
     public ResponseEntity<AddressResponseDto> getAccountAddressForPayment(@PathVariable("accountId") Long accountId,
                                                                           @PathVariable("addressId") Long addressId) {
 
-        AddressResponseDto address = addressService.selectAccountAddressForPayment(accountId, addressId);
+        AddressResponseDto address = addressService.selectAccountAddress(accountId, addressId);
 
         return ResponseEntity.status(HttpStatus.OK).body(address);
     }
