@@ -10,14 +10,17 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import store.cookshoong.www.cookshoongbackend.store.exception.store.StoreValidException;
-import store.cookshoong.www.cookshoongbackend.store.model.request.CreateStoreRequestDto;
-import store.cookshoong.www.cookshoongbackend.store.model.response.SelectAllStoresResponseDto;
-import store.cookshoong.www.cookshoongbackend.store.model.response.SelectStoreResponseDto;
-import store.cookshoong.www.cookshoongbackend.store.service.StoreService;
+import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreValidException;
+import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateStoreRequestDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateCategoryRequestDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreRequestDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.service.StoreService;
 
 /**
  * 사업자 회원을 위한 컨트롤러.
@@ -40,7 +43,7 @@ public class BusinessAccountController {
      */
     @GetMapping("/stores")
     public ResponseEntity<Page<SelectAllStoresResponseDto>> getStores(@PathVariable("accountId") Long accountId,
-                                                                         Pageable pageable) {
+                                                                      Pageable pageable) {
         return ResponseEntity
             .ok(storeService.selectAllStores(accountId, pageable));
     }
@@ -48,12 +51,13 @@ public class BusinessAccountController {
     /**
      * 사업자 : 해당 매장 조회.
      *
-     * @param storeId 매장 아이디
+     * @param accountId the account id
+     * @param storeId   매장 아이디
      * @return 매장 정보 반환
      */
     @GetMapping("/stores/{storeId}")
     public ResponseEntity<SelectStoreResponseDto> getStoreForUser(@PathVariable("accountId") Long accountId,
-                                                           @PathVariable("storeId") Long storeId) {
+                                                                  @PathVariable("storeId") Long storeId) {
         return ResponseEntity
             .ok(storeService.selectStore(accountId, storeId));
     }
@@ -82,4 +86,48 @@ public class BusinessAccountController {
             .status(HttpStatus.CREATED)
             .build();
     }
+
+
+    /**
+     * 매장 정보 수정 컨트롤러.
+     *
+     * @param storeId       the store id
+     * @param accountId     the account id
+     * @param requestDto    매장 정보 request
+     * @param bindingResult valid 결과값
+     * @return 200
+     */
+//TODO 4. 수정이 아니라 추가 정보로 영업일, 휴무일을 넣을 수 있도록 하는건?
+    @PutMapping("/stores/{storeId}")
+    public ResponseEntity<Void> putStore(@PathVariable("storeId") Long storeId,
+                                         @PathVariable("accountId") Long accountId,
+                                         @RequestBody @Valid UpdateStoreRequestDto requestDto,
+                                         BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new StoreValidException(bindingResult);
+        }
+        storeService.updateStore(accountId, storeId, requestDto);
+        return ResponseEntity
+            .ok()
+            .build();
+    }
+
+    /**
+     * 매장 카테고리 수정 컨트롤러.
+     *
+     * @param accountId  the account id
+     * @param storeId    the store id
+     * @param requestDto 매장 카테고리 code 리스트
+     * @return 200
+     */
+    @PutMapping("/stores/{storeId}/categories")
+    public ResponseEntity<Void> putStoreCategory(@PathVariable("accountId") Long accountId,
+                                                 @PathVariable("storeId") Long storeId,
+                                                 @RequestBody UpdateCategoryRequestDto requestDto) {
+        storeService.updateStoreCategories(accountId, storeId, requestDto);
+        return ResponseEntity
+            .ok()
+            .build();
+    }
+    //TODO 8. 매장 삭제가 아니라 상태를 폐업으로 바꾸도록
 }

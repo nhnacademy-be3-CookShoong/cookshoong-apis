@@ -28,7 +28,7 @@ public class Charge {
     private String chargeCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "charge_type_id", nullable = false)
+    @JoinColumn(name = "charge_type_code", nullable = false)
     private ChargeType chargeType;
 
     @ManyToOne(fetch = FetchType.LAZY)

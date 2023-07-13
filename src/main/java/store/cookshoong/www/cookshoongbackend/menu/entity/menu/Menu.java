@@ -14,7 +14,7 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import store.cookshoong.www.cookshoongbackend.store.entity.Store;
+import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 
 /**
  * 메뉴 엔티티.

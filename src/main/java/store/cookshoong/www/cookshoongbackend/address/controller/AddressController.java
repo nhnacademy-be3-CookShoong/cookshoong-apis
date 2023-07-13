@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import store.cookshoong.www.cookshoongbackend.address.exception.CreateAccountAddressValidationException;
+import store.cookshoong.www.cookshoongbackend.address.exception.ModifyAccountAddressValidationException;
 import store.cookshoong.www.cookshoongbackend.address.model.request.CreateAccountAddressRequestDto;
 import store.cookshoong.www.cookshoongbackend.address.model.request.ModifyAccountAddressRequestDto;
 import store.cookshoong.www.cookshoongbackend.address.model.response.AccountAddressResponseDto;
@@ -42,7 +45,12 @@ public class AddressController {
      */
     @PostMapping("/{accountId}")
     public ResponseEntity<Void> postCreateAccountAddress(@PathVariable("accountId") Long accountId,
-                                                     @RequestBody CreateAccountAddressRequestDto requestDto) {
+                                                         @RequestBody CreateAccountAddressRequestDto requestDto,
+                                                         BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            throw new CreateAccountAddressValidationException(bindingResult);
+        }
 
         addressService.createAccountAddress(accountId, requestDto);
 
@@ -59,10 +67,15 @@ public class AddressController {
      */
     @PatchMapping("/{accountId}/{addressId}")
     public ResponseEntity<Void> patchModifyAccountDetailAddress(@PathVariable("accountId") Long accountId,
-                                                           @PathVariable("addressId") Long addressId,
-                                                           @RequestBody ModifyAccountAddressRequestDto requestDto) {
+                                                                @PathVariable("addressId") Long addressId,
+                                                                @RequestBody ModifyAccountAddressRequestDto requestDto,
+                                                                BindingResult bindingResult) {
 
-        addressService.modifyAccountDetailAddress(accountId, addressId, requestDto);
+        if (bindingResult.hasErrors()) {
+            throw new ModifyAccountAddressValidationException(bindingResult);
+        }
+
+        addressService.updateAccountDetailAddress(accountId, addressId, requestDto);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -75,22 +88,23 @@ public class AddressController {
      */
     @GetMapping("/{accountId}")
     public ResponseEntity<List<AccountAddressResponseDto>> getAccountAddressList(@PathVariable Long accountId) {
-        List<AccountAddressResponseDto> addressList = addressService.getAccountAddressList(accountId);
+        List<AccountAddressResponseDto> addressList = addressService.selectAccountAddressList(accountId);
         return ResponseEntity.status(HttpStatus.OK).body(addressList);
     }
 
     /**
-     * 회원이 주문하기 누른 후 결제 화면에서 보여주는 메인 주소와 상세 주소 Controller.
+     * 회원이 주문하기 누른 후 결제 화면에서 보여주는 메인 주소와 상세 주소.
+     * 회원의 현재 위치를 찍어주기 위한 좌표
      *
      * @param accountId     회원 아이디
      * @param addressId     주소 아이디
      * @return              상태코드 200(Ok)와 함께 응답을 반환 & 클라이언트에게 해당 메인 주소와 상세 주소를 반환
      */
     @GetMapping("/{accountId}/{addressId}")
-    public ResponseEntity<AddressResponseDto> getAccountAddressForPayment(@PathVariable("accountId") Long accountId,
-                                                                          @PathVariable("addressId") Long addressId) {
+    public ResponseEntity<AddressResponseDto> getAccountAddress(@PathVariable("accountId") Long accountId,
+                                                                @PathVariable("addressId") Long addressId) {
 
-        AddressResponseDto address = addressService.getAccountAddressForPayment(accountId, addressId);
+        AddressResponseDto address = addressService.selectAccountAddress(accountId, addressId);
 
         return ResponseEntity.status(HttpStatus.OK).body(address);
     }
@@ -108,7 +122,7 @@ public class AddressController {
 
         addressService.deleteAccountAddress(accountId, addressId);
 
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
 

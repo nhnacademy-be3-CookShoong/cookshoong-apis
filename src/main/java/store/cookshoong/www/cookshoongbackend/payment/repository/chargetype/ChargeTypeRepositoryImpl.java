@@ -28,8 +28,9 @@ public class ChargeTypeRepositoryImpl implements ChargeTypeRepositoryCustom {
         QChargeType chargeType = QChargeType.chargeType;
 
         return jpaQueryFactory
-            .select(Projections.constructor(TypeResponseDto.class, chargeType.id, chargeType.name))
+            .select(Projections.constructor(TypeResponseDto.class, chargeType.code, chargeType.name))
             .from(chargeType)
+            .where(chargeType.isDeleted.eq(false))
             .fetch();
     }
 }

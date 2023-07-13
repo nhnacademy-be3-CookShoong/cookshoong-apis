@@ -102,15 +102,15 @@ class AccountAddressRepositoryTest {
 
 
         List<AccountAddressResponseDto> accountAddressList =
-            accountAddressRepository.getByAccountIdAddress(account.getId());
+            accountAddressRepository.lookupByAccountIdAddressAll(account.getId());
 
-        assertThat(accountAddressList.get(0).getMainAddress()).isEqualTo(accountAddress.getAddress().getMainPlace());
+        assertThat(accountAddressList.get(0).getMainPlace()).isEqualTo(accountAddress.getAddress().getMainPlace());
         assertThat(accountAddressList.get(0).getAlias()).isEqualTo(accountAddress.getAlias());
 
     }
 
     @Test
-    @DisplayName("회원으로로 조회한 주소")
+    @DisplayName("회원으로 조회한 주소")
     void getFindByAccount() {
 
         AccountStatus status = new AccountStatus("ACTIVE", "활성");
@@ -145,7 +145,4 @@ class AccountAddressRepositoryTest {
         assertThat(accountAddressList.get(0).getAlias()).isEqualTo(accountAddress.getAlias());
 
     }
-
-
-
 }
