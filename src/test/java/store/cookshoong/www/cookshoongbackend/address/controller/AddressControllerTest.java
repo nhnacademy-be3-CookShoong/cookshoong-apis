@@ -136,9 +136,9 @@ class AddressControllerTest {
         AddressResponseDto responseDto = new AddressResponseDto("경기도 성남시 분당구 대왕판교로645번길 16", "NHN 플레이뮤지엄",
             new BigDecimal("37.40096549041187"), new BigDecimal("127.1040493631922"));
 
-        when(addressService.selectAccountAddress(1L, 1L)).thenReturn(responseDto);
+        when(addressService.selectAccountAddressRecentRegistration(1L)).thenReturn(responseDto);
 
-        mockMvc.perform(get("/api/addresses/{accountId}/{addressId}", 1L, 1L))
+        mockMvc.perform(get("/api/addresses/{accountId}/recent-registration",  1L))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.mainPlace").value(responseDto.getMainPlace()))
             .andExpect(jsonPath("$.detailPlace").value(responseDto.getDetailPlace()))
