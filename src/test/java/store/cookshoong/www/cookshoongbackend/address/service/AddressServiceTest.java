@@ -1,0 +1,265 @@
+package store.cookshoong.www.cookshoongbackend.address.service;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.platform.commons.util.ReflectionUtils;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
+import store.cookshoong.www.cookshoongbackend.account.entity.Account;
+import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
+import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
+import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
+import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
+import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
+import store.cookshoong.www.cookshoongbackend.address.entity.AccountAddress;
+import store.cookshoong.www.cookshoongbackend.address.entity.Address;
+import store.cookshoong.www.cookshoongbackend.address.exception.AccountAddressNotFoundException;
+import store.cookshoong.www.cookshoongbackend.address.exception.MaxAddressLimitException;
+import store.cookshoong.www.cookshoongbackend.address.model.request.CreateAccountAddressRequestDto;
+import store.cookshoong.www.cookshoongbackend.address.model.request.ModifyAccountAddressRequestDto;
+import store.cookshoong.www.cookshoongbackend.address.model.response.AccountAddressResponseDto;
+import store.cookshoong.www.cookshoongbackend.address.model.response.AddressResponseDto;
+import store.cookshoong.www.cookshoongbackend.address.repository.accountaddress.AccountAddressRepository;
+import store.cookshoong.www.cookshoongbackend.address.repository.address.AddressRepository;
+
+/**
+ * 주소 서비스에 대한 테스트.
+ *
+ * @author jeongjewan
+ * @since 2023.07.13
+ */
+@Slf4j
+@ExtendWith(MockitoExtension.class)
+class AddressServiceTest {
+
+    @InjectMocks
+    private AddressService addressService;
+
+    @Mock
+    private AccountAddressRepository accountAddressRepository;
+
+    @Mock
+    private AddressRepository addressRepository;
+
+    @Mock
+    private AccountRepository accountRepository;
+
+    static SignUpRequestDto testDto;
+    static Authority testAuthority;
+    static AccountStatus testAccountStatus;
+    static Rank testRank;
+    static Account testAccount;
+    static AccountAddress accountAddress;
+    static Address testAddress;
+
+    @BeforeEach
+    void setup() {
+        testDto = ReflectionUtils.newInstance(SignUpRequestDto.class);
+        ReflectionTestUtils.setField(testDto, "loginId", "user1");
+        ReflectionTestUtils.setField(testDto, "password", "1234");
+        ReflectionTestUtils.setField(testDto, "name", "유유저");
+        ReflectionTestUtils.setField(testDto, "nickname", "이름이유저래");
+        ReflectionTestUtils.setField(testDto, "email", "user@cookshoong.store");
+        ReflectionTestUtils.setField(testDto, "birthday", LocalDate.of(1997, 6, 4));
+        ReflectionTestUtils.setField(testDto, "phoneNumber", "01012345678");
+
+        testAuthority = new Authority("CUSTOMER", "일반 회원");
+        testAccountStatus = new AccountStatus("ACTIVE", "활성");
+        testRank = new Rank("LEVEL_1", "프랜드");
+
+        testAccount = new Account(testAccountStatus, testAuthority, testRank, testDto);
+        ReflectionTestUtils.setField(testAccount, "id", 1L);
+
+        testAddress = new Address("mainPlaceT", "detailPlaceT",
+            new BigDecimal("23.2323223"), new BigDecimal("24.12312312"));
+
+        accountAddress = new AccountAddress(new AccountAddress.Pk(testAccount.getId(), testAddress.getId()),
+            testAccount, testAddress, "alias");
+    }
+
+    @Test
+    @DisplayName("회원이 주소를 등록")
+    void createAccountAddress() {
+        CreateAccountAddressRequestDto requestDto = ReflectionUtils.newInstance(CreateAccountAddressRequestDto.class);
+
+        ReflectionTestUtils.setField(requestDto, "mainPlace", "mainPlace");
+        ReflectionTestUtils.setField(requestDto, "detailPlace", "detailPlace");
+        ReflectionTestUtils.setField(requestDto, "latitude", "23.323242342");
+        ReflectionTestUtils.setField(requestDto, "longitude", "24.23552423");
+
+        List<AccountAddress> accountAddresses = new ArrayList<>();
+
+        when(accountRepository.findById(testAccount.getId())).thenReturn(Optional.of(testAccount));
+        when(accountAddressRepository.findByAccount(testAccount)).thenReturn(accountAddresses);
+
+        addressService.createAccountAddress(testAccount.getId(), requestDto);
+
+
+        verify(accountRepository, times(1)).findById(testAccount.getId());
+        verify(accountAddressRepository, times(1)).findByAccount(testAccount);
+        verify(addressRepository, times(1)).save(any(Address.class));
+        verify(accountAddressRepository, times(1)).save(any(AccountAddress.class));
+    }
+
+    @Test
+    @DisplayName("회원이 주소를 등록 실패: 회원이 가지고 있는 주소가 10개 초과될 때")
+    void createAccountAddress_MaxAddressLimitedReached_Throw() {
+        CreateAccountAddressRequestDto requestDto = ReflectionUtils.newInstance(CreateAccountAddressRequestDto.class);
+
+        ReflectionTestUtils.setField(requestDto, "mainPlace", "mainPlace");
+        ReflectionTestUtils.setField(requestDto, "detailPlace", "detailPlace");
+        ReflectionTestUtils.setField(requestDto, "latitude", "23.323242342");
+        ReflectionTestUtils.setField(requestDto, "longitude", "24.23552423");
+
+        List<AccountAddress> accountAddresses = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            accountAddresses.add(accountAddress);
+        }
+
+        when(accountRepository.findById(testAccount.getId())).thenReturn(Optional.of(testAccount));
+        when(accountAddressRepository.findByAccount(testAccount)).thenReturn(accountAddresses);
+
+        assertThrows(MaxAddressLimitException.class,
+            () -> addressService.createAccountAddress(testAccount.getId(), requestDto));
+
+        verify(accountRepository, times(1)).findById(testAccount.getId());
+        verify(accountAddressRepository, times(1)).findByAccount(testAccount);
+        verify(addressRepository, never()).save(any(Address.class));
+        verify(accountAddressRepository, never()).save(any(AccountAddress.class));
+    }
+
+    @Test
+    @DisplayName("회원이 주문할 때 상세 주소 수정")
+    void updateAccountDetailAddress() {
+
+        ModifyAccountAddressRequestDto requestDto = ReflectionUtils.newInstance(ModifyAccountAddressRequestDto.class);
+        ReflectionTestUtils.setField(requestDto, "detailPlace", "test Detail Place");
+
+        AccountAddress.Pk pk = new AccountAddress.Pk(testAccount.getId(), testAddress.getId());
+
+        when(accountAddressRepository.findById(pk)).thenReturn(Optional.of(accountAddress));
+
+        addressService.updateAccountDetailAddress(testAccount.getId(), testAddress.getId(), requestDto);
+
+        verify(accountAddressRepository, times(1)).findById(pk);
+        verify(accountAddressRepository, times(1)).save(accountAddress);
+
+        assertEquals(requestDto.getDetailPlace(), accountAddress.getAddress().getDetailPlace());
+    }
+
+    @Test
+    @DisplayName("회원이 주문할 때 상세 주소 수정 실패: 해당 주소가 존재하지 않을 때")
+    void updateAccountDetailAddress_NotFound_Address_Throw() {
+
+        ModifyAccountAddressRequestDto requestDto = ReflectionUtils.newInstance(ModifyAccountAddressRequestDto.class);
+        ReflectionTestUtils.setField(requestDto, "detailPlace", "test Detail Place");
+
+        AccountAddress.Pk pk = new AccountAddress.Pk(testAccount.getId(), testAddress.getId());
+
+        when(accountAddressRepository.findById(pk)).thenReturn(Optional.empty());
+
+        assertThrows(AccountAddressNotFoundException.class,
+            () -> addressService.updateAccountDetailAddress(testAccount.getId(), testAddress.getId(), requestDto));
+
+        verify(accountAddressRepository, times(1)).findById(pk);
+        verify(accountAddressRepository, never()).save(accountAddress);
+    }
+
+
+    @Test
+    @DisplayName("회원이 가지고 있는 모든 주소 가져오기, 별칭과 메인주소만")
+    void selectAccountAddressList() {
+
+        List<AccountAddressResponseDto> addressResponses = new ArrayList<>();
+        addressResponses.add(new AccountAddressResponseDto(testAccount.getId(), "alias", "성수동"));
+
+        when(accountAddressRepository.lookupByAccountIdAddressAll(testAccount.getId())).thenReturn(addressResponses);
+
+        List<AccountAddressResponseDto> actual = addressService.selectAccountAddressList(testAccount.getId());
+
+        verify(accountAddressRepository, times(1)).lookupByAccountIdAddressAll(testAccount.getId());
+        assertNotNull(actual);
+        assertEquals(addressResponses, actual);
+        assertEquals(addressResponses.get(0).getMainPlace(), actual.get(0).getMainPlace());
+    }
+
+    @Test
+    @DisplayName("회원이 주문할 때 필요한 메인주소와 상세주소, 회원의 위치를 맵에서 보여줄 좌표를 조회")
+    void selectAccountAddress() {
+        AccountAddress.Pk pk = new AccountAddress.Pk(testAccount.getId(), testAddress.getId());
+
+        when(accountAddressRepository.findById(pk)).thenReturn(Optional.of(accountAddress));
+
+        AddressResponseDto actual =
+            addressService.selectAccountAddress(testAccount.getId(), testAddress.getId());
+
+        verify(accountAddressRepository, times(1)).findById(pk);
+
+        assertEquals(testAddress.getMainPlace(), actual.getMainPlace());
+        assertEquals(testAddress.getDetailPlace(), actual.getDetailPlace());
+        assertEquals(testAddress.getLatitude(), actual.getLatitude());
+        assertEquals(testAddress.getLongitude(), actual.getLongitude());
+    }
+
+    @Test
+    @DisplayName("회원이 주문할 때 필요한 메인주소와 상세주소, 회원의 위치를 맵에서 보여줄 좌표를 조회 실패: 해당 주소가 존재하지 않을 때")
+    void selectAccountAddress_NotFound_Address_Throw() {
+        AccountAddress.Pk pk = new AccountAddress.Pk(testAccount.getId(), testAddress.getId());
+
+        when(accountAddressRepository.findById(pk)).thenReturn(Optional.empty());
+
+        assertThrows(AccountAddressNotFoundException.class,
+            () -> addressService.selectAccountAddress(testAccount.getId(), testAddress.getId()));
+
+        verify(accountAddressRepository, times(1)).findById(pk);
+    }
+
+    @Test
+    @DisplayName("회원이 주소를 삭제")
+    void deleteAccountAddress() {
+
+        AccountAddress.Pk pk = new AccountAddress.Pk(testAccount.getId(), testAddress.getId());
+
+        when(accountAddressRepository.findById(pk)).thenReturn(Optional.of(accountAddress));
+
+        addressService.deleteAccountAddress(testAccount.getId(), testAddress.getId());
+
+        verify(accountAddressRepository, times(1)).findById(pk);
+        verify(accountAddressRepository, times(1)).delete(accountAddress);
+    }
+
+    @Test
+    @DisplayName("회원이 주소를 삭제 실패: 해당 주소가 존재하지 않을 때")
+    void deleteAccountAddress_NotFound_Address_Throw() {
+
+        AccountAddress.Pk pk = new AccountAddress.Pk(testAccount.getId(), testAddress.getId());
+
+        when(accountAddressRepository.findById(pk)).thenReturn(Optional.empty());
+
+        assertThrows(AccountAddressNotFoundException.class,
+            () -> addressService.selectAccountAddress(testAccount.getId(), testAddress.getId()));
+
+
+        verify(accountAddressRepository, times(1)).findById(pk);
+        verify(accountAddressRepository, never()).delete(accountAddress);
+    }
+}
