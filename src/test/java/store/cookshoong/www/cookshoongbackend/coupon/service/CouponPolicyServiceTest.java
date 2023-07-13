@@ -35,10 +35,10 @@ import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponTypePercen
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponUsageAllRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponUsageMerchantRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponUsageStoreRepository;
-import store.cookshoong.www.cookshoongbackend.store.entity.Merchant;
-import store.cookshoong.www.cookshoongbackend.store.entity.Store;
-import store.cookshoong.www.cookshoongbackend.store.repository.merchant.MerchantRepository;
-import store.cookshoong.www.cookshoongbackend.store.repository.store.StoreRepository;
+import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
+import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
+import store.cookshoong.www.cookshoongbackend.shop.repository.merchant.MerchantRepository;
+import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreRepository;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
 
 @ExtendWith(MockitoExtension.class)

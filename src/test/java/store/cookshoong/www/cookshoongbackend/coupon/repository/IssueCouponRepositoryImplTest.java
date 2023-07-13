@@ -28,8 +28,8 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectOwnCouponResponseTempDto;
 import store.cookshoong.www.cookshoongbackend.payment.entity.Order;
-import store.cookshoong.www.cookshoongbackend.store.entity.Merchant;
-import store.cookshoong.www.cookshoongbackend.store.entity.Store;
+import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
+import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
 import store.cookshoong.www.cookshoongbackend.util.TestPersistEntity;
 
