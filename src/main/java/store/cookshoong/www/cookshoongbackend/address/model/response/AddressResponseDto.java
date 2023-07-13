@@ -15,8 +15,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public class AddressResponseDto {
 
-    private String mainAddress;
-    private String detailAddress;
+    private String mainPlace;
+    private String detailPlace;
     private BigDecimal latitude;
     private BigDecimal longitude;
 }
