@@ -52,7 +52,7 @@ public class AddressService {
         }
 
         Address address = new Address(requestDto.getMainPlace(), requestDto.getDetailPlace(),
-            new BigDecimal(requestDto.getLatitude()), new BigDecimal(requestDto.getLongitude()));
+            requestDto.getLatitude(), requestDto.getLongitude());
 
         addressRepository.save(address);
 
@@ -69,7 +69,7 @@ public class AddressService {
      * @param addressId     주소 아이디
      * @param requestDto    상세주소를 가지고 Dto
      */
-    public void modifyAccountDetailAddress(Long accountId, Long addressId, ModifyAccountAddressRequestDto requestDto) {
+    public void updateAccountDetailAddress(Long accountId, Long addressId, ModifyAccountAddressRequestDto requestDto) {
 
         AccountAddress.Pk pk = new AccountAddress.Pk(accountId, addressId);
 
@@ -87,19 +87,22 @@ public class AddressService {
      * @return              회원이 등록한 주소 중 메인 주소만 리턴
      */
     @Transactional(readOnly = true)
-    public List<AccountAddressResponseDto> getAccountAddressList(Long accountId) {
+    public List<AccountAddressResponseDto> selectAccountAddressList(Long accountId) {
 
-        return accountAddressRepository.getByAccountIdAddress(accountId);
+        return accountAddressRepository.lookupByAccountIdAddressAll(accountId);
     }
 
     /**
-     * 회원이 주문하기를 누르고 결제페이지에서 보여주는 메인 주소와 상세 주소.
+     * 회원이 최근에 등록한 주소를 가지고.
+     * 주문할 때 보여주는 메인주소와 상세주소를 보여주고
+     * 회원이 주소를 등록할 때 지도에 위도와 경도를 가지고 위치를 보여주는 메서드
      *
      * @param accountId     회원 아이디
-     * @return              회원의 결제 페이지에서 보여주는 메인 주소와 상세 주소 리턴
+     * @param addressId     주소 아이디
+     * @return              회원이 가지고 있는 주소와 좌표를 반환
      */
     @Transactional(readOnly = true)
-    public AddressResponseDto getAccountAddressForPayment(Long accountId, Long addressId) {
+    public AddressResponseDto selectAccountAddress(Long accountId, Long addressId) {
 
         AccountAddress.Pk pk = new AccountAddress.Pk(accountId, addressId);
 
@@ -108,10 +111,11 @@ public class AddressService {
 
         String mainPlace = accountAddress.getAddress().getMainPlace();
         String detailPlace = accountAddress.getAddress().getDetailPlace();
+        BigDecimal latitude = accountAddress.getAddress().getLatitude();
+        BigDecimal longitude = accountAddress.getAddress().getLongitude();
 
-        return new AddressResponseDto(mainPlace, detailPlace);
+        return new AddressResponseDto(mainPlace, detailPlace, latitude, longitude);
     }
-
 
     /**
      * 회원이 지정한 해당 주소를 삭제하는 메서드.

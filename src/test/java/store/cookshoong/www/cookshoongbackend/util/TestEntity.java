@@ -25,12 +25,14 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageAll;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
+import store.cookshoong.www.cookshoongbackend.payment.entity.ChargeType;
 import store.cookshoong.www.cookshoongbackend.payment.entity.Order;
-import store.cookshoong.www.cookshoongbackend.store.entity.BankType;
-import store.cookshoong.www.cookshoongbackend.store.entity.Holiday;
-import store.cookshoong.www.cookshoongbackend.store.entity.Merchant;
-import store.cookshoong.www.cookshoongbackend.store.entity.Store;
-import store.cookshoong.www.cookshoongbackend.store.entity.StoreStatus;
+import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
+import store.cookshoong.www.cookshoongbackend.shop.entity.Holiday;
+import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
+import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
+import store.cookshoong.www.cookshoongbackend.shop.entity.StoreCategory;
+import store.cookshoong.www.cookshoongbackend.shop.entity.StoreStatus;
 
 /**
  * 테스트 환경에서 원하는 entity 미리 만들어두는 클래스.
@@ -68,6 +70,10 @@ public class TestEntity {
         return createTestBankType("KB", "국민은행");
     }
 
+    public ChargeType getChargeType() {
+        return new ChargeType("KAKAO", "카카오결제", false);
+    }
+
     public StoreStatus getStoreStatusOpen() {
         return createTestStoreStatus("OPEN", "영업중");
     }
@@ -81,6 +87,10 @@ public class TestEntity {
             storeStatus, UUID.randomUUID() + ".jpg", "123456", "김주호",
             LocalDate.of(2020, 2, 20), "주호타코", "01012345678", BigDecimal.ONE,
             null, null, "123456");
+    }
+
+    public StoreCategory getStoreCategory() {
+        return new StoreCategory("CHK", "치킨");
     }
 
     public CouponTypePercent getCouponTypePercent_3_1000_10000() {

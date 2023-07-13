@@ -17,6 +17,7 @@ import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
 import store.cookshoong.www.cookshoongbackend.account.exception.AuthorityNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.exception.SignUpValidationException;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
+import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountAuthResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.service.AccountService;
 
@@ -72,4 +73,19 @@ public class AccountController {
         return ResponseEntity.status(HttpStatus.OK)
             .body(response);
     }
+
+    /**
+     * 로그인아이디를 경로로 받아와 자격증명에 필요한 정보를 응답한다.
+     *
+     * @param loginId the login id
+     * @return the account for authentication
+     */
+    @GetMapping("/{loginId}/auth")
+    public ResponseEntity<SelectAccountAuthResponseDto> getAccountForAuthentication(@PathVariable String loginId) {
+        SelectAccountAuthResponseDto response = accountService.selectAccount(loginId);
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(response);
+    }
+
+
 }

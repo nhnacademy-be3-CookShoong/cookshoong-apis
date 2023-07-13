@@ -31,7 +31,7 @@ public class ChargeTypeService {
      */
     public void createChargeType(CreateTypeRequestDto requestDto) {
 
-        ChargeType chargeType = new ChargeType(requestDto.getName());
+        ChargeType chargeType = new ChargeType(requestDto.getId(), requestDto.getName(), false);
 
         chargeTypeRepository.save(chargeType);
     }
@@ -42,12 +42,12 @@ public class ChargeTypeService {
      * @param chargeTypeId  결제 타입 아이디
      * @param requestDto    결제 타입 수정에 name에 대한 Dto
      */
-    public void modifyChargeType(Long chargeTypeId, ModifyTypeRequestDto requestDto) {
+    public void modifyChargeType(String chargeTypeId, ModifyTypeRequestDto requestDto) {
 
         ChargeType chargeType = chargeTypeRepository.findById(chargeTypeId)
             .orElseThrow(ChargeTypeNotFoundException::new);
 
-        chargeType.modifyChargeType(requestDto);
+        chargeType.modifyChargeType(requestDto.getName());
     }
 
     /**
@@ -57,12 +57,12 @@ public class ChargeTypeService {
      * @return              결제 타입 name 을 반환
      */
     @Transactional(readOnly = true)
-    public TypeResponseDto selectChargeType(Long chargeTypeId) {
+    public TypeResponseDto selectChargeType(String chargeTypeId) {
 
         ChargeType chargeType = chargeTypeRepository.findById(chargeTypeId)
             .orElseThrow(ChargeTypeNotFoundException::new);
 
-        return new TypeResponseDto(chargeType.getId(), chargeType.getName());
+        return new TypeResponseDto(chargeType.getCode(), chargeType.getName());
     }
 
     /**
@@ -78,14 +78,15 @@ public class ChargeTypeService {
 
     /**
      * 환불 타입 아이디에 대한 삭제 메서드.
+     * 호출 시 해당 타입은 deleted 상태로 변경됨.
      *
      * @param chargeTypeId  결제 타입 아이디
      */
-    public void removeChargeType(Long chargeTypeId) {
+    public void removeChargeType(String chargeTypeId) {
 
         ChargeType chargeType = chargeTypeRepository.findById(chargeTypeId)
             .orElseThrow(ChargeTypeNotFoundException::new);
 
-        chargeTypeRepository.delete(chargeType);
+        chargeType.modifyDeleteCharge(true);
     }
 }

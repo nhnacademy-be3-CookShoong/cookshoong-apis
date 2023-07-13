@@ -10,6 +10,8 @@ import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.account.exception.DuplicatedUserException;
 import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
+import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountAuthResponseDto;
+import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountAuthDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountStatusRepository;
@@ -56,5 +58,18 @@ public class AccountService {
     public SelectAccountResponseDto selectAccount(Long accountId) {
         return accountRepository.lookupAccount(accountId)
             .orElseThrow(UserNotFoundException::new);
+    }
+
+    /**
+     * 로그인아이디를 통해 자격증명에 필요한 정보를 가져온다.
+     *
+     * @param loginId the login id
+     * @return 자격증명 응답 정보
+     */
+    public SelectAccountAuthResponseDto selectAccount(String loginId) {
+        SelectAccountAuthDto authDto = accountRepository.findByLoginId(loginId)
+            .orElseThrow(UserNotFoundException::new);
+
+        return SelectAccountAuthResponseDto.responseDtoFrom(authDto);
     }
 }

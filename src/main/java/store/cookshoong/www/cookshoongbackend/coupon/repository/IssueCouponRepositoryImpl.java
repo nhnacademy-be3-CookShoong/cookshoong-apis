@@ -10,8 +10,8 @@ import static store.cookshoong.www.cookshoongbackend.coupon.entity.QCouponUsageA
 import static store.cookshoong.www.cookshoongbackend.coupon.entity.QCouponUsageMerchant.couponUsageMerchant;
 import static store.cookshoong.www.cookshoongbackend.coupon.entity.QCouponUsageStore.couponUsageStore;
 import static store.cookshoong.www.cookshoongbackend.coupon.entity.QIssueCoupon.issueCoupon;
-import static store.cookshoong.www.cookshoongbackend.store.entity.QMerchant.merchant;
-import static store.cookshoong.www.cookshoongbackend.store.entity.QStore.store;
+import static store.cookshoong.www.cookshoongbackend.shop.entity.QMerchant.merchant;
+import static store.cookshoong.www.cookshoongbackend.shop.entity.QStore.store;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
