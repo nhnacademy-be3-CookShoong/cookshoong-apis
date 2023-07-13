@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.address.entity.QAccountAddress;
 import store.cookshoong.www.cookshoongbackend.address.entity.QAddress;
 import store.cookshoong.www.cookshoongbackend.address.model.response.AccountAddressResponseDto;
+import store.cookshoong.www.cookshoongbackend.address.model.response.AddressResponseDto;
 
 /**
  * 회원과 주소 repository.
@@ -34,5 +35,23 @@ public class AccountAddressRepositoryImpl implements AccountAddressRepositoryCus
             .innerJoin(accountAddress.address, address)
             .where(accountAddress.pk.accountId.eq(accountId))
             .fetch();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AddressResponseDto lookupByAccountIdAddressRecentRegistration(Long accountId) {
+        QAccountAddress accountAddress = QAccountAddress.accountAddress;
+        QAddress address = QAddress.address;
+
+        return jpaQueryFactory
+            .select(Projections.constructor(AddressResponseDto.class,
+                address.mainPlace, address.detailPlace, address.latitude, address.longitude))
+            .from(accountAddress)
+            .innerJoin(accountAddress.address, address)
+            .where(accountAddress.pk.accountId.eq(accountId))
+            .orderBy(accountAddress.pk.addressId.desc())
+            .fetchFirst();
     }
 }
