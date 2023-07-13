@@ -17,6 +17,7 @@ import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
+import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountAuthDto;
 import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
 
 /**
@@ -53,17 +54,11 @@ class AccountRepositoryTest {
 
         em.clear();
 
-        Account actual = accountRepository.findByLoginId("user1").orElseThrow();
+        SelectAccountAuthDto actual = accountRepository.findByLoginId("user1").orElseThrow();
 
         assertThat(actual.getId()).isEqualTo(expected.getId());
         assertThat(actual.getLoginId()).isEqualTo(expected.getLoginId());
-        assertThat(actual.getName()).isEqualTo(expected.getName());
-        assertThat(actual.getBirthday()).isEqualTo(expected.getBirthday());
-        assertThat(actual.getEmail()).isEqualTo(expected.getEmail());
-        assertThat(actual.getNickname()).isEqualTo(expected.getNickname());
         assertThat(actual.getPassword()).isEqualTo(expected.getPassword());
-        assertThat(actual.getLastLoginAt()).isEqualTo(expected.getLastLoginAt());
-        assertThat(actual.getPhoneNumber()).isEqualTo(expected.getPhoneNumber());
     }
 
     @Test
@@ -187,6 +182,4 @@ class AccountRepositoryTest {
 
         assertThat(actual).isEqualTo(expected);
     }
-
-
 }
