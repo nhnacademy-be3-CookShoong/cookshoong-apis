@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
-import org.junit.platform.commons.util.ReflectionUtils;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -130,35 +129,35 @@ public class TestEntity {
     }
 
     private BankType createTestBankType(String bankTypeCode, String description) {
-        BankType bankType = createEntityUsingDeclared(BankType.class);
+        BankType bankType = createUsingDeclared(BankType.class);
         ReflectionTestUtils.setField(bankType, "bankTypeCode", bankTypeCode);
         ReflectionTestUtils.setField(bankType, "description", description);
         return bankType;
     }
 
     private StoreStatus createTestStoreStatus(String storeStatusCode, String description) {
-        StoreStatus storeStatus = createEntityUsingDeclared(StoreStatus.class);
+        StoreStatus storeStatus = createUsingDeclared(StoreStatus.class);
         ReflectionTestUtils.setField(storeStatus, "storeStatusCode", storeStatusCode);
         ReflectionTestUtils.setField(storeStatus, "description", description);
         return storeStatus;
     }
 
     private CouponLogType createTestCouponLogType(String code, String description) {
-        CouponLogType couponLogType = createEntityUsingDeclared(CouponLogType.class);
+        CouponLogType couponLogType = createUsingDeclared(CouponLogType.class);
         ReflectionTestUtils.setField(couponLogType, "code", code);
         ReflectionTestUtils.setField(couponLogType, "description", description);
         return couponLogType;
     }
 
     private Order createTestOrder() {
-        Order order = createEntityUsingDeclared(Order.class);
+        Order order = createUsingDeclared(Order.class);
         ReflectionTestUtils.setField(order, "orderCode", UUID.randomUUID());
         ReflectionTestUtils.setField(order, "orderedAt", LocalDateTime.now());
         ReflectionTestUtils.setField(order, "memo", "memo");
         return order;
     }
 
-    private <T> T createEntityUsingDeclared(Class<T> clazz) {
+    public <T> T createUsingDeclared(Class<T> clazz) {
         try {
             Constructor<T> constructor = clazz.getDeclaredConstructor();
             constructor.setAccessible(true);
