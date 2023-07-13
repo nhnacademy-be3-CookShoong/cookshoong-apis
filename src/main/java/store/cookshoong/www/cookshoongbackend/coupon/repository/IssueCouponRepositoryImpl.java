@@ -61,7 +61,7 @@ public class IssueCouponRepositoryImpl implements IssueCouponRepositoryCustom {
                 couponUsage,
                 couponPolicy.name,
                 couponPolicy.description,
-                couponPolicy.expirationTime,
+                issueCoupon.expirationAt,
                 couponLogTypeDescription))
 
             .from(issueCoupon)
