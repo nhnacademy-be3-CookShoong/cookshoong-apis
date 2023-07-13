@@ -9,7 +9,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import store.cookshoong.www.cookshoongbackend.store.entity.Merchant;
+import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 
 /**
  * 쿠폰 사용처 가맹점 entity.

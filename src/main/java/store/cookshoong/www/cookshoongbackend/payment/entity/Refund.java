@@ -28,7 +28,7 @@ public class Refund {
     private String refundCode;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "refund_type_id", nullable = false)
+    @JoinColumn(name = "refund_type_code", nullable = false)
     private RefundType refundType;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

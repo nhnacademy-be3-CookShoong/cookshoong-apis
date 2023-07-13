@@ -3,6 +3,7 @@ package store.cookshoong.www.cookshoongbackend.payment.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -48,7 +49,7 @@ class ChargeTypeServiceTest {
 
     @BeforeEach
     void setup() {
-        chargeType = new ChargeType("페이코결제");
+        chargeType = new ChargeType("PAYCO", "페이코결제", false);
     }
 
     @Test
@@ -68,7 +69,7 @@ class ChargeTypeServiceTest {
     @Test
     @DisplayName("결제 타입 수정")
     void modifyChargeType() {
-        Long chargeTypeId = 1L;
+        String chargeTypeId = "MEET";
         ModifyTypeRequestDto modifyTypeRequestDto = ReflectionUtils.newInstance(ModifyTypeRequestDto.class);
         ReflectionTestUtils.setField(modifyTypeRequestDto, "name", "만나서결제");
 
@@ -84,7 +85,7 @@ class ChargeTypeServiceTest {
     @Test
     @DisplayName("결제 타입 수정: 아이디가 존재하지 않을 때")
     void modifyChargeTypeChargeTypeIdNotFound() {
-        Long nonExistChargeTypeId = 100L;
+        String nonExistChargeTypeId = "NOREASON";
 
         ModifyTypeRequestDto modifyTypeRequestDto = ReflectionUtils.newInstance(ModifyTypeRequestDto.class);
         ReflectionTestUtils.setField(modifyTypeRequestDto, "name", "만나서결제");
@@ -102,7 +103,7 @@ class ChargeTypeServiceTest {
     @DisplayName("해당 아이디에 대한 결제 타입 조회")
     void selectChargeType() {
 
-        Long chargeTypeId = 1L;
+        String chargeTypeId = "CARD";
 
         when(chargeTypeRepository.findById(chargeTypeId)).thenReturn(Optional.of(chargeType));
 
@@ -117,7 +118,7 @@ class ChargeTypeServiceTest {
     @DisplayName("해당 아이디에 대한 결제 타입 조회: 아이디가 존재하지 않을 때")
     void selectChargeTypeNotFound() {
 
-        Long nonExistChargeTypeId = 100L;
+        String nonExistChargeTypeId = "NOREASON";
 
         when(chargeTypeRepository.findById(nonExistChargeTypeId)).thenReturn(Optional.empty());
 
@@ -130,7 +131,7 @@ class ChargeTypeServiceTest {
     @DisplayName("모든 결제 타입 조회")
     void selectChargeTypeAll() {
         List<TypeResponseDto> chargeTypeList = new ArrayList<>();
-        chargeTypeList.add(new TypeResponseDto(1L, "카드결제"));
+        chargeTypeList.add(new TypeResponseDto("CARD", "카드결제"));
 
         when(chargeTypeRepository.lookupChargeTypeAll()).thenReturn(chargeTypeList);
 
@@ -146,13 +147,11 @@ class ChargeTypeServiceTest {
     @Test
     @DisplayName("해당 아이디에 대한 결제 타입 삭제")
     void removeChargeType() {
-        Long chargeTypeId = 1L;
+        String chargeTypeId = "CARD";
 
         when(chargeTypeRepository.findById(chargeTypeId)).thenReturn(Optional.of(chargeType));
 
         chargeTypeService.removeChargeType(chargeTypeId);
-
-        verify(chargeTypeRepository, times(1)).findById(chargeTypeId);
-        verify(chargeTypeRepository, times(1)).delete(chargeType);
+        assertTrue(chargeType.isDeleted());
     }
 }

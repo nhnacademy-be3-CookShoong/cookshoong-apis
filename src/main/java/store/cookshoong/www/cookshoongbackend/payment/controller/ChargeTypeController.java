@@ -61,7 +61,7 @@ public class ChargeTypeController {
      * @return              상태코드 200(Ok)와 함께 응답을 반환
      */
     @PutMapping("/charges/{chargeTypeId}")
-    public ResponseEntity<ModifyTypeRequestDto> putModifyChargeType(@PathVariable("chargeTypeId") Long chargeTypeId,
+    public ResponseEntity<ModifyTypeRequestDto> putModifyChargeType(@PathVariable("chargeTypeId") String chargeTypeId,
                                                                     @RequestBody @Valid ModifyTypeRequestDto requestDto,
                                                                     BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -80,7 +80,7 @@ public class ChargeTypeController {
      * @return              상태코드 200(Ok)와 함께 응답을 반환
      */
     @GetMapping("/charges/{chargeTypeId}")
-    public ResponseEntity<TypeResponseDto> getChargeType(@PathVariable("chargeTypeId") Long chargeTypeId) {
+    public ResponseEntity<TypeResponseDto> getChargeType(@PathVariable("chargeTypeId") String chargeTypeId) {
 
         TypeResponseDto chargeType = chargeTypeService.selectChargeType(chargeTypeId);
 
@@ -107,7 +107,7 @@ public class ChargeTypeController {
      * @return              상태코드 204(No_CONTENT)와 함께 응답을 반환
      */
     @DeleteMapping("/charges/{chargeTypeId}")
-    public ResponseEntity<Void> deleteChargeType(@PathVariable("chargeTypeId") Long chargeTypeId) {
+    public ResponseEntity<Void> deleteChargeType(@PathVariable("chargeTypeId") String chargeTypeId) {
 
         chargeTypeService.removeChargeType(chargeTypeId);
 

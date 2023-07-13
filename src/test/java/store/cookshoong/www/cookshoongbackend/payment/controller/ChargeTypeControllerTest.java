@@ -56,6 +56,7 @@ class ChargeTypeControllerTest {
     @DisplayName("POST 결제 타입 등록")
     void postCreateChargeType() throws Exception {
         CreateTypeRequestDto requestDto = ReflectionUtils.newInstance(CreateTypeRequestDto.class);
+        ReflectionTestUtils.setField(requestDto, "id", "TOSS");
         ReflectionTestUtils.setField(requestDto, "name", "토스결제");
 
         String requestBody = objectMapper.writeValueAsString(requestDto);
@@ -64,11 +65,13 @@ class ChargeTypeControllerTest {
                 .contentType(APPLICATION_JSON)
                 .content(requestBody))
             .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.id").value(requestDto.getId()))
             .andExpect(jsonPath("$.name").value(requestDto.getName()))
             .andDo(MockMvcRestDocumentationWrapper.document("post-charge",
                 ResourceSnippetParameters.builder()
                     .requestSchema(Schema.schema("MainRequest.Post")),
                 requestFields(
+                    fieldWithPath("id").description("결제 코드"),
                     fieldWithPath("name").description("결제 이름")
                 )));
     }
@@ -183,8 +186,8 @@ class ChargeTypeControllerTest {
     @Test
     @DisplayName("GET 해당 아이디에 대한 결제 타입 조회")
     void getChargeType() throws Exception {
-        Long chargeTypeId = 1L;
-        TypeResponseDto responseDto = new TypeResponseDto(1L, "토스결제");
+        String chargeTypeId = "TOSS";
+        TypeResponseDto responseDto = new TypeResponseDto("TOSS", "토스결제");
 
         when(chargeTypeService.selectChargeType(chargeTypeId)).thenReturn(responseDto);
 
@@ -198,7 +201,7 @@ class ChargeTypeControllerTest {
     @Test
     @DisplayName("GET 모든 결제애 대한 결제 타입 조회")
     void getChargeTypeAll() throws Exception {
-        TypeResponseDto responseDto = new TypeResponseDto(1L, "토스결제");
+        TypeResponseDto responseDto = new TypeResponseDto("TOSS", "토스결제");
         List<TypeResponseDto> responseDtoList = Collections.singletonList(responseDto);
 
         when(chargeTypeService.selectChargeTypeAll()).thenReturn(responseDtoList);
@@ -213,7 +216,7 @@ class ChargeTypeControllerTest {
     @Test
     @DisplayName("DELETE 해당 아이디에 대한 결제 타입 삭제")
     void deleteChargeType() throws Exception {
-        Long chargeTypeId = 1L;
+        String chargeTypeId = "TOSS";
 
         mockMvc.perform(delete("/api/payments/charges/{chargeTypeId}", chargeTypeId))
             .andExpect(status().isNoContent());
