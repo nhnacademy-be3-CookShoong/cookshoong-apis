@@ -1,6 +1,8 @@
 package store.cookshoong.www.cookshoongbackend.address.model.request;
 
+import java.math.BigDecimal;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -32,9 +34,9 @@ public class CreateAccountAddressRequestDto {
     @Pattern(regexp = RegularExpressions.LETTER_WITH_NUMBER, message = ValidationFailureMessages.LETTER_WITH_NUMBER)
     private String detailPlace;
 
-    @NotBlank
-    private String latitude;
+    @NotNull
+    private BigDecimal latitude;
 
-    @NotBlank
-    private String longitude;
+    @NotNull
+    private BigDecimal longitude;
 }

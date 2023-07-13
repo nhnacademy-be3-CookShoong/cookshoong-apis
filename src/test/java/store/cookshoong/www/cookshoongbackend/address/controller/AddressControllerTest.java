@@ -63,8 +63,8 @@ class AddressControllerTest {
         ReflectionTestUtils.setField(createAccountAddressRequestDto, "alias", "NHN");
         ReflectionTestUtils.setField(createAccountAddressRequestDto, "mainPlace", "경기도 성남시 분당구 대왕판교로645번길 16");
         ReflectionTestUtils.setField(createAccountAddressRequestDto, "detailPlace", "NHN 플레이뮤지엄");
-        ReflectionTestUtils.setField(createAccountAddressRequestDto, "latitude", "37.40096549041187");
-        ReflectionTestUtils.setField(createAccountAddressRequestDto, "longitude", "127.1040493631922");
+        ReflectionTestUtils.setField(createAccountAddressRequestDto, "latitude", new BigDecimal("37.40096549041187"));
+        ReflectionTestUtils.setField(createAccountAddressRequestDto, "longitude", new BigDecimal("127.1040493631922"));
     }
 
     @Test

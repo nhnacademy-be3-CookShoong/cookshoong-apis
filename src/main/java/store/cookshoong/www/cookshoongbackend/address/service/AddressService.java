@@ -52,7 +52,7 @@ public class AddressService {
         }
 
         Address address = new Address(requestDto.getMainPlace(), requestDto.getDetailPlace(),
-            new BigDecimal(requestDto.getLatitude()), new BigDecimal(requestDto.getLongitude()));
+            requestDto.getLatitude(), requestDto.getLongitude());
 
         addressRepository.save(address);
 

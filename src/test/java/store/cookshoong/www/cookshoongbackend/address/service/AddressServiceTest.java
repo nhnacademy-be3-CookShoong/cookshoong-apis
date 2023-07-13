@@ -103,8 +103,8 @@ class AddressServiceTest {
 
         ReflectionTestUtils.setField(requestDto, "mainPlace", "mainPlace");
         ReflectionTestUtils.setField(requestDto, "detailPlace", "detailPlace");
-        ReflectionTestUtils.setField(requestDto, "latitude", "23.323242342");
-        ReflectionTestUtils.setField(requestDto, "longitude", "24.23552423");
+        ReflectionTestUtils.setField(requestDto, "latitude", new BigDecimal("23.323242342"));
+        ReflectionTestUtils.setField(requestDto, "longitude", new BigDecimal("24.23552423"));
 
         List<AccountAddress> accountAddresses = new ArrayList<>();
 
@@ -127,8 +127,8 @@ class AddressServiceTest {
 
         ReflectionTestUtils.setField(requestDto, "mainPlace", "mainPlace");
         ReflectionTestUtils.setField(requestDto, "detailPlace", "detailPlace");
-        ReflectionTestUtils.setField(requestDto, "latitude", "23.323242342");
-        ReflectionTestUtils.setField(requestDto, "longitude", "24.23552423");
+        ReflectionTestUtils.setField(requestDto, "latitude", new BigDecimal("23.323242342"));
+        ReflectionTestUtils.setField(requestDto, "longitude", new BigDecimal("24.23552423"));
 
         List<AccountAddress> accountAddresses = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
