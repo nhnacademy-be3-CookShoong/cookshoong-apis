@@ -80,15 +80,16 @@ public class AddressController {
     }
 
     /**
-     * 회원이 주문하기 누른 후 결제 화면에서 보여주는 메인 주소와 상세 주소 Controller.
+     * 회원이 주문하기 누른 후 결제 화면에서 보여주는 메인 주소와 상세 주소.
+     * 회원의 현재 위치를 찍어주기 위한 좌표
      *
      * @param accountId     회원 아이디
      * @param addressId     주소 아이디
      * @return              상태코드 200(Ok)와 함께 응답을 반환 & 클라이언트에게 해당 메인 주소와 상세 주소를 반환
      */
     @GetMapping("/{accountId}/{addressId}")
-    public ResponseEntity<AddressResponseDto> getAccountAddressForPayment(@PathVariable("accountId") Long accountId,
-                                                                          @PathVariable("addressId") Long addressId) {
+    public ResponseEntity<AddressResponseDto> getAccountAddress(@PathVariable("accountId") Long accountId,
+                                                                @PathVariable("addressId") Long addressId) {
 
         AddressResponseDto address = addressService.selectAccountAddress(accountId, addressId);
 
