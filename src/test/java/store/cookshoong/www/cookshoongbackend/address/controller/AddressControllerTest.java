@@ -2,6 +2,7 @@ package store.cookshoong.www.cookshoongbackend.address.controller;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.Schema.schema;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
@@ -88,6 +89,19 @@ class AddressControllerTest {
     }
 
     @Test
+    @DisplayName("회원이 주소를 등록 - 유효성 검사 실패, 빈 값이 들어올 때")
+    void postCreateAccountAddress_ValidationFailed() throws Exception {
+        ReflectionTestUtils.setField(createAccountAddressRequestDto, "mainPlace", null);
+        // 유효성 검사에 실패하는 필드를 설정
+
+        mockMvc.perform(post("/api/addresses/{accountId}", 1L)
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createAccountAddressRequestDto)))
+            .andExpect(status().isBadRequest());
+    }
+
+
+    @Test
     @DisplayName("회원의 상세 주소를 변경")
     void patchModifyAccountDetailAddress() throws Exception {
         ModifyAccountAddressRequestDto requestDto = ReflectionUtils.newInstance(ModifyAccountAddressRequestDto.class);
@@ -103,6 +117,18 @@ class AddressControllerTest {
                 requestFields(
                     fieldWithPath("detailPlace").description("변경된 상세 주소")
                 )));
+    }
+
+    @Test
+    @DisplayName("회원의 상세 주소를 변경 - 유효성 검사 실패, 옮지 않으 값이 들어갈 때")
+    void patchModifyAccountDetailAddress_ValidationFailed() throws Exception {
+        ModifyAccountAddressRequestDto requestDto = ReflectionUtils.newInstance(ModifyAccountAddressRequestDto.class);
+        ReflectionTestUtils.setField(requestDto, "detailPlace", "--???--");
+
+        mockMvc.perform(patch("/api/addresses/{accountId}/{addressId}", 1L, 1L)
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDto)))
+            .andExpect(status().isBadRequest());
     }
 
     @Test

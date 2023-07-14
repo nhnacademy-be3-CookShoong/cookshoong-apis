@@ -1,6 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.address.controller;
 
 import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +46,7 @@ public class AddressController {
      */
     @PostMapping("/{accountId}")
     public ResponseEntity<Void> postCreateAccountAddress(@PathVariable("accountId") Long accountId,
-                                                         @RequestBody CreateAccountAddressRequestDto requestDto,
+                                                         @RequestBody @Valid CreateAccountAddressRequestDto requestDto,
                                                          BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -68,7 +69,7 @@ public class AddressController {
     @PatchMapping("/{accountId}/{addressId}")
     public ResponseEntity<Void> patchModifyAccountDetailAddress(@PathVariable("accountId") Long accountId,
                                                                 @PathVariable("addressId") Long addressId,
-                                                                @RequestBody ModifyAccountAddressRequestDto requestDto,
+                                                                @RequestBody @Valid ModifyAccountAddressRequestDto requestDto,
                                                                 BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {

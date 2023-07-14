@@ -15,4 +15,5 @@ public class ValidationFailureMessages {
     public static final String LETTER_WITH_NUMBER = "문자와 숫자만 입력해주세요";
     public static final String NUMBER_ONLY = "숫자만 입력해주세요";
     public static final String NOT_NUMBER = "숫자를 제외한 문자만 입력해주세요";
+    public static final String MAIN_DETAIL_ADDRESS = "옳지 않은 주소 입니다. 다시 입력해주세요.";
 }
