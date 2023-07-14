@@ -3,6 +3,7 @@ package store.cookshoong.www.cookshoongbackend.coupon.model.vo;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
 
 /**
@@ -11,6 +12,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
  * @author eora21
  * @since 2023.07.06
  */
+@Getter
 @EqualsAndHashCode
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CouponTypeCashVo implements CouponTypeResponse {
