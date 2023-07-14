@@ -6,9 +6,9 @@ import org.springframework.stereotype.Component;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponType;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypePercent;
-import store.cookshoong.www.cookshoongbackend.coupon.model.response.CouponTypeCashResponseDto;
-import store.cookshoong.www.cookshoongbackend.coupon.model.response.CouponTypePercentResponseDto;
-import store.cookshoong.www.cookshoongbackend.coupon.model.response.CouponTypeResponse;
+import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeCashVo;
+import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypePercentVo;
+import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeResponse;
 
 /**
  * 업캐스팅 쿠폰 타입 객체를 다운캐스팅하는 Converter.
@@ -25,11 +25,11 @@ public class CouponTypeConverter {
         );
 
     private static CouponTypeResponse couponTypeCashToDto(CouponType couponTypeCash) {
-        return CouponTypeCashResponseDto.newInstance((CouponTypeCash) couponTypeCash);
+        return CouponTypeCashVo.newInstance((CouponTypeCash) couponTypeCash);
     }
 
     private static CouponTypeResponse couponTypePercentToDto(CouponType couponTypePercent) {
-        return CouponTypePercentResponseDto.newInstance((CouponTypePercent) couponTypePercent);
+        return CouponTypePercentVo.newInstance((CouponTypePercent) couponTypePercent);
     }
 
     public CouponTypeResponse convert(CouponType couponType) {

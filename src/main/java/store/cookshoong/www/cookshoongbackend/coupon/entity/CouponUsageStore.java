@@ -9,7 +9,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import store.cookshoong.www.cookshoongbackend.store.entity.Store;
+import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 
 /**
  * 쿠폰 사용처 가게 entity.
@@ -28,9 +28,4 @@ public class CouponUsageStore extends CouponUsage {
     @ManyToOne
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
-
-    @Override
-    public String getTypeName() {
-        return "STORE";
-    }
 }

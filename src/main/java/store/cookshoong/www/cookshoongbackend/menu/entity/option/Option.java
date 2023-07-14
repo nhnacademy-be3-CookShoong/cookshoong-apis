@@ -38,11 +38,28 @@ public class Option {
     private String name;
 
     @Column(name = "price", nullable = false)
-    private Long price;
+    private Integer price;
 
     @Column(name = "option_sequence", nullable = false)
     private Integer optionSequence;
 
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted;
+
+    /**
+     * 옵션 생성자.
+     *
+     * @param optionGroup       옵션 그룹
+     * @param name              이름
+     * @param price             가격
+     * @param optionSequence    순서
+     * @param isDeleted         삭제여부
+     */
+    public Option(OptionGroup optionGroup, String name, Integer price, Integer optionSequence, Boolean isDeleted) {
+        this.optionGroup = optionGroup;
+        this.name = name;
+        this.price = price;
+        this.optionSequence = optionSequence;
+        this.isDeleted = isDeleted;
+    }
 }

@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.address.model.response;
 
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -14,6 +15,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public class AddressResponseDto {
 
-    private String mainAddress;
-    private String detailAddress;
+    private String mainPlace;
+    private String detailPlace;
+    private BigDecimal latitude;
+    private BigDecimal longitude;
 }

@@ -12,7 +12,7 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import store.cookshoong.www.cookshoongbackend.store.entity.Store;
+import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 
 /**
  * 메뉴 그룹 엔티티.
@@ -42,4 +42,19 @@ public class MenuGroup {
 
     @Column(name = "menu_group_sequence", nullable = false)
     private Integer menuGroupSequence;
+
+    /**
+     * 메뉴 그룹 생성자.
+     *
+     * @param store             매장
+     * @param name              이름
+     * @param description       설명
+     * @param menuGroupSequence 순서
+     */
+    public MenuGroup(Store store, String name, String description, Integer menuGroupSequence) {
+        this.store = store;
+        this.name = name;
+        this.description = description;
+        this.menuGroupSequence = menuGroupSequence;
+    }
 }

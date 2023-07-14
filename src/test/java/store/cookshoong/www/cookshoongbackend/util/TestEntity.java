@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
-import org.junit.platform.commons.util.ReflectionUtils;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -26,12 +25,14 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageAll;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
+import store.cookshoong.www.cookshoongbackend.payment.entity.ChargeType;
 import store.cookshoong.www.cookshoongbackend.payment.entity.Order;
-import store.cookshoong.www.cookshoongbackend.store.entity.BankType;
-import store.cookshoong.www.cookshoongbackend.store.entity.Holiday;
-import store.cookshoong.www.cookshoongbackend.store.entity.Merchant;
-import store.cookshoong.www.cookshoongbackend.store.entity.Store;
-import store.cookshoong.www.cookshoongbackend.store.entity.StoreStatus;
+import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
+import store.cookshoong.www.cookshoongbackend.shop.entity.Holiday;
+import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
+import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
+import store.cookshoong.www.cookshoongbackend.shop.entity.StoreCategory;
+import store.cookshoong.www.cookshoongbackend.shop.entity.StoreStatus;
 
 /**
  * 테스트 환경에서 원하는 entity 미리 만들어두는 클래스.
@@ -69,6 +70,10 @@ public class TestEntity {
         return createTestBankType("KB", "국민은행");
     }
 
+    public ChargeType getChargeType() {
+        return new ChargeType("KAKAO", "카카오결제", false);
+    }
+
     public StoreStatus getStoreStatusOpen() {
         return createTestStoreStatus("OPEN", "영업중");
     }
@@ -82,6 +87,10 @@ public class TestEntity {
             storeStatus, UUID.randomUUID() + ".jpg", "123456", "김주호",
             LocalDate.of(2020, 2, 20), "주호타코", "01012345678", BigDecimal.ONE,
             null, null, "123456");
+    }
+
+    public StoreCategory getStoreCategory() {
+        return new StoreCategory("CHK", "치킨");
     }
 
     public CouponTypePercent getCouponTypePercent_3_1000_10000() {
@@ -110,12 +119,7 @@ public class TestEntity {
     }
 
     public IssueCoupon getIssueCoupon(CouponPolicy couponPolicy) {
-        LocalTime expirationTime = couponPolicy.getExpirationTime();
-        return new IssueCoupon(couponPolicy,
-            LocalDateTime.now()
-                .plusHours(expirationTime.getHour())
-                .plusMinutes(expirationTime.getMinute())
-                .plusSeconds(expirationTime.getSecond()));
+        return new IssueCoupon(couponPolicy);
     }
 
     public CouponLogType getCouponLogType(String code, String description) {
@@ -135,35 +139,35 @@ public class TestEntity {
     }
 
     private BankType createTestBankType(String bankTypeCode, String description) {
-        BankType bankType = createEntityUsingDeclared(BankType.class);
+        BankType bankType = createUsingDeclared(BankType.class);
         ReflectionTestUtils.setField(bankType, "bankTypeCode", bankTypeCode);
         ReflectionTestUtils.setField(bankType, "description", description);
         return bankType;
     }
 
     private StoreStatus createTestStoreStatus(String storeStatusCode, String description) {
-        StoreStatus storeStatus = createEntityUsingDeclared(StoreStatus.class);
+        StoreStatus storeStatus = createUsingDeclared(StoreStatus.class);
         ReflectionTestUtils.setField(storeStatus, "storeStatusCode", storeStatusCode);
         ReflectionTestUtils.setField(storeStatus, "description", description);
         return storeStatus;
     }
 
     private CouponLogType createTestCouponLogType(String code, String description) {
-        CouponLogType couponLogType = createEntityUsingDeclared(CouponLogType.class);
+        CouponLogType couponLogType = createUsingDeclared(CouponLogType.class);
         ReflectionTestUtils.setField(couponLogType, "code", code);
         ReflectionTestUtils.setField(couponLogType, "description", description);
         return couponLogType;
     }
 
     private Order createTestOrder() {
-        Order order = createEntityUsingDeclared(Order.class);
+        Order order = createUsingDeclared(Order.class);
         ReflectionTestUtils.setField(order, "orderCode", UUID.randomUUID());
         ReflectionTestUtils.setField(order, "orderedAt", LocalDateTime.now());
         ReflectionTestUtils.setField(order, "memo", "memo");
         return order;
     }
 
-    private <T> T createEntityUsingDeclared(Class<T> clazz) {
+    public <T> T createUsingDeclared(Class<T> clazz) {
         try {
             Constructor<T> constructor = clazz.getDeclaredConstructor();
             constructor.setAccessible(true);

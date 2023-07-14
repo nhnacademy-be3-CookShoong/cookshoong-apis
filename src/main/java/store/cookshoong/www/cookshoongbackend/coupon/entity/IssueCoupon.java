@@ -1,7 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.coupon.entity;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,7 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -55,21 +53,22 @@ public class IssueCoupon {
      * 쿠폰 식별번호 랜덤 생성, 쿠폰 정책과 발행일 지정.
      *
      * @param couponPolicy 쿠폰 정책
-     * @param issueAt      쿠폰 발행일
      */
-    public IssueCoupon(CouponPolicy couponPolicy, LocalDateTime issueAt) {
+    public IssueCoupon(CouponPolicy couponPolicy) {
         this.couponPolicy = couponPolicy;
-        this.issueAt = issueAt;
+        this.issueAt = LocalDateTime.now();
     }
 
     /**
      * 발행된 쿠폰을 사용자에게 제공.
      *
-     * @param account      쿠폰을 제공받을 사용자
-     * @param expirationAt 쿠폰 만료일자
+     * @param account 쿠폰을 제공받을 사용자
      */
-    public void provideToUser(Account account, LocalDateTime expirationAt) {
+    public void provideToUser(Account account) {
         this.account = account;
-        this.expirationAt = expirationAt;
+        this.expirationAt = LocalDateTime.now()
+            .plusHours(couponPolicy.getExpirationTime().getHour())
+            .plusMinutes(couponPolicy.getExpirationTime().getMinute())
+            .plusSeconds(couponPolicy.getExpirationTime().getSecond());
     }
 }
