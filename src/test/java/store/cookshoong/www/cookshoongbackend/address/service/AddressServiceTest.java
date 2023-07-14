@@ -132,7 +132,7 @@ class AddressServiceTest {
         ReflectionTestUtils.setField(requestDto, "longitude", new BigDecimal("24.23552423"));
 
         List<AccountAddress> accountAddresses = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 11; i++) {
             accountAddresses.add(accountAddress);
         }
 
