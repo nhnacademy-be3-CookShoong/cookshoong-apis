@@ -93,8 +93,6 @@ class CouponSearchControllerTest {
 
         RequestBuilder request = RestDocumentationRequestBuilders
             .get("/api/coupon/search/{accountId}", Long.MIN_VALUE)
-            .param("usable", "true")
-            .param("storeId", "3")
             .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(request)
