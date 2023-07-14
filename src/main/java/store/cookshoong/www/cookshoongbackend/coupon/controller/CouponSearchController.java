@@ -36,7 +36,8 @@ public class CouponSearchController {
      */
     @GetMapping("/{accountId}")
     public ResponseEntity<Page<SelectOwnCouponResponseDto>> getOwnCoupons(
-        @PathVariable Long accountId, Pageable pageable, @RequestParam Boolean usable, @RequestParam Long storeId) {
+        @PathVariable Long accountId, Pageable pageable, @RequestParam(required = false) Boolean usable,
+        @RequestParam(required = false) Long storeId) {
 
         return ResponseEntity.ok(couponSearchService.getOwnCoupons(accountId, pageable, usable, storeId));
     }
