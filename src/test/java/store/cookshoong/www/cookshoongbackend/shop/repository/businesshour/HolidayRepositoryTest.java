@@ -28,10 +28,14 @@ class HolidayRepositoryTest {
     TestPersistEntity tpe;
 
     @Test
-    @DisplayName("휴업일 조회 - 성공")
+    @DisplayName("휴업일 등록 - 성공")
     void find_holiday() {
         Store store = tpe.getOpenStore();
-        Holiday actual = new Holiday(store, LocalDate.of(2020, 2, 20), LocalDate.of(2020, 2, 22));
+        Holiday actual =
+            new Holiday(
+                store,
+                LocalDate.of(2020, 2, 20),
+                LocalDate.of(2020, 2, 22));
         holidayRepository.save(actual);
 
         List<Holiday> expect = holidayRepository.findByStore_Id(store.getId());
