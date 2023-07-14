@@ -1,8 +1,9 @@
 package store.cookshoong.www.cookshoongbackend.coupon.model.response;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeResponse;
 
 /**
@@ -11,6 +12,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeResponse
  * @author eora21
  * @since 2023.07.06
  */
+@Getter
 @AllArgsConstructor
 public class SelectOwnCouponResponseDto {
     private UUID issueCouponCode;
@@ -18,6 +20,6 @@ public class SelectOwnCouponResponseDto {
     private String couponUsageName;
     private String name;
     private String description;
-    private LocalTime expirationAt;
+    private LocalDateTime expirationAt;
     private String logTypeDescription;
 }

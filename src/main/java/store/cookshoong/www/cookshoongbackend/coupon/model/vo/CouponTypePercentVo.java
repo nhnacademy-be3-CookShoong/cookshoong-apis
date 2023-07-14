@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypePercent;
 
 /**
@@ -12,6 +13,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypePercent;
  * @author eora21
  * @since 2023.07.06
  */
+@Getter
 @EqualsAndHashCode
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CouponTypePercentVo implements CouponTypeResponse {
