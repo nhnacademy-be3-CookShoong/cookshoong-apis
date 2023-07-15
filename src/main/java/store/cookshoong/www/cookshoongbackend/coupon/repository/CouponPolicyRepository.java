@@ -9,6 +9,6 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponPolicy;
  * @author eora21
  * @since 2023.07.04
  */
-public interface CouponPolicyRepository extends JpaRepository<CouponPolicy, Long> {
+public interface CouponPolicyRepository extends JpaRepository<CouponPolicy, Long>, CouponPolicyRepositoryCustom {
 
 }
