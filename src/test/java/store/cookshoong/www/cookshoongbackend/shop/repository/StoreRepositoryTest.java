@@ -159,7 +159,7 @@ class StoreRepositoryTest {
     @Test
     @DisplayName("관리자 : 매장 한 개 조회 - 성공")
     void select_store() {
-        Address address = new Address("조선대학교 11번길", "33-1", new BigDecimal("1.0000000"), new BigDecimal("1.0000000"));
+        Address address = new Address("조선대학교 11번길", "33-1", new BigDecimal("1.0000000000000"), new BigDecimal("1.0000000000000"));
         em.persist(address);
         store.modifyAddress(address);
 
