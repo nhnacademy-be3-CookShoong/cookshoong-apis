@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import store.cookshoong.www.cookshoongbackend.coupon.model.response.QSelectPolicyResponseTempDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.temp.QSelectPolicyResponseTempDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectPolicyResponseTempDto;
 
 /**
