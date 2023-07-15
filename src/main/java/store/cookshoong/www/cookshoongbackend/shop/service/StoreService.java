@@ -132,10 +132,10 @@ public class StoreService {
             registerRequestDto.getBusinessLicense(),
             registerRequestDto.getBusinessLicenseNumber(),
             registerRequestDto.getRepresentativeName(),
-            LocalDate.parse(registerRequestDto.getOpeningDate()),
+            registerRequestDto.getOpeningDate(),
             registerRequestDto.getStoreName(),
             registerRequestDto.getPhoneNumber(),
-            new BigDecimal(registerRequestDto.getEarningRate()),
+            registerRequestDto.getEarningRate(),
             registerRequestDto.getDescription(),
             null,
             registerRequestDto.getBankAccount());
@@ -144,7 +144,7 @@ public class StoreService {
         addStoreCategory(categories, store);
 
         Address address = new Address(registerRequestDto.getMainPlace(), registerRequestDto.getDetailPlace(),
-            new BigDecimal(registerRequestDto.getLatitude()), new BigDecimal(registerRequestDto.getLongitude()));
+            registerRequestDto.getLatitude(), registerRequestDto.getLongitude());
         store.modifyAddress(address);
 
         storeRepository.save(store);
