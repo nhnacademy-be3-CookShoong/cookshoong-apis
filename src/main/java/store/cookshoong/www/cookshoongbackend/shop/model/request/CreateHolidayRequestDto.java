@@ -5,6 +5,7 @@ import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * 휴업일 등록 Dto.
@@ -17,8 +18,10 @@ import lombok.NoArgsConstructor;
 public class CreateHolidayRequestDto {
 
     @NotNull
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate holidayStartDate;
 
     @NotNull
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate holidayEndDate;
 }

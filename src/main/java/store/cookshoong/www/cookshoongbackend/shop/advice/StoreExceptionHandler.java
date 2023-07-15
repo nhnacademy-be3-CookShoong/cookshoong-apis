@@ -8,13 +8,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException;
 import store.cookshoong.www.cookshoongbackend.common.exception.ValidationFailureException;
-import store.cookshoong.www.cookshoongbackend.shop.exception.HolidayValidationException;
-import store.cookshoong.www.cookshoongbackend.shop.exception.SelectHolidayNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.banktype.BankTypeNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.banktype.DuplicatedBankException;
+import store.cookshoong.www.cookshoongbackend.shop.exception.businesshour.BusinessHourValidationException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.category.DuplicatedStoreCategoryException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.category.StoreCategoryNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.category.StoreCategoryValidException;
+import store.cookshoong.www.cookshoongbackend.shop.exception.holiday.HolidayValidationException;
+import store.cookshoong.www.cookshoongbackend.shop.exception.holiday.HolidayNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.merchant.DuplicatedMerchantException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.merchant.MerchantNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.merchant.MerchantValidException;
@@ -39,7 +40,7 @@ public class StoreExceptionHandler {
      * @return 404
      */
     @ExceptionHandler(value = {SelectStoreNotFoundException.class, BankTypeNotFoundException.class,
-        StoreCategoryNotFoundException.class, MerchantNotFoundException.class, SelectHolidayNotFoundException.class})
+        StoreCategoryNotFoundException.class, MerchantNotFoundException.class, HolidayNotFoundException.class})
     public ResponseEntity<String> somethingNotFoundError(NotFoundException e) {
         return ResponseEntity
             .status(HttpStatus.NOT_FOUND)
@@ -53,7 +54,7 @@ public class StoreExceptionHandler {
      * @return 400
      */
     @ExceptionHandler(value = {StoreValidException.class, MerchantValidException.class,
-        StoreCategoryValidException.class, HolidayValidationException.class})
+        StoreCategoryValidException.class, BusinessHourValidationException.class, HolidayValidationException.class})
     public ResponseEntity<Map<String, String>> validFailure(ValidationFailureException e) {
         return ResponseEntity
             .badRequest()

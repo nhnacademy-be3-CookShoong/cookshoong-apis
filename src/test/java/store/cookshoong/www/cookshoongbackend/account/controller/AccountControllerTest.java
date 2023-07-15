@@ -22,7 +22,6 @@ import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,14 +32,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.restdocs.snippet.Attributes;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
-import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.account.exception.AuthorityNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.exception.DuplicatedUserException;
 import store.cookshoong.www.cookshoongbackend.account.exception.SignUpValidationException;
@@ -269,13 +266,13 @@ class AccountControllerTest {
         when(accountService.selectAccount(anyString())).thenReturn(expect);
 
         RequestBuilder request = RestDocumentationRequestBuilders
-            .get("/api/accounts/{loginId}/auth", expect.getUsername())
+            .get("/api/accounts/{loginId}/auth", expect.getLoginId())
             .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(request)
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.username").value(expect.getUsername()))
+            .andExpect(jsonPath("$.loginId").value(expect.getLoginId()))
             .andExpect(jsonPath("$.password").value(expect.getPassword()))
             .andExpect(jsonPath("$.attributes.accountId").value(testAuthDto.getId()))
             .andExpect(jsonPath("$.attributes.authority").value(testAuthDto.getAuthority().getAuthorityCode()))
@@ -286,7 +283,7 @@ class AccountControllerTest {
                     .pathParameters(
                         parameterWithName("loginId").description("로그인할 때 사용자 아이디"))
                     .responseFields(
-                        fieldWithPath("username").description("사용자 아이디(loginId)"),
+                        fieldWithPath("loginId").description("사용자 아이디"),
                         fieldWithPath("password").description("사용자 비밀번호"),
                         fieldWithPath("attributes.accountId").description("사용자 시퀀스"),
                         fieldWithPath("attributes.status").description("사용자 상태"),

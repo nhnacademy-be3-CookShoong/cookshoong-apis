@@ -28,6 +28,7 @@ import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
+import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.address.entity.AccountAddress;
@@ -131,7 +132,7 @@ class AddressServiceTest {
         ReflectionTestUtils.setField(requestDto, "longitude", new BigDecimal("24.23552423"));
 
         List<AccountAddress> accountAddresses = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 11; i++) {
             accountAddresses.add(accountAddress);
         }
 
@@ -192,10 +193,12 @@ class AddressServiceTest {
         List<AccountAddressResponseDto> addressResponses = new ArrayList<>();
         addressResponses.add(new AccountAddressResponseDto(testAccount.getId(), "alias", "성수동"));
 
+        when(accountRepository.findById(testAccount.getId())).thenReturn(Optional.of(testAccount));
         when(accountAddressRepository.lookupByAccountIdAddressAll(testAccount.getId())).thenReturn(addressResponses);
 
         List<AccountAddressResponseDto> actual = addressService.selectAccountAddressList(testAccount.getId());
 
+        verify(accountRepository, times(1)).findById(testAccount.getId());
         verify(accountAddressRepository, times(1)).lookupByAccountIdAddressAll(testAccount.getId());
         assertNotNull(actual);
         assertEquals(addressResponses, actual);
@@ -203,34 +206,52 @@ class AddressServiceTest {
     }
 
     @Test
-    @DisplayName("회원이 주문할 때 필요한 메인주소와 상세주소, 회원의 위치를 맵에서 보여줄 좌표를 조회")
-    void selectAccountAddress() {
-        AccountAddress.Pk pk = new AccountAddress.Pk(testAccount.getId(), testAddress.getId());
+    @DisplayName("회원이 가지고 있는 모든 주소 가져오기, 별칭과 메인주소만 실패 - 회원이 존재하지 않을 때")
+    void selectAccountAddressList_NotFound_Account_Throw() {
 
-        when(accountAddressRepository.findById(pk)).thenReturn(Optional.of(accountAddress));
+        when(accountRepository.findById(testAccount.getId())).thenReturn(Optional.empty());
 
-        AddressResponseDto actual =
-            addressService.selectAccountAddress(testAccount.getId(), testAddress.getId());
+        assertThrows(UserNotFoundException.class,
+            () -> addressService.selectAccountAddressList(testAccount.getId()));
 
-        verify(accountAddressRepository, times(1)).findById(pk);
-
-        assertEquals(testAddress.getMainPlace(), actual.getMainPlace());
-        assertEquals(testAddress.getDetailPlace(), actual.getDetailPlace());
-        assertEquals(testAddress.getLatitude(), actual.getLatitude());
-        assertEquals(testAddress.getLongitude(), actual.getLongitude());
+        verify(accountRepository, times(1)).findById(testAccount.getId());
     }
 
     @Test
-    @DisplayName("회원이 주문할 때 필요한 메인주소와 상세주소, 회원의 위치를 맵에서 보여줄 좌표를 조회 실패: 해당 주소가 존재하지 않을 때")
-    void selectAccountAddress_NotFound_Address_Throw() {
-        AccountAddress.Pk pk = new AccountAddress.Pk(testAccount.getId(), testAddress.getId());
+    @DisplayName("회원이 최근에 등록한 주소와 좌표 조회")
+    void selectAccountAddressRecentRegistration() {
 
-        when(accountAddressRepository.findById(pk)).thenReturn(Optional.empty());
+        AddressResponseDto expectedAddress = new AddressResponseDto("Main Place", "Detail Place",
+            new BigDecimal("23.23233323"), new BigDecimal("23.232333255"));
+        AddressResponseDto expectedAddress1 = new AddressResponseDto("Main Place", "Detail Place",
+            new BigDecimal("23.23233323"), new BigDecimal("23.232333255"));
 
-        assertThrows(AccountAddressNotFoundException.class,
-            () -> addressService.selectAccountAddress(testAccount.getId(), testAddress.getId()));
+        when(accountRepository.findById(testAccount.getId())).thenReturn(Optional.of(testAccount));
+        when(accountAddressRepository.lookupByAccountIdAddressRecentRegistration(testAccount.getId()))
+            .thenReturn(expectedAddress, expectedAddress1);
 
-        verify(accountAddressRepository, times(1)).findById(pk);
+        AddressResponseDto actual = addressService.selectAccountAddressRecentRegistration(testAccount.getId());
+
+        assertEquals(expectedAddress, actual);
+        verify(accountRepository, times(1)).findById(testAccount.getId());
+        verify(accountAddressRepository, times(1)).lookupByAccountIdAddressRecentRegistration(testAccount.getId());
+
+        assertEquals(actual.getMainPlace(), expectedAddress1.getMainPlace());
+        assertEquals(actual.getDetailPlace(), expectedAddress1.getDetailPlace());
+        assertEquals(actual.getLatitude(), expectedAddress1.getLatitude());
+        assertEquals(actual.getLongitude(), expectedAddress1.getLongitude());
+    }
+
+    @Test
+    @DisplayName("회원이 주문할 때 필요한 메인주소와 상세주소, 회원의 위치를 맵에서 보여줄 좌표를 조회 실패: 회원이 존재하지 않을 때")
+    void selectAccountAddress_NotFound_Account_Throw() {
+
+        when(accountRepository.findById(testAccount.getId())).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class,
+            () -> addressService.selectAccountAddressRecentRegistration(testAccount.getId()));
+
+        verify(accountRepository, times(1)).findById(testAccount.getId());
     }
 
     @Test
@@ -256,7 +277,7 @@ class AddressServiceTest {
         when(accountAddressRepository.findById(pk)).thenReturn(Optional.empty());
 
         assertThrows(AccountAddressNotFoundException.class,
-            () -> addressService.selectAccountAddress(testAccount.getId(), testAddress.getId()));
+            () -> addressService.deleteAccountAddress(testAccount.getId(), testAddress.getId()));
 
 
         verify(accountAddressRepository, times(1)).findById(pk);

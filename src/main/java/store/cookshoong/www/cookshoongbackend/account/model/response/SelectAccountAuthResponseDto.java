@@ -1,13 +1,10 @@
 package store.cookshoong.www.cookshoongbackend.account.model.response;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import java.io.Serializable;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountAuthDto;
 
 /**
@@ -19,12 +16,12 @@ import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountAuth
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SelectAccountAuthResponseDto {
-    private String username;
+    private String loginId;
     private String password;
     private Attributes attributes;
 
-    private void setUsername(String username) {
-        this.username = username;
+    private void setLoginId(String loginId) {
+        this.loginId = loginId;
     }
 
     private void setPassword(String password) {
@@ -39,7 +36,7 @@ public class SelectAccountAuthResponseDto {
      */
     public static SelectAccountAuthResponseDto responseDtoFrom(SelectAccountAuthDto authDto) {
         SelectAccountAuthResponseDto authResponseDto = new SelectAccountAuthResponseDto();
-        authResponseDto.setUsername(authDto.getLoginId());
+        authResponseDto.setLoginId(authDto.getLoginId());
         authResponseDto.setPassword(authDto.getPassword());
         authResponseDto.attributes = Attributes.builder()
             .accountId(authDto.getId())

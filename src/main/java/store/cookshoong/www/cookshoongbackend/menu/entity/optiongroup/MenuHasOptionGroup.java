@@ -41,8 +41,8 @@ public class MenuHasOptionGroup {
     @JoinColumn(name = "option_group_id", nullable = false)
     private OptionGroup optionGroup;
 
-    @Column(name = "option_sequence", nullable = false)
-    private Integer optionSequence;
+    @Column(name = "option_group_sequence", nullable = false)
+    private Integer optionGroupSequence;
 
     @Embeddable
     @Getter
