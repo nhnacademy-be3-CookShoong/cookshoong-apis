@@ -5,12 +5,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import org.aspectj.lang.annotation.Before;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -18,30 +15,22 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.event.annotation.BeforeTestMethod;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
-import store.cookshoong.www.cookshoongbackend.common.util.PageResponseDto;
 import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
-import store.cookshoong.www.cookshoongbackend.shop.entity.StoreCategory;
 import store.cookshoong.www.cookshoongbackend.shop.entity.StoreStatus;
-import store.cookshoong.www.cookshoongbackend.shop.entity.StoresHasCategory;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseDto;
-import store.cookshoong.www.cookshoongbackend.shop.repository.bank.BankTypeRepository;
-import store.cookshoong.www.cookshoongbackend.shop.repository.merchant.MerchantRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreRepository;
-import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreStatusRepository;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
-import store.cookshoong.www.cookshoongbackend.util.TestPersistEntity;
 
 /**
  * 가게 레포지토리 테스트 코드 작성.
@@ -74,7 +63,7 @@ class StoreRepositoryTest {
     private AccountRepository accountRepository;
 
     @BeforeEach
-    void setup(){
+    void setup() {
         AccountStatus accountStatus = testEntity.getAccountStatusActive();
         Authority authority = new Authority("BUSINESS", "사업자회원");
         Rank rank = testEntity.getRankLevelOne();
@@ -100,7 +89,7 @@ class StoreRepositoryTest {
 
     @Test
     @DisplayName("매장 저장 - 성공")
-    void save_store(){
+    void save_store() {
         Address address = new Address("조선대학교 11번길", "33-1", new BigDecimal(111), new BigDecimal(122));
         em.persist(address);
         store.modifyAddress(address);
@@ -122,7 +111,7 @@ class StoreRepositoryTest {
 
     @Test
     @DisplayName("매장이 존재 할 떄")
-    void exist_store(){
+    void exist_store() {
         storeRepository.save(store);
 
         boolean actual = storeRepository.existsStoreByBusinessLicenseNumber(store.getBusinessLicenseNumber());
@@ -132,7 +121,7 @@ class StoreRepositoryTest {
 
     @Test
     @DisplayName("매장 존재하지 않을 때")
-    void exist_store_fail(){
+    void exist_store_fail() {
         Address address = testEntity.getAddress();
         em.persist(address);
         store.modifyAddress(address);
@@ -145,7 +134,7 @@ class StoreRepositoryTest {
 
     @Test
     @DisplayName("매장 조회 (페이지) - 성공")
-    void select_stores_page(){
+    void select_stores_page() {
 
         BankType bankType = em.find(BankType.class, "KB");
         StoreStatus storeStatus = em.find(StoreStatus.class, "OPEN");
@@ -153,14 +142,14 @@ class StoreRepositoryTest {
         Address address = new Address("조선대학교 11번길", "33-1", new BigDecimal(111), new BigDecimal(122));
         em.persist(address);
 
-        for(int i=1; i<10;i++){
-            Store store = new Store(merchant, account, bankType, storeStatus, "businessImage"+i,
-                "1111111"+i, "유회장", LocalDate.of(2020,11,11), i+"호점",
+        for (int i = 1; i < 10; i++) {
+            Store store = new Store(merchant, account, bankType, storeStatus, "businessImage" + i,
+                "1111111" + i, "유회장", LocalDate.of(2020, 11, 11), i + "호점",
                 "01011112222", new BigDecimal("1.1"), "가장 맛있는 집", null, "011122222");
             store.modifyAddress(address);
             storeRepository.save(store);
         }
-        Pageable pageable = PageRequest.of(2,2);
+        Pageable pageable = PageRequest.of(2, 2);
         Page<SelectAllStoresResponseDto> actuals = storeRepository.lookupStoresPage(account.getId(), pageable);
 
         assertThat(actuals.get().count()).isEqualTo(2);
@@ -169,7 +158,7 @@ class StoreRepositoryTest {
 
     @Test
     @DisplayName("관리자 : 매장 한 개 조회 - 성공")
-    void select_store(){
+    void select_store() {
         Address address = new Address("조선대학교 11번길", "33-1", new BigDecimal("1.0000000"), new BigDecimal("1.0000000"));
         em.persist(address);
         store.modifyAddress(address);
@@ -182,7 +171,7 @@ class StoreRepositoryTest {
         assertThat(actual.getStoreName()).isEqualTo(store.getName());
         assertThat(actual.getOpeningDate()).isEqualTo(store.getOpeningDate());
         assertThat(actual.getDescription()).isEqualTo(store.getDescription());
-        assertThat(actual.getPhoneNumber()). isEqualTo(store.getPhoneNumber());
+        assertThat(actual.getPhoneNumber()).isEqualTo(store.getPhoneNumber());
         assertThat(actual.getBusinessLicenseNumber()).isEqualTo(store.getBusinessLicenseNumber());
         assertThat(actual.getRepresentativeName()).isEqualTo(store.getRepresentativeName());
 
@@ -196,7 +185,7 @@ class StoreRepositoryTest {
 
     @Test
     @DisplayName("사용자 : 매장에서 한 개 조회 - 성공")
-    void select_store_for_user(){
+    void select_store_for_user() {
         Address address = new Address("조선대학교 11번길", "33-1", new BigDecimal("1.0000000"), new BigDecimal("1.0000000"));
         em.persist(address);
 
