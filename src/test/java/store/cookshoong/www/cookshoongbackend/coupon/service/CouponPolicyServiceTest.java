@@ -1,45 +1,46 @@
 package store.cookshoong.www.cookshoongbackend.coupon.service;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.math.BigDecimal;
-import java.time.LocalTime;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
-import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponPolicy;
-import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
-import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypePercent;
-import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageAll;
-import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
-import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.*;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponUsageNotFoundException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateCashCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreatePercentCouponPolicyRequestDto;
-import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;
-import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponTypeCashRepository;
-import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponTypePercentRepository;
-import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponUsageAllRepository;
-import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponUsageMerchantRepository;
-import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponUsageStoreRepository;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicyResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectPolicyResponseTempDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeCashVo;
+import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypePercentVo;
+import store.cookshoong.www.cookshoongbackend.coupon.repository.*;
+import store.cookshoong.www.cookshoongbackend.coupon.util.CouponTypeConverter;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.shop.repository.merchant.MerchantRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreRepository;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
+
+import java.math.BigDecimal;
+import java.time.LocalTime;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CouponPolicyServiceTest {
@@ -61,6 +62,8 @@ class CouponPolicyServiceTest {
     StoreRepository storeRepository;
     @Mock
     MerchantRepository merchantRepository;
+    @Spy
+    CouponTypeConverter couponTypeConverter;
 
     TestEntity te = new TestEntity();
 
@@ -69,6 +72,129 @@ class CouponPolicyServiceTest {
 
     Account account = persist(
         te.getAccount(te.getAccountStatusActive(), te.getAuthorityCustomer(), te.getRankLevelOne()));
+
+    @Test
+    @DisplayName("매장 정책 확인")
+    void selectStorePolicyTest() throws Exception {
+        CouponTypeCash couponTypeCash = te.getCouponTypeCash_1000_10000();
+        CouponTypePercent couponTypePercent = te.getCouponTypePercent_3_1000_10000();
+
+        SelectPolicyResponseTempDto storeCashPolicy = new SelectPolicyResponseTempDto(
+            atomicLong.getAndIncrement(), couponTypeCash, "매장 금액 쿠폰", "매장에서만 쓰입니다.",
+            LocalTime.of(1, 0, 0));
+
+        SelectPolicyResponseTempDto storePercentPolicy = new SelectPolicyResponseTempDto(
+            atomicLong.getAndIncrement(), couponTypePercent, "매장 금액 쿠폰", "매장에서만 쓰입니다.",
+            LocalTime.of(1, 0, 0));
+
+        List<SelectPolicyResponseTempDto> couponStorePolicies = List.of(storeCashPolicy, storePercentPolicy);
+
+        when(couponPolicyRepository.lookupStorePolicy(any(Long.class), any(Pageable.class)))
+            .thenAnswer(invocation ->
+                new PageImpl<>(couponStorePolicies, invocation.getArgument(1), couponStorePolicies.size()));
+
+        Page<SelectPolicyResponseDto> selectPolicyResponses =
+            couponPolicyService.selectStorePolicy(Long.MIN_VALUE, Pageable.ofSize(10));
+
+        assertThat(selectPolicyResponses).hasSize(couponStorePolicies.size());
+
+        Iterator<SelectPolicyResponseDto> responseIterator = selectPolicyResponses.iterator();
+        Iterator<SelectPolicyResponseTempDto> tempIterator = couponStorePolicies.iterator();
+
+        while (responseIterator.hasNext()) {
+            SelectPolicyResponseDto response = responseIterator.next();
+            SelectPolicyResponseTempDto temp = tempIterator.next();
+
+            assertThat(response.getId()).isEqualTo(temp.getId());
+            assertThat(response.getCouponTypeResponse())
+                .isInstanceOfAny(CouponTypeCashVo.class, CouponTypePercentVo.class);
+            assertThat(response.getName()).isEqualTo(temp.getName());
+            assertThat(response.getDescription()).isEqualTo(temp.getDescription());
+            assertThat(response.getExpirationTime()).isEqualTo(temp.getExpirationTime());
+        }
+    }
+
+    @Test
+    @DisplayName("가맹점 정책 확인")
+    void selectMerchantPolicyTest() throws Exception {
+        CouponTypeCash couponTypeCash = te.getCouponTypeCash_1000_10000();
+        CouponTypePercent couponTypePercent = te.getCouponTypePercent_3_1000_10000();
+
+        SelectPolicyResponseTempDto merchantCashPolicy = new SelectPolicyResponseTempDto(
+            atomicLong.getAndIncrement(), couponTypeCash, "가맹점 금액 쿠폰", "가맹점에서 쓰입니다.",
+            LocalTime.of(1, 0, 0));
+
+        SelectPolicyResponseTempDto merchantPercentPolicy = new SelectPolicyResponseTempDto(
+            atomicLong.getAndIncrement(), couponTypePercent, "가맹점 금액 쿠폰", "가맹점에서 쓰입니다.",
+            LocalTime.of(1, 0, 0));
+
+        List<SelectPolicyResponseTempDto> couponMerchantPolicies = List.of(merchantCashPolicy, merchantPercentPolicy);
+
+        when(couponPolicyRepository.lookupMerchantPolicy(any(Long.class), any(Pageable.class)))
+            .thenAnswer(invocation ->
+                new PageImpl<>(couponMerchantPolicies, invocation.getArgument(1), couponMerchantPolicies.size()));
+
+        Page<SelectPolicyResponseDto> selectPolicyResponses =
+            couponPolicyService.selectMerchantPolicy(Long.MIN_VALUE, Pageable.ofSize(10));
+
+        assertThat(selectPolicyResponses).hasSize(couponMerchantPolicies.size());
+
+        Iterator<SelectPolicyResponseDto> responseIterator = selectPolicyResponses.iterator();
+        Iterator<SelectPolicyResponseTempDto> tempIterator = couponMerchantPolicies.iterator();
+
+        while (responseIterator.hasNext()) {
+            SelectPolicyResponseDto response = responseIterator.next();
+            SelectPolicyResponseTempDto temp = tempIterator.next();
+
+            assertThat(response.getId()).isEqualTo(temp.getId());
+            assertThat(response.getCouponTypeResponse())
+                .isInstanceOfAny(CouponTypeCashVo.class, CouponTypePercentVo.class);
+            assertThat(response.getName()).isEqualTo(temp.getName());
+            assertThat(response.getDescription()).isEqualTo(temp.getDescription());
+            assertThat(response.getExpirationTime()).isEqualTo(temp.getExpirationTime());
+        }
+    }
+
+    @Test
+    @DisplayName("사용처 전체 정책 확인")
+    void selectAllPolicyTest() throws Exception {
+        CouponTypeCash couponTypeCash = te.getCouponTypeCash_1000_10000();
+        CouponTypePercent couponTypePercent = te.getCouponTypePercent_3_1000_10000();
+
+        SelectPolicyResponseTempDto allCashPolicy = new SelectPolicyResponseTempDto(
+            atomicLong.getAndIncrement(), couponTypeCash, "전체 금액 쿠폰", "어디든",
+            LocalTime.of(1, 0, 0));
+
+        SelectPolicyResponseTempDto allPercentPolicy = new SelectPolicyResponseTempDto(
+            atomicLong.getAndIncrement(), couponTypePercent, "전체 금액 쿠폰", "어디든",
+            LocalTime.of(1, 0, 0));
+
+        List<SelectPolicyResponseTempDto> couponAllPolicies = List.of(allCashPolicy, allPercentPolicy);
+
+        when(couponPolicyRepository.lookupAllPolicy(any(Pageable.class)))
+            .thenAnswer(invocation ->
+                new PageImpl<>(couponAllPolicies, invocation.getArgument(0), couponAllPolicies.size()));
+
+        Page<SelectPolicyResponseDto> selectPolicyResponses =
+            couponPolicyService.selectUsageAllPolicy(Pageable.ofSize(10));
+
+        assertThat(selectPolicyResponses).hasSize(couponAllPolicies.size());
+
+        Iterator<SelectPolicyResponseDto> responseIterator = selectPolicyResponses.iterator();
+        Iterator<SelectPolicyResponseTempDto> tempIterator = couponAllPolicies.iterator();
+
+        while (responseIterator.hasNext()) {
+            SelectPolicyResponseDto response = responseIterator.next();
+            SelectPolicyResponseTempDto temp = tempIterator.next();
+
+            assertThat(response.getId()).isEqualTo(temp.getId());
+            assertThat(response.getCouponTypeResponse())
+                .isInstanceOfAny(CouponTypeCashVo.class, CouponTypePercentVo.class);
+            assertThat(response.getName()).isEqualTo(temp.getName());
+            assertThat(response.getDescription()).isEqualTo(temp.getDescription());
+            assertThat(response.getExpirationTime()).isEqualTo(temp.getExpirationTime());
+        }
+    }
 
     @Test
     @DisplayName("매장 금액 쿠폰 정책 생성 성공")
