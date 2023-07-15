@@ -91,14 +91,14 @@ public class CouponPolicyRepositoryImpl implements CouponPolicyRepositoryCustom 
     }
 
     private static JPQLQuery<Long> getCouponUsageMerchantId(Long merchantId) {
-        return JPAExpressions.select(couponUsageStore.id)
+        return JPAExpressions.select(couponUsageMerchant.id)
             .from(couponUsageMerchant)
             .innerJoin(couponUsageMerchant.merchant, merchant)
             .where(merchant.id.eq(merchantId));
     }
 
     private static JPQLQuery<Long> getCouponUsageAllId() {
-        return JPAExpressions.select(couponUsageStore.id)
+        return JPAExpressions.select(couponUsageAll.id)
             .from(couponUsageAll)
             .limit(1L);
     }
