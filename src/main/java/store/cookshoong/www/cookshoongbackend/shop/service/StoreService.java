@@ -140,14 +140,8 @@ public class StoreService {
             null,
             registerRequestDto.getBankAccount());
 
-        if (registerRequestDto.getStoreCategories().size() < 4) {
-            for (String categoryCode : registerRequestDto.getStoreCategories()) {
-                StoreCategory category = storeCategoryRepository.findById(categoryCode)
-                    .orElseThrow(StoreCategoryNotFoundException::new);
-                store.getStoresHasCategories()
-                    .add(new StoresHasCategory(new StoresHasCategory.Pk(store.getId(), category.getCategoryCode()), store, category));
-            }
-        }
+        List<String> categories = registerRequestDto.getStoreCategories();
+        addStoreCategory(categories, store);
 
         Address address = new Address(registerRequestDto.getMainPlace(), registerRequestDto.getDetailPlace(),
             new BigDecimal(registerRequestDto.getLatitude()), new BigDecimal(registerRequestDto.getLongitude()));
