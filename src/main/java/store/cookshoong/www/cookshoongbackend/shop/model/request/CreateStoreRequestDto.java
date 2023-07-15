@@ -1,7 +1,5 @@
 package store.cookshoong.www.cookshoongbackend.shop.model.request;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
 import lombok.AccessLevel;
@@ -17,24 +15,35 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CreateStoreRequestDto {
-    //TODO 2. validation 재작성
-    private String merchantName;
+    private Long merchantId;
     @NotBlank
     private String businessLicenseNumber;
+    @NotBlank
     private String representativeName;
-    private LocalDate openingDate;
+    @NotBlank
+    private String openingDate;
+    @NotBlank
     private String storeName;
+    @NotBlank
     private String mainPlace;
+    @NotBlank
     private String detailPlace;
-    private BigDecimal latitude;
-    private BigDecimal longitude;
+    @NotBlank
+    private String latitude;
+    @NotBlank
+    private String longitude;
+    @NotBlank
     private String phoneNumber;
+    @NotBlank
     private String businessLicense;
+    @NotBlank
     private String description;
-    private BigDecimal earningRate;
-    private String image;
+    @NotBlank
+    private String earningRate;
     private List<String> storeCategories;
-    private String bankName;
+    @NotBlank
+    private String bankCode;
+    @NotBlank
     private String bankAccount;
 
 }

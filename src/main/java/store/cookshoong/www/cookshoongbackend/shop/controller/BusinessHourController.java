@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import store.cookshoong.www.cookshoongbackend.shop.exception.businesshour.BusinessHourValidationException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.HolidayValidationException;
+import store.cookshoong.www.cookshoongbackend.shop.exception.businesshour.BusinessHourValidationException;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateBusinessHourRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateHolidayRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectBusinessHourResponseDto;
@@ -88,9 +88,9 @@ public class BusinessHourController {
     /**
      * 영업시간 등록을 위한 컨트롤러 구현.
      *
-     * @param storeId                 the store id
+     * @param storeId                      the store id
      * @param createBusinessHourRequestDto 영업시간 등록을 위한 Request Body
-     * @param bindingResult           validation 결과
+     * @param bindingResult                validation 결과
      * @return 201
      */
     @PostMapping("/businesshour")
