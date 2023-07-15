@@ -12,7 +12,6 @@ import store.cookshoong.www.cookshoongbackend.shop.exception.merchant.MerchantNo
 import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateMerchantRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateMerchantRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllMerchantsForUserResponseDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectMerchantResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.repository.merchant.MerchantRepository;
 
 /**
@@ -41,7 +40,7 @@ public class MerchantService {
      * @return 가맹점 리스트
      */
     @Transactional(readOnly = true)
-    public Page<SelectMerchantResponseDto> selectAllMerchants(Pageable pageable) {
+    public Page<SelectAllMerchantsForUserResponseDto> selectAllMerchants(Pageable pageable) {
         return merchantRepository.lookupMerchantPage(pageable);
     }
 

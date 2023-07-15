@@ -5,8 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreForUserResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseDto;
 
 /**
  * 매장 Custom 레포지토리 인터페이스.
