@@ -25,7 +25,7 @@ public class SelectStoreResponseDto {
     private final BigDecimal longitude;
     private final BigDecimal defaultEarningRate;
     private final String description;
-    private final String bankName;
+    private final String bankCode;
     private final String bankAccountNumber;
 
     /**
@@ -43,13 +43,13 @@ public class SelectStoreResponseDto {
      * @param longitude             경도
      * @param defaultEarningRate    기본 적립률
      * @param description           매장 설명
-     * @param bankName              정산 은행 이름
+     * @param bankCode              정산 은행 이름
      * @param bankAccountNumber     정산받을 계좌번호
      */
     @QueryProjection
     public SelectStoreResponseDto(String loginId, String businessLicenseNumber, String representativeName,
                                   LocalDate openingDate, String storeName, String phoneNumber, String mainPlace,
-                                  String detailPlace, BigDecimal latitude, BigDecimal longitude, BigDecimal defaultEarningRate, String description, String bankName,
+                                  String detailPlace, BigDecimal latitude, BigDecimal longitude, BigDecimal defaultEarningRate, String description, String bankCode,
                                   String bankAccountNumber) {
         this.loginId = loginId;
         this.businessLicenseNumber = businessLicenseNumber;
@@ -63,7 +63,7 @@ public class SelectStoreResponseDto {
         this.longitude = longitude;
         this.defaultEarningRate = defaultEarningRate;
         this.description = description;
-        this.bankName = bankName;
+        this.bankCode = bankCode;
         this.bankAccountNumber = bankAccountNumber;
     }
 }

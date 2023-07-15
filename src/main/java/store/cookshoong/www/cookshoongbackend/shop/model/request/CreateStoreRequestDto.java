@@ -19,7 +19,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CreateStoreRequestDto {
-    private String merchantName;
+    private Long merchantId;
     @NotBlank
     private String businessLicenseNumber;
     @NotBlank
@@ -30,6 +30,7 @@ public class CreateStoreRequestDto {
     private String storeName;
     @NotBlank
     private String mainPlace;
+    @NotBlank
     private String detailPlace;
     @NotNull
     private BigDecimal latitude;
@@ -39,6 +40,7 @@ public class CreateStoreRequestDto {
     private String phoneNumber;
     @NotBlank
     private String businessLicense;
+    @NotBlank
     private String description;
     @NotNull
     private BigDecimal earningRate;
@@ -46,7 +48,8 @@ public class CreateStoreRequestDto {
     @NotNull
     private List<String> storeCategories;
     @NotBlank
-    private String bankName;
+    private String bankCode;
     @NotBlank
     private String bankAccount;
+
 }

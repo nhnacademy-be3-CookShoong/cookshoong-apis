@@ -7,9 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QBankType;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectAllBanksForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectAllBanksResponseDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllBanksForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllBanksResponseDto;
 
 /**
@@ -53,11 +51,11 @@ public class BankTypeRepositoryImpl implements BankTypeRepositoryCustom {
     }
 
     @Override
-    public List<SelectAllBanksForUserResponseDto> lookupBanks() {
+    public List<SelectAllBanksResponseDto> lookupBanks() {
         QBankType bankType = QBankType.bankType;
 
         return jpaQueryFactory
-            .select(new QSelectAllBanksForUserResponseDto(bankType.bankTypeCode, bankType.description))
+            .select(new QSelectAllBanksResponseDto(bankType.bankTypeCode, bankType.description))
             .from(bankType)
             .orderBy(bankType.description.asc())
             .fetch();
