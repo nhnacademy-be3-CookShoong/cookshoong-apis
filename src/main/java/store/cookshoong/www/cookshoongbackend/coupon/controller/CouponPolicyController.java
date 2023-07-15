@@ -33,7 +33,7 @@ public class CouponPolicyController {
     private final CouponPolicyService couponPolicyService;
 
     /**
-     * Gets all policy.
+     * 매장 쿠폰 정책 조회.
      *
      * @param storeId  the store id
      * @param pageable the pageable
@@ -45,7 +45,7 @@ public class CouponPolicyController {
     }
 
     /**
-     * Gets merchant policy.
+     * 가맹점 쿠폰 정책 조회.
      *
      * @param merchantId the merchant id
      * @param pageable   the pageable
@@ -58,7 +58,7 @@ public class CouponPolicyController {
     }
 
     /**
-     * Gets usage all policy.
+     * 어느 곳이든 사용 가능한 쿠폰 정책 조회.
      *
      * @param pageable the pageable
      * @return the usage all policy
