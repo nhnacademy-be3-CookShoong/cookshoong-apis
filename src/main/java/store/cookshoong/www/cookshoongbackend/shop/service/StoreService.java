@@ -1,5 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.shop.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -104,8 +106,6 @@ public class StoreService {
             .orElseThrow(SelectStoreNotFoundException::new);
     }
 
-    //TODO 2. 매장에서 카테고리 설정하는거 빠져있음. 추후에 프론트 적용하면서 넘어오는 값들 확인 후 다시 설정.
-
     /**
      * 사업자 : 매장 등록 서비스 구현.
      * 가맹점 등록시 찾아서 넣고, 없으면 null로 등록, 매장 등록시 바로 CLOSE(휴식중) 상태로 등록됨.
@@ -118,10 +118,10 @@ public class StoreService {
             throw new DuplicatedBusinessLicenseException(registerRequestDto.getBusinessLicenseNumber());
         }
 
-        Merchant merchant = merchantRepository.findMerchantByName(registerRequestDto.getMerchantName()).orElse(null);
+        Merchant merchant = merchantRepository.findById(registerRequestDto.getMerchantId()).orElse(null);
         Account account = accountRepository.findById(accountId)
             .orElseThrow(UserNotFoundException::new);
-        BankType bankType = bankTypeRepository.findByDescription(registerRequestDto.getBankName())
+        BankType bankType = bankTypeRepository.findById(registerRequestDto.getBankCode())
             .orElseThrow(BankTypeNotFoundException::new);
         StoreStatus storeStatus = storeStatusRepository.getReferenceById(StoreStatus.StoreStatusCode.CLOSE.name());
 
@@ -132,12 +132,12 @@ public class StoreService {
             registerRequestDto.getBusinessLicense(),
             registerRequestDto.getBusinessLicenseNumber(),
             registerRequestDto.getRepresentativeName(),
-            registerRequestDto.getOpeningDate(),
+            LocalDate.parse(registerRequestDto.getOpeningDate()),
             registerRequestDto.getStoreName(),
             registerRequestDto.getPhoneNumber(),
-            registerRequestDto.getEarningRate(),
+            new BigDecimal(registerRequestDto.getEarningRate()),
             registerRequestDto.getDescription(),
-            registerRequestDto.getImage(),
+            null,
             registerRequestDto.getBankAccount());
 
         if (registerRequestDto.getStoreCategories().size() < 4) {
@@ -150,7 +150,7 @@ public class StoreService {
         }
 
         Address address = new Address(registerRequestDto.getMainPlace(), registerRequestDto.getDetailPlace(),
-            registerRequestDto.getLatitude(), registerRequestDto.getLongitude());
+            new BigDecimal(registerRequestDto.getLatitude()), new BigDecimal(registerRequestDto.getLongitude()));
         store.modifyAddress(address);
 
         storeRepository.save(store);
