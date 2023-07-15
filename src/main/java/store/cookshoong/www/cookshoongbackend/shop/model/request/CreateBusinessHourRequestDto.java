@@ -6,6 +6,7 @@ import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * 영업시간 등록 Dto.
@@ -21,8 +22,10 @@ public class CreateBusinessHourRequestDto {
     private String dayCodeName;
 
     @NotNull
+    @DateTimeFormat(pattern = "HH:mm")
     private LocalTime openHour;
 
     @NotNull
+    @DateTimeFormat(pattern = "HH:mm")
     private LocalTime closeHour;
 }

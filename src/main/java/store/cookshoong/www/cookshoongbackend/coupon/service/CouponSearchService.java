@@ -8,9 +8,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import store.cookshoong.www.cookshoongbackend.coupon.model.response.CouponResponseDto;
-import store.cookshoong.www.cookshoongbackend.coupon.model.response.CouponTypeResponse;
-import store.cookshoong.www.cookshoongbackend.coupon.model.temp.CouponResponseTempDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectOwnCouponResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectOwnCouponResponseTempDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeResponse;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.IssueCouponRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.util.CouponTypeConverter;
 import store.cookshoong.www.cookshoongbackend.coupon.util.CouponUsageConverter;
@@ -34,15 +34,16 @@ public class CouponSearchService {
      *
      * @param accountId the account id
      * @param pageable  페이징 설정
-     * @param useCond   사용 가능 여부 컨디션(null = 조건없음, true = 사용 가능, false = 사용 불가)
+     * @param usable    사용 가능 여부 컨디션(null = 사용 가능•불가 쿠폰 모두, true = 사용 가능, false = 사용 불가)
      * @param storeId   the store id
      * @return 소유 쿠폰 중 사용 가능 등 필터링한 결과
      */
-    public Page<CouponResponseDto> getOwnCoupons(Long accountId, Pageable pageable, Boolean useCond, Long storeId) {
-        Page<CouponResponseTempDto> couponResponseTemps =
-            issueCouponRepository.lookupAllOwnCoupons(accountId, pageable, useCond, storeId);
+    public Page<SelectOwnCouponResponseDto> getOwnCoupons(Long accountId, Pageable pageable, Boolean usable,
+                                                          Long storeId) {
+        Page<SelectOwnCouponResponseTempDto> couponResponseTemps =
+            issueCouponRepository.lookupAllOwnCoupons(accountId, pageable, usable, storeId);
 
-        List<CouponResponseDto> couponResponses = couponResponseTemps.stream()
+        List<SelectOwnCouponResponseDto> couponResponses = couponResponseTemps.stream()
             .map(this::tempToPermanent)
             .collect(Collectors.toList());
 
@@ -50,13 +51,14 @@ public class CouponSearchService {
             couponResponses, couponResponseTemps.getPageable(), couponResponseTemps.getTotalElements());
     }
 
-    private CouponResponseDto tempToPermanent(CouponResponseTempDto couponResponseTempDto) {
-        CouponTypeResponse couponTypeResponse = couponTypeConverter.convert(couponResponseTempDto.getCouponType());
-        String couponUsageName = couponUsageConverter.convert(couponResponseTempDto.getCouponUsage());
+    private SelectOwnCouponResponseDto tempToPermanent(SelectOwnCouponResponseTempDto selectOwnCouponResponseTempDto) {
+        CouponTypeResponse couponTypeResponse =
+            couponTypeConverter.convert(selectOwnCouponResponseTempDto.getCouponType());
+        String couponUsageName = couponUsageConverter.convert(selectOwnCouponResponseTempDto.getCouponUsage());
 
-        return new CouponResponseDto(
-            couponResponseTempDto.getIssueCouponCode(), couponTypeResponse, couponUsageName,
-            couponResponseTempDto.getName(), couponResponseTempDto.getDescription(),
-            couponResponseTempDto.getExpirationAt(), couponResponseTempDto.getLogTypeDescription());
+        return new SelectOwnCouponResponseDto(
+            selectOwnCouponResponseTempDto.getIssueCouponCode(), couponTypeResponse, couponUsageName,
+            selectOwnCouponResponseTempDto.getName(), selectOwnCouponResponseTempDto.getDescription(),
+            selectOwnCouponResponseTempDto.getExpirationAt(), selectOwnCouponResponseTempDto.getLogTypeDescription());
     }
 }

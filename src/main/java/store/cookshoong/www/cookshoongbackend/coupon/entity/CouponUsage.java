@@ -29,6 +29,4 @@ public abstract class CouponUsage {
     @Column(name = "coupon_usage_id", nullable = false)
     private Long id;
 
-    public abstract String getTypeName();
-
 }

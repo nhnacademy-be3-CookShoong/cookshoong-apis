@@ -35,10 +35,10 @@ public class Address {
     @Column(name = "detail_place", length = 80)
     private String detailPlace;
 
-    @Column(name = "latitude", precision = 10, scale = 7, nullable = false)
+    @Column(name = "latitude", precision = 16, scale = 13, nullable = false)
     private BigDecimal latitude;
 
-    @Column(name = "longitude", precision = 10, scale = 7, nullable = false)
+    @Column(name = "longitude", precision = 16, scale = 13, nullable = false)
     private BigDecimal longitude;
 
     /**

@@ -1,10 +1,14 @@
 package store.cookshoong.www.cookshoongbackend.shop.model.request;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * 매장 등록 Dto.
@@ -20,26 +24,28 @@ public class CreateStoreRequestDto {
     private String businessLicenseNumber;
     @NotBlank
     private String representativeName;
-    @NotBlank
-    private String openingDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate openingDate;
     @NotBlank
     private String storeName;
     @NotBlank
     private String mainPlace;
     @NotBlank
     private String detailPlace;
-    @NotBlank
-    private String latitude;
-    @NotBlank
-    private String longitude;
+    @NotNull
+    private BigDecimal latitude;
+    @NotNull
+    private BigDecimal longitude;
     @NotBlank
     private String phoneNumber;
     @NotBlank
     private String businessLicense;
     @NotBlank
     private String description;
-    @NotBlank
-    private String earningRate;
+    @NotNull
+    private BigDecimal earningRate;
+    private String image;
+    @NotNull
     private List<String> storeCategories;
     @NotBlank
     private String bankCode;

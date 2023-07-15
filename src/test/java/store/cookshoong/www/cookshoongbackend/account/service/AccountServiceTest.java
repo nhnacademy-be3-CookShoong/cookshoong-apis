@@ -168,7 +168,7 @@ class AccountServiceTest {
         String status = (String) ReflectionTestUtils.getField(actual.getAttributes(), "status");
         String authority = (String) ReflectionTestUtils.getField(actual.getAttributes(), "authority");
 
-        assertThat(actual.getUsername()).isEqualTo(expect.getLoginId());
+        assertThat(actual.getLoginId()).isEqualTo(expect.getLoginId());
         assertThat(actual.getPassword()).isEqualTo(expect.getPassword());
         assertThat(accountId).isEqualTo(expect.getId());
         assertThat(status).isEqualTo(expect.getStatus().getStatusCode());

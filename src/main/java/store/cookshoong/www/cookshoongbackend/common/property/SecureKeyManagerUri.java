@@ -37,7 +37,6 @@ public class SecureKeyManagerUri {
             .pathSegment("secrets")
             .path("{keyid}")
             .buildAndExpand(appkey, keyid)
-            .encode()
             .toUri();
     }
 }

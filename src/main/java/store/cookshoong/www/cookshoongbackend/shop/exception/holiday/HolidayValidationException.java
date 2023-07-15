@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.shop.exception;
+package store.cookshoong.www.cookshoongbackend.shop.exception.holiday;
 
 import org.springframework.validation.BindingResult;
 import store.cookshoong.www.cookshoongbackend.common.exception.ValidationFailureException;
