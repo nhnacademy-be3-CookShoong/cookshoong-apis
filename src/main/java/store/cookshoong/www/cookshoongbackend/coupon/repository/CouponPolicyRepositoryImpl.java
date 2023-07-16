@@ -6,9 +6,11 @@ import static store.cookshoong.www.cookshoongbackend.coupon.entity.QCouponUsage.
 import static store.cookshoong.www.cookshoongbackend.coupon.entity.QCouponUsageAll.couponUsageAll;
 import static store.cookshoong.www.cookshoongbackend.coupon.entity.QCouponUsageMerchant.couponUsageMerchant;
 import static store.cookshoong.www.cookshoongbackend.coupon.entity.QCouponUsageStore.couponUsageStore;
+import static store.cookshoong.www.cookshoongbackend.coupon.entity.QIssueCoupon.issueCoupon;
 import static store.cookshoong.www.cookshoongbackend.shop.entity.QMerchant.merchant;
 import static store.cookshoong.www.cookshoongbackend.shop.entity.QStore.store;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -69,7 +71,9 @@ public class CouponPolicyRepositoryImpl implements CouponPolicyRepositoryCustom 
                 couponType,
                 couponPolicy.name,
                 couponPolicy.description,
-                couponPolicy.expirationTime
+                couponPolicy.expirationTime,
+                getIssueCouponCount(true),
+                getIssueCouponCount(false)
             ))
             .from(couponPolicy)
 
@@ -113,5 +117,19 @@ public class CouponPolicyRepositoryImpl implements CouponPolicyRepositoryCustom 
 
             .where(couponUsage.id.eq(couponUsageId))
             .fetchOne();
+    }
+
+    private JPQLQuery<Long> getIssueCouponCount(boolean receivable) {
+        return JPAExpressions.select(issueCoupon.count())
+            .from(issueCoupon)
+            .where(issueCoupon.couponPolicy.eq(couponPolicy), isUnclaimedCouponCount(receivable));
+    }
+
+    private BooleanExpression isUnclaimedCouponCount(boolean receivable) {
+        if (!receivable) {
+            return null;
+        }
+
+        return issueCoupon.account.isNull();
     }
 }

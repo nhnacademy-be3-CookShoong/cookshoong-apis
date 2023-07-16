@@ -82,10 +82,10 @@ class CouponPolicyControllerTest {
         CouponTypePercent couponTypePercent = te.getCouponTypePercent_3_1000_10000();
         SelectPolicyResponseDto cashPolicy = new SelectPolicyResponseDto(atomicLong.getAndIncrement(),
             CouponTypeCashVo.newInstance(couponTypeCash), "금액 쿠폰", "현금처럼 쓰입니다.",
-            LocalTime.of(1, 0, 0));
+            LocalTime.of(1, 0, 0), 1L, 10L);
         SelectPolicyResponseDto percentPolicy = new SelectPolicyResponseDto(atomicLong.getAndIncrement(),
             CouponTypePercentVo.newInstance(couponTypePercent), "퍼센트 쿠폰", "퍼센트만큼 차감합니다.",
-            LocalTime.of(1, 0, 0));
+            LocalTime.of(1, 0, 0), 1L, 10L);
 
         policies = List.of(cashPolicy, percentPolicy);
 
@@ -131,24 +131,26 @@ class CouponPolicyControllerTest {
                     fieldWithPath("content[].name").description("쿠폰명"),
                     fieldWithPath("content[].description").description("쿠폰 설명"),
                     fieldWithPath("content[].expirationTime").description("쿠폰 만료시간"),
+                    fieldWithPath("content[].unclaimedCouponCount").description("남은 쿠폰 개수"),
+                    fieldWithPath("content[].issueCouponCount").description("전체 발행 쿠폰 개수"),
                     fieldWithPath("pageable.sort.empty").description("정렬 데이터 공백 여부"),
                     fieldWithPath("pageable.sort.sorted").description("정렬 여부"),
                     fieldWithPath("pageable.sort.unsorted").description("비정렬 여부"),
                     fieldWithPath("pageable.offset").description("데이터 순번"),
                     fieldWithPath("pageable.pageNumber").description("페이지 번호"),
-                    fieldWithPath("pageable.pageSize").description("한 페이지당 조회할 데이터 갯수"),
+                    fieldWithPath("pageable.pageSize").description("한 페이지당 조회할 데이터 개수"),
                     fieldWithPath("pageable.paged").description("페이징 정보 포함 여부"),
                     fieldWithPath("pageable.unpaged").description("페이징 정보 미포함 여부"),
                     fieldWithPath("last").description("마지막 페이지 여부"),
-                    fieldWithPath("totalPages").description("전체 페이지 갯수"),
-                    fieldWithPath("totalElements").description("총 데이터 갯수"),
+                    fieldWithPath("totalPages").description("전체 페이지 개수"),
+                    fieldWithPath("totalElements").description("총 데이터 개수"),
                     fieldWithPath("first").description("첫 페이지 여부"),
-                    fieldWithPath("size").description("한 페이지당 조회할 데이터 갯수"),
+                    fieldWithPath("size").description("한 페이지당 조회할 데이터 개수"),
                     fieldWithPath("number").description("현재 페이지 번호"),
                     fieldWithPath("sort.empty").description("정렬 데이터 공백 여부"),
                     fieldWithPath("sort.sorted").description("정렬 여부"),
                     fieldWithPath("sort.unsorted").description("비정렬 여부"),
-                    fieldWithPath("numberOfElements").description("요청 페이지에서 조회된 데이터 갯수"),
+                    fieldWithPath("numberOfElements").description("요청 페이지에서 조회된 데이터 개수"),
                     fieldWithPath("empty").description("데이터 미존재 여부")
                 )
             ));
@@ -180,24 +182,26 @@ class CouponPolicyControllerTest {
                     fieldWithPath("content[].name").description("쿠폰명"),
                     fieldWithPath("content[].description").description("쿠폰 설명"),
                     fieldWithPath("content[].expirationTime").description("쿠폰 만료시간"),
+                    fieldWithPath("content[].unclaimedCouponCount").description("남은 쿠폰 개수"),
+                    fieldWithPath("content[].issueCouponCount").description("전체 발행 쿠폰 개수"),
                     fieldWithPath("pageable.sort.empty").description("정렬 데이터 공백 여부"),
                     fieldWithPath("pageable.sort.sorted").description("정렬 여부"),
                     fieldWithPath("pageable.sort.unsorted").description("비정렬 여부"),
                     fieldWithPath("pageable.offset").description("데이터 순번"),
                     fieldWithPath("pageable.pageNumber").description("페이지 번호"),
-                    fieldWithPath("pageable.pageSize").description("한 페이지당 조회할 데이터 갯수"),
+                    fieldWithPath("pageable.pageSize").description("한 페이지당 조회할 데이터 개수"),
                     fieldWithPath("pageable.paged").description("페이징 정보 포함 여부"),
                     fieldWithPath("pageable.unpaged").description("페이징 정보 미포함 여부"),
                     fieldWithPath("last").description("마지막 페이지 여부"),
-                    fieldWithPath("totalPages").description("전체 페이지 갯수"),
-                    fieldWithPath("totalElements").description("총 데이터 갯수"),
+                    fieldWithPath("totalPages").description("전체 페이지 개수"),
+                    fieldWithPath("totalElements").description("총 데이터 개수"),
                     fieldWithPath("first").description("첫 페이지 여부"),
-                    fieldWithPath("size").description("한 페이지당 조회할 데이터 갯수"),
+                    fieldWithPath("size").description("한 페이지당 조회할 데이터 개수"),
                     fieldWithPath("number").description("현재 페이지 번호"),
                     fieldWithPath("sort.empty").description("정렬 데이터 공백 여부"),
                     fieldWithPath("sort.sorted").description("정렬 여부"),
                     fieldWithPath("sort.unsorted").description("비정렬 여부"),
-                    fieldWithPath("numberOfElements").description("요청 페이지에서 조회된 데이터 갯수"),
+                    fieldWithPath("numberOfElements").description("요청 페이지에서 조회된 데이터 개수"),
                     fieldWithPath("empty").description("데이터 미존재 여부")
                 )
             ));
@@ -228,24 +232,26 @@ class CouponPolicyControllerTest {
                     fieldWithPath("content[].name").description("쿠폰명"),
                     fieldWithPath("content[].description").description("쿠폰 설명"),
                     fieldWithPath("content[].expirationTime").description("쿠폰 만료시간"),
+                    fieldWithPath("content[].unclaimedCouponCount").description("남은 쿠폰 개수"),
+                    fieldWithPath("content[].issueCouponCount").description("전체 발행 쿠폰 개수"),
                     fieldWithPath("pageable.sort.empty").description("정렬 데이터 공백 여부"),
                     fieldWithPath("pageable.sort.sorted").description("정렬 여부"),
                     fieldWithPath("pageable.sort.unsorted").description("비정렬 여부"),
                     fieldWithPath("pageable.offset").description("데이터 순번"),
                     fieldWithPath("pageable.pageNumber").description("페이지 번호"),
-                    fieldWithPath("pageable.pageSize").description("한 페이지당 조회할 데이터 갯수"),
+                    fieldWithPath("pageable.pageSize").description("한 페이지당 조회할 데이터 개수"),
                     fieldWithPath("pageable.paged").description("페이징 정보 포함 여부"),
                     fieldWithPath("pageable.unpaged").description("페이징 정보 미포함 여부"),
                     fieldWithPath("last").description("마지막 페이지 여부"),
-                    fieldWithPath("totalPages").description("전체 페이지 갯수"),
-                    fieldWithPath("totalElements").description("총 데이터 갯수"),
+                    fieldWithPath("totalPages").description("전체 페이지 개수"),
+                    fieldWithPath("totalElements").description("총 데이터 개수"),
                     fieldWithPath("first").description("첫 페이지 여부"),
-                    fieldWithPath("size").description("한 페이지당 조회할 데이터 갯수"),
+                    fieldWithPath("size").description("한 페이지당 조회할 데이터 개수"),
                     fieldWithPath("number").description("현재 페이지 번호"),
                     fieldWithPath("sort.empty").description("정렬 데이터 공백 여부"),
                     fieldWithPath("sort.sorted").description("정렬 여부"),
                     fieldWithPath("sort.unsorted").description("비정렬 여부"),
-                    fieldWithPath("numberOfElements").description("요청 페이지에서 조회된 데이터 갯수"),
+                    fieldWithPath("numberOfElements").description("요청 페이지에서 조회된 데이터 개수"),
                     fieldWithPath("empty").description("데이터 미존재 여부")
                 )
             ));
