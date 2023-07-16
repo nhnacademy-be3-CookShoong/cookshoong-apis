@@ -19,30 +19,30 @@ public class SelectPolicyResponseTempDto {
     private final String name;
     private final String description;
     private final LocalTime expirationTime;
-    private final Long leftCount;
-    private final Long issueCount;
+    private final Long unclaimedCouponCount;
+    private final Long issueCouponCount;
 
     /**
      * 쿠폰 정책 임시 응답 객체 생성자.
      *
-     * @param id             쿠폰 정책 id
-     * @param couponType     쿠폰 타입
-     * @param name           쿠폰 이름
-     * @param description    쿠폰 설명
-     * @param expirationTime 쿠폰 만료시간
-     * @param leftCount      발급되었으나 유저가 지니고 있지 않은 쿠폰 개수
-     * @param issueCount     발급된 전체 쿠폰 개수
+     * @param id                   쿠폰 정책 id
+     * @param couponType           쿠폰 타입
+     * @param name                 쿠폰 이름
+     * @param description          쿠폰 설명
+     * @param expirationTime       쿠폰 만료시간
+     * @param unclaimedCouponCount 발급되었으나 유저가 지니고 있지 않은 쿠폰 개수
+     * @param issueCouponCount     발급된 전체 쿠폰 개수
      */
     @QueryProjection
 
     public SelectPolicyResponseTempDto(Long id, CouponType couponType, String name, String description,
-                                       LocalTime expirationTime, Long leftCount, Long issueCount) {
+                                       LocalTime expirationTime, Long unclaimedCouponCount, Long issueCouponCount) {
         this.id = id;
         this.couponType = couponType;
         this.name = name;
         this.description = description;
         this.expirationTime = expirationTime;
-        this.leftCount = leftCount;
-        this.issueCount = issueCount;
+        this.unclaimedCouponCount = unclaimedCouponCount;
+        this.issueCouponCount = issueCouponCount;
     }
 }

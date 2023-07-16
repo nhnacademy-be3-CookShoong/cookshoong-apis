@@ -194,12 +194,12 @@ class CouponPolicyRepositoryImplTest {
         assertThat(selectPolicyResponseTemps).hasSize(2);
 
         SelectPolicyResponseTempDto firstPolicyResponse = selectPolicyResponseTemps.getContent().get(0);
-        assertThat(firstPolicyResponse.getLeftCount()).isEqualTo(provideCount);
-        assertThat(firstPolicyResponse.getIssueCount()).isEqualTo(provideCount + provideToCustomerCount);
+        assertThat(firstPolicyResponse.getUnclaimedCouponCount()).isEqualTo(provideCount);
+        assertThat(firstPolicyResponse.getIssueCouponCount()).isEqualTo(provideCount + provideToCustomerCount);
 
         SelectPolicyResponseTempDto secondPolicyResponse = selectPolicyResponseTemps.getContent().get(1);
-        assertThat(secondPolicyResponse.getLeftCount()).isEqualTo(provideSecondCount);
-        assertThat(secondPolicyResponse.getIssueCount())
+        assertThat(secondPolicyResponse.getUnclaimedCouponCount()).isEqualTo(provideSecondCount);
+        assertThat(secondPolicyResponse.getIssueCouponCount())
             .isEqualTo(provideSecondCount + provideToCustomerSecondCount);
     }
 
@@ -219,12 +219,12 @@ class CouponPolicyRepositoryImplTest {
         assertThat(selectPolicyResponseTemps).hasSize(2);
 
         SelectPolicyResponseTempDto firstPolicyResponse = selectPolicyResponseTemps.getContent().get(0);
-        assertThat(firstPolicyResponse.getLeftCount()).isEqualTo(provideCount);
-        assertThat(firstPolicyResponse.getIssueCount()).isEqualTo(provideCount + provideToCustomerCount);
+        assertThat(firstPolicyResponse.getUnclaimedCouponCount()).isEqualTo(provideCount);
+        assertThat(firstPolicyResponse.getIssueCouponCount()).isEqualTo(provideCount + provideToCustomerCount);
 
         SelectPolicyResponseTempDto secondPolicyResponse = selectPolicyResponseTemps.getContent().get(1);
-        assertThat(secondPolicyResponse.getLeftCount()).isEqualTo(provideSecondCount);
-        assertThat(secondPolicyResponse.getIssueCount())
+        assertThat(secondPolicyResponse.getUnclaimedCouponCount()).isEqualTo(provideSecondCount);
+        assertThat(secondPolicyResponse.getIssueCouponCount())
             .isEqualTo(provideSecondCount + provideToCustomerSecondCount);
     }
 
@@ -244,12 +244,12 @@ class CouponPolicyRepositoryImplTest {
         assertThat(selectPolicyResponseTemps).hasSize(2);
 
         SelectPolicyResponseTempDto firstPolicyResponse = selectPolicyResponseTemps.getContent().get(0);
-        assertThat(firstPolicyResponse.getLeftCount()).isEqualTo(provideCount);
-        assertThat(firstPolicyResponse.getIssueCount()).isEqualTo(provideCount + provideToCustomerCount);
+        assertThat(firstPolicyResponse.getUnclaimedCouponCount()).isEqualTo(provideCount);
+        assertThat(firstPolicyResponse.getIssueCouponCount()).isEqualTo(provideCount + provideToCustomerCount);
 
         SelectPolicyResponseTempDto secondPolicyResponse = selectPolicyResponseTemps.getContent().get(1);
-        assertThat(secondPolicyResponse.getLeftCount()).isEqualTo(provideSecondCount);
-        assertThat(secondPolicyResponse.getIssueCount())
+        assertThat(secondPolicyResponse.getUnclaimedCouponCount()).isEqualTo(provideSecondCount);
+        assertThat(secondPolicyResponse.getIssueCouponCount())
             .isEqualTo(provideSecondCount + provideToCustomerSecondCount);
     }
 

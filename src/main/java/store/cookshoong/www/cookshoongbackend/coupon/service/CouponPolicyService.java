@@ -102,7 +102,7 @@ public class CouponPolicyService {
     private SelectPolicyResponseDto tempToPermanent(SelectPolicyResponseTempDto temp) {
         CouponTypeResponse couponTypeResponse = couponTypeConverter.convert(temp.getCouponType());
         return new SelectPolicyResponseDto(temp.getId(), couponTypeResponse, temp.getName(), temp.getDescription(),
-            temp.getExpirationTime(), temp.getLeftCount(), temp.getIssueCount());
+            temp.getExpirationTime(), temp.getUnclaimedCouponCount(), temp.getIssueCouponCount());
     }
 
     /**

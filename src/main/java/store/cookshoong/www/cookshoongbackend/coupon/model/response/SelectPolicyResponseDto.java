@@ -19,6 +19,6 @@ public class SelectPolicyResponseDto {
     private String name;
     private String description;
     private LocalTime expirationTime;
-    private final Long leftCount;
-    private final Long issueCount;
+    private final Long unclaimedCouponCount;
+    private final Long issueCouponCount;
 }

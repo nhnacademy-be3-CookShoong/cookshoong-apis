@@ -111,8 +111,8 @@ class CouponPolicyServiceTest {
             assertThat(response.getName()).isEqualTo(temp.getName());
             assertThat(response.getDescription()).isEqualTo(temp.getDescription());
             assertThat(response.getExpirationTime()).isEqualTo(temp.getExpirationTime());
-            assertThat(response.getLeftCount()).isEqualTo(temp.getLeftCount());
-            assertThat(response.getIssueCount()).isEqualTo(temp.getIssueCount());
+            assertThat(response.getUnclaimedCouponCount()).isEqualTo(temp.getUnclaimedCouponCount());
+            assertThat(response.getIssueCouponCount()).isEqualTo(temp.getIssueCouponCount());
         }
     }
 
@@ -154,8 +154,8 @@ class CouponPolicyServiceTest {
             assertThat(response.getName()).isEqualTo(temp.getName());
             assertThat(response.getDescription()).isEqualTo(temp.getDescription());
             assertThat(response.getExpirationTime()).isEqualTo(temp.getExpirationTime());
-            assertThat(response.getLeftCount()).isEqualTo(temp.getLeftCount());
-            assertThat(response.getIssueCount()).isEqualTo(temp.getIssueCount());
+            assertThat(response.getUnclaimedCouponCount()).isEqualTo(temp.getUnclaimedCouponCount());
+            assertThat(response.getIssueCouponCount()).isEqualTo(temp.getIssueCouponCount());
         }
     }
 
@@ -197,8 +197,8 @@ class CouponPolicyServiceTest {
             assertThat(response.getName()).isEqualTo(temp.getName());
             assertThat(response.getDescription()).isEqualTo(temp.getDescription());
             assertThat(response.getExpirationTime()).isEqualTo(temp.getExpirationTime());
-            assertThat(response.getLeftCount()).isEqualTo(temp.getLeftCount());
-            assertThat(response.getIssueCount()).isEqualTo(temp.getIssueCount());
+            assertThat(response.getUnclaimedCouponCount()).isEqualTo(temp.getUnclaimedCouponCount());
+            assertThat(response.getIssueCouponCount()).isEqualTo(temp.getIssueCouponCount());
         }
     }
 
