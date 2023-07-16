@@ -88,9 +88,9 @@ public class BusinessHourController {
     /**
      * 영업시간 등록을 위한 컨트롤러 구현.
      *
-     * @param storeId                 the store id
+     * @param storeId                      the store id
      * @param createBusinessHourRequestDto 영업시간 등록을 위한 Request Body
-     * @param bindingResult           validation 결과
+     * @param bindingResult                validation 결과
      * @return 201
      */
     @PostMapping("/businesshour")

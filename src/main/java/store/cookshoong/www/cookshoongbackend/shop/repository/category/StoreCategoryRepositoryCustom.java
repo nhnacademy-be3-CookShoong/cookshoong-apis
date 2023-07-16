@@ -4,7 +4,6 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllCategoriesForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllCategoriesResponseDto;
 
 /**
@@ -22,5 +21,5 @@ public interface StoreCategoryRepositoryCustom {
      * @return 페이지 별로 정보 보여줌
      */
     Page<SelectAllCategoriesResponseDto> lookupStoreCategoriesPage(Pageable pageable);
-    List<SelectAllCategoriesForUserResponseDto> lookupStoreCategories();
+    List<SelectAllCategoriesResponseDto> lookupStoreCategories();
 }

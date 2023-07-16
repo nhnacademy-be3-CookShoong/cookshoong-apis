@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -16,6 +17,8 @@ import com.epages.restdocs.apispec.Schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,14 +31,21 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypePercent;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponUsageNotFoundException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateCashCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreatePercentCouponPolicyRequestDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicyResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeCashVo;
+import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypePercentVo;
 import store.cookshoong.www.cookshoongbackend.coupon.service.CouponPolicyService;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
 import store.cookshoong.www.cookshoongbackend.util.TestEntityAspect;
@@ -62,8 +72,23 @@ class CouponPolicyControllerTest {
 
     CreatePercentCouponPolicyRequestDto percentRequestDto;
 
+    List<SelectPolicyResponseDto> policies;
+
+    AtomicLong atomicLong = new AtomicLong();
+
     @BeforeEach
     void beforeEach() {
+        CouponTypeCash couponTypeCash = te.getCouponTypeCash_1000_10000();
+        CouponTypePercent couponTypePercent = te.getCouponTypePercent_3_1000_10000();
+        SelectPolicyResponseDto cashPolicy = new SelectPolicyResponseDto(atomicLong.getAndIncrement(),
+            CouponTypeCashVo.newInstance(couponTypeCash), "금액 쿠폰", "현금처럼 쓰입니다.",
+            LocalTime.of(1, 0, 0));
+        SelectPolicyResponseDto percentPolicy = new SelectPolicyResponseDto(atomicLong.getAndIncrement(),
+            CouponTypePercentVo.newInstance(couponTypePercent), "퍼센트 쿠폰", "퍼센트만큼 차감합니다.",
+            LocalTime.of(1, 0, 0));
+
+        policies = List.of(cashPolicy, percentPolicy);
+
         cashRequestDto = te.createUsingDeclared(CreateCashCouponPolicyRequestDto.class);
         ReflectionTestUtils.setField(cashRequestDto, "name", "금액 쿠폰");
         ReflectionTestUtils.setField(cashRequestDto, "description", "설정된 금액만큼 가격을 차감합니다.");
@@ -78,6 +103,152 @@ class CouponPolicyControllerTest {
         ReflectionTestUtils.setField(percentRequestDto, "rate", new BigDecimal("10.0"));
         ReflectionTestUtils.setField(percentRequestDto, "minimumPrice", 10_000);
         ReflectionTestUtils.setField(percentRequestDto, "maximumPrice", 30_000);
+    }
+
+    @Test
+    @DisplayName("매장 쿠폰 정책 조회")
+    void getStorePolicyTest() throws Exception {
+        when(couponPolicyService.selectStorePolicy(any(Long.class), any(Pageable.class)))
+            .thenAnswer(invocation -> new PageImpl<>(policies, invocation.getArgument(1), policies.size()));
+
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .get("/api/coupon/policies/stores/{storeId}", Long.MIN_VALUE)
+            .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(request)
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andDo(MockMvcRestDocumentationWrapper.document("getStorePolicy",
+                ResourceSnippetParameters.builder()
+                    .pathParameters(parameterWithName("storeId").description("매장 id"))
+                    .responseSchema(Schema.schema("getStorePolicy.Response")),
+                responseFields(
+                    fieldWithPath("content[].id").description("정책 id"),
+                    fieldWithPath("content[].couponTypeResponse.discountAmount").optional().description("할인금"),
+                    fieldWithPath("content[].couponTypeResponse.rate").optional().description("할인율"),
+                    fieldWithPath("content[].couponTypeResponse.minimumPrice").optional().description("최소주문금액"),
+                    fieldWithPath("content[].couponTypeResponse.maximumPrice").optional().description("최대할인금액"),
+                    fieldWithPath("content[].name").description("쿠폰명"),
+                    fieldWithPath("content[].description").description("쿠폰 설명"),
+                    fieldWithPath("content[].expirationTime").description("쿠폰 만료시간"),
+                    fieldWithPath("pageable.sort.empty").description("정렬 데이터 공백 여부"),
+                    fieldWithPath("pageable.sort.sorted").description("정렬 여부"),
+                    fieldWithPath("pageable.sort.unsorted").description("비정렬 여부"),
+                    fieldWithPath("pageable.offset").description("데이터 순번"),
+                    fieldWithPath("pageable.pageNumber").description("페이지 번호"),
+                    fieldWithPath("pageable.pageSize").description("한 페이지당 조회할 데이터 갯수"),
+                    fieldWithPath("pageable.paged").description("페이징 정보 포함 여부"),
+                    fieldWithPath("pageable.unpaged").description("페이징 정보 미포함 여부"),
+                    fieldWithPath("last").description("마지막 페이지 여부"),
+                    fieldWithPath("totalPages").description("전체 페이지 갯수"),
+                    fieldWithPath("totalElements").description("총 데이터 갯수"),
+                    fieldWithPath("first").description("첫 페이지 여부"),
+                    fieldWithPath("size").description("한 페이지당 조회할 데이터 갯수"),
+                    fieldWithPath("number").description("현재 페이지 번호"),
+                    fieldWithPath("sort.empty").description("정렬 데이터 공백 여부"),
+                    fieldWithPath("sort.sorted").description("정렬 여부"),
+                    fieldWithPath("sort.unsorted").description("비정렬 여부"),
+                    fieldWithPath("numberOfElements").description("요청 페이지에서 조회된 데이터 갯수"),
+                    fieldWithPath("empty").description("데이터 미존재 여부")
+                )
+            ));
+    }
+
+    @Test
+    @DisplayName("가맹점 쿠폰 정책 조회")
+    void getMerchantPolicyTest() throws Exception {
+        when(couponPolicyService.selectMerchantPolicy(any(Long.class), any(Pageable.class)))
+            .thenAnswer(invocation -> new PageImpl<>(policies, invocation.getArgument(1), policies.size()));
+
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .get("/api/coupon/policies/merchants/{merchantId}", Long.MIN_VALUE)
+            .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(request)
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andDo(MockMvcRestDocumentationWrapper.document("getMerchantPolicy",
+                ResourceSnippetParameters.builder()
+                    .pathParameters(parameterWithName("merchantId").description("가맹점 id"))
+                    .responseSchema(Schema.schema("getMerchantPolicy.Response")),
+                responseFields(
+                    fieldWithPath("content[].id").description("정책 id"),
+                    fieldWithPath("content[].couponTypeResponse.discountAmount").optional().description("할인금"),
+                    fieldWithPath("content[].couponTypeResponse.rate").optional().description("할인율"),
+                    fieldWithPath("content[].couponTypeResponse.minimumPrice").optional().description("최소주문금액"),
+                    fieldWithPath("content[].couponTypeResponse.maximumPrice").optional().description("최대할인금액"),
+                    fieldWithPath("content[].name").description("쿠폰명"),
+                    fieldWithPath("content[].description").description("쿠폰 설명"),
+                    fieldWithPath("content[].expirationTime").description("쿠폰 만료시간"),
+                    fieldWithPath("pageable.sort.empty").description("정렬 데이터 공백 여부"),
+                    fieldWithPath("pageable.sort.sorted").description("정렬 여부"),
+                    fieldWithPath("pageable.sort.unsorted").description("비정렬 여부"),
+                    fieldWithPath("pageable.offset").description("데이터 순번"),
+                    fieldWithPath("pageable.pageNumber").description("페이지 번호"),
+                    fieldWithPath("pageable.pageSize").description("한 페이지당 조회할 데이터 갯수"),
+                    fieldWithPath("pageable.paged").description("페이징 정보 포함 여부"),
+                    fieldWithPath("pageable.unpaged").description("페이징 정보 미포함 여부"),
+                    fieldWithPath("last").description("마지막 페이지 여부"),
+                    fieldWithPath("totalPages").description("전체 페이지 갯수"),
+                    fieldWithPath("totalElements").description("총 데이터 갯수"),
+                    fieldWithPath("first").description("첫 페이지 여부"),
+                    fieldWithPath("size").description("한 페이지당 조회할 데이터 갯수"),
+                    fieldWithPath("number").description("현재 페이지 번호"),
+                    fieldWithPath("sort.empty").description("정렬 데이터 공백 여부"),
+                    fieldWithPath("sort.sorted").description("정렬 여부"),
+                    fieldWithPath("sort.unsorted").description("비정렬 여부"),
+                    fieldWithPath("numberOfElements").description("요청 페이지에서 조회된 데이터 갯수"),
+                    fieldWithPath("empty").description("데이터 미존재 여부")
+                )
+            ));
+    }
+
+    @Test
+    @DisplayName("가맹점 쿠폰 정책 조회")
+    void getUsageAllPolicyTest() throws Exception {
+        when(couponPolicyService.selectUsageAllPolicy(any(Pageable.class)))
+            .thenAnswer(invocation -> new PageImpl<>(policies, invocation.getArgument(0), policies.size()));
+
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .get("/api/coupon/policies/all")
+            .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(request)
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andDo(MockMvcRestDocumentationWrapper.document("getUsageAllPolicy",
+                ResourceSnippetParameters.builder()
+                    .responseSchema(Schema.schema("getUsageAllPolicy.Response")),
+                responseFields(
+                    fieldWithPath("content[].id").description("정책 id"),
+                    fieldWithPath("content[].couponTypeResponse.discountAmount").optional().description("할인금"),
+                    fieldWithPath("content[].couponTypeResponse.rate").optional().description("할인율"),
+                    fieldWithPath("content[].couponTypeResponse.minimumPrice").optional().description("최소주문금액"),
+                    fieldWithPath("content[].couponTypeResponse.maximumPrice").optional().description("최대할인금액"),
+                    fieldWithPath("content[].name").description("쿠폰명"),
+                    fieldWithPath("content[].description").description("쿠폰 설명"),
+                    fieldWithPath("content[].expirationTime").description("쿠폰 만료시간"),
+                    fieldWithPath("pageable.sort.empty").description("정렬 데이터 공백 여부"),
+                    fieldWithPath("pageable.sort.sorted").description("정렬 여부"),
+                    fieldWithPath("pageable.sort.unsorted").description("비정렬 여부"),
+                    fieldWithPath("pageable.offset").description("데이터 순번"),
+                    fieldWithPath("pageable.pageNumber").description("페이지 번호"),
+                    fieldWithPath("pageable.pageSize").description("한 페이지당 조회할 데이터 갯수"),
+                    fieldWithPath("pageable.paged").description("페이징 정보 포함 여부"),
+                    fieldWithPath("pageable.unpaged").description("페이징 정보 미포함 여부"),
+                    fieldWithPath("last").description("마지막 페이지 여부"),
+                    fieldWithPath("totalPages").description("전체 페이지 갯수"),
+                    fieldWithPath("totalElements").description("총 데이터 갯수"),
+                    fieldWithPath("first").description("첫 페이지 여부"),
+                    fieldWithPath("size").description("한 페이지당 조회할 데이터 갯수"),
+                    fieldWithPath("number").description("현재 페이지 번호"),
+                    fieldWithPath("sort.empty").description("정렬 데이터 공백 여부"),
+                    fieldWithPath("sort.sorted").description("정렬 여부"),
+                    fieldWithPath("sort.unsorted").description("비정렬 여부"),
+                    fieldWithPath("numberOfElements").description("요청 페이지에서 조회된 데이터 갯수"),
+                    fieldWithPath("empty").description("데이터 미존재 여부")
+                )
+            ));
     }
 
     @Test

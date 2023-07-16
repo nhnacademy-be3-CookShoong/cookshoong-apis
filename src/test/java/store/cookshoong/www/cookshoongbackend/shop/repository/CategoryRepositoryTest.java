@@ -82,7 +82,7 @@ class CategoryRepositoryTest {
             StoreCategory storeCategory = new StoreCategory("Code" + i, "카테고리" + i);
             storeCategoryRepository.save(storeCategory);
         }
-        storeCategoryRepository.flush();
+
 
         Pageable pageable = PageRequest.of(2, 3);
         Page<SelectAllCategoriesResponseDto> expects = storeCategoryRepository.lookupStoreCategoriesPage(pageable);
