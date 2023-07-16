@@ -81,11 +81,11 @@ class CouponPolicyServiceTest {
 
         SelectPolicyResponseTempDto storeCashPolicy = new SelectPolicyResponseTempDto(
             atomicLong.getAndIncrement(), couponTypeCash, "매장 금액 쿠폰", "매장에서만 쓰입니다.",
-            LocalTime.of(1, 0, 0));
+            LocalTime.of(1, 0, 0), 1L, 10L);
 
         SelectPolicyResponseTempDto storePercentPolicy = new SelectPolicyResponseTempDto(
             atomicLong.getAndIncrement(), couponTypePercent, "매장 금액 쿠폰", "매장에서만 쓰입니다.",
-            LocalTime.of(1, 0, 0));
+            LocalTime.of(1, 0, 0), 2L, 9L);
 
         List<SelectPolicyResponseTempDto> couponStorePolicies = List.of(storeCashPolicy, storePercentPolicy);
 
@@ -111,6 +111,8 @@ class CouponPolicyServiceTest {
             assertThat(response.getName()).isEqualTo(temp.getName());
             assertThat(response.getDescription()).isEqualTo(temp.getDescription());
             assertThat(response.getExpirationTime()).isEqualTo(temp.getExpirationTime());
+            assertThat(response.getUnclaimedCouponCount()).isEqualTo(temp.getUnclaimedCouponCount());
+            assertThat(response.getIssueCouponCount()).isEqualTo(temp.getIssueCouponCount());
         }
     }
 
@@ -122,11 +124,11 @@ class CouponPolicyServiceTest {
 
         SelectPolicyResponseTempDto merchantCashPolicy = new SelectPolicyResponseTempDto(
             atomicLong.getAndIncrement(), couponTypeCash, "가맹점 금액 쿠폰", "가맹점에서 쓰입니다.",
-            LocalTime.of(1, 0, 0));
+            LocalTime.of(1, 0, 0), 3L, 8L);
 
         SelectPolicyResponseTempDto merchantPercentPolicy = new SelectPolicyResponseTempDto(
             atomicLong.getAndIncrement(), couponTypePercent, "가맹점 금액 쿠폰", "가맹점에서 쓰입니다.",
-            LocalTime.of(1, 0, 0));
+            LocalTime.of(1, 0, 0), 4L, 7L);
 
         List<SelectPolicyResponseTempDto> couponMerchantPolicies = List.of(merchantCashPolicy, merchantPercentPolicy);
 
@@ -152,6 +154,8 @@ class CouponPolicyServiceTest {
             assertThat(response.getName()).isEqualTo(temp.getName());
             assertThat(response.getDescription()).isEqualTo(temp.getDescription());
             assertThat(response.getExpirationTime()).isEqualTo(temp.getExpirationTime());
+            assertThat(response.getUnclaimedCouponCount()).isEqualTo(temp.getUnclaimedCouponCount());
+            assertThat(response.getIssueCouponCount()).isEqualTo(temp.getIssueCouponCount());
         }
     }
 
@@ -163,11 +167,11 @@ class CouponPolicyServiceTest {
 
         SelectPolicyResponseTempDto allCashPolicy = new SelectPolicyResponseTempDto(
             atomicLong.getAndIncrement(), couponTypeCash, "전체 금액 쿠폰", "어디든",
-            LocalTime.of(1, 0, 0));
+            LocalTime.of(1, 0, 0), 5L, 6L);
 
         SelectPolicyResponseTempDto allPercentPolicy = new SelectPolicyResponseTempDto(
             atomicLong.getAndIncrement(), couponTypePercent, "전체 금액 쿠폰", "어디든",
-            LocalTime.of(1, 0, 0));
+            LocalTime.of(1, 0, 0), 6L, 50L);
 
         List<SelectPolicyResponseTempDto> couponAllPolicies = List.of(allCashPolicy, allPercentPolicy);
 
@@ -193,6 +197,8 @@ class CouponPolicyServiceTest {
             assertThat(response.getName()).isEqualTo(temp.getName());
             assertThat(response.getDescription()).isEqualTo(temp.getDescription());
             assertThat(response.getExpirationTime()).isEqualTo(temp.getExpirationTime());
+            assertThat(response.getUnclaimedCouponCount()).isEqualTo(temp.getUnclaimedCouponCount());
+            assertThat(response.getIssueCouponCount()).isEqualTo(temp.getIssueCouponCount());
         }
     }
 
