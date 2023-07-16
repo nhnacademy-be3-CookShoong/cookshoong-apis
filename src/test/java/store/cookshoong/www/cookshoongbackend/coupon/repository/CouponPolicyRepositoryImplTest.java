@@ -180,7 +180,7 @@ class CouponPolicyRepositoryImplTest {
 
     @ParameterizedTest
     @MethodSource("parameters")
-    @DisplayName("매장 쿠폰 발급 횟수 확인")
+    @DisplayName("매장 쿠폰 발행 횟수 확인")
     void issueStoreCouponCountTest(int provideCount, int provideToCustomerCount,
                                    int provideSecondCount, int provideToCustomerSecondCount) throws Exception {
         provide(storeCashCouponPolicy, provideCount);
@@ -205,7 +205,7 @@ class CouponPolicyRepositoryImplTest {
 
     @ParameterizedTest
     @MethodSource("parameters")
-    @DisplayName("가맹점 쿠폰 발급 횟수 확인")
+    @DisplayName("가맹점 쿠폰 발행 횟수 확인")
     void issueMerchantCouponCountTest(int provideCount, int provideToCustomerCount,
                                       int provideSecondCount, int provideToCustomerSecondCount) throws Exception {
         provide(merchantCashCouponPolicy, provideCount);
@@ -230,7 +230,7 @@ class CouponPolicyRepositoryImplTest {
 
     @ParameterizedTest
     @MethodSource("parameters")
-    @DisplayName("전체 쿠폰 발급 횟수 확인")
+    @DisplayName("전체 쿠폰 발행 횟수 확인")
     void issueAllCouponCountTest(int provideCount, int provideToCustomerCount,
                                  int provideSecondCount, int provideToCustomerSecondCount) throws Exception {
         provide(allCashCouponPolicy, provideCount);
