@@ -122,10 +122,10 @@ public class CouponPolicyRepositoryImpl implements CouponPolicyRepositoryCustom 
     private JPQLQuery<Long> getIssueCouponCount(boolean receivable) {
         return JPAExpressions.select(issueCoupon.count())
             .from(issueCoupon)
-            .where(issueCoupon.couponPolicy.eq(couponPolicy), getAccountExistIssueCoupon(receivable));
+            .where(issueCoupon.couponPolicy.eq(couponPolicy), isUnclaimedCouponCount(receivable));
     }
 
-    private BooleanExpression getAccountExistIssueCoupon(boolean receivable) {
+    private BooleanExpression isUnclaimedCouponCount(boolean receivable) {
         if (!receivable) {
             return null;
         }
