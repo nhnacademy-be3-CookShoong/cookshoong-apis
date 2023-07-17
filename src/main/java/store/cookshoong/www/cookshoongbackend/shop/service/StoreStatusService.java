@@ -18,6 +18,6 @@ public class StoreStatusService {
     private final StoreStatusRepository storeStatusRepository;
 
     public List<SelectAllStatusResponseDto> selectAllStatusForUser(){
-        return storeStatusRepository.lookupStatusForUser();
+        return storeStatusRepository.findAllBy();
     }
 }
