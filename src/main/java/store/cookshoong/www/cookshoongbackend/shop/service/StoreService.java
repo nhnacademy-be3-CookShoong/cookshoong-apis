@@ -1,10 +1,12 @@
 package store.cookshoong.www.cookshoongbackend.shop.service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +14,8 @@ import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
+import store.cookshoong.www.cookshoongbackend.address.model.response.AddressResponseDto;
+import store.cookshoong.www.cookshoongbackend.address.repository.accountaddress.AccountAddressRepository;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
@@ -26,6 +30,7 @@ import store.cookshoong.www.cookshoongbackend.shop.exception.store.UserAccessDen
 import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateStoreRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateCategoryRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreRequestDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseDto;
@@ -42,6 +47,7 @@ import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreStatusR
  * @since 2023.07.05
  */
 @Service
+@Slf4j
 @RequiredArgsConstructor
 @Transactional
 public class StoreService {
@@ -51,6 +57,8 @@ public class StoreService {
     private final MerchantRepository merchantRepository;
     private final StoreStatusRepository storeStatusRepository;
     private final StoreCategoryRepository storeCategoryRepository;
+    private final AccountAddressRepository accountAddressRepository;
+    private static final BigDecimal DISTANCE = new BigDecimal("3.0");
 
     private static void accessDeniedException(Long accountId, Store store) {
         if (!store.getAccount().getId().equals(accountId)) {
@@ -105,6 +113,8 @@ public class StoreService {
         return storeRepository.lookupStoreForUser(storeId)
             .orElseThrow(SelectStoreNotFoundException::new);
     }
+
+    //TODO 2. 매장에서 카테고리 설정하는거 빠져있음. 추후에 프론트 적용하면서 넘어오는 값들 확인 후 다시 설정.
 
     /**
      * 사업자 : 매장 등록 서비스 구현.
@@ -201,5 +211,68 @@ public class StoreService {
         store.initStoreCategories();
 
         addStoreCategory(requestDto.getStoreCategories(), store);
+    }
+
+    /**
+     * 회원의 위치를 기반으로 3km 이내에 위차한 매장만을 조회하는 메서드.
+     *
+     * @param addressId 주소 아이디
+     * @param pageable  페이지 정보
+     * @return          3km 이내에 위치한 매장만을 반환
+     */
+    public Page<SelectAllStoresNotOutedResponseDto> selectAllStoresNotOutedResponsePage(Long addressId,
+                                                                                        String storeCategoryCode,
+                                                                                        Pageable pageable) {
+
+        Page<SelectAllStoresNotOutedResponseDto> allStore =
+            storeRepository.lookupStoreLatLanPage(storeCategoryCode, pageable);
+
+        AddressResponseDto addressLatLng =
+            accountAddressRepository.lookupByAccountSelectAddressId(addressId);
+
+        log.info("ADDRESS: {}", addressLatLng);
+
+        List<SelectAllStoresNotOutedResponseDto> nearbyStores = allStore
+            .stream()
+            .filter(store -> isWithDistance(addressLatLng, store))
+            .collect(Collectors.toList());
+
+        return new PageImpl<>(nearbyStores, pageable, nearbyStores.size());
+    }
+
+    private boolean isWithDistance(AddressResponseDto address, SelectAllStoresNotOutedResponseDto store) {
+
+        BigDecimal storeDistance =  calculateDistance(
+            address.getLatitude(), address.getLongitude(),
+            store.getLatitude(), store.getLongitude()
+        );
+
+        return storeDistance.compareTo(DISTANCE) <= 0;
+    }
+
+    private BigDecimal calculateDistance(BigDecimal x1, BigDecimal y1, BigDecimal x2, BigDecimal y2) {
+
+        Double distance;
+        Double radius = 6371.0; // 지구 반지름(km)
+        Double toRadian = Math.PI / 180;
+
+        Double deltaLatitude = Math.abs(x1.doubleValue() - x2.doubleValue()) * toRadian;
+        Double deltaLongitude = Math.abs(y1.doubleValue() - y2.doubleValue()) * toRadian;
+
+        Double sinDeltaLat = Math.sin(deltaLatitude / 2);
+        Double sinDeltaLng = Math.sin(deltaLongitude / 2);
+
+        Double mulSinDelLat = sinDeltaLat * sinDeltaLat;
+        Double cosX1ToTadian = Math.cos(x1.doubleValue() * toRadian);
+        Double cosX2ToTadian = Math.cos(x2.doubleValue() * toRadian);
+        Double mulSinDelLng = sinDeltaLng * sinDeltaLng;
+
+        Double squareRoot = Math.sqrt(
+            mulSinDelLat + cosX1ToTadian * cosX2ToTadian * mulSinDelLng);
+
+        distance = 2 * radius * Math.asin(squareRoot);
+        log.info("distance: {}", distance);
+
+        return BigDecimal.valueOf(distance);
     }
 }
