@@ -21,5 +21,4 @@ public interface StoreCategoryRepositoryCustom {
      * @return 페이지 별로 정보 보여줌
      */
     Page<SelectAllCategoriesResponseDto> lookupStoreCategoriesPage(Pageable pageable);
-    List<SelectAllCategoriesResponseDto> lookupStoreCategories();
 }
