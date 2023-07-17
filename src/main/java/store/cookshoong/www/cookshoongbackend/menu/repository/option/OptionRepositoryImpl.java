@@ -29,10 +29,10 @@ public class OptionRepositoryImpl implements OptionRepositoryCustom {
         return jpaQueryFactory
             .select(new QSelectOptionResponseDto(
                 option.id, option.name, option.price, option.isDeleted,
-                option.optionSequence))
+                option.optionSequence, optionGroup.id))
             .from(option)
             .innerJoin(option.optionGroup, optionGroup)
-            .where(option.optionGroup.store.id.eq(storeId))
+            .where(optionGroup.store.id.eq(storeId))
             .fetch();
     }
 }

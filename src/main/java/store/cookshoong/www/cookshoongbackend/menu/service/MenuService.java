@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.menu.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -7,6 +8,7 @@ import store.cookshoong.www.cookshoongbackend.menu.entity.menu.Menu;
 import store.cookshoong.www.cookshoongbackend.menu.entity.menu.MenuStatus;
 import store.cookshoong.www.cookshoongbackend.menu.exception.menu.MenuStatusNotFoundException;
 import store.cookshoong.www.cookshoongbackend.menu.model.request.CreateMenuRequestDto;
+import store.cookshoong.www.cookshoongbackend.menu.model.response.SelectMenuResponseDto;
 import store.cookshoong.www.cookshoongbackend.menu.repository.menu.MenuRepository;
 import store.cookshoong.www.cookshoongbackend.menu.repository.menu.MenuStatusRepository;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
@@ -29,7 +31,7 @@ public class MenuService {
     private final StoreRepository storeRepository;
 
     /**
-     * 사업자 : 메뉴 등록 서비스 구현.
+     * 사업자 회원 : 메뉴 등록 서비스 구현.
      * 메뉴 등록, 처음 상태는 판매중으로 고정.
      *
      * @param storeId              매장 아이디
@@ -50,5 +52,15 @@ public class MenuService {
                 createMenuRequestDto.getCookingTime(),
                 createMenuRequestDto.getEarningRate());
         menuRepository.save(menu);
+    }
+
+    /**
+     * 일반 회원 : 매장의 메뉴 조회 서비스 구현.
+     *
+     * @param storeId 매장 아이디
+     * @return 매장의 메뉴 리스트
+     */
+    public List<SelectMenuResponseDto> selectMenus(Long storeId) {
+        return menuRepository.lookupMenus(storeId);
     }
 }

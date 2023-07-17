@@ -9,5 +9,5 @@ import store.cookshoong.www.cookshoongbackend.menu.entity.option.Option;
  * @author papel
  * @since 2023.07.11
  */
-public interface OptionRepository extends JpaRepository<Option, Long> {
+public interface OptionRepository extends JpaRepository<Option, Long>, OptionRepositoryCustom {
 }

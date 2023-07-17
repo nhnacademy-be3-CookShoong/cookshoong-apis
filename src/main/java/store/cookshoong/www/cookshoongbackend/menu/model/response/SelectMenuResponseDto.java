@@ -2,13 +2,15 @@ package store.cookshoong.www.cookshoongbackend.menu.model.response;
 
 import com.querydsl.core.annotations.QueryProjection;
 import java.math.BigDecimal;
+import lombok.Getter;
 
 /**
- * 사업자입장에서 메뉴 조회를 위한 Dto.
+ * 메뉴 조회를 위한 Dto.
  *
  * @author papel
  * @since 2023.07.11
  */
+@Getter
 public class SelectMenuResponseDto {
     private final Long id;
     private final String name;

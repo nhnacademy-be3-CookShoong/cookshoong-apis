@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.menu.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -7,6 +8,7 @@ import store.cookshoong.www.cookshoongbackend.menu.entity.option.Option;
 import store.cookshoong.www.cookshoongbackend.menu.entity.optiongroup.OptionGroup;
 import store.cookshoong.www.cookshoongbackend.menu.exception.option.OptionGroupNotFoundException;
 import store.cookshoong.www.cookshoongbackend.menu.model.request.CreateOptionRequestDto;
+import store.cookshoong.www.cookshoongbackend.menu.model.response.SelectOptionResponseDto;
 import store.cookshoong.www.cookshoongbackend.menu.repository.option.OptionRepository;
 import store.cookshoong.www.cookshoongbackend.menu.repository.optiongroup.OptionGroupRepository;
 
@@ -25,7 +27,7 @@ public class OptionService {
     private final OptionGroupRepository optionGroupRepository;
 
     /**
-     * 사업자 : 옵션 등록 서비스 구현.
+     * 사업자 회원 : 옵션 등록 서비스 구현.
      * 옵션 등록.
      *
      * @param createOptionRequestDto 옵션 등록을 위한 정보
@@ -42,5 +44,15 @@ public class OptionService {
                 false
                 );
         optionRepository.save(option);
+    }
+
+    /**
+     * 일반 회원 : 매장의 옵션 조회 서비스 구현.
+     *
+     * @param storeId 매장 아이디
+     * @return 매장의 옵션 리스트
+     */
+    public List<SelectOptionResponseDto> selectOptions(Long storeId) {
+        return optionRepository.lookupOptions(storeId);
     }
 }
