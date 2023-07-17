@@ -213,6 +213,16 @@ public class StoreService {
         addStoreCategory(requestDto.getStoreCategories(), store);
     }
 
+    public void updateStoreStatus(Long accountId, Long storeId, UpdateStoreStatusRequestDto requestDto){
+        Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
+        accessDeniedException(accountId, store);
+        // TODO 7. OUTED 된 매장 다시 부활시킬 수 있을까?
+        StoreStatus storeStatus = storeStatusRepository.findById(requestDto.getStatusCode())
+            .orElseThrow(StoreStatusNotFoundException::new);
+
+        store.modifyStoreStatus(storeStatus);
+    }
+
     /**
      * 회원의 위치를 기반으로 3km 이내에 위차한 매장만을 조회하는 메서드.
      *
