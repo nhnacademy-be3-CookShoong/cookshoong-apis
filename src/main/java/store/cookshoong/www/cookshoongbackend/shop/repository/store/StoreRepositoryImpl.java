@@ -52,16 +52,14 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
      */
     private List<SelectAllStoresResponseDto> lookupStores(Long accountId, Pageable pageable) {
         QStore store = QStore.store;
-        QAccount account = QAccount.account;
         QStoreStatus storeStatus = QStoreStatus.storeStatus;
         QAddress address = QAddress.address;
 
         return jpaQueryFactory
             .select(new QSelectAllStoresResponseDto(
-                store.id, account.loginId, store.name,
+                store.id, store.name,
                 address.mainPlace, address.detailPlace, storeStatus.description))
             .from(store)
-            .innerJoin(store.account, account)
             .innerJoin(store.storeStatusCode, storeStatus)
             .innerJoin(store.address, address)
             .where(store.account.id.eq(accountId))
@@ -78,14 +76,12 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
      */
     private Long lookupTotal(Long accountId) {
         QStore store = QStore.store;
-        QAccount account = QAccount.account;
         QStoreStatus storeStatus = QStoreStatus.storeStatus;
         QAddress address = QAddress.address;
 
         return jpaQueryFactory
             .select(store.count())
             .from(store)
-            .innerJoin(store.account, account)
             .innerJoin(store.storeStatusCode, storeStatus)
             .innerJoin(store.address, address)
             .where(store.account.id.eq(accountId))
@@ -97,14 +93,12 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
      */
     @Override
     public Optional<SelectStoreResponseDto> lookupStore(Long accountId, Long storeId) {
-        QAccount account = QAccount.account;
         QStore store = QStore.store;
         QAddress address = QAddress.address;
         QBankType bankType = QBankType.bankType;
 
         return Optional.ofNullable(jpaQueryFactory
             .select(new QSelectStoreResponseDto(
-                account.loginId,
                 store.businessLicenseNumber,
                 store.representativeName,
                 store.openingDate,
@@ -112,7 +106,6 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
                 address.mainPlace, address.detailPlace, address.latitude, address.longitude, store.defaultEarningRate,
                 store.description, bankType.description, store.bankAccountNumber))
             .from(store)
-            .innerJoin(store.account, account)
             .innerJoin(store.address, address)
             .innerJoin(store.bankTypeCode, bankType)
             .where(store.id.eq(storeId))
