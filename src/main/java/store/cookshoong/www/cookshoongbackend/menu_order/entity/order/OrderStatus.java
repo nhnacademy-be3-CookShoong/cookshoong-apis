@@ -8,6 +8,12 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * 주문 상태 엔티티.
+ *
+ * @author seungyeon (유승연)
+ * @since 2023.07.17
+ */
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity

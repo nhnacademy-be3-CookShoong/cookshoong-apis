@@ -15,6 +15,12 @@ import lombok.NoArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.Order;
 
+/**
+ * 주문 상세 엔티티.
+ *
+ * @author seungyeon (유승연)
+ * @since 2023.07.17
+ */
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity

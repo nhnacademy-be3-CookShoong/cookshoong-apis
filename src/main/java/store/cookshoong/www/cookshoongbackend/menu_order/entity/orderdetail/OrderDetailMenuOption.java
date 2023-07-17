@@ -42,6 +42,9 @@ public class OrderDetailMenuOption {
 
     /**
      * 매장_카테고리 엔티티 복합키.
+     *
+     * @author papel
+     * @since 2023.07.11
      */
     @Embeddable
     @Getter

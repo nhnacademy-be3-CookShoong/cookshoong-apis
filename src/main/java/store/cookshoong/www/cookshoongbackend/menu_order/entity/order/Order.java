@@ -1,6 +1,5 @@
 package store.cookshoong.www.cookshoongbackend.menu_order.entity.order;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import javax.persistence.Column;
@@ -16,6 +15,12 @@ import lombok.NoArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 
+/**
+ * 주문 엔티티.
+ *
+ * @author seungyeon (유승연)
+ * @since 2023.07.17
+ */
 @Getter
 @Entity
 @Table(name = "orders")
