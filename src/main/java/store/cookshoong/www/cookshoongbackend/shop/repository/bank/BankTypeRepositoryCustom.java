@@ -20,5 +20,4 @@ public interface BankTypeRepositoryCustom {
      * @return 페이지 별 은행이름
      */
     Page<SelectAllBanksResponseDto> lookupBanksPage(Pageable pageable);
-    List<SelectAllBanksResponseDto> lookupBanks();
 }
