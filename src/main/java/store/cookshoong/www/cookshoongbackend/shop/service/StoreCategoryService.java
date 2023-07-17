@@ -81,7 +81,7 @@ public class StoreCategoryService {
      * @return the list
      */
     public List<SelectAllCategoriesResponseDto> selectAllCategoriesForUser() {
-        return storeCategoryRepository.lookupStoreCategories();
+        return storeCategoryRepository.findAllByOrderByCategoryCodeAsc();
     }
 
     //TODO 10. 카테고리 삭제는 오늘 작성.

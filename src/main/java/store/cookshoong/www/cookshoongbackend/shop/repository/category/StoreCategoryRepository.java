@@ -1,8 +1,10 @@
 package store.cookshoong.www.cookshoongbackend.shop.repository.category;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import store.cookshoong.www.cookshoongbackend.shop.entity.StoreCategory;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllCategoriesResponseDto;
 
 /**
  * 매장 카테고리 레포지토리.
@@ -26,4 +28,5 @@ public interface StoreCategoryRepository extends JpaRepository<StoreCategory, St
      * @return 매장 카테고리 객체 or null
      */
     Optional<StoreCategory> findByDescription(String description);
+    List<SelectAllCategoriesResponseDto> findAllByOrderByCategoryCodeAsc();
 }

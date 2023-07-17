@@ -49,15 +49,4 @@ public class BankTypeRepositoryImpl implements BankTypeRepositoryCustom {
             .from(bankType)
             .fetchOne();
     }
-
-    @Override
-    public List<SelectAllBanksResponseDto> lookupBanks() {
-        QBankType bankType = QBankType.bankType;
-
-        return jpaQueryFactory
-            .select(new QSelectAllBanksResponseDto(bankType.bankTypeCode, bankType.description))
-            .from(bankType)
-            .orderBy(bankType.description.asc())
-            .fetch();
-    }
 }

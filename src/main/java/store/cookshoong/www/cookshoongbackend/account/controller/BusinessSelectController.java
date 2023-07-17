@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllBanksResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllCategoriesResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllMerchantsForUserResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.service.BankTypeService;
 import store.cookshoong.www.cookshoongbackend.shop.service.MerchantService;
 import store.cookshoong.www.cookshoongbackend.shop.service.StoreCategoryService;
+import store.cookshoong.www.cookshoongbackend.shop.service.StoreStatusService;
 
 /**
  * 사업자 : 등록, 수정시 필요한 selectBox, checkBox 용 api.
@@ -27,6 +29,7 @@ public class BusinessSelectController {
     private final BankTypeService bankTypeService;
     private final MerchantService merchantService;
     private final StoreCategoryService storeCategoryService;
+    private final StoreStatusService storeStatusService;
 
     /**
      * 사업자등록 : 은행 리스트 조회.
@@ -59,5 +62,11 @@ public class BusinessSelectController {
     public ResponseEntity<List<SelectAllCategoriesResponseDto>> getCategoriesForUser() {
         return ResponseEntity
             .ok(storeCategoryService.selectAllCategoriesForUser());
+    }
+
+    @GetMapping("/store-status")
+    public ResponseEntity<List<SelectAllStatusResponseDto>> getStoreStatusForUser(){
+        return ResponseEntity
+            .ok(storeStatusService.selectAllStatusForUser());
     }
 }

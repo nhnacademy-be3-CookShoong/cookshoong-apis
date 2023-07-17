@@ -25,11 +25,13 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.StoresHasCategory;
 import store.cookshoong.www.cookshoongbackend.shop.exception.banktype.BankTypeNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.category.StoreCategoryNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.DuplicatedBusinessLicenseException;
-import store.cookshoong.www.cookshoongbackend.shop.exception.store.SelectStoreNotFoundException;
+import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreNotFoundException;
+import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreStatusNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.UserAccessDeniedException;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateStoreRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateCategoryRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreRequestDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreStatusRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreForUserResponseDto;
@@ -38,7 +40,7 @@ import store.cookshoong.www.cookshoongbackend.shop.repository.bank.BankTypeRepos
 import store.cookshoong.www.cookshoongbackend.shop.repository.category.StoreCategoryRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.merchant.MerchantRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreRepository;
-import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreStatusRepository;
+import store.cookshoong.www.cookshoongbackend.shop.repository.stauts.StoreStatusRepository;
 
 /**
  * 매장리스트 조회, 등록, 삭제, 수정 서비스 구현.
@@ -99,7 +101,7 @@ public class StoreService {
     @Transactional(readOnly = true)
     public SelectStoreResponseDto selectStore(Long accountId, Long storeId) {
         return storeRepository.lookupStore(accountId, storeId)
-            .orElseThrow(SelectStoreNotFoundException::new);
+            .orElseThrow(StoreNotFoundException::new);
     }
 
     /**
@@ -111,10 +113,8 @@ public class StoreService {
     @Transactional(readOnly = true)
     public SelectStoreForUserResponseDto selectStoreForUser(Long storeId) {
         return storeRepository.lookupStoreForUser(storeId)
-            .orElseThrow(SelectStoreNotFoundException::new);
+            .orElseThrow(StoreNotFoundException::new);
     }
-
-    //TODO 2. 매장에서 카테고리 설정하는거 빠져있음. 추후에 프론트 적용하면서 넘어오는 값들 확인 후 다시 설정.
 
     /**
      * 사업자 : 매장 등록 서비스 구현.
@@ -168,7 +168,7 @@ public class StoreService {
      * @param requestDto 매장 수정 정보
      */
     public void updateStore(Long accountId, Long storeId, UpdateStoreRequestDto requestDto) {
-        Store store = storeRepository.findById(storeId).orElseThrow(SelectStoreNotFoundException::new);
+        Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
         accessDeniedException(accountId, store);
         Merchant merchant = merchantRepository.findMerchantByName(requestDto.getMerchantName()).orElse(null);
         Account account = accountRepository.findById(accountId)
@@ -205,12 +205,22 @@ public class StoreService {
      * @param requestDto 매장 카테고리 code list
      */
     public void updateStoreCategories(Long accountId, Long storeId, UpdateCategoryRequestDto requestDto) {
-        Store store = storeRepository.findById(storeId).orElseThrow(SelectStoreNotFoundException::new);
+        Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
         accessDeniedException(accountId, store);
 
         store.initStoreCategories();
 
         addStoreCategory(requestDto.getStoreCategories(), store);
+    }
+
+    public void updateStoreStatus(Long accountId, Long storeId, UpdateStoreStatusRequestDto requestDto){
+        Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
+        accessDeniedException(accountId, store);
+        // TODO 7. OUTED 된 매장 다시 부활시킬 수 있을까?
+        StoreStatus storeStatus = storeStatusRepository.findById(requestDto.getStatusCode())
+            .orElseThrow(StoreStatusNotFoundException::new);
+
+        store.modifyStoreStatus(storeStatus);
     }
 
     /**

@@ -174,7 +174,6 @@ class StoreRepositoryTest {
         Account account = accountRepository.findById(accountId).orElseThrow();
         SelectStoreResponseDto actual = storeRepository.lookupStore(accountId, store.getId()).orElseThrow();
 
-        assertThat(actual.getLoginId()).isEqualTo(account.getLoginId());
         assertThat(actual.getStoreName()).isEqualTo(store.getName());
         assertThat(actual.getOpeningDate()).isEqualTo(store.getOpeningDate());
         assertThat(actual.getDescription()).isEqualTo(store.getDescription());

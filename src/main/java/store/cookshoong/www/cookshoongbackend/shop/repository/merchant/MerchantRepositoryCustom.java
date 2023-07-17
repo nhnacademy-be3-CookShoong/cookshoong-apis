@@ -23,5 +23,4 @@ public interface MerchantRepositoryCustom {
      */
     Page<SelectAllMerchantsForUserResponseDto> lookupMerchantPage(Pageable pageable);
 
-    List<SelectAllMerchantsForUserResponseDto> lookupMerchants();
 }

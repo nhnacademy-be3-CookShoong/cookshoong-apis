@@ -49,14 +49,4 @@ public class StoreCategoryRepositoryImpl implements StoreCategoryRepositoryCusto
             .from(storeCategory)
             .fetchOne();
     }
-
-    @Override
-    public List<SelectAllCategoriesResponseDto> lookupStoreCategories() {
-        QStoreCategory storeCategory = QStoreCategory.storeCategory;
-        return jpaQueryFactory
-            .select(new QSelectAllCategoriesResponseDto(storeCategory.categoryCode, storeCategory.description))
-            .from(storeCategory)
-            .orderBy(storeCategory.description.asc())
-            .fetch();
-    }
 }

@@ -88,7 +88,7 @@ class CategoryRepositoryTest {
         Page<SelectAllCategoriesResponseDto> expects = storeCategoryRepository.lookupStoreCategoriesPage(pageable);
 
         assertThat(expects.get().count()).isEqualTo(3);
-        assertThat(expects.get().findFirst().get().getCategoryName()).isEqualTo("카테고리7");
+        assertThat(expects.get().findFirst().get().getDescription()).isEqualTo("카테고리7");
     }
 
     @Test

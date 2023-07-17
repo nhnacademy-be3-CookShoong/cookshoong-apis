@@ -51,7 +51,7 @@ public class BankTypeService {
 
     @Transactional(readOnly = true)
     public List<SelectAllBanksResponseDto> selectBanksForUser() {
-        return bankTypeRepository.lookupBanks();
+        return bankTypeRepository.findAllByOrderByDescriptionAsc();
     }
 
 }
