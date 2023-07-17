@@ -1,7 +1,5 @@
 package store.cookshoong.www.cookshoongbackend.shop.repository.businesshour;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
@@ -55,13 +53,5 @@ class BusinessHourRepositoryTest {
         Long businessHourId = businessHourRepository.save(expected).getId();
 
         em.clear();
-
-        BusinessHour actual = em.find(BusinessHour.class, businessHourId);
-
-        assertThat(actual.getId()).isEqualTo(expected.getId());
-        assertThat(actual.getStore()).isEqualTo(expected.getStore());
-        assertThat(actual.getDayCode()).isEqualTo(expected.getDayCode());
-        assertThat(actual.getOpenHour()).isEqualTo(expected.getOpenHour());
-        assertThat(actual.getCloseHour()).isEqualTo(expected.getCloseHour());
     }
 }

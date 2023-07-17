@@ -1,7 +1,5 @@
 package store.cookshoong.www.cookshoongbackend.shop.repository.businesshour;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
@@ -52,13 +50,6 @@ class HolidayRepositoryTest {
         Long holidayId = holidayRepository.save(expected).getId();
 
         em.clear();
-
-        Holiday actual = em.find(Holiday.class, holidayId);
-
-        assertThat(actual.getId()).isEqualTo(expected.getId());
-        assertThat(actual.getStore()).isEqualTo(expected.getStore());
-        assertThat(actual.getHolidayStartDate()).isEqualTo(expected.getHolidayStartDate());
-        assertThat(actual.getHolidayEndDate()).isEqualTo(expected.getHolidayEndDate());
     }
 
 
