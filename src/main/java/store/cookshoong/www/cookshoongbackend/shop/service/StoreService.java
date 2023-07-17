@@ -59,6 +59,8 @@ public class StoreService {
     private final StoreCategoryRepository storeCategoryRepository;
     private final AccountAddressRepository accountAddressRepository;
     private static final BigDecimal DISTANCE = new BigDecimal("3.0");
+    private static final Double RADIUS = 6371.0;
+    private static final Double TO_RADIAN = Math.PI / 180;
 
     private static void accessDeniedException(Long accountId, Store store) {
         if (!store.getAccount().getId().equals(accountId)) {
@@ -253,24 +255,22 @@ public class StoreService {
     private BigDecimal calculateDistance(BigDecimal x1, BigDecimal y1, BigDecimal x2, BigDecimal y2) {
 
         Double distance;
-        Double radius = 6371.0; // 지구 반지름(km)
-        Double toRadian = Math.PI / 180;
 
-        Double deltaLatitude = Math.abs(x1.doubleValue() - x2.doubleValue()) * toRadian;
-        Double deltaLongitude = Math.abs(y1.doubleValue() - y2.doubleValue()) * toRadian;
+        Double deltaLatitude = Math.abs(x1.doubleValue() - x2.doubleValue()) * TO_RADIAN;
+        Double deltaLongitude = Math.abs(y1.doubleValue() - y2.doubleValue()) * TO_RADIAN;
 
         Double sinDeltaLat = Math.sin(deltaLatitude / 2);
         Double sinDeltaLng = Math.sin(deltaLongitude / 2);
 
         Double mulSinDelLat = sinDeltaLat * sinDeltaLat;
-        Double cosX1ToTadian = Math.cos(x1.doubleValue() * toRadian);
-        Double cosX2ToTadian = Math.cos(x2.doubleValue() * toRadian);
+        Double cosX1ToTadian = Math.cos(x1.doubleValue() * TO_RADIAN);
+        Double cosX2ToTadian = Math.cos(x2.doubleValue() * TO_RADIAN);
         Double mulSinDelLng = sinDeltaLng * sinDeltaLng;
 
         Double squareRoot = Math.sqrt(
             mulSinDelLat + cosX1ToTadian * cosX2ToTadian * mulSinDelLng);
 
-        distance = 2 * radius * Math.asin(squareRoot);
+        distance = 2 * RADIUS * Math.asin(squareRoot);
         log.info("distance: {}", distance);
 
         return BigDecimal.valueOf(distance);
