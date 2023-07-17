@@ -3,6 +3,7 @@ package store.cookshoong.www.cookshoongbackend.address.model.response;
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 
 /**
  * 주소에 정보를 모두 응답해 주는 Dto.
@@ -12,9 +13,11 @@ import lombok.Getter;
  * @since 2023.07.04
  */
 @Getter
+@ToString
 @AllArgsConstructor
 public class AddressResponseDto {
 
+    private Long id;
     private String mainPlace;
     private String detailPlace;
     private BigDecimal latitude;
