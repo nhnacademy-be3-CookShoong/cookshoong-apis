@@ -61,11 +61,11 @@ class StoreSearchControllerTest {
         List<SelectAllStoresNotOutedResponseDto> storeList = new ArrayList<>();
         storeList.add(new SelectAllStoresNotOutedResponseDto(
             1L, "네네치킨", "OPEN", "광주광역시 동구 필문대로287번길 19-24", "평양빌딩",
-            new BigDecimal("35.1453447604175"), new BigDecimal("126.9292302170903"), storeCategoryCode
+            new BigDecimal("35.1453447604175"), new BigDecimal("126.9292302170903"), "CHK"
         ));
         storeList.add(new SelectAllStoresNotOutedResponseDto(
             1L, "굽네치킨", "OPEN", "광주광역시 동구 필문대로273번길 8-5", "평양빌딩",
-            new BigDecimal("35.1464529445461"), new BigDecimal("126.9283952407910"), storeCategoryCode
+            new BigDecimal("35.1464529445461"), new BigDecimal("126.9283952407910"), "CHK"
         ));
 
         Page<SelectAllStoresNotOutedResponseDto> storePage = new PageImpl<>(storeList, pageable, storeList.size());
@@ -92,6 +92,7 @@ class StoreSearchControllerTest {
                     fieldWithPath("content[].detailPlace").description("상세 주소"),
                     fieldWithPath("content[].latitude").description("위도"),
                     fieldWithPath("content[].longitude").description("경도"),
+                    fieldWithPath("content[].category").description("카테고리"),
                     fieldWithPath("pageable.sort.empty").description("정렬 데이터 공백 여부"),
                     fieldWithPath("pageable.sort.sorted").description("정렬 여부"),
                     fieldWithPath("pageable.sort.unsorted").description("비정렬 여부"),
