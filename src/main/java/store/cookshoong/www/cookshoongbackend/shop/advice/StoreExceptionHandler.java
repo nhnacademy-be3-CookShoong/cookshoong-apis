@@ -20,7 +20,7 @@ import store.cookshoong.www.cookshoongbackend.shop.exception.merchant.Duplicated
 import store.cookshoong.www.cookshoongbackend.shop.exception.merchant.MerchantNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.merchant.MerchantValidException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.DuplicatedBusinessLicenseException;
-import store.cookshoong.www.cookshoongbackend.shop.exception.store.SelectStoreNotFoundException;
+import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreValidException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.UserAccessDeniedException;
 
@@ -39,7 +39,7 @@ public class StoreExceptionHandler {
      * @param e 없을 때 예외
      * @return 404
      */
-    @ExceptionHandler(value = {SelectStoreNotFoundException.class, BankTypeNotFoundException.class,
+    @ExceptionHandler(value = {StoreNotFoundException.class, BankTypeNotFoundException.class,
         StoreCategoryNotFoundException.class, MerchantNotFoundException.class, HolidayNotFoundException.class})
     public ResponseEntity<String> somethingNotFoundError(NotFoundException e) {
         return ResponseEntity
