@@ -11,7 +11,9 @@ import store.cookshoong.www.cookshoongbackend.account.entity.QAccount;
 import store.cookshoong.www.cookshoongbackend.address.entity.QAddress;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QBankType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QStore;
+import store.cookshoong.www.cookshoongbackend.shop.entity.QStoreCategory;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QStoreStatus;
+import store.cookshoong.www.cookshoongbackend.shop.entity.QStoresHasCategory;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectStoreForUserResponseDto;
@@ -139,15 +141,17 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
      * {@inheritDoc}
      */
     @Override
-    public Page<SelectAllStoresNotOutedResponseDto> lookupStoreLatLanPage(Pageable pageable) {
-        List<SelectAllStoresNotOutedResponseDto> responseDtos = lookupNotOutedStore(pageable);
+    public Page<SelectAllStoresNotOutedResponseDto> lookupStoreLatLanPage(String storeCategoryCode, Pageable pageable) {
+        List<SelectAllStoresNotOutedResponseDto> responseDtos = lookupNotOutedStore(storeCategoryCode, pageable);
         Long total = lookupNotOutedStoreTotal();
         return new PageImpl<>(responseDtos, pageable, total);
     }
 
-    private List<SelectAllStoresNotOutedResponseDto> lookupNotOutedStore(Pageable pageable) {
+    private List<SelectAllStoresNotOutedResponseDto> lookupNotOutedStore(String storeCategoryCode, Pageable pageable) {
         QStore store = QStore.store;
         QStoreStatus storeStatus = QStoreStatus.storeStatus;
+        QStoresHasCategory storesHasCategory = QStoresHasCategory.storesHasCategory;
+        QStoreCategory storeCategory = QStoreCategory.storeCategory;
         QAddress address = QAddress.address;
 
         return jpaQueryFactory
@@ -157,7 +161,9 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
             .from(store)
             .innerJoin(store.storeStatusCode, storeStatus)
             .innerJoin(store.address, address)
-            .where(storeStatus.storeStatusCode.ne("OUTED"))
+            .innerJoin(store.storesHasCategories, storesHasCategory)
+            .innerJoin(storesHasCategory.categoryCode, storeCategory)
+            .where(storeStatus.storeStatusCode.ne("OUTED").and(storeCategory.categoryCode.eq(storeCategoryCode)))
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();

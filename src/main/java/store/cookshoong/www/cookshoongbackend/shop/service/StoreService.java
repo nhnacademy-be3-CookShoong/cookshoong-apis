@@ -216,32 +216,38 @@ public class StoreService {
     /**
      * 회원의 위치를 기반으로 3km 이내에 위차한 매장만을 조회하는 메서드.
      *
-     * @param accountId 회원 아이디
+     * @param addressId 주소 아이디
      * @param pageable  페이지 정보
      * @return          3km 이내에 위치한 매장만을 반환
      */
-    public Page<SelectAllStoresNotOutedResponseDto> selectAllStoresNotOutedResponsePage(Long accountId, Pageable pageable) {
+    public Page<SelectAllStoresNotOutedResponseDto> selectAllStoresNotOutedResponsePage(Long addressId,
+                                                                                        String storeCategoryCode,
+                                                                                        Pageable pageable) {
 
-        Page<SelectAllStoresNotOutedResponseDto> allStore = storeRepository.lookupStoreLatLanPage(pageable);
+        Page<SelectAllStoresNotOutedResponseDto> allStore =
+            storeRepository.lookupStoreLatLanPage(storeCategoryCode, pageable);
 
-        AddressResponseDto addressLatLng = accountAddressRepository.lookupByAccountIdAddressRecentRegistration(accountId);
+        AddressResponseDto addressLatLng =
+            accountAddressRepository.lookupByAccountSelectAddressId(addressId);
+
+        log.info("ADDRESS: {}", addressLatLng);
 
         List<SelectAllStoresNotOutedResponseDto> nearbyStores = allStore
             .stream()
-            .filter(store -> isWithDistance(addressLatLng, store, DISTANCE))
+            .filter(store -> isWithDistance(addressLatLng, store))
             .collect(Collectors.toList());
 
         return new PageImpl<>(nearbyStores, pageable, nearbyStores.size());
     }
 
-    private boolean isWithDistance(AddressResponseDto address, SelectAllStoresNotOutedResponseDto store, BigDecimal distance) {
+    private boolean isWithDistance(AddressResponseDto address, SelectAllStoresNotOutedResponseDto store) {
 
         BigDecimal storeDistance =  calculateDistance(
             address.getLatitude(), address.getLongitude(),
             store.getLatitude(), store.getLongitude()
         );
 
-        return storeDistance.compareTo(distance) <= 0;
+        return storeDistance.compareTo(DISTANCE) <= 0;
     }
 
     private BigDecimal calculateDistance(BigDecimal x1, BigDecimal y1, BigDecimal x2, BigDecimal y2) {
