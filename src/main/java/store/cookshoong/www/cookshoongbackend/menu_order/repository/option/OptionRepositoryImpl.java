@@ -1,12 +1,12 @@
-package store.cookshoong.www.cookshoongbackend.menu.repository.option;
+package store.cookshoong.www.cookshoongbackend.menu_order.repository.option;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import store.cookshoong.www.cookshoongbackend.menu.entity.option.QOption;
-import store.cookshoong.www.cookshoongbackend.menu.entity.optiongroup.QOptionGroup;
-import store.cookshoong.www.cookshoongbackend.menu.model.response.QSelectOptionResponseDto;
-import store.cookshoong.www.cookshoongbackend.menu.model.response.SelectOptionResponseDto;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.option.QOption;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.optiongroup.QOptionGroup;
+import store.cookshoong.www.cookshoongbackend.menu_order.model.response.QSelectOptionResponseDto;
+import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectOptionResponseDto;
 
 /**
  * 옵션 Custom 레포지토리 구현.

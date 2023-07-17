@@ -1,14 +1,14 @@
-package store.cookshoong.www.cookshoongbackend.menu.repository.menu;
+package store.cookshoong.www.cookshoongbackend.menu_order.repository.menu;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import store.cookshoong.www.cookshoongbackend.menu.entity.menu.QMenu;
-import store.cookshoong.www.cookshoongbackend.menu.entity.menu.QMenuStatus;
-import store.cookshoong.www.cookshoongbackend.menu.entity.menugroup.QMenuGroup;
-import store.cookshoong.www.cookshoongbackend.menu.entity.menugroup.QMenuHasMenuGroup;
-import store.cookshoong.www.cookshoongbackend.menu.model.response.QSelectMenuResponseDto;
-import store.cookshoong.www.cookshoongbackend.menu.model.response.SelectMenuResponseDto;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.QMenu;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.QMenuStatus;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.menugroup.QMenuGroup;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.menugroup.QMenuHasMenuGroup;
+import store.cookshoong.www.cookshoongbackend.menu_order.model.response.QSelectMenuResponseDto;
+import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectMenuResponseDto;
 
 /**
  * 메뉴 Custom 레포지토리 구현.

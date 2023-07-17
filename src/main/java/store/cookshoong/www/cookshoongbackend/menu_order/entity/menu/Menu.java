@@ -18,7 +18,7 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import store.cookshoong.www.cookshoongbackend.menu.entity.menugroup.MenuHasMenuGroup;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.menugroup.MenuHasMenuGroup;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 
 /**

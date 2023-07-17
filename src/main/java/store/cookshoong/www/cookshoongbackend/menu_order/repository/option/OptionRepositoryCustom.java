@@ -1,8 +1,8 @@
-package store.cookshoong.www.cookshoongbackend.menu.repository.option;
+package store.cookshoong.www.cookshoongbackend.menu_order.repository.option;
 
 import java.util.List;
 import org.springframework.data.repository.NoRepositoryBean;
-import store.cookshoong.www.cookshoongbackend.menu.model.response.SelectOptionResponseDto;
+import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectOptionResponseDto;
 
 /**
  * 옵션 Custom 레포지토리 인터페이스.

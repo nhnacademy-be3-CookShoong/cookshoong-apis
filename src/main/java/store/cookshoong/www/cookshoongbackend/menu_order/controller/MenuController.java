@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import store.cookshoong.www.cookshoongbackend.menu_order.exception.menu.MenuValidationException;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.request.CreateMenuRequestDto;
+import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectMenuResponseDto;
 import store.cookshoong.www.cookshoongbackend.menu_order.service.MenuService;
 
 /**
@@ -59,8 +60,6 @@ public class MenuController {
     @GetMapping("/menu")
     public ResponseEntity<List<SelectMenuResponseDto>> getMenus(@PathVariable("storeId") Long storeId) {
         List<SelectMenuResponseDto> menus = menuService.selectMenus(storeId);
-        log.error(storeId + "");
-        log.error(menus.size() + "");
         return ResponseEntity.ok(menus);
     }
 }
