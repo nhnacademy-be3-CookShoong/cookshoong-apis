@@ -20,6 +20,8 @@ import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpReques
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountAuthResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.service.AccountService;
+import store.cookshoong.www.cookshoongbackend.address.model.request.CreateAccountAddressRequestDto;
+import store.cookshoong.www.cookshoongbackend.address.service.AddressService;
 
 /**
  * 회원가입, 회원 조회, 회원 관련 정보 수정를 다루는 컨트롤러.
@@ -33,6 +35,7 @@ import store.cookshoong.www.cookshoongbackend.account.service.AccountService;
 @RequestMapping("/api/accounts")
 public class AccountController {
     private final AccountService accountService;
+    private final AddressService addressService;
 
     /**
      * 회원 정보를 전달받아 DB에 저장 요청하는 메서드.
@@ -55,7 +58,8 @@ public class AccountController {
             throw new SignUpValidationException(bindingResult);
         }
 
-        accountService.createAccount(signUpRequestDto, Authority.Code.valueOf(authorityCodeUpperCase));
+        Long accountId = accountService.createAccount(signUpRequestDto, Authority.Code.valueOf(authorityCodeUpperCase));
+        addressService.createAccountAddress(accountId, signUpRequestDto.getCreateAccountAddressRequestDto());
 
         return ResponseEntity.status(HttpStatus.CREATED)
             .build();
