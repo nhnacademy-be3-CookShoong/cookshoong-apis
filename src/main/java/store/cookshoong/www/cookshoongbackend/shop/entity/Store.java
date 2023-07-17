@@ -140,8 +140,25 @@ public class Store {
         this.address = address;
     }
 
+    /**
+     * 매장 정보 수정.
+     *
+     * @param merchant              the merchant
+     * @param account               the account
+     * @param bankTypeCode          the bank type code
+     * @param storeStatus           the store status
+     * @param businessLicenseNumber the business license number
+     * @param representativeName    the representative name
+     * @param openingDate           the opening date
+     * @param name                  the name
+     * @param phoneNumber           the phone number
+     * @param defaultEarningRate    the default earning rate
+     * @param description           the description
+     * @param image                 the image
+     * @param bankAccountNumber     the bank account number
+     */
     public void modifyStoreInfo(Merchant merchant, Account account, BankType bankTypeCode, StoreStatus storeStatus,
-                                 String businessLicenseNumber, String representativeName,
+                                String businessLicenseNumber, String representativeName,
                                 LocalDate openingDate, String name, String phoneNumber, BigDecimal defaultEarningRate,
                                 String description, String image, String bankAccountNumber) {
         this.merchant = merchant;
@@ -158,7 +175,20 @@ public class Store {
         this.image = image;
         this.bankAccountNumber = bankAccountNumber;
     }
-    public void initStoreCategories(){
+
+    /**
+     * 매장의 카테고리 초기화.
+     */
+    public void initStoreCategories() {
         this.storesHasCategories.clear();
+    }
+
+    /**
+     * 매장의 상태코드 변경.
+     *
+     * @param storeStatusCode 매장 상태 코드(OPEN, CLOSE, OUTED)
+     */
+    public void modifyStoreStatus(StoreStatus storeStatusCode) {
+        this.storeStatusCode = storeStatusCode;
     }
 }
