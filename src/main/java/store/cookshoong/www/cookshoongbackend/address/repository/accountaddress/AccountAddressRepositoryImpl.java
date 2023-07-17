@@ -47,11 +47,26 @@ public class AccountAddressRepositoryImpl implements AccountAddressRepositoryCus
 
         return jpaQueryFactory
             .select(Projections.constructor(AddressResponseDto.class,
-                address.mainPlace, address.detailPlace, address.latitude, address.longitude))
+                accountAddress.address.id, address.mainPlace, address.detailPlace, address.latitude, address.longitude))
             .from(accountAddress)
             .innerJoin(accountAddress.address, address)
             .where(accountAddress.pk.accountId.eq(accountId))
             .orderBy(accountAddress.pk.addressId.desc())
+            .fetchFirst();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AddressResponseDto lookupByAccountSelectAddressId(Long addressId) {
+        QAddress address = QAddress.address;
+
+        return jpaQueryFactory
+            .select(Projections.constructor(AddressResponseDto.class,
+                address.id, address.mainPlace, address.detailPlace, address.latitude, address.longitude))
+            .from(address)
+            .where(address.id.eq(addressId))
             .fetchFirst();
     }
 }

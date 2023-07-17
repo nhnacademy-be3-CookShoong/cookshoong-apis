@@ -4,6 +4,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseDto;
@@ -42,4 +43,11 @@ public interface StoreRepositoryCustom {
      * @return 해당 매장 정보
      */
     Optional<SelectStoreForUserResponseDto> lookupStoreForUser(Long storeId);
+
+    /**
+     * 회원 위치에서 3km 이내에 있는 매장들을 조회하기 전, 모든 매장을 가져오는 메서드.
+     *
+     * @return  모든 매장 정보 페이지로 반환.
+     */
+    Page<SelectAllStoresNotOutedResponseDto> lookupStoreLatLanPage(Pageable pageable);
 }

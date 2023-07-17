@@ -12,9 +12,11 @@ import store.cookshoong.www.cookshoongbackend.address.entity.QAddress;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QBankType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QStore;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QStoreStatus;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectStoreForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectStoreResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseDto;
@@ -133,4 +135,45 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
             .fetchOne());
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<SelectAllStoresNotOutedResponseDto> lookupStoreLatLanPage(Pageable pageable) {
+        List<SelectAllStoresNotOutedResponseDto> responseDtos = lookupNotOutedStore(pageable);
+        Long total = lookupNotOutedStoreTotal();
+        return new PageImpl<>(responseDtos, pageable, total);
+    }
+
+    private List<SelectAllStoresNotOutedResponseDto> lookupNotOutedStore(Pageable pageable) {
+        QStore store = QStore.store;
+        QStoreStatus storeStatus = QStoreStatus.storeStatus;
+        QAddress address = QAddress.address;
+
+        return jpaQueryFactory
+            .select(new QSelectAllStoresNotOutedResponseDto(
+                store.id, store.name, storeStatus.description, address.mainPlace,
+                address.detailPlace, address.latitude, address.longitude))
+            .from(store)
+            .innerJoin(store.storeStatusCode, storeStatus)
+            .innerJoin(store.address, address)
+            .where(storeStatus.storeStatusCode.ne("OUTED"))
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
+    }
+
+    private Long lookupNotOutedStoreTotal() {
+        QStore store = QStore.store;
+        QStoreStatus storeStatus = QStoreStatus.storeStatus;
+        QAddress address = QAddress.address;
+
+        return jpaQueryFactory
+            .select(store.count())
+            .from(store)
+            .innerJoin(store.storeStatusCode, storeStatus)
+            .innerJoin(store.address, address)
+            .where(storeStatus.storeStatusCode.ne("OUTED"))
+            .fetchOne();
+    }
 }
