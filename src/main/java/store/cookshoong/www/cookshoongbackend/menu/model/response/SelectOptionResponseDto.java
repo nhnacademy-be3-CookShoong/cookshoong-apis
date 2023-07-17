@@ -9,6 +9,7 @@ import com.querydsl.core.annotations.QueryProjection;
  * @since 2023.07.11
  */
 public class SelectOptionResponseDto {
+    private final Long id;
     private final String name;
     private final Integer price;
     private final Boolean isDeleted;
@@ -17,13 +18,15 @@ public class SelectOptionResponseDto {
     /**
      * QueryDSL DTO Projection 을 위한 생성자.
      *
+     * @param id               the id
      * @param name             the name
      * @param price            the price
      * @param isDeleted        the isDeleted
      * @param optionSequence   the optionSequence
      */
     @QueryProjection
-    public SelectOptionResponseDto(String name, Integer price, Boolean isDeleted, Integer optionSequence) {
+    public SelectOptionResponseDto(Long id, String name, Integer price, Boolean isDeleted, Integer optionSequence) {
+        this.id = id;
         this.name = name;
         this.price = price;
         this.isDeleted = isDeleted;

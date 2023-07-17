@@ -141,13 +141,13 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
      * {@inheritDoc}
      */
     @Override
-    public Page<SelectAllStoresNotOutedResponseDto> lookupStoreLatLanPage(String storeCategoryCode, Pageable pageable) {
-        List<SelectAllStoresNotOutedResponseDto> responseDtos = lookupNotOutedStore(storeCategoryCode, pageable);
+    public Page<SelectAllStoresNotOutedResponseDto> lookupStoreLatLanPage(Pageable pageable) {
+        List<SelectAllStoresNotOutedResponseDto> responseDtos = lookupNotOutedStore(pageable);
         Long total = lookupNotOutedStoreTotal();
         return new PageImpl<>(responseDtos, pageable, total);
     }
 
-    private List<SelectAllStoresNotOutedResponseDto> lookupNotOutedStore(String storeCategoryCode, Pageable pageable) {
+    private List<SelectAllStoresNotOutedResponseDto> lookupNotOutedStore(Pageable pageable) {
         QStore store = QStore.store;
         QStoreStatus storeStatus = QStoreStatus.storeStatus;
         QStoresHasCategory storesHasCategory = QStoresHasCategory.storesHasCategory;
@@ -157,13 +157,13 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
         return jpaQueryFactory
             .select(new QSelectAllStoresNotOutedResponseDto(
                 store.id, store.name, storeStatus.description, address.mainPlace,
-                address.detailPlace, address.latitude, address.longitude))
+                address.detailPlace, address.latitude, address.longitude, storeCategory.categoryCode))
             .from(store)
             .innerJoin(store.storeStatusCode, storeStatus)
             .innerJoin(store.address, address)
             .innerJoin(store.storesHasCategories, storesHasCategory)
             .innerJoin(storesHasCategory.categoryCode, storeCategory)
-            .where(storeStatus.storeStatusCode.ne("OUTED").and(storeCategory.categoryCode.eq(storeCategoryCode)))
+            .where(storeStatus.storeStatusCode.ne("OUTED"))
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();

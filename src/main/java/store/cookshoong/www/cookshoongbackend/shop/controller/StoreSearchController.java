@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.service.StoreService;
@@ -35,11 +34,10 @@ public class StoreSearchController {
     @GetMapping("/stores")
     public ResponseEntity<Page<SelectAllStoresNotOutedResponseDto>> getNotOutedStores(
         @PathVariable("addressId") Long addressId,
-        @RequestParam String storeCategoryCode,
         Pageable pageable) {
 
         Page<SelectAllStoresNotOutedResponseDto> stores =
-            storeService.selectAllStoresNotOutedResponsePage(addressId, storeCategoryCode, pageable);
+            storeService.selectAllStoresNotOutedResponsePage(addressId, pageable);
 
         return ResponseEntity.ok(stores);
     }

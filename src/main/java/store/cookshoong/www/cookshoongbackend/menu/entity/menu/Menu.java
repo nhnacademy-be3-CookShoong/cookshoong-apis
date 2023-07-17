@@ -1,6 +1,9 @@
 package store.cookshoong.www.cookshoongbackend.menu.entity.menu;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,10 +13,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.cookshoong.www.cookshoongbackend.menu.entity.menugroup.MenuHasMenuGroup;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 
 /**
@@ -58,6 +63,9 @@ public class Menu {
 
     @Column(name = "earning_rate", precision = 4, scale = 1)
     private BigDecimal earningRate;
+
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.PERSIST)
+    private final Set<MenuHasMenuGroup> menuHasMenuGroups = new HashSet<>();
 
     /**
      * 메뉴 생성자.

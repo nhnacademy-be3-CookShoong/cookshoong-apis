@@ -266,7 +266,7 @@ class StoreRepositoryTest {
         storeRepository.save(store3);
 
         Pageable pageable = PageRequest.of(0, 10);
-        Page<SelectAllStoresNotOutedResponseDto> actual = storeRepository.lookupStoreLatLanPage("CHK", pageable);
+        Page<SelectAllStoresNotOutedResponseDto> actual = storeRepository.lookupStoreLatLanPage(pageable);
 
 
         assertThat(actual.getContent()).isNotNull();

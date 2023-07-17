@@ -158,7 +158,7 @@ public class Store {
         this.image = image;
         this.bankAccountNumber = bankAccountNumber;
     }
-    public void initStoreCategories(){
+    public void initStoreCategories() {
         this.storesHasCategories.clear();
     }
 }
