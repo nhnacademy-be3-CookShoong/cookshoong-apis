@@ -67,10 +67,11 @@ public class AddressController {
      * @return              상태코드 200(Ok)와 함께 응답을 반환
      */
     @PatchMapping("/{accountId}/{addressId}")
-    public ResponseEntity<Void> patchModifyAccountDetailAddress(@PathVariable("accountId") Long accountId,
-                                                                @PathVariable("addressId") Long addressId,
-                                                                @RequestBody @Valid ModifyAccountAddressRequestDto requestDto,
-                                                                BindingResult bindingResult) {
+    public ResponseEntity<Void> patchModifyAccountDetailAddress(
+        @PathVariable("accountId") Long accountId,
+        @PathVariable("addressId") Long addressId,
+        @RequestBody @Valid ModifyAccountAddressRequestDto requestDto,
+        BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new ModifyAccountAddressValidationException(bindingResult);
@@ -104,6 +105,20 @@ public class AddressController {
     public ResponseEntity<AddressResponseDto> getAccountAddressRecentRegistration(@PathVariable("accountId") Long accountId) {
 
         AddressResponseDto address = addressService.selectAccountAddressRecentRegistration(accountId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(address);
+    }
+
+    /**
+     * 회원이 선택한 주소에 대한 주소 정보.
+     *
+     * @param addressId     주소 아이디
+     * @return              상태코드 200(Ok)와 함께 응답을 반환 & 클라이언트에게 해당 주소 정보를 반환
+     */
+    @GetMapping("/{addressId}/choice")
+    public ResponseEntity<AddressResponseDto> getAccountChoiceAddress(@PathVariable("addressId") Long addressId) {
+
+        AddressResponseDto address = addressService.selectAccountChoiceAddress(addressId);
 
         return ResponseEntity.status(HttpStatus.OK).body(address);
     }

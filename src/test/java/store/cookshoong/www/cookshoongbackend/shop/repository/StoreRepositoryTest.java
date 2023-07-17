@@ -5,9 +5,11 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.util.ReflectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -15,6 +17,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.util.ReflectionTestUtils;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
@@ -25,7 +28,10 @@ import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
+import store.cookshoong.www.cookshoongbackend.shop.entity.StoreCategory;
 import store.cookshoong.www.cookshoongbackend.shop.entity.StoreStatus;
+import store.cookshoong.www.cookshoongbackend.shop.entity.StoresHasCategory;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseDto;
@@ -39,6 +45,7 @@ import store.cookshoong.www.cookshoongbackend.util.TestEntity;
  * @author seungyeon
  * @since 2023.07.14
  */
+@Slf4j
 @DataJpaTest
 @Import({QueryDslConfig.class,
     TestEntity.class,
@@ -202,5 +209,67 @@ class StoreRepositoryTest {
         assertThat(actual.getMainPlace()).isEqualTo(store.getAddress().getMainPlace());
         assertThat(actual.getDetailPlace()).isEqualTo(store.getAddress().getDetailPlace());
         assertThat(actual.getRepresentativeName()).isEqualTo(store.getRepresentativeName());
+    }
+
+    @Test
+    @DisplayName("사용자: 사용자 위치에서 3km 이내에 위치한 매장들만 조회")
+    void select_Not_Outed_store() {
+
+        BankType bankType = em.find(BankType.class, "KB");
+        StoreStatus storeStatus = em.find(StoreStatus.class, "OPEN");
+
+        Address address = new Address("조선대학교 11번길", "33-1", new BigDecimal(111), new BigDecimal(122));
+        em.persist(address);
+
+        Store store = new Store(merchant, account, bankType, storeStatus, "businessLicenseImage1",
+            "1234567891", "나기업", LocalDate.parse("1999-02-03"), "나기업의 김치찌개",
+            "01088889991", new BigDecimal("1.1"), "우리 매장음식이 가장 맛있어요.", null, "11022223333");
+        store.modifyAddress(address);
+
+        StoreCategory storeCategory = new StoreCategory("CHK", "네네치킨");
+        em.persist(storeCategory);
+
+        store.getStoresHasCategories().add(new StoresHasCategory(
+            new StoresHasCategory.Pk(store.getId(), storeCategory.getCategoryCode()), store, storeCategory));
+
+        storeRepository.save(store);
+
+        log.info("Categories: {}", store.getStoresHasCategories());
+
+        Store store2 = new Store(merchant, account, bankType, storeStatus, "businessLicenseImage1",
+            "1234567891", "나기업", LocalDate.parse("1999-02-03"), "나기업의 김치찌개",
+            "01088889991", new BigDecimal("1.1"), "우리 매장음식이 가장 맛있어요.", null, "11022223333");
+        store2.modifyAddress(address);
+
+        store2.getStoresHasCategories().add(new StoresHasCategory(
+            new StoresHasCategory.Pk(store2.getId(), storeCategory.getCategoryCode()), store2, storeCategory));
+
+        storeRepository.save(store2);
+
+        StoreStatus storeStatus1 = ReflectionUtils.newInstance(StoreStatus.class);
+        ReflectionTestUtils.setField(storeStatus1, "storeStatusCode", "OUTED");
+        ReflectionTestUtils.setField(storeStatus1, "description", "VKD");
+        em.persist(storeStatus1);
+
+        Store store3 = new Store(merchant, account, bankType, storeStatus1, "businessLicenseImage1",
+            "1234567891", "나기업", LocalDate.parse("1999-02-03"), "나기업의 김치찌개",
+            "01088889991", new BigDecimal("1.1"), "우리 매장음식이 가장 맛있어요.", null, "11022223333");
+
+        StoreCategory storeCategory1 = ReflectionUtils.newInstance(StoreCategory.class);
+        ReflectionTestUtils.setField(storeCategory1, "categoryCode", "DER");
+        ReflectionTestUtils.setField(storeCategory1, "description", "bkks");
+        em.persist(storeCategory1);
+        store3.modifyAddress(address);
+        store3.getStoresHasCategories().add(new StoresHasCategory(
+            new StoresHasCategory.Pk(store2.getId(), storeCategory1.getCategoryCode()), store3, storeCategory1
+        ));
+        storeRepository.save(store3);
+
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<SelectAllStoresNotOutedResponseDto> actual = storeRepository.lookupStoreLatLanPage("CHK", pageable);
+
+
+        assertThat(actual.getContent()).isNotNull();
+        assertThat(actual.getTotalElements()).isEqualTo(2);
     }
 }

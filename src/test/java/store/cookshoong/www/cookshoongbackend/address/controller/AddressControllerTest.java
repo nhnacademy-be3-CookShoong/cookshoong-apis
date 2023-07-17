@@ -156,10 +156,10 @@ class AddressControllerTest {
     }
 
     @Test
-    @DisplayName("회원이 주문할 때 보여줄 최근 등록 메인 주소와 상세 주소, 회원이 최근의 등록한 주소의 위치를 보여줄 좌표")
-    void getAccountAddressForPayment() throws Exception {
+    @DisplayName("회원이 최근에 등록한 주소와 좌표 조회")
+    void getAccountAddressRecentRegistration() throws Exception {
 
-        AddressResponseDto responseDto = new AddressResponseDto("경기도 성남시 분당구 대왕판교로645번길 16", "NHN 플레이뮤지엄",
+        AddressResponseDto responseDto = new AddressResponseDto(1L, "경기도 성남시 분당구 대왕판교로645번길 16", "NHN 플레이뮤지엄",
             new BigDecimal("37.40096549041187"), new BigDecimal("127.1040493631922"));
 
         when(addressService.selectAccountAddressRecentRegistration(1L)).thenReturn(responseDto);
@@ -172,6 +172,32 @@ class AddressControllerTest {
             .andExpect(jsonPath("$.longitude").value(responseDto.getLongitude()))
             .andDo(document("get-account-address",
                 responseFields(
+                    fieldWithPath("id").description("주소 아아디"),
+                    fieldWithPath("mainPlace").description("메인 주소"),
+                    fieldWithPath("detailPlace").description("상세 주소"),
+                    fieldWithPath("latitude").description("위도"),
+                    fieldWithPath("longitude").description("경도")
+                )));
+    }
+
+    @Test
+    @DisplayName("회원이 주소록에 선택한 주소 정보")
+    void getAccountChoiceAddress() throws Exception {
+
+        AddressResponseDto responseDto = new AddressResponseDto(1L, "경기도 성남시 분당구 대왕판교로645번길 16", "NHN 플레이뮤지엄",
+            new BigDecimal("37.40096549041187"), new BigDecimal("127.1040493631922"));
+
+        when(addressService.selectAccountChoiceAddress(1L)).thenReturn(responseDto);
+
+        mockMvc.perform(get("/api/addresses/{addressId}/choice",  1L))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.mainPlace").value(responseDto.getMainPlace()))
+            .andExpect(jsonPath("$.detailPlace").value(responseDto.getDetailPlace()))
+            .andExpect(jsonPath("$.latitude").value(responseDto.getLatitude()))
+            .andExpect(jsonPath("$.longitude").value(responseDto.getLongitude()))
+            .andDo(document("get-account-address",
+                responseFields(
+                    fieldWithPath("id").description("주소 아이디"),
                     fieldWithPath("mainPlace").description("메인 주소"),
                     fieldWithPath("detailPlace").description("상세 주소"),
                     fieldWithPath("latitude").description("위도"),
