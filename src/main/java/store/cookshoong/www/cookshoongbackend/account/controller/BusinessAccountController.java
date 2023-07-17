@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -18,6 +19,7 @@ import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreValidExc
 import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateStoreRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateCategoryRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreRequestDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreStatusRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.service.StoreService;
@@ -120,8 +122,8 @@ public class BusinessAccountController {
      * @param requestDto 매장 카테고리 code 리스트
      * @return 200
      */
-    @PutMapping("/stores/{storeId}/categories")
-    public ResponseEntity<Void> putStoreCategory(@PathVariable("accountId") Long accountId,
+    @PatchMapping("/stores/{storeId}/categories")
+    public ResponseEntity<Void> patchStoreCategory(@PathVariable("accountId") Long accountId,
                                                  @PathVariable("storeId") Long storeId,
                                                  @RequestBody UpdateCategoryRequestDto requestDto) {
         storeService.updateStoreCategories(accountId, storeId, requestDto);
@@ -129,5 +131,13 @@ public class BusinessAccountController {
             .ok()
             .build();
     }
-    //TODO 8. 매장 삭제가 아니라 상태를 폐업으로 바꾸도록
+    @PatchMapping("/stores/{storeId}/status")
+    public ResponseEntity<Void> patchStoreStatus(@PathVariable("accountId") Long accountId,
+                                               @PathVariable("storeId") Long storeId,
+                                               @RequestBody @Valid UpdateStoreStatusRequestDto requestDto){
+        storeService.updateStoreStatus(accountId, storeId, requestDto);
+        return ResponseEntity
+            .ok()
+            .build();
+    }
 }

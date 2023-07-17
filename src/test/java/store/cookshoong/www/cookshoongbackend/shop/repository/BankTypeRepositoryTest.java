@@ -90,7 +90,7 @@ class BankTypeRepositoryTest {
         Page<SelectAllBanksResponseDto> expects = bankTypeRepository.lookupBanksPage(pageable);
 
         assertThat(expects.get().count()).isEqualTo(4);
-        assertThat(expects.get().findFirst().get().getBankName()).isEqualTo("은행5");
+        assertThat(expects.get().findFirst().get().getDescription()).isEqualTo("은행5");
     }
 
     @Test

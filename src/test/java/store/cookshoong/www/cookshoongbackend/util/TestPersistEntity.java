@@ -1,9 +1,12 @@
 package store.cookshoong.www.cookshoongbackend.util;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.util.ReflectionTestUtils;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
@@ -12,6 +15,8 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponPolicy;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.Order;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.OrderStatus;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
@@ -58,5 +63,11 @@ public class TestPersistEntity {
         CouponTypeCash couponTypeCash = testEntity.getCouponTypeCash_1000_10000();
         CouponPolicy couponPolicy = testEntity.getCouponPolicy(couponTypeCash, couponUsageStore);
         return testEntity.getIssueCoupon(couponPolicy);
+    }
+    public Order createTestOrder(){
+        Store store = getOpenStore();
+        Account account = getLevelOneActiveCustomer();
+        OrderStatus orderStatus = testEntity.getOrderStatus("CANCELED", "주문취소");
+        return testEntity.getOrder(account, store, orderStatus);
     }
 }

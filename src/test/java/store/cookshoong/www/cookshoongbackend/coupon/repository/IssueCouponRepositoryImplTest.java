@@ -27,7 +27,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectOwnCouponResponseTempDto;
-import store.cookshoong.www.cookshoongbackend.payment.entity.Order;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.Order;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
@@ -122,7 +122,7 @@ class IssueCouponRepositoryImplTest {
 
         issueCoupons.forEach(issueCoupon -> issueCoupon.provideToUser(customer));
 
-        Order order = te.getOrder();
+        Order order = tpe.createTestOrder();
         issueCoupons.stream()
             .skip(5)
             .forEach(issueCoupon -> te.getCouponLog(

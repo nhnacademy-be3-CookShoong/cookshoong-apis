@@ -1,8 +1,10 @@
 package store.cookshoong.www.cookshoongbackend.shop.repository.bank;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllBanksResponseDto;
 
 /**
  * 은행 타입 레포지토리.
@@ -26,4 +28,5 @@ public interface BankTypeRepository extends JpaRepository<BankType, String>, Ban
      * @return true : 이미 존재함, false : 아직 존재하지 않음
      */
     boolean existsByDescription(String description);
+    List<SelectAllBanksResponseDto> findAllByOrderByDescriptionAsc();
 }

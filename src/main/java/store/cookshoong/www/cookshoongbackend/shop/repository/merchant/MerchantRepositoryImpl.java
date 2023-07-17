@@ -48,13 +48,4 @@ public class MerchantRepositoryImpl implements MerchantRepositoryCustom {
             .from(merchant)
             .fetchOne();
     }
-
-    @Override
-    public List<SelectAllMerchantsForUserResponseDto> lookupMerchants() {
-        QMerchant merchant = QMerchant.merchant;
-        return jpaQueryFactory
-            .select(new QSelectAllMerchantsForUserResponseDto(merchant.id, merchant.name))
-            .from(merchant)
-            .fetch();
-    }
 }
