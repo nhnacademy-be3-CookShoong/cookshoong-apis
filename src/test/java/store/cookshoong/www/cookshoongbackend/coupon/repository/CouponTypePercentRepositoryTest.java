@@ -32,8 +32,8 @@ class CouponTypePercentRepositoryTest {
         CouponTypePercent couponTypePercent = testEntity.getCouponTypePercent_3_1000_10000();
         couponTypePercentRepository.save(couponTypePercent);
 
-        assertDoesNotThrow(() -> couponTypePercentRepository.findByRateAndMinimumPriceAndMaximumPrice(
-            couponTypePercent.getRate(), couponTypePercent.getMinimumPrice(), couponTypePercent.getMaximumPrice()))
+        assertDoesNotThrow(() -> couponTypePercentRepository.findByRateAndMinimumOrderPriceAndMaximumDiscountAmount(
+            couponTypePercent.getRate(), couponTypePercent.getMinimumOrderPrice(), couponTypePercent.getMaximumDiscountAmount()))
             .orElseThrow(IllegalArgumentException::new);
     }
 
@@ -43,8 +43,8 @@ class CouponTypePercentRepositoryTest {
         CouponTypePercent couponTypePercent = testEntity.getCouponTypePercent_3_1000_10000();
 
         Optional<CouponTypePercent> byRateAndMinimumPriceAndMaximumPrice =
-            couponTypePercentRepository.findByRateAndMinimumPriceAndMaximumPrice(
-                couponTypePercent.getRate(), couponTypePercent.getMinimumPrice(), couponTypePercent.getMaximumPrice()
+            couponTypePercentRepository.findByRateAndMinimumOrderPriceAndMaximumDiscountAmount(
+                couponTypePercent.getRate(), couponTypePercent.getMinimumOrderPrice(), couponTypePercent.getMaximumDiscountAmount()
             );
         assertThrows(IllegalArgumentException.class,
             () -> byRateAndMinimumPriceAndMaximumPrice.orElseThrow(IllegalArgumentException::new));

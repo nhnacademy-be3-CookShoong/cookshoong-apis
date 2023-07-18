@@ -29,7 +29,6 @@ import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreReposit
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
 
 import java.math.BigDecimal;
-import java.time.LocalTime;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -81,11 +80,11 @@ class CouponPolicyServiceTest {
 
         SelectPolicyResponseTempDto storeCashPolicy = new SelectPolicyResponseTempDto(
             atomicLong.getAndIncrement(), couponTypeCash, "매장 금액 쿠폰", "매장에서만 쓰입니다.",
-            LocalTime.of(1, 0, 0), 1L, 10L);
+            0, 1L, 10L);
 
         SelectPolicyResponseTempDto storePercentPolicy = new SelectPolicyResponseTempDto(
             atomicLong.getAndIncrement(), couponTypePercent, "매장 금액 쿠폰", "매장에서만 쓰입니다.",
-            LocalTime.of(1, 0, 0), 2L, 9L);
+            0, 2L, 9L);
 
         List<SelectPolicyResponseTempDto> couponStorePolicies = List.of(storeCashPolicy, storePercentPolicy);
 
@@ -110,7 +109,7 @@ class CouponPolicyServiceTest {
                 .isInstanceOfAny(CouponTypeCashVo.class, CouponTypePercentVo.class);
             assertThat(response.getName()).isEqualTo(temp.getName());
             assertThat(response.getDescription()).isEqualTo(temp.getDescription());
-            assertThat(response.getExpirationTime()).isEqualTo(temp.getExpirationTime());
+            assertThat(response.getUsagePeriod()).isEqualTo(temp.getUsagePeriod());
             assertThat(response.getUnclaimedCouponCount()).isEqualTo(temp.getUnclaimedCouponCount());
             assertThat(response.getIssueCouponCount()).isEqualTo(temp.getIssueCouponCount());
         }
@@ -124,11 +123,11 @@ class CouponPolicyServiceTest {
 
         SelectPolicyResponseTempDto merchantCashPolicy = new SelectPolicyResponseTempDto(
             atomicLong.getAndIncrement(), couponTypeCash, "가맹점 금액 쿠폰", "가맹점에서 쓰입니다.",
-            LocalTime.of(1, 0, 0), 3L, 8L);
+            0, 3L, 8L);
 
         SelectPolicyResponseTempDto merchantPercentPolicy = new SelectPolicyResponseTempDto(
             atomicLong.getAndIncrement(), couponTypePercent, "가맹점 금액 쿠폰", "가맹점에서 쓰입니다.",
-            LocalTime.of(1, 0, 0), 4L, 7L);
+            0, 4L, 7L);
 
         List<SelectPolicyResponseTempDto> couponMerchantPolicies = List.of(merchantCashPolicy, merchantPercentPolicy);
 
@@ -153,7 +152,7 @@ class CouponPolicyServiceTest {
                 .isInstanceOfAny(CouponTypeCashVo.class, CouponTypePercentVo.class);
             assertThat(response.getName()).isEqualTo(temp.getName());
             assertThat(response.getDescription()).isEqualTo(temp.getDescription());
-            assertThat(response.getExpirationTime()).isEqualTo(temp.getExpirationTime());
+            assertThat(response.getUsagePeriod()).isEqualTo(temp.getUsagePeriod());
             assertThat(response.getUnclaimedCouponCount()).isEqualTo(temp.getUnclaimedCouponCount());
             assertThat(response.getIssueCouponCount()).isEqualTo(temp.getIssueCouponCount());
         }
@@ -167,11 +166,11 @@ class CouponPolicyServiceTest {
 
         SelectPolicyResponseTempDto allCashPolicy = new SelectPolicyResponseTempDto(
             atomicLong.getAndIncrement(), couponTypeCash, "전체 금액 쿠폰", "어디든",
-            LocalTime.of(1, 0, 0), 5L, 6L);
+            0, 5L, 6L);
 
         SelectPolicyResponseTempDto allPercentPolicy = new SelectPolicyResponseTempDto(
             atomicLong.getAndIncrement(), couponTypePercent, "전체 금액 쿠폰", "어디든",
-            LocalTime.of(1, 0, 0), 6L, 50L);
+            0, 6L, 50L);
 
         List<SelectPolicyResponseTempDto> couponAllPolicies = List.of(allCashPolicy, allPercentPolicy);
 
@@ -196,7 +195,7 @@ class CouponPolicyServiceTest {
                 .isInstanceOfAny(CouponTypeCashVo.class, CouponTypePercentVo.class);
             assertThat(response.getName()).isEqualTo(temp.getName());
             assertThat(response.getDescription()).isEqualTo(temp.getDescription());
-            assertThat(response.getExpirationTime()).isEqualTo(temp.getExpirationTime());
+            assertThat(response.getUsagePeriod()).isEqualTo(temp.getUsagePeriod());
             assertThat(response.getUnclaimedCouponCount()).isEqualTo(temp.getUnclaimedCouponCount());
             assertThat(response.getIssueCouponCount()).isEqualTo(temp.getIssueCouponCount());
         }
@@ -208,11 +207,11 @@ class CouponPolicyServiceTest {
         CreateCashCouponPolicyRequestDto requestDto = te.createUsingDeclared(CreateCashCouponPolicyRequestDto.class);
         ReflectionTestUtils.setField(requestDto, "name", "매장 금액 쿠폰");
         ReflectionTestUtils.setField(requestDto, "description", "해당 매장에서만 쓰입니다.");
-        ReflectionTestUtils.setField(requestDto, "expirationTime", LocalTime.of(1, 0));
+        ReflectionTestUtils.setField(requestDto, "usagePeriod", 30);
         ReflectionTestUtils.setField(requestDto, "discountAmount", 5_000);
-        ReflectionTestUtils.setField(requestDto, "minimumPrice", 10_000);
+        ReflectionTestUtils.setField(requestDto, "minimumOrderPrice", 10_000);
 
-        when(couponTypeCashRepository.findByDiscountAmountAndMinimumPrice(anyInt(), anyInt()))
+        when(couponTypeCashRepository.findByDiscountAmountAndMinimumOrderPrice(anyInt(), anyInt()))
             .thenAnswer(invocation -> Optional.of(
                 new CouponTypeCash(invocation.getArgument(0), invocation.getArgument(1))));
 
@@ -235,11 +234,11 @@ class CouponPolicyServiceTest {
         CreateCashCouponPolicyRequestDto requestDto = te.createUsingDeclared(CreateCashCouponPolicyRequestDto.class);
         ReflectionTestUtils.setField(requestDto, "name", "매장 금액 쿠폰");
         ReflectionTestUtils.setField(requestDto, "description", "해당 매장에서만 쓰입니다.");
-        ReflectionTestUtils.setField(requestDto, "expirationTime", LocalTime.of(1, 0));
+        ReflectionTestUtils.setField(requestDto, "usagePeriod", 30);
         ReflectionTestUtils.setField(requestDto, "discountAmount", 5_000);
-        ReflectionTestUtils.setField(requestDto, "minimumPrice", 10_000);
+        ReflectionTestUtils.setField(requestDto, "minimumOrderPrice", 10_000);
 
-        when(couponTypeCashRepository.findByDiscountAmountAndMinimumPrice(anyInt(), anyInt()))
+        when(couponTypeCashRepository.findByDiscountAmountAndMinimumOrderPrice(anyInt(), anyInt()))
             .thenAnswer(invocation -> Optional.of(
                 new CouponTypeCash(invocation.getArgument(0), invocation.getArgument(1))));
 
@@ -265,13 +264,13 @@ class CouponPolicyServiceTest {
             te.createUsingDeclared(CreatePercentCouponPolicyRequestDto.class);
         ReflectionTestUtils.setField(requestDto, "name", "매장 금액 쿠폰");
         ReflectionTestUtils.setField(requestDto, "description", "해당 매장에서만 쓰입니다.");
-        ReflectionTestUtils.setField(requestDto, "expirationTime", LocalTime.of(1, 0));
-        ReflectionTestUtils.setField(requestDto, "rate", new BigDecimal("10.0"));
-        ReflectionTestUtils.setField(requestDto, "minimumPrice", 10_000);
-        ReflectionTestUtils.setField(requestDto, "maximumPrice", 30_000);
+        ReflectionTestUtils.setField(requestDto, "usagePeriod", 30);
+        ReflectionTestUtils.setField(requestDto, "rate", 10);
+        ReflectionTestUtils.setField(requestDto, "minimumOrderPrice", 10_000);
+        ReflectionTestUtils.setField(requestDto, "maximumDiscountAmount", 30_000);
 
-        when(couponTypePercentRepository.findByRateAndMinimumPriceAndMaximumPrice(
-            any(BigDecimal.class), anyInt(), anyInt()))
+        when(couponTypePercentRepository.findByRateAndMinimumOrderPriceAndMaximumDiscountAmount(
+            anyInt(), anyInt(), anyInt()))
             .thenAnswer(invocation -> Optional.of(new CouponTypePercent(
                 invocation.getArgument(0), invocation.getArgument(1), invocation.getArgument(2))));
 
@@ -295,11 +294,11 @@ class CouponPolicyServiceTest {
             te.createUsingDeclared(CreateCashCouponPolicyRequestDto.class);
         ReflectionTestUtils.setField(requestDto, "name", "가맹점 금액 쿠폰");
         ReflectionTestUtils.setField(requestDto, "description", "가맹점 매장에서 쓰입니다.");
-        ReflectionTestUtils.setField(requestDto, "expirationTime", LocalTime.of(1, 0));
+        ReflectionTestUtils.setField(requestDto, "usagePeriod", 30);
         ReflectionTestUtils.setField(requestDto, "discountAmount", 5_000);
-        ReflectionTestUtils.setField(requestDto, "minimumPrice", 10_000);
+        ReflectionTestUtils.setField(requestDto, "minimumOrderPrice", 10_000);
 
-        when(couponTypeCashRepository.findByDiscountAmountAndMinimumPrice(anyInt(), anyInt()))
+        when(couponTypeCashRepository.findByDiscountAmountAndMinimumOrderPrice(anyInt(), anyInt()))
             .thenAnswer(invocation -> Optional.of(
                 new CouponTypeCash(invocation.getArgument(0), invocation.getArgument(1))));
 
@@ -321,11 +320,11 @@ class CouponPolicyServiceTest {
             te.createUsingDeclared(CreateCashCouponPolicyRequestDto.class);
         ReflectionTestUtils.setField(requestDto, "name", "가맹점 금액 쿠폰");
         ReflectionTestUtils.setField(requestDto, "description", "가맹점 매장에서 쓰입니다.");
-        ReflectionTestUtils.setField(requestDto, "expirationTime", LocalTime.of(1, 0));
+        ReflectionTestUtils.setField(requestDto, "usagePeriod", 30);
         ReflectionTestUtils.setField(requestDto, "discountAmount", 5_000);
-        ReflectionTestUtils.setField(requestDto, "minimumPrice", 10_000);
+        ReflectionTestUtils.setField(requestDto, "minimumOrderPrice", 10_000);
 
-        when(couponTypeCashRepository.findByDiscountAmountAndMinimumPrice(anyInt(), anyInt()))
+        when(couponTypeCashRepository.findByDiscountAmountAndMinimumOrderPrice(anyInt(), anyInt()))
             .thenAnswer(invocation -> Optional.of(
                 new CouponTypeCash(invocation.getArgument(0), invocation.getArgument(1))));
 
@@ -349,13 +348,13 @@ class CouponPolicyServiceTest {
             te.createUsingDeclared(CreatePercentCouponPolicyRequestDto.class);
         ReflectionTestUtils.setField(requestDto, "name", "가맹점 금액 쿠폰");
         ReflectionTestUtils.setField(requestDto, "description", "가맹점 매장에서 쓰입니다.");
-        ReflectionTestUtils.setField(requestDto, "expirationTime", LocalTime.of(1, 0));
-        ReflectionTestUtils.setField(requestDto, "rate", new BigDecimal("10.0"));
-        ReflectionTestUtils.setField(requestDto, "minimumPrice", 10_000);
-        ReflectionTestUtils.setField(requestDto, "maximumPrice", 30_000);
+        ReflectionTestUtils.setField(requestDto, "usagePeriod", 30);
+        ReflectionTestUtils.setField(requestDto, "rate", 10);
+        ReflectionTestUtils.setField(requestDto, "minimumOrderPrice", 10_000);
+        ReflectionTestUtils.setField(requestDto, "maximumDiscountAmount", 30_000);
 
-        when(couponTypePercentRepository.findByRateAndMinimumPriceAndMaximumPrice(
-            any(BigDecimal.class), anyInt(), anyInt()))
+        when(couponTypePercentRepository.findByRateAndMinimumOrderPriceAndMaximumDiscountAmount(
+            anyInt(), anyInt(), anyInt()))
             .thenAnswer(invocation -> Optional.of(new CouponTypePercent(
                 invocation.getArgument(0), invocation.getArgument(1), invocation.getArgument(2))));
 
@@ -376,11 +375,11 @@ class CouponPolicyServiceTest {
             te.createUsingDeclared(CreateCashCouponPolicyRequestDto.class);
         ReflectionTestUtils.setField(requestDto, "name", "전체 금액 쿠폰");
         ReflectionTestUtils.setField(requestDto, "description", "모든 매장에서 쓰입니다.");
-        ReflectionTestUtils.setField(requestDto, "expirationTime", LocalTime.of(1, 0));
+        ReflectionTestUtils.setField(requestDto, "usagePeriod", 30);
         ReflectionTestUtils.setField(requestDto, "discountAmount", 5_000);
-        ReflectionTestUtils.setField(requestDto, "minimumPrice", 10_000);
+        ReflectionTestUtils.setField(requestDto, "minimumOrderPrice", 10_000);
 
-        when(couponTypeCashRepository.findByDiscountAmountAndMinimumPrice(anyInt(), anyInt()))
+        when(couponTypeCashRepository.findByDiscountAmountAndMinimumOrderPrice(anyInt(), anyInt()))
             .thenAnswer(invocation -> Optional.of(
                 new CouponTypeCash(invocation.getArgument(0), invocation.getArgument(1))));
 
@@ -398,13 +397,13 @@ class CouponPolicyServiceTest {
             te.createUsingDeclared(CreatePercentCouponPolicyRequestDto.class);
         ReflectionTestUtils.setField(requestDto, "name", "전체 포인트 쿠폰");
         ReflectionTestUtils.setField(requestDto, "description", "모든 매장에서 쓰입니다.");
-        ReflectionTestUtils.setField(requestDto, "expirationTime", LocalTime.of(1, 0));
-        ReflectionTestUtils.setField(requestDto, "rate", new BigDecimal("10.0"));
-        ReflectionTestUtils.setField(requestDto, "minimumPrice", 10_000);
-        ReflectionTestUtils.setField(requestDto, "maximumPrice", 30_000);
+        ReflectionTestUtils.setField(requestDto, "usagePeriod", 30);
+        ReflectionTestUtils.setField(requestDto, "rate", 10);
+        ReflectionTestUtils.setField(requestDto, "minimumOrderPrice", 10_000);
+        ReflectionTestUtils.setField(requestDto, "maximumDiscountAmount", 30_000);
 
-        when(couponTypePercentRepository.findByRateAndMinimumPriceAndMaximumPrice(
-            any(BigDecimal.class), anyInt(), anyInt()))
+        when(couponTypePercentRepository.findByRateAndMinimumOrderPriceAndMaximumDiscountAmount(
+            anyInt(), anyInt(), anyInt()))
             .thenAnswer(invocation -> Optional.of(new CouponTypePercent(
                 invocation.getArgument(0), invocation.getArgument(1), invocation.getArgument(2))));
 
@@ -422,11 +421,11 @@ class CouponPolicyServiceTest {
             te.createUsingDeclared(CreateCashCouponPolicyRequestDto.class);
         ReflectionTestUtils.setField(requestDto, "name", "전체 금액 쿠폰");
         ReflectionTestUtils.setField(requestDto, "description", "모든 매장에서 쓰입니다.");
-        ReflectionTestUtils.setField(requestDto, "expirationTime", LocalTime.of(1, 0));
+        ReflectionTestUtils.setField(requestDto, "usagePeriod", 30);
         ReflectionTestUtils.setField(requestDto, "discountAmount", 5_000);
-        ReflectionTestUtils.setField(requestDto, "minimumPrice", 10_000);
+        ReflectionTestUtils.setField(requestDto, "minimumOrderPrice", 10_000);
 
-        when(couponTypeCashRepository.findByDiscountAmountAndMinimumPrice(anyInt(), anyInt()))
+        when(couponTypeCashRepository.findByDiscountAmountAndMinimumOrderPrice(anyInt(), anyInt()))
             .thenReturn(Optional.empty());
 
         when(couponTypeCashRepository.save(any(CouponTypeCash.class)))
@@ -446,13 +445,13 @@ class CouponPolicyServiceTest {
             te.createUsingDeclared(CreatePercentCouponPolicyRequestDto.class);
         ReflectionTestUtils.setField(requestDto, "name", "전체 포인트 쿠폰");
         ReflectionTestUtils.setField(requestDto, "description", "모든 매장에서 쓰입니다.");
-        ReflectionTestUtils.setField(requestDto, "expirationTime", LocalTime.of(1, 0));
-        ReflectionTestUtils.setField(requestDto, "rate", new BigDecimal("10.0"));
-        ReflectionTestUtils.setField(requestDto, "minimumPrice", 10_000);
-        ReflectionTestUtils.setField(requestDto, "maximumPrice", 30_000);
+        ReflectionTestUtils.setField(requestDto, "usagePeriod", 30);
+        ReflectionTestUtils.setField(requestDto, "rate", 10);
+        ReflectionTestUtils.setField(requestDto, "minimumOrderPrice", 10_000);
+        ReflectionTestUtils.setField(requestDto, "maximumDiscountAmount", 30_000);
 
-        when(couponTypePercentRepository.findByRateAndMinimumPriceAndMaximumPrice(
-            any(BigDecimal.class), anyInt(), anyInt()))
+        when(couponTypePercentRepository.findByRateAndMinimumOrderPriceAndMaximumDiscountAmount(
+            anyInt(), anyInt(), anyInt()))
             .thenReturn(Optional.empty());
 
         when(couponTypePercentRepository.save(any(CouponTypePercent.class)))
@@ -472,13 +471,13 @@ class CouponPolicyServiceTest {
             te.createUsingDeclared(CreatePercentCouponPolicyRequestDto.class);
         ReflectionTestUtils.setField(requestDto, "name", "전체 포인트 쿠폰");
         ReflectionTestUtils.setField(requestDto, "description", "모든 매장에서 쓰입니다.");
-        ReflectionTestUtils.setField(requestDto, "expirationTime", LocalTime.of(1, 0));
-        ReflectionTestUtils.setField(requestDto, "rate", new BigDecimal("10.0"));
-        ReflectionTestUtils.setField(requestDto, "minimumPrice", 10_000);
-        ReflectionTestUtils.setField(requestDto, "maximumPrice", 30_000);
+        ReflectionTestUtils.setField(requestDto, "usagePeriod", 30);
+        ReflectionTestUtils.setField(requestDto, "rate", 10);
+        ReflectionTestUtils.setField(requestDto, "minimumOrderPrice", 10_000);
+        ReflectionTestUtils.setField(requestDto, "maximumDiscountAmount", 30_000);
 
-        when(couponTypePercentRepository.findByRateAndMinimumPriceAndMaximumPrice(
-            any(BigDecimal.class), anyInt(), anyInt()))
+        when(couponTypePercentRepository.findByRateAndMinimumOrderPriceAndMaximumDiscountAmount(
+            anyInt(), anyInt(), anyInt()))
             .thenReturn(Optional.empty());
 
         when(couponTypePercentRepository.save(any(CouponTypePercent.class)))

@@ -2,7 +2,6 @@ package store.cookshoong.www.cookshoongbackend.coupon.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalTime;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
@@ -71,19 +70,19 @@ class CouponPolicyRepositoryImplTest {
         CouponUsageAll couponUsageAll = em.persist(new CouponUsageAll());
 
         storeCashCouponPolicy = new CouponPolicy(couponTypeCash, couponUsageStore, "매장 금액 쿠폰",
-            "10000원 이상 주문 시 1000원 할인", LocalTime.of(1, 0, 0));
+            "10000원 이상 주문 시 1000원 할인", 30);
         storePercentCouponPolicy = new CouponPolicy(couponTypePercent, couponUsageStore,
             "매장 퍼센트 쿠폰", "10000원 이상 주문 시 3%, 최대 1000원 할인",
-            LocalTime.of(1, 0, 0));
+            30);
         merchantCashCouponPolicy = new CouponPolicy(couponTypeCash, couponUsageMerchant,
-            "가맹점 금액 쿠폰", "10000원 이상 주문 시 1000원 할인", LocalTime.of(1, 0, 0));
+            "가맹점 금액 쿠폰", "10000원 이상 주문 시 1000원 할인", 30);
         merchantPercentCouponPolicy = new CouponPolicy(couponTypePercent, couponUsageMerchant,
             "가맹점 퍼센트 쿠폰", "10000원 이상 주문 시 3%, 최대 1000원 할인",
-            LocalTime.of(1, 0, 0));
+            30);
         allCashCouponPolicy = new CouponPolicy(couponTypeCash, couponUsageAll, "전체 금액 쿠폰",
-            "10000원 이상 주문 시 1000원 할인", LocalTime.of(1, 0, 0));
+            "10000원 이상 주문 시 1000원 할인", 30);
         allPercentCouponPolicy = new CouponPolicy(couponTypePercent, couponUsageAll, "전체 퍼센트 쿠폰",
-            "10000원 이상 주문 시 3%, 최대 1000원 할인", LocalTime.of(1, 0, 0));
+            "10000원 이상 주문 시 3%, 최대 1000원 할인", 30);
 
         em.persist(storeCashCouponPolicy);
         em.persist(storePercentCouponPolicy);
@@ -126,7 +125,7 @@ class CouponPolicyRepositoryImplTest {
             assertThat(temp.getCouponType().getId()).isEqualTo(policy.getCouponType().getId());
             assertThat(temp.getName()).isEqualTo(policy.getName());
             assertThat(temp.getDescription()).isEqualTo(policy.getDescription());
-            assertThat(temp.getExpirationTime()).isEqualTo(policy.getExpirationTime());
+            assertThat(temp.getUsagePeriod()).isEqualTo(policy.getUsagePeriod());
         }
     }
 
@@ -150,7 +149,7 @@ class CouponPolicyRepositoryImplTest {
             assertThat(temp.getCouponType().getId()).isEqualTo(policy.getCouponType().getId());
             assertThat(temp.getName()).isEqualTo(policy.getName());
             assertThat(temp.getDescription()).isEqualTo(policy.getDescription());
-            assertThat(temp.getExpirationTime()).isEqualTo(policy.getExpirationTime());
+            assertThat(temp.getUsagePeriod()).isEqualTo(policy.getUsagePeriod());
         }
     }
 
@@ -174,7 +173,7 @@ class CouponPolicyRepositoryImplTest {
             assertThat(temp.getCouponType().getId()).isEqualTo(policy.getCouponType().getId());
             assertThat(temp.getName()).isEqualTo(policy.getName());
             assertThat(temp.getDescription()).isEqualTo(policy.getDescription());
-            assertThat(temp.getExpirationTime()).isEqualTo(policy.getExpirationTime());
+            assertThat(temp.getUsagePeriod()).isEqualTo(policy.getUsagePeriod());
         }
     }
 
