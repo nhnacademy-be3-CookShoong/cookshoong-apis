@@ -94,7 +94,7 @@ public class TestEntity {
     }
 
     public CouponTypePercent getCouponTypePercent_3_1000_10000() {
-        return new CouponTypePercent(new BigDecimal("3"), 1_000, 10_000);
+        return new CouponTypePercent(3, 1_000, 10_000);
     }
 
     public CouponTypeCash getCouponTypeCash_1000_10000() {
@@ -114,8 +114,7 @@ public class TestEntity {
     }
 
     public CouponPolicy getCouponPolicy(CouponType couponType, CouponUsage couponUsage) {
-        return new CouponPolicy(couponType, couponUsage, "testCoupon", "just Test",
-            LocalTime.of(1, 0, 0));
+        return new CouponPolicy(couponType, couponUsage, "testCoupon", "just Test", 30);
     }
 
     public IssueCoupon getIssueCoupon(CouponPolicy couponPolicy) {
