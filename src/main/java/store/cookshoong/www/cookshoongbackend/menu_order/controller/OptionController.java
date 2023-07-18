@@ -38,7 +38,7 @@ public class OptionController {
      * @return 201 response
      */
     @PostMapping("/option-group/{optionGroupId}/option")
-    public ResponseEntity<Void> postOption(@PathVariable("optionGroupId") Integer optionGroupId,
+    public ResponseEntity<Void> postOption(@PathVariable("optionGroupId") Long optionGroupId,
                                          @RequestBody @Valid CreateOptionRequestDto createOptionRequestDto,
                                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {

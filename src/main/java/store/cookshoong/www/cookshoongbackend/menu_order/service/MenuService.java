@@ -33,7 +33,7 @@ public class MenuService {
      * 메뉴 등록 서비스.
      *
      * @param storeId              매장 아이디
-     * @param createMenuRequestDto 메뉴 등록을 위한 정보
+     * @param createMenuRequestDto 메뉴 등록 Dto
      */
     public void createMenu(Long storeId, CreateMenuRequestDto createMenuRequestDto) {
         Store store = storeRepository.findById(storeId)

@@ -5,10 +5,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.QMenu;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.QMenuStatus;
-import store.cookshoong.www.cookshoongbackend.menu_order.entity.menugroup.QMenuGroup;
-import store.cookshoong.www.cookshoongbackend.menu_order.entity.menugroup.QMenuHasMenuGroup;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.response.QSelectMenuResponseDto;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectMenuResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.entity.QStore;
 
 /**
  * 메뉴 커스텀 레포지토리 구현.
@@ -26,21 +25,18 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
     @Override
     public List<SelectMenuResponseDto> lookupMenus(Long storeId) {
         QMenu menu = QMenu.menu;
-        QMenuHasMenuGroup menuHasMenuGroup = QMenuHasMenuGroup.menuHasMenuGroup;
-        QMenuGroup menuGroup = QMenuGroup.menuGroup;
-        QMenuStatus status = QMenuStatus.menuStatus;
+        QMenuStatus menuStatus = QMenuStatus.menuStatus;
+        QStore store = QStore.store;
 
         return jpaQueryFactory
             .select(new QSelectMenuResponseDto(
-                menu.id, menu.name, menu.price, menu.description,
-                menu.image, menu.cookingTime, menu.earningRate,
-                status.menuStatusCode, menuHasMenuGroup.menuSequence,
-                menuGroup.id))
+                menu.id, menuStatus.menuStatusCode, store.id,
+                menu.name, menu.price, menu.description,
+                menu.image, menu.cookingTime, menu.earningRate))
             .from(menu)
-            .innerJoin(menu.menuStatusCode, status)
-            .innerJoin(menu.menuHasMenuGroups, menuHasMenuGroup)
-            .innerJoin(menuHasMenuGroup.menuGroup, menuGroup)
-            .where(menu.store.id.eq(storeId))
+            .innerJoin(menu.menuStatusCode, menuStatus)
+            .innerJoin(menu.store, store)
+            .where(store.id.eq(storeId))
             .fetch();
     }
 }

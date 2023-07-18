@@ -7,6 +7,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.entity.option.QOption;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.optiongroup.QOptionGroup;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.response.QSelectOptionResponseDto;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectOptionResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.entity.QStore;
 
 /**
  * 옵션 커스텀 레포지토리 구현.
@@ -25,14 +26,17 @@ public class OptionRepositoryImpl implements OptionRepositoryCustom {
     public List<SelectOptionResponseDto> lookupOptions(Long storeId) {
         QOption option = QOption.option;
         QOptionGroup optionGroup = QOptionGroup.optionGroup;
+        QStore store = QStore.store;
 
         return jpaQueryFactory
             .select(new QSelectOptionResponseDto(
-                option.id, option.name, option.price, option.isDeleted,
-                option.optionSequence, optionGroup.id))
+                option.id, optionGroup.id, option.name,
+                option.price, option.isDeleted,
+                option.optionSequence))
             .from(option)
             .innerJoin(option.optionGroup, optionGroup)
-            .where(optionGroup.store.id.eq(storeId))
+            .innerJoin(optionGroup.store, store)
+            .where(store.id.eq(storeId))
             .fetch();
     }
 }

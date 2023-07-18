@@ -29,9 +29,9 @@ public class OptionService {
      * 옵션 등록 서비스.
      *
      * @param optionGroupId          옵션 그룹 아이디
-     * @param createOptionRequestDto 옵션 등록을 위한 정보
+     * @param createOptionRequestDto 옵션 등록 Dto
      */
-    public void createOption(Integer optionGroupId, CreateOptionRequestDto createOptionRequestDto) {
+    public void createOption(Long optionGroupId, CreateOptionRequestDto createOptionRequestDto) {
         OptionGroup optionGroup = optionGroupRepository.findById(optionGroupId)
             .orElseThrow(OptionGroupNotFoundException::new);
         Option option =

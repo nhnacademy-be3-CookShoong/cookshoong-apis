@@ -54,7 +54,7 @@ public class MenuController {
     /**
      * 메뉴 조회 컨트롤러.
      *
-     * @param storeId 주소 아이디
+     * @param storeId 매장 아이디
      * @return 200 response, 메뉴리스트
      */
     @GetMapping("/menu")
