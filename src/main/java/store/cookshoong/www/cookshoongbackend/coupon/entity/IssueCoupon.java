@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.coupon.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import javax.persistence.Column;
@@ -45,8 +46,8 @@ public class IssueCoupon {
     @Column(name = "issue_at", nullable = false)
     private LocalDateTime issueAt;
 
-    @Column(name = "expiration_at")
-    private LocalDateTime expirationAt;
+    @Column(name = "expiration_date")
+    private LocalDate expirationDate;
 
     /**
      * 쿠폰 발행 생성자.
@@ -66,9 +67,7 @@ public class IssueCoupon {
      */
     public void provideToUser(Account account) {
         this.account = account;
-        this.expirationAt = LocalDateTime.now()
-            .plusHours(couponPolicy.getExpirationTime().getHour())
-            .plusMinutes(couponPolicy.getExpirationTime().getMinute())
-            .plusSeconds(couponPolicy.getExpirationTime().getSecond());
+        this.expirationDate = LocalDate.now()
+            .plusDays(getCouponPolicy().getUsagePeriod());
     }
 }
