@@ -1,6 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.address.entity;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
@@ -46,6 +47,9 @@ public class AccountAddress {
     @Column(name = "alias", length = 10, nullable = false)
     private String alias;
 
+    @Column(name = "renewal_at", nullable = false)
+    private LocalDateTime renewalAt;
+
     /**
      * 회원과 주소를 연결하는 pk.
      *
@@ -63,5 +67,7 @@ public class AccountAddress {
 
         private Long addressId;
     }
-
+    public void modifyRenewalAt(){
+        this.renewalAt = LocalDateTime.now();
+    }
 }
