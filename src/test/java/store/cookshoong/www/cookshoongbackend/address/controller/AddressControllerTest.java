@@ -80,6 +80,7 @@ class AddressControllerTest {
             .andExpect(status().isCreated())
             .andDo(document("post-create-account-address",
                 ResourceSnippetParameters.builder()
+                    .pathParameters(parameterWithName("accountId").description("회원 아이디"))
                     .requestSchema(schema("CreateAccountAddressRequest")),
                 requestFields(
                     fieldWithPath("alias").description("별칭"),
@@ -115,6 +116,8 @@ class AddressControllerTest {
             .andExpect(status().isOk())
             .andDo(document("patch-modify-account-detail-address",
                 ResourceSnippetParameters.builder()
+                    .pathParameters(parameterWithName("accountId").description("회원 아이디"))
+                    .pathParameters(parameterWithName("addressId").description("주소 아이디"))
                     .requestSchema(schema("ModifyAccountAddressRequest")),
                 requestFields(
                     fieldWithPath("detailPlace").description("변경된 상세 주소")
@@ -163,6 +166,9 @@ class AddressControllerTest {
             .andExpect(jsonPath("$[0].alias").value(responseDto.getAlias()))
             .andExpect(jsonPath("$[0].mainPlace").value(responseDto.getMainPlace()))
             .andDo(document("get-account-address-list",
+                ResourceSnippetParameters.builder()
+                    .pathParameters(parameterWithName("accountId").description("회원 아이디"))
+                    .requestSchema(schema("AccountAddressList")),
                 responseFields(
                     fieldWithPath("[].id").description("주소 아이디"),
                     fieldWithPath("[].alias").description("별칭"),
@@ -171,21 +177,24 @@ class AddressControllerTest {
     }
 
     @Test
-    @DisplayName("회원이 최근에 등록한 주소와 좌표 조회")
-    void getAccountAddressRecentRegistration() throws Exception {
+    @DisplayName("회원이 최근에 갱신한 주소와 좌표 조회")
+    void getAccountAddressRenewalAt() throws Exception {
 
         AddressResponseDto responseDto = new AddressResponseDto(1L, "경기도 성남시 분당구 대왕판교로645번길 16", "NHN 플레이뮤지엄",
             new BigDecimal("37.40096549041187"), new BigDecimal("127.1040493631922"));
 
         when(addressService.selectAccountAddressRenewalAt(1L)).thenReturn(responseDto);
 
-        mockMvc.perform(get("/api/addresses/{accountId}/recent-registration",  1L))
+        mockMvc.perform(get("/api/addresses/{accountId}/renewal-at",  1L))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.mainPlace").value(responseDto.getMainPlace()))
             .andExpect(jsonPath("$.detailPlace").value(responseDto.getDetailPlace()))
             .andExpect(jsonPath("$.latitude").value(responseDto.getLatitude()))
             .andExpect(jsonPath("$.longitude").value(responseDto.getLongitude()))
             .andDo(document("get-account-address",
+                ResourceSnippetParameters.builder()
+                    .pathParameters(parameterWithName("accountId").description("회원 아이디"))
+                    .requestSchema(schema("AccountAddressRenewalAt")),
                 responseFields(
                     fieldWithPath("id").description("주소 아아디"),
                     fieldWithPath("mainPlace").description("메인 주소"),
@@ -211,6 +220,9 @@ class AddressControllerTest {
             .andExpect(jsonPath("$.latitude").value(responseDto.getLatitude()))
             .andExpect(jsonPath("$.longitude").value(responseDto.getLongitude()))
             .andDo(document("get-account-address",
+                ResourceSnippetParameters.builder()
+                    .pathParameters(parameterWithName("accountId").description("회원 아이디"))
+                    .requestSchema(schema("AccountChoiceAddress")),
                 responseFields(
                     fieldWithPath("id").description("주소 아이디"),
                     fieldWithPath("mainPlace").description("메인 주소"),
@@ -226,6 +238,10 @@ class AddressControllerTest {
 
         mockMvc.perform(delete("/api/addresses/{accountId}/{addressId}", 1L, 1L))
             .andExpect(status().isNoContent())
-            .andDo(document("delete-account-address"));
+            .andDo(document("delete-account-address",
+                ResourceSnippetParameters.builder()
+                    .pathParameters(parameterWithName("accountId").description("회원 아이디"))
+                    .pathParameters(parameterWithName("addressId").description("주소 아이디"))
+                    .requestSchema(schema("DeleteAccountAddress"))));
     }
 }
