@@ -12,6 +12,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypePercent;
  * @since 2023.07.04
  */
 public interface CouponTypePercentRepository extends JpaRepository<CouponTypePercent, Integer> {
-    Optional<CouponTypePercent> findByRateAndMinimumPriceAndMaximumPrice(BigDecimal rate, int minimumPrice,
-                                                                         int maximumPrice);
+    Optional<CouponTypePercent> findByRateAndMinimumOrderPriceAndMaximumDiscountAmount(int rate,
+                                                                                       int minimumOrderPrice,
+                                                                                       int maximumDiscountAmount);
 }
