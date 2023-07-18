@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -94,7 +95,7 @@ class AddressServiceTest {
             new BigDecimal("23.2323223"), new BigDecimal("24.12312312"));
 
         accountAddress = new AccountAddress(new AccountAddress.Pk(testAccount.getId(), testAddress.getId()),
-            testAccount, testAddress, "alias");
+            testAccount, testAddress, "alias", LocalDateTime.now());
     }
 
     @Test

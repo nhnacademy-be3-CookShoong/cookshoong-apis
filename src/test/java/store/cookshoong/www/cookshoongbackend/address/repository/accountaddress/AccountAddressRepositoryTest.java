@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
@@ -66,7 +67,8 @@ class AccountAddressRepositoryTest {
             new AccountAddress.Pk(account.getId(), address.getId()),
             account,
             address,
-            "alias"
+            "alias",
+            LocalDateTime.now()
         );
 
         AccountAddress actual = accountAddressRepository.save(accountAddress);
@@ -100,7 +102,8 @@ class AccountAddressRepositoryTest {
             new AccountAddress.Pk(account.getId(), address.getId()),
             account,
             address,
-            "기본0");
+            "기본0",
+            LocalDateTime.now());
         accountAddressRepository.save(accountAddress);
 
 
@@ -132,12 +135,13 @@ class AccountAddressRepositoryTest {
         Address address = new Address("광주 광역시 서석동0", "조선대학교0",
             new BigDecimal("23.5757577000000"), new BigDecimal("24.8898989000000"));
         em.persist(address);
-
         AccountAddress accountAddress = new AccountAddress(
             new AccountAddress.Pk(account.getId(), address.getId()),
             account,
             address,
-            "기본0");
+            "기본0",
+            LocalDateTime.now()
+            );
         accountAddressRepository.save(accountAddress);
 
         Address address1 = new Address("광주 광역시 서석동0", "조선대학교0",
@@ -148,7 +152,9 @@ class AccountAddressRepositoryTest {
             new AccountAddress.Pk(account.getId(), address.getId()),
             account,
             address,
-            "기본0");
+            "기본0",
+            LocalDateTime.now()
+            );
         accountAddressRepository.save(accountAddress1);
 
 
@@ -187,7 +193,8 @@ class AccountAddressRepositoryTest {
             new AccountAddress.Pk(account.getId(), address1.getId()),
             account,
             address1,
-            "기본0");
+            "기본0",
+            LocalDateTime.now());
         accountAddressRepository.save(accountAddress1);
 
 
@@ -228,7 +235,8 @@ class AccountAddressRepositoryTest {
             new AccountAddress.Pk(account.getId(), address.getId()),
             account,
             address,
-            "기본0");
+            "기본0",
+            LocalDateTime.now());
         accountAddressRepository.save(accountAddress);
 
 
