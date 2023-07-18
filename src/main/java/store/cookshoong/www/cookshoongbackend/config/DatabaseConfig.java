@@ -1,8 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import javax.sql.DataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Value;
