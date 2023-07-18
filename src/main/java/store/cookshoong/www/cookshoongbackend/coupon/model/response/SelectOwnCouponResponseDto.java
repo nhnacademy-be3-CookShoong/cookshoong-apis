@@ -1,6 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.coupon.model.response;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,6 +20,6 @@ public class SelectOwnCouponResponseDto {
     private String couponUsageName;
     private String name;
     private String description;
-    private LocalDateTime expirationAt;
+    private LocalDate expirationDate;
     private String logTypeDescription;
 }

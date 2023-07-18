@@ -1,7 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.coupon.model.temp;
 
 import com.querydsl.core.annotations.QueryProjection;
-import java.time.LocalTime;
 import lombok.Getter;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponType;
 
@@ -18,7 +17,7 @@ public class SelectPolicyResponseTempDto {
     private final CouponType couponType;
     private final String name;
     private final String description;
-    private final LocalTime expirationTime;
+    private final Integer usagePeriod;
     private final Long unclaimedCouponCount;
     private final Long issueCouponCount;
 
@@ -29,19 +28,18 @@ public class SelectPolicyResponseTempDto {
      * @param couponType           쿠폰 타입
      * @param name                 쿠폰 이름
      * @param description          쿠폰 설명
-     * @param expirationTime       쿠폰 만료시간
+     * @param usagePeriod          쿠폰 만료시간
      * @param unclaimedCouponCount 발급되었으나 유저가 지니고 있지 않은 쿠폰 개수
      * @param issueCouponCount     발급된 전체 쿠폰 개수
      */
     @QueryProjection
-
     public SelectPolicyResponseTempDto(Long id, CouponType couponType, String name, String description,
-                                       LocalTime expirationTime, Long unclaimedCouponCount, Long issueCouponCount) {
+                                       Integer usagePeriod, Long unclaimedCouponCount, Long issueCouponCount) {
         this.id = id;
         this.couponType = couponType;
         this.name = name;
         this.description = description;
-        this.expirationTime = expirationTime;
+        this.usagePeriod = usagePeriod;
         this.unclaimedCouponCount = unclaimedCouponCount;
         this.issueCouponCount = issueCouponCount;
     }
