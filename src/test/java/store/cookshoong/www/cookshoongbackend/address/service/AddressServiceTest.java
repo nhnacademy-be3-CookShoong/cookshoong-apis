@@ -163,7 +163,6 @@ class AddressServiceTest {
         addressService.updateAccountDetailAddress(testAccount.getId(), testAddress.getId(), requestDto);
 
         verify(accountAddressRepository, times(1)).findById(pk);
-        verify(accountAddressRepository, times(1)).save(accountAddress);
 
         assertEquals(requestDto.getDetailPlace(), accountAddress.getAddress().getDetailPlace());
     }
@@ -183,7 +182,33 @@ class AddressServiceTest {
             () -> addressService.updateAccountDetailAddress(testAccount.getId(), testAddress.getId(), requestDto));
 
         verify(accountAddressRepository, times(1)).findById(pk);
-        verify(accountAddressRepository, never()).save(accountAddress);
+    }
+
+    @Test
+    @DisplayName("회원이 선택한 주소에 대해 갱신 날짜를 업데이트")
+    void updateSelectAccountAddressRenewalAt() {
+
+        AccountAddress.Pk pk = new AccountAddress.Pk(testAccount.getId(), testAddress.getId());
+
+        when(accountAddressRepository.findById(pk)).thenReturn(Optional.of(accountAddress));
+
+        addressService.updateSelectAccountAddressRenewalAt(testAccount.getId(), testAddress.getId());
+
+        verify(accountAddressRepository, times(1)).findById(pk);
+    }
+
+    @Test
+    @DisplayName("회원이 선택한 주소에 대해 갱신 날짜를 업데이트 실패: 해당 주소가 존재하지 않을 때")
+    void updateSelectAccountAddressRenewalAt_NotFound_Address_Throw() {
+
+        AccountAddress.Pk pk = new AccountAddress.Pk(testAccount.getId(), testAddress.getId());
+
+        when(accountAddressRepository.findById(pk)).thenReturn(Optional.empty());
+
+        assertThrows(AccountAddressNotFoundException.class,
+            () -> addressService.updateSelectAccountAddressRenewalAt(testAccount.getId(), testAddress.getId()));
+
+        verify(accountAddressRepository, times(1)).findById(pk);
     }
 
 
@@ -219,7 +244,7 @@ class AddressServiceTest {
     }
 
     @Test
-    @DisplayName("회원이 최근에 등록한 주소와 좌표 조회")
+    @DisplayName("회원이 최근에 갱신한 주소와 좌표 조회")
     void selectAccountAddressRecentRegistration() {
 
         AddressResponseDto expectedAddress = new AddressResponseDto(1L, "Main Place", "Detail Place",
@@ -228,14 +253,14 @@ class AddressServiceTest {
             new BigDecimal("23.23233323"), new BigDecimal("23.232333255"));
 
         when(accountRepository.findById(testAccount.getId())).thenReturn(Optional.of(testAccount));
-        when(accountAddressRepository.lookupByAccountIdAddressRecentRegistration(testAccount.getId()))
+        when(accountAddressRepository.lookupByAccountAddressRenewalAt(testAccount.getId()))
             .thenReturn(expectedAddress, expectedAddress1);
 
-        AddressResponseDto actual = addressService.selectAccountAddressRecentRegistration(testAccount.getId());
+        AddressResponseDto actual = addressService.selectAccountAddressRenewalAt(testAccount.getId());
 
         assertEquals(expectedAddress, actual);
         verify(accountRepository, times(1)).findById(testAccount.getId());
-        verify(accountAddressRepository, times(1)).lookupByAccountIdAddressRecentRegistration(testAccount.getId());
+        verify(accountAddressRepository, times(1)).lookupByAccountAddressRenewalAt(testAccount.getId());
 
         assertEquals(actual.getMainPlace(), expectedAddress1.getMainPlace());
         assertEquals(actual.getDetailPlace(), expectedAddress1.getDetailPlace());
@@ -244,13 +269,13 @@ class AddressServiceTest {
     }
 
     @Test
-    @DisplayName("회원이 최근에 등록한 주소와 좌표 조회 실패: 회원이 존재하지 않을 때")
+    @DisplayName("회원이 최근에 갱신한 주소와 좌표 조회 실패: 회원이 존재하지 않을 때")
     void selectAccountAddress_NotFound_Account_Throw() {
 
         when(accountRepository.findById(testAccount.getId())).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class,
-            () -> addressService.selectAccountAddressRecentRegistration(testAccount.getId()));
+            () -> addressService.selectAccountAddressRenewalAt(testAccount.getId()));
 
         verify(accountRepository, times(1)).findById(testAccount.getId());
     }
