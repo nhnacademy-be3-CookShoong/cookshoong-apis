@@ -25,7 +25,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.service.MenuGroupServic
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/stores/{storeId}")
+@RequestMapping("/api")
 public class MenuGroupController {
     private final MenuGroupService menuGroupService;
 
@@ -37,7 +37,7 @@ public class MenuGroupController {
      * @param bindingResult             validation
      * @return 201 response
      */
-    @PostMapping("/menu-group")
+    @PostMapping("/stores/{storeId}/menu-group")
     public ResponseEntity<Void> postMenuGroup(@PathVariable("storeId") Long storeId,
                                          @RequestBody @Valid CreateMenuGroupRequestDto createMenuGroupRequestDto,
                                          BindingResult bindingResult) {
@@ -52,14 +52,26 @@ public class MenuGroupController {
     }
 
     /**
-     * 메뉴 그룹 조회 컨트롤러.
+     * 메뉴 그룹 리스트 조회 컨트롤러.
      *
      * @param storeId 매장 아이디
      * @return 200 response, 메뉴 그룹 리스트
      */
-    @GetMapping("/menu-group")
+    @GetMapping("/stores/{storeId}/menu-group")
     public ResponseEntity<List<SelectMenuGroupResponseDto>> getMenuGroups(@PathVariable("storeId") Long storeId) {
         List<SelectMenuGroupResponseDto> menuGroups = menuGroupService.selectMenuGroups(storeId);
         return ResponseEntity.ok(menuGroups);
+    }
+
+    /**
+     * 메뉴 그룹 조회 컨트롤러.
+     *
+     * @param menuGroupId 메뉴 그룹 아이디
+     * @return 200 response, 메뉴 그룹
+     */
+    @GetMapping("/menu-group/{menuGroupId}")
+    public ResponseEntity<SelectMenuGroupResponseDto> getMenuGroup(@PathVariable("menuGroupId") Long menuGroupId) {
+        SelectMenuGroupResponseDto menuGroup = menuGroupService.selectMenuGroup(menuGroupId);
+        return ResponseEntity.ok(menuGroup);
     }
 }

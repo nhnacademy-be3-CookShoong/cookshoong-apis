@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.optiongroup.OptionGroup;
+import store.cookshoong.www.cookshoongbackend.menu_order.exception.option.OptionGroupNotFoundException;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.request.CreateOptionGroupRequestDto;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectOptionGroupResponseDto;
 import store.cookshoong.www.cookshoongbackend.menu_order.repository.option.OptionGroupRepository;
@@ -46,12 +47,23 @@ public class OptionGroupService {
     }
 
     /**
-     * 옵션 그룹 조회 서비스.
+     * 옵션 그룹 리스트 조회 서비스.
      *
      * @param storeId 매장 아이디
      * @return 매장의 옵션 그룹 리스트
      */
     public List<SelectOptionGroupResponseDto> selectOptionGroups(Long storeId) {
         return optionGroupRepository.lookupOptionGroups(storeId);
+    }
+
+    /**
+     * 옵션 그룹 조회 서비스.
+     *
+     * @param optionGroupId 옵션 그룹 아이디
+     * @return 매장의 옵션 그룹
+     */
+    public SelectOptionGroupResponseDto selectOptionGroup(Long optionGroupId) {
+        return optionGroupRepository.lookupOptionGroup(optionGroupId)
+            .orElseThrow(OptionGroupNotFoundException::new);
     }
 }

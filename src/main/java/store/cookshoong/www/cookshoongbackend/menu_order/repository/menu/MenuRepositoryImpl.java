@@ -2,6 +2,7 @@ package store.cookshoong.www.cookshoongbackend.menu_order.repository.menu;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.QMenu;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.QMenuStatus;
@@ -19,8 +20,36 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.QStore;
 public class MenuRepositoryImpl implements MenuRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
+
     /**
-     * {@inheritDoc}
+     * 매장 메뉴 조회.
+     *
+     * @param menuId 메뉴 아이디
+     * @return 매장의 메뉴
+     */
+    @Override
+    public Optional<SelectMenuResponseDto> lookupMenu(Long menuId) {
+        QMenu menu = QMenu.menu;
+        QMenuStatus menuStatus = QMenuStatus.menuStatus;
+        QStore store = QStore.store;
+
+        return Optional.ofNullable(jpaQueryFactory
+            .select(new QSelectMenuResponseDto(
+                menu.id, menuStatus.menuStatusCode, store.id,
+                menu.name, menu.price, menu.description,
+                menu.image, menu.cookingTime, menu.earningRate))
+            .from(menu)
+            .innerJoin(menu.menuStatusCode, menuStatus)
+            .innerJoin(menu.store, store)
+            .where(menu.id.eq(menuId))
+            .fetchOne());
+    }
+
+    /**
+     * 매장 메뉴 리스트 조회.
+     *
+     * @param storeId 매장 아이디
+     * @return 매장의 메뉴 리스트
      */
     @Override
     public List<SelectMenuResponseDto> lookupMenus(Long storeId) {
