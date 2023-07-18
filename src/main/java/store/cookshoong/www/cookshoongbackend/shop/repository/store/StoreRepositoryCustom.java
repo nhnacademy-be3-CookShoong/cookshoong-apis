@@ -49,5 +49,5 @@ public interface StoreRepositoryCustom {
      *
      * @return  모든 매장 정보 페이지로 반환.
      */
-    Page<SelectAllStoresNotOutedResponseDto> lookupStoreLatLanPage(String storeCategoryCode, Pageable pageable);
+    Page<SelectAllStoresNotOutedResponseDto> lookupStoreLatLanPage(Pageable pageable);
 }

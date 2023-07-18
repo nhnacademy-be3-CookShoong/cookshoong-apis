@@ -15,7 +15,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.model.request.CreateMen
 import store.cookshoong.www.cookshoongbackend.menu_order.service.MenuGroupService;
 
 /**
- * 메뉴 그룹 컨트롤러 구현.
+ * 메뉴 그룹 컨트롤러.
  *
  * @author papel
  * @since 2023.07.13
@@ -27,12 +27,12 @@ public class MenuGroupController {
     private final MenuGroupService menuGroupService;
 
     /**
-     * 메뉴 그룹 등록을 위한 컨트롤러 구현.
+     * 메뉴 그룹 등록 컨트롤러.
      *
-     * @param storeId                 the store id
-     * @param createMenuGroupRequestDto    메뉴 등록을 위한 Request Body
-     * @param bindingResult           validation 결과
-     * @return 201
+     * @param storeId                   매장 아이디
+     * @param createMenuGroupRequestDto 메뉴 등록 Dto
+     * @param bindingResult             validation
+     * @return 201 response
      */
     @PostMapping("/menu-group")
     public ResponseEntity<Void> postMenu(@PathVariable("storeId") Long storeId,

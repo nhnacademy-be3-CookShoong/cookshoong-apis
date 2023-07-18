@@ -1,6 +1,9 @@
 package store.cookshoong.www.cookshoongbackend.menu_order.entity.menu;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,10 +13,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.menugroup.MenuHasMenuGroup;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 
 /**
@@ -59,17 +64,20 @@ public class Menu {
     @Column(name = "earning_rate", precision = 4, scale = 1)
     private BigDecimal earningRate;
 
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.PERSIST)
+    private final Set<MenuHasMenuGroup> menuHasMenuGroups = new HashSet<>();
+
     /**
-     * 메뉴 생성자.
+     * 메뉴 엔티티 생성자.
      *
-     * @param menuStatusCode      가맹점
-     * @param store               회원
-     * @param name                은행타입
-     * @param price               가게 상태
-     * @param description         사업자등록증
-     * @param image               사업자등록번호
-     * @param cookingTime         대표자 이름
-     * @param earningRate         개업일자
+     * @param menuStatusCode 가맹점
+     * @param store          회원
+     * @param name           은행타입
+     * @param price          가게 상태
+     * @param description    사업자등록증
+     * @param image          사업자등록번호
+     * @param cookingTime    대표자 이름
+     * @param earningRate    개업일자
      */
     public Menu(MenuStatus menuStatusCode, Store store, String name, Integer price, String description, String image, Integer cookingTime, BigDecimal earningRate) {
         this.menuStatusCode = menuStatusCode;

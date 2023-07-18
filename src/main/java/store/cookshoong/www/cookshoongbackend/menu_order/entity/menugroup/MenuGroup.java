@@ -44,7 +44,7 @@ public class MenuGroup {
     private Integer menuGroupSequence;
 
     /**
-     * 메뉴 그룹 생성자.
+     * 메뉴 그룹 엔티티 생성자.
      *
      * @param store             매장
      * @param name              이름

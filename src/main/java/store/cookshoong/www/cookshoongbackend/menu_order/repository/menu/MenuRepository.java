@@ -9,5 +9,5 @@ import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
  * @author papel
  * @since 2023.07.11
  */
-public interface MenuRepository extends JpaRepository<Menu, Long> {
+public interface MenuRepository extends JpaRepository<Menu, Long>, MenuRepositoryCustom {
 }

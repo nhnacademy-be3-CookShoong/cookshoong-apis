@@ -2,14 +2,17 @@ package store.cookshoong.www.cookshoongbackend.menu_order.model.response;
 
 import com.querydsl.core.annotations.QueryProjection;
 import java.math.BigDecimal;
+import lombok.Getter;
 
 /**
- * 사업자입장에서 메뉴 조회를 위한 Dto.
+ * 메뉴 조회 Dto.
  *
  * @author papel
  * @since 2023.07.11
  */
+@Getter
 public class SelectMenuResponseDto {
+    private final Long id;
     private final String name;
     private final Integer price;
     private final String description;
@@ -18,10 +21,12 @@ public class SelectMenuResponseDto {
     private final BigDecimal earningRate;
     private final String menuStatus;
     private final Integer menuSequence;
+    private final Long menuGroupId;
 
     /**
      * QueryDSL DTO Projection 을 위한 생성자.
      *
+     * @param id                 the id
      * @param name               the name
      * @param price              the price
      * @param description        the description
@@ -30,9 +35,11 @@ public class SelectMenuResponseDto {
      * @param earningRate        the earningRate
      * @param menuStatus         the menuStatus
      * @param menuSequence       the menuSequence
+     * @param menuGroupId        the menuGroup
      */
     @QueryProjection
-    public SelectMenuResponseDto(String name, Integer price, String description, String image, Integer cookingTime, BigDecimal earningRate, String menuStatus, Integer menuSequence) {
+    public SelectMenuResponseDto(Long id, String name, Integer price, String description, String image, Integer cookingTime, BigDecimal earningRate, String menuStatus, Integer menuSequence, Long menuGroupId) {
+        this.id = id;
         this.name = name;
         this.price = price;
         this.description = description;
@@ -41,5 +48,6 @@ public class SelectMenuResponseDto {
         this.earningRate = earningRate;
         this.menuStatus = menuStatus;
         this.menuSequence = menuSequence;
+        this.menuGroupId = menuGroupId;
     }
 }

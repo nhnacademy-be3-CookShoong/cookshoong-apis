@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.menu_order.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -7,6 +8,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.MenuStatus;
 import store.cookshoong.www.cookshoongbackend.menu_order.exception.menu.MenuStatusNotFoundException;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.request.CreateMenuRequestDto;
+import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectMenuResponseDto;
 import store.cookshoong.www.cookshoongbackend.menu_order.repository.menu.MenuRepository;
 import store.cookshoong.www.cookshoongbackend.menu_order.repository.menu.MenuStatusRepository;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
@@ -14,8 +16,7 @@ import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreNotFound
 import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreRepository;
 
 /**
- * 관리자가 가맹점의 메뉴를 관리.
- * 메뉴 추가, 수정, 삭제.
+ * 메뉴 관리 서비스.
  *
  * @author papel
  * @since 2023.07.11
@@ -29,8 +30,7 @@ public class MenuService {
     private final StoreRepository storeRepository;
 
     /**
-     * 사업자 : 메뉴 등록 서비스 구현.
-     * 메뉴 등록, 처음 상태는 판매중으로 고정.
+     * 메뉴 등록 서비스.
      *
      * @param storeId              매장 아이디
      * @param createMenuRequestDto 메뉴 등록을 위한 정보
@@ -50,5 +50,15 @@ public class MenuService {
                 createMenuRequestDto.getCookingTime(),
                 createMenuRequestDto.getEarningRate());
         menuRepository.save(menu);
+    }
+
+    /**
+     * 메뉴 조회 서비스.
+     *
+     * @param storeId 매장 아이디
+     * @return 매장의 메뉴 리스트
+     */
+    public List<SelectMenuResponseDto> selectMenus(Long storeId) {
+        return menuRepository.lookupMenus(storeId);
     }
 }

@@ -15,7 +15,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.model.request.CreateOpt
 import store.cookshoong.www.cookshoongbackend.menu_order.service.OptionGroupService;
 
 /**
- * 옵션 그룹 컨트롤러 구현.
+ * 옵션 그룹 컨트롤러.
  *
  * @author papel
  * @since 2023.07.13
@@ -27,12 +27,12 @@ public class OptionGroupController {
     private final OptionGroupService optionGroupService;
 
     /**
-     * 옵션 그룹 등록을 위한 컨트롤러 구현.
+     * 옵션 그룹 등록 컨트롤러.
      *
-     * @param storeId                        the store id
-     * @param createOptionGroupRequestDto    옵션 그룹 등록을 위한 Request Body
-     * @param bindingResult                  validation 결과
-     * @return 201
+     * @param storeId                     매장 아이디
+     * @param createOptionGroupRequestDto 옵션 그룹 등록 Dto
+     * @param bindingResult               validation
+     * @return 201 response
      */
     @PostMapping("/option-group")
     public ResponseEntity<Void> postOption(@PathVariable("storeId") Long storeId,

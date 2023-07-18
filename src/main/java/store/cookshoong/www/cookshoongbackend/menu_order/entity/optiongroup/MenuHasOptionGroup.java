@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
 
 /**
- * 메뉴-옵션그룹 엔티티.
+ * 메뉴 - 옵션그룹 엔티티.
  *
  * @author papel
  * @since 2023.07.11

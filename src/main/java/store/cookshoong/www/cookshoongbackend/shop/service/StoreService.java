@@ -231,22 +231,16 @@ public class StoreService {
      * @return          3km 이내에 위치한 매장만을 반환
      */
     public Page<SelectAllStoresNotOutedResponseDto> selectAllStoresNotOutedResponsePage(Long addressId,
-                                                                                        String storeCategoryCode,
                                                                                         Pageable pageable) {
-
         Page<SelectAllStoresNotOutedResponseDto> allStore =
-            storeRepository.lookupStoreLatLanPage(storeCategoryCode, pageable);
-
+            storeRepository.lookupStoreLatLanPage(pageable);
         AddressResponseDto addressLatLng =
             accountAddressRepository.lookupByAccountSelectAddressId(addressId);
-
         log.info("ADDRESS: {}", addressLatLng);
-
         List<SelectAllStoresNotOutedResponseDto> nearbyStores = allStore
             .stream()
             .filter(store -> isWithDistance(addressLatLng, store))
             .collect(Collectors.toList());
-
         return new PageImpl<>(nearbyStores, pageable, nearbyStores.size());
     }
 

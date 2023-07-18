@@ -2,29 +2,23 @@ package store.cookshoong.www.cookshoongbackend.shop.controller;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.Schema.schema;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
-import com.epages.restdocs.apispec.Schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -32,7 +26,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.service.StoreService;
@@ -68,18 +61,17 @@ class StoreSearchControllerTest {
         List<SelectAllStoresNotOutedResponseDto> storeList = new ArrayList<>();
         storeList.add(new SelectAllStoresNotOutedResponseDto(
             1L, "네네치킨", "OPEN", "광주광역시 동구 필문대로287번길 19-24", "평양빌딩",
-            new BigDecimal("35.1453447604175"), new BigDecimal("126.9292302170903")
+            new BigDecimal("35.1453447604175"), new BigDecimal("126.9292302170903"), "CHK"
         ));
         storeList.add(new SelectAllStoresNotOutedResponseDto(
             1L, "굽네치킨", "OPEN", "광주광역시 동구 필문대로273번길 8-5", "평양빌딩",
-            new BigDecimal("35.1464529445461"), new BigDecimal("126.9283952407910")
+            new BigDecimal("35.1464529445461"), new BigDecimal("126.9283952407910"), "CHK"
         ));
 
         Page<SelectAllStoresNotOutedResponseDto> storePage = new PageImpl<>(storeList, pageable, storeList.size());
 
         when(storeService.selectAllStoresNotOutedResponsePage(
             eq(addressId),
-            eq(storeCategoryCode),
             any(Pageable.class))).thenReturn(storePage);
 
         mockMvc.perform(get("/api/accounts/customer/{addressId}/stores", addressId)
@@ -100,6 +92,7 @@ class StoreSearchControllerTest {
                     fieldWithPath("content[].detailPlace").description("상세 주소"),
                     fieldWithPath("content[].latitude").description("위도"),
                     fieldWithPath("content[].longitude").description("경도"),
+                    fieldWithPath("content[].category").description("카테고리"),
                     fieldWithPath("pageable.sort.empty").description("정렬 데이터 공백 여부"),
                     fieldWithPath("pageable.sort.sorted").description("정렬 여부"),
                     fieldWithPath("pageable.sort.unsorted").description("비정렬 여부"),
@@ -125,7 +118,6 @@ class StoreSearchControllerTest {
         verify(storeService, times(1))
             .selectAllStoresNotOutedResponsePage(
             eq(addressId),
-            eq(storeCategoryCode),
             any(Pageable.class)
             );
     }

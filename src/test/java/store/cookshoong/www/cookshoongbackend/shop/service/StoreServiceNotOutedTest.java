@@ -44,15 +44,16 @@ class StoreServiceNotOutedTest {
     void selectAllStoresLatLngResponsePage() {
 
         Long accountId = 1L;
+        String storeCategoryCode = "CHK";
 
         Pageable pageable = Pageable.ofSize(10).withPage(0);
 
         List<SelectAllStoresNotOutedResponseDto> stores = new ArrayList<>();
         stores.add(new SelectAllStoresNotOutedResponseDto(1L, "미술대", "영업중", "주소 1", "상세주소 1",
-            new BigDecimal("35.14385822588584"), new BigDecimal("126.93046054250793")));
+            new BigDecimal("35.14385822588584"), new BigDecimal("126.93046054250793"), storeCategoryCode));
 
         Page<SelectAllStoresNotOutedResponseDto> storePage = new PageImpl<>(stores, pageable, stores.size());
-        when(storeRepository.lookupStoreLatLanPage("CHK", pageable)).thenReturn(storePage);
+        when(storeRepository.lookupStoreLatLanPage(pageable)).thenReturn(storePage);
 
         AddressResponseDto address =
             new AddressResponseDto(accountId, "광주 서석동", "조선대 IT 융합대학",
@@ -60,7 +61,7 @@ class StoreServiceNotOutedTest {
         when(accountAddressRepository.lookupByAccountSelectAddressId(accountId)).thenReturn(address);
 
         Page<SelectAllStoresNotOutedResponseDto> result =
-            storeService.selectAllStoresNotOutedResponsePage(accountId, "CHK", pageable);
+            storeService.selectAllStoresNotOutedResponsePage(accountId, pageable);
 
         assertThat(result).isNotNull();
         assertThat(result.getContent()).hasSize(1);
