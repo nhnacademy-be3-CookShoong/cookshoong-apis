@@ -216,7 +216,7 @@ public class StoreService {
         addStoreCategory(requestDto.getStoreCategories(), store);
     }
 
-    // 승연님 javadoc 달아주세요.
+    // TODO 승연님 javadoc 달아주세요@.@
     public void updateStoreStatus(Long accountId, Long storeId, UpdateStoreStatusRequestDto requestDto) {
         Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
         accessDeniedException(accountId, store);
