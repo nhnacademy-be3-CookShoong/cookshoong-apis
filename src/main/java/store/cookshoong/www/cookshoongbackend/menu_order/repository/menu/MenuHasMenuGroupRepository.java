@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.menu_order.repository.menugroup;
+package store.cookshoong.www.cookshoongbackend.menu_order.repository.menu;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menugroup.MenuHasMenuGroup;

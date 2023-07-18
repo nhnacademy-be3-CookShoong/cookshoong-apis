@@ -9,8 +9,8 @@ import store.cookshoong.www.cookshoongbackend.menu_order.entity.optiongroup.Opti
 import store.cookshoong.www.cookshoongbackend.menu_order.exception.option.OptionGroupNotFoundException;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.request.CreateOptionRequestDto;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectOptionResponseDto;
+import store.cookshoong.www.cookshoongbackend.menu_order.repository.option.OptionGroupRepository;
 import store.cookshoong.www.cookshoongbackend.menu_order.repository.option.OptionRepository;
-import store.cookshoong.www.cookshoongbackend.menu_order.repository.optiongroup.OptionGroupRepository;
 
 /**
  * 옵션 관리 서비스.
