@@ -33,8 +33,8 @@ class CouponTypeCashRepositoryTest {
         couponTypeCashRepository.save(couponTypeCash);
 
         assertDoesNotThrow(() ->
-            couponTypeCashRepository.findByDiscountAmountAndMinimumPrice(
-                couponTypeCash.getDiscountAmount(), couponTypeCash.getMinimumPrice()))
+            couponTypeCashRepository.findByDiscountAmountAndMinimumOrderPrice(
+                couponTypeCash.getDiscountAmount(), couponTypeCash.getMinimumOrderPrice()))
             .orElseThrow(IllegalArgumentException::new);
     }
 
@@ -43,8 +43,8 @@ class CouponTypeCashRepositoryTest {
     void findByDiscountAmountAndMinimumPriceFail() throws Exception {
         CouponTypeCash couponTypeCash = testEntity.getCouponTypeCash_1000_10000();
         Optional<CouponTypeCash> byDiscountAmountAndMinimumPrice =
-            couponTypeCashRepository.findByDiscountAmountAndMinimumPrice(
-                couponTypeCash.getDiscountAmount(), couponTypeCash.getMinimumPrice());
+            couponTypeCashRepository.findByDiscountAmountAndMinimumOrderPrice(
+                couponTypeCash.getDiscountAmount(), couponTypeCash.getMinimumOrderPrice());
 
         assertThrows(IllegalArgumentException.class,
             () -> byDiscountAmountAndMinimumPrice.orElseThrow(IllegalArgumentException::new));

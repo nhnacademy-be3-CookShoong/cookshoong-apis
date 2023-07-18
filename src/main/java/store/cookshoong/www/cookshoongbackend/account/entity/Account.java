@@ -44,7 +44,7 @@ public class Account {
     @JoinColumn(name = "rank_code", nullable = false)
     private Rank rank;
 
-    @Column(name = "login_id", nullable = false, length = 30)
+    @Column(name = "login_id", nullable = false)
     private String loginId;
 
     @Column(nullable = false, length = 60)

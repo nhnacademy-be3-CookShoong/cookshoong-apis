@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.address.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -57,7 +58,7 @@ public class AddressService {
         addressRepository.save(address);
 
         AccountAddress accountAddress = new AccountAddress(new AccountAddress.Pk(accountId, address.getId()),
-            account, address, requestDto.getAlias());
+            account, address, requestDto.getAlias(), LocalDateTime.now());
 
         accountAddressRepository.save(accountAddress);
     }
@@ -77,6 +78,7 @@ public class AddressService {
             .orElseThrow(AccountAddressNotFoundException::new);
 
         accountAddress.getAddress().updateDetailAddress(requestDto);
+        accountAddress.modifyRenewalAt();
         accountAddressRepository.save(accountAddress);
     }
 

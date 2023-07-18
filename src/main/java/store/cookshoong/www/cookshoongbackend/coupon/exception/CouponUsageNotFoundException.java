@@ -10,6 +10,6 @@ import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException
  */
 public class CouponUsageNotFoundException extends NotFoundException {
     public CouponUsageNotFoundException() {
-        super("쿠폰 사용처를 찾을 수 없습니다.");
+        super("쿠폰 사용처");
     }
 }

@@ -11,5 +11,5 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
  * @since 2023.07.04
  */
 public interface CouponTypeCashRepository extends JpaRepository<CouponTypeCash, Integer> {
-    Optional<CouponTypeCash> findByDiscountAmountAndMinimumPrice(int discountAmount, int minimumPrice);
+    Optional<CouponTypeCash> findByDiscountAmountAndMinimumOrderPrice(int discountAmount, int minimumOrderPrice);
 }

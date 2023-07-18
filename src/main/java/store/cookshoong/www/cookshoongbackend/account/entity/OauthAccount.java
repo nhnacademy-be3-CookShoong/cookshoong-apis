@@ -40,6 +40,6 @@ public class OauthAccount {
     @JoinColumn(name = "oauth_type_id", nullable = false)
     private OauthType oauthType;
 
-    @Column(name = "account_code", nullable = false, length = 30)
+    @Column(name = "account_code", nullable = false)
     private String accountCode;
 }

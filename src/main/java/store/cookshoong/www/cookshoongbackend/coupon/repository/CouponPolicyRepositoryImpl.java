@@ -71,7 +71,7 @@ public class CouponPolicyRepositoryImpl implements CouponPolicyRepositoryCustom 
                 couponType,
                 couponPolicy.name,
                 couponPolicy.description,
-                couponPolicy.expirationTime,
+                couponPolicy.usagePeriod,
                 getIssueCouponCount(true),
                 getIssueCouponCount(false)
             ))
@@ -102,9 +102,8 @@ public class CouponPolicyRepositoryImpl implements CouponPolicyRepositoryCustom 
     }
 
     private static JPQLQuery<Long> getCouponUsageAllId() {
-        return JPAExpressions.select(couponUsageAll.id)
-            .from(couponUsageAll)
-            .limit(1L);
+        return JPAExpressions.select(couponUsageAll.id.min())
+            .from(couponUsageAll);
     }
 
     private Long getTotal(JPQLQuery<Long> couponUsageId) {

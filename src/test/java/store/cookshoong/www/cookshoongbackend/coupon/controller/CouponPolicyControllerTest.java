@@ -82,27 +82,27 @@ class CouponPolicyControllerTest {
         CouponTypePercent couponTypePercent = te.getCouponTypePercent_3_1000_10000();
         SelectPolicyResponseDto cashPolicy = new SelectPolicyResponseDto(atomicLong.getAndIncrement(),
             CouponTypeCashVo.newInstance(couponTypeCash), "금액 쿠폰", "현금처럼 쓰입니다.",
-            LocalTime.of(1, 0, 0), 1L, 10L);
+            0, 1L, 10L);
         SelectPolicyResponseDto percentPolicy = new SelectPolicyResponseDto(atomicLong.getAndIncrement(),
             CouponTypePercentVo.newInstance(couponTypePercent), "퍼센트 쿠폰", "퍼센트만큼 차감합니다.",
-            LocalTime.of(1, 0, 0), 1L, 10L);
+            0, 1L, 10L);
 
         policies = List.of(cashPolicy, percentPolicy);
 
         cashRequestDto = te.createUsingDeclared(CreateCashCouponPolicyRequestDto.class);
         ReflectionTestUtils.setField(cashRequestDto, "name", "금액 쿠폰");
         ReflectionTestUtils.setField(cashRequestDto, "description", "설정된 금액만큼 가격을 차감합니다.");
-        ReflectionTestUtils.setField(cashRequestDto, "expirationTime", LocalTime.of(1, 0));
+        ReflectionTestUtils.setField(cashRequestDto, "usagePeriod", 30);
         ReflectionTestUtils.setField(cashRequestDto, "discountAmount", 5_000);
-        ReflectionTestUtils.setField(cashRequestDto, "minimumPrice", 10_000);
+        ReflectionTestUtils.setField(cashRequestDto, "minimumOrderPrice", 10_000);
 
         percentRequestDto = te.createUsingDeclared(CreatePercentCouponPolicyRequestDto.class);
         ReflectionTestUtils.setField(percentRequestDto, "name", "퍼센트 쿠폰");
         ReflectionTestUtils.setField(percentRequestDto, "description", "설정된 퍼센트만큼 가격을 차감합니다.");
-        ReflectionTestUtils.setField(percentRequestDto, "expirationTime", LocalTime.of(1, 0));
-        ReflectionTestUtils.setField(percentRequestDto, "rate", new BigDecimal("10.0"));
-        ReflectionTestUtils.setField(percentRequestDto, "minimumPrice", 10_000);
-        ReflectionTestUtils.setField(percentRequestDto, "maximumPrice", 30_000);
+        ReflectionTestUtils.setField(percentRequestDto, "usagePeriod", 30);
+        ReflectionTestUtils.setField(percentRequestDto, "rate", 10);
+        ReflectionTestUtils.setField(percentRequestDto, "minimumOrderPrice", 10_000);
+        ReflectionTestUtils.setField(percentRequestDto, "maximumDiscountAmount", 30_000);
     }
 
     @Test
@@ -124,13 +124,14 @@ class CouponPolicyControllerTest {
                     .responseSchema(Schema.schema("getStorePolicy.Response")),
                 responseFields(
                     fieldWithPath("content[].id").description("정책 id"),
+                    fieldWithPath("content[].couponTypeResponse.type").description("쿠폰 타입 설명"),
                     fieldWithPath("content[].couponTypeResponse.discountAmount").optional().description("할인금"),
                     fieldWithPath("content[].couponTypeResponse.rate").optional().description("할인율"),
-                    fieldWithPath("content[].couponTypeResponse.minimumPrice").optional().description("최소주문금액"),
-                    fieldWithPath("content[].couponTypeResponse.maximumPrice").optional().description("최대할인금액"),
+                    fieldWithPath("content[].couponTypeResponse.minimumOrderPrice").optional().description("최소주문금액"),
+                    fieldWithPath("content[].couponTypeResponse.maximumDiscountAmount").optional().description("최대할인금액"),
                     fieldWithPath("content[].name").description("쿠폰명"),
                     fieldWithPath("content[].description").description("쿠폰 설명"),
-                    fieldWithPath("content[].expirationTime").description("쿠폰 만료시간"),
+                    fieldWithPath("content[].usagePeriod").description("발급 후 사용기"),
                     fieldWithPath("content[].unclaimedCouponCount").description("남은 쿠폰 개수"),
                     fieldWithPath("content[].issueCouponCount").description("전체 발행 쿠폰 개수"),
                     fieldWithPath("pageable.sort.empty").description("정렬 데이터 공백 여부"),
@@ -175,13 +176,14 @@ class CouponPolicyControllerTest {
                     .responseSchema(Schema.schema("getMerchantPolicy.Response")),
                 responseFields(
                     fieldWithPath("content[].id").description("정책 id"),
+                    fieldWithPath("content[].couponTypeResponse.type").description("쿠폰 타입 설명"),
                     fieldWithPath("content[].couponTypeResponse.discountAmount").optional().description("할인금"),
                     fieldWithPath("content[].couponTypeResponse.rate").optional().description("할인율"),
-                    fieldWithPath("content[].couponTypeResponse.minimumPrice").optional().description("최소주문금액"),
-                    fieldWithPath("content[].couponTypeResponse.maximumPrice").optional().description("최대할인금액"),
+                    fieldWithPath("content[].couponTypeResponse.minimumOrderPrice").optional().description("최소주문금액"),
+                    fieldWithPath("content[].couponTypeResponse.maximumDiscountAmount").optional().description("최대할인금액"),
                     fieldWithPath("content[].name").description("쿠폰명"),
                     fieldWithPath("content[].description").description("쿠폰 설명"),
-                    fieldWithPath("content[].expirationTime").description("쿠폰 만료시간"),
+                    fieldWithPath("content[].usagePeriod").description("발급 후 사용기"),
                     fieldWithPath("content[].unclaimedCouponCount").description("남은 쿠폰 개수"),
                     fieldWithPath("content[].issueCouponCount").description("전체 발행 쿠폰 개수"),
                     fieldWithPath("pageable.sort.empty").description("정렬 데이터 공백 여부"),
@@ -225,13 +227,14 @@ class CouponPolicyControllerTest {
                     .responseSchema(Schema.schema("getUsageAllPolicy.Response")),
                 responseFields(
                     fieldWithPath("content[].id").description("정책 id"),
+                    fieldWithPath("content[].couponTypeResponse.type").description("쿠폰 타입 설명"),
                     fieldWithPath("content[].couponTypeResponse.discountAmount").optional().description("할인금"),
                     fieldWithPath("content[].couponTypeResponse.rate").optional().description("할인율"),
-                    fieldWithPath("content[].couponTypeResponse.minimumPrice").optional().description("최소주문금액"),
-                    fieldWithPath("content[].couponTypeResponse.maximumPrice").optional().description("최대할인금액"),
+                    fieldWithPath("content[].couponTypeResponse.minimumOrderPrice").optional().description("최소주문금액"),
+                    fieldWithPath("content[].couponTypeResponse.maximumDiscountAmount").optional().description("최대할인금액"),
                     fieldWithPath("content[].name").description("쿠폰명"),
                     fieldWithPath("content[].description").description("쿠폰 설명"),
-                    fieldWithPath("content[].expirationTime").description("쿠폰 만료시간"),
+                    fieldWithPath("content[].usagePeriod").description("발급 후 사용기간"),
                     fieldWithPath("content[].unclaimedCouponCount").description("남은 쿠폰 개수"),
                     fieldWithPath("content[].issueCouponCount").description("전체 발행 쿠폰 개수"),
                     fieldWithPath("pageable.sort.empty").description("정렬 데이터 공백 여부"),
@@ -275,9 +278,9 @@ class CouponPolicyControllerTest {
                 requestFields(
                     fieldWithPath("name").description("쿠폰명"),
                     fieldWithPath("description").description("쿠폰 설명"),
-                    fieldWithPath("expirationTime").description("만료시간"),
+                    fieldWithPath("usagePeriod").description("만료일"),
                     fieldWithPath("discountAmount").description("할인금액"),
-                    fieldWithPath("minimumPrice").description("최소주문금액"))
+                    fieldWithPath("minimumOrderPrice").description("최소주문금액"))
             ));
 
         verify(couponPolicyService, Mockito.times(1))
@@ -286,7 +289,7 @@ class CouponPolicyControllerTest {
 
     @ParameterizedTest(name = "{index}: {0}")
     @CsvSource(value = {
-        "쿠폰명:name", "설명:description", "만료시간:expirationTime", "할인금액:discountAmount", "최소주문금액:minimumPrice"
+        "쿠폰명:name", "설명:description", "만료일:usagePeriod", "할인금액:discountAmount", "최소주문금액:minimumOrderPrice"
     }, delimiter = ':')
     @DisplayName("매장 금액 쿠폰 정책 생성 실패 - 필수 필드 없음")
     void postStoreCashCouponPolicyNonFieldFailTest(String displayName, String fieldName) throws Exception {
@@ -326,8 +329,8 @@ class CouponPolicyControllerTest {
     @ParameterizedTest
     @ValueSource(ints = {-1_000, 100_000})
     @DisplayName("매장 금액 쿠폰 정책 생성 실패 - 최소주문금액 범위 초과")
-    void postStoreCashCouponPolicyMinimumPriceOutOfRangeFailTest(Integer minimumPrice) throws Exception {
-        ReflectionTestUtils.setField(cashRequestDto, "minimumPrice", minimumPrice);
+    void postStoreCashCouponPolicyminimumOrderPriceOutOfRangeFailTest(Integer minimumOrderPrice) throws Exception {
+        ReflectionTestUtils.setField(cashRequestDto, "minimumOrderPrice", minimumOrderPrice);
 
         RequestBuilder request = RestDocumentationRequestBuilders
             .post("/api/coupon/policies/stores/{storeId}/cash", Long.MIN_VALUE)
@@ -360,10 +363,10 @@ class CouponPolicyControllerTest {
                 requestFields(
                     fieldWithPath("name").description("쿠폰명"),
                     fieldWithPath("description").description("쿠폰 설명"),
-                    fieldWithPath("expirationTime").description("만료시간"),
+                    fieldWithPath("usagePeriod").description("만료일"),
                     fieldWithPath("rate").description("할인율"),
-                    fieldWithPath("minimumPrice").description("최소주문금액"),
-                    fieldWithPath("maximumPrice").description("최대할인금액"))
+                    fieldWithPath("minimumOrderPrice").description("최소주문금액"),
+                    fieldWithPath("maximumDiscountAmount").description("최대할인금액"))
             ));
 
         verify(couponPolicyService, Mockito.times(1))
@@ -372,8 +375,8 @@ class CouponPolicyControllerTest {
 
     @ParameterizedTest(name = "{index}: {0}")
     @CsvSource(value = {
-        "쿠폰명:name", "설명:description", "만료시간:expirationTime", "할인율:rate", "최소주문금액:minimumPrice",
-        "최대할인금액:maximumPrice"}, delimiter = ':')
+        "쿠폰명:name", "설명:description", "만료일:usagePeriod", "할인율:rate", "최소주문금액:minimumOrderPrice",
+        "최대할인금액:maximumDiscountAmount"}, delimiter = ':')
     @DisplayName("매장 퍼센트 쿠폰 정책 생성 실패 - 필수 필드 없음")
     void postStorePercentCouponPolicyNonFieldFailTest(String displayName, String fieldName) throws Exception {
         ReflectionTestUtils.setField(percentRequestDto, fieldName, null);
@@ -391,10 +394,10 @@ class CouponPolicyControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"0.0", "100.0", "11.11111"})
+    @ValueSource(ints = {0, 100})
     @DisplayName("매장 퍼센트 쿠폰 정책 생성 실패 - 할인율 범위 초과")
-    void postStorePercentCouponPolicyRateOutOfRangeFailTest(String rate) throws Exception {
-        ReflectionTestUtils.setField(percentRequestDto, "rate", new BigDecimal(rate));
+    void postStorePercentCouponPolicyRateOutOfRangeFailTest(int rate) throws Exception {
+        ReflectionTestUtils.setField(percentRequestDto, "rate", rate);
         RequestBuilder request = RestDocumentationRequestBuilders
             .post("/api/coupon/policies/stores/{storeId}/percent", Long.MIN_VALUE)
             .contentType(MediaType.APPLICATION_JSON)
@@ -411,8 +414,8 @@ class CouponPolicyControllerTest {
     @ParameterizedTest
     @ValueSource(ints = {-10_000, 30_000})
     @DisplayName("매장 퍼센트 쿠폰 정책 생성 실패 - 최소주문금액 범위 초과")
-    void postStorePercentCouponPolicyMinimumPriceOutOfRangeFailTest(int minimumPrice) throws Exception {
-        ReflectionTestUtils.setField(percentRequestDto, "minimumPrice", minimumPrice);
+    void postStorePercentCouponPolicyminimumOrderPriceOutOfRangeFailTest(int minimumOrderPrice) throws Exception {
+        ReflectionTestUtils.setField(percentRequestDto, "minimumOrderPrice", minimumOrderPrice);
         RequestBuilder request = RestDocumentationRequestBuilders
             .post("/api/coupon/policies/stores/{storeId}/percent", Long.MIN_VALUE)
             .contentType(MediaType.APPLICATION_JSON)
@@ -429,8 +432,8 @@ class CouponPolicyControllerTest {
     @ParameterizedTest
     @ValueSource(ints = {0, 60_000})
     @DisplayName("매장 퍼센트 쿠폰 정책 생성 실패 - 최대할인금액 범위 초과")
-    void postStorePercentCouponPolicyMaximumPriceOutOfRangeFailTest(int maximumPrice) throws Exception {
-        ReflectionTestUtils.setField(percentRequestDto, "maximumPrice", maximumPrice);
+    void postStorePercentCouponPolicymaximumDiscountAmountOutOfRangeFailTest(int maximumDiscountAmount) throws Exception {
+        ReflectionTestUtils.setField(percentRequestDto, "maximumDiscountAmount", maximumDiscountAmount);
         RequestBuilder request = RestDocumentationRequestBuilders
             .post("/api/coupon/policies/stores/{storeId}/percent", Long.MIN_VALUE)
             .contentType(MediaType.APPLICATION_JSON)
@@ -462,9 +465,9 @@ class CouponPolicyControllerTest {
                 requestFields(
                     fieldWithPath("name").description("쿠폰명"),
                     fieldWithPath("description").description("쿠폰 설명"),
-                    fieldWithPath("expirationTime").description("만료시간"),
+                    fieldWithPath("usagePeriod").description("만료일"),
                     fieldWithPath("discountAmount").description("할인금액"),
-                    fieldWithPath("minimumPrice").description("최소주문금액"))
+                    fieldWithPath("minimumOrderPrice").description("최소주문금액"))
             ));
 
         verify(couponPolicyService, Mockito.times(1))
@@ -489,10 +492,10 @@ class CouponPolicyControllerTest {
                 requestFields(
                     fieldWithPath("name").description("쿠폰명"),
                     fieldWithPath("description").description("쿠폰 설명"),
-                    fieldWithPath("expirationTime").description("만료시간"),
+                    fieldWithPath("usagePeriod").description("만료일"),
                     fieldWithPath("rate").description("할인율"),
-                    fieldWithPath("minimumPrice").description("최소주문금액"),
-                    fieldWithPath("maximumPrice").description("최대할인금액"))
+                    fieldWithPath("minimumOrderPrice").description("최소주문금액"),
+                    fieldWithPath("maximumDiscountAmount").description("최대할인금액"))
             ));
 
         verify(couponPolicyService, Mockito.times(1))
@@ -516,9 +519,9 @@ class CouponPolicyControllerTest {
                 requestFields(
                     fieldWithPath("name").description("쿠폰명"),
                     fieldWithPath("description").description("쿠폰 설명"),
-                    fieldWithPath("expirationTime").description("만료시간"),
+                    fieldWithPath("usagePeriod").description("만료일"),
                     fieldWithPath("discountAmount").description("할인금액"),
-                    fieldWithPath("minimumPrice").description("최소주문금액"))
+                    fieldWithPath("minimumOrderPrice").description("최소주문금액"))
             ));
 
         verify(couponPolicyService, Mockito.times(1))
@@ -545,7 +548,7 @@ class CouponPolicyControllerTest {
     }
 
     @Test
-    @DisplayName("전 퍼센트 쿠폰 정책 생성 성공")
+    @DisplayName("전체 퍼센트 쿠폰 정책 생성 성공")
     void postAllPercentCouponPolicySuccessTest() throws Exception {
         RequestBuilder request = RestDocumentationRequestBuilders
             .post("/api/coupon/policies/all/percent", Long.MIN_VALUE)
@@ -561,10 +564,10 @@ class CouponPolicyControllerTest {
                 requestFields(
                     fieldWithPath("name").description("쿠폰명"),
                     fieldWithPath("description").description("쿠폰 설명"),
-                    fieldWithPath("expirationTime").description("만료시간"),
+                    fieldWithPath("usagePeriod").description("만료일"),
                     fieldWithPath("rate").description("할인율"),
-                    fieldWithPath("minimumPrice").description("최소주문금액"),
-                    fieldWithPath("maximumPrice").description("최대할인금액"))
+                    fieldWithPath("minimumOrderPrice").description("최소주문금액"),
+                    fieldWithPath("maximumDiscountAmount").description("최대할인금액"))
             ));
 
         verify(couponPolicyService, Mockito.times(1))

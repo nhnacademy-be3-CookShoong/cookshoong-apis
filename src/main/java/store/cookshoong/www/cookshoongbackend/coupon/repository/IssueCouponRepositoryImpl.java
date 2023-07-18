@@ -17,7 +17,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -61,7 +61,7 @@ public class IssueCouponRepositoryImpl implements IssueCouponRepositoryCustom {
                 couponUsage,
                 couponPolicy.name,
                 couponPolicy.description,
-                issueCoupon.expirationAt,
+                issueCoupon.expirationDate,
                 couponLogTypeDescription))
 
             .from(issueCoupon)
@@ -103,11 +103,11 @@ public class IssueCouponRepositoryImpl implements IssueCouponRepositoryCustom {
         if (usable) {
             return couponLogTypeDescription.ne(getCouponLogTypeUseDescription())
                 .or(couponLogTypeDescription.isNull()
-                    .and(issueCoupon.expirationAt.gt(LocalDateTime.now())));
+                    .and(issueCoupon.expirationDate.goe(LocalDate.now())));
         }
 
         return couponLogTypeDescription.eq(getCouponLogTypeUseDescription())
-            .or(issueCoupon.expirationAt.loe(LocalDateTime.now()));
+            .or(issueCoupon.expirationDate.lt(LocalDate.now()));
     }
 
     private static JPQLQuery<String> getCouponLogTypeUseDescription() {

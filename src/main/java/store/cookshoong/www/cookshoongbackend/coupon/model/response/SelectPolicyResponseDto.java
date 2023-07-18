@@ -1,6 +1,5 @@
 package store.cookshoong.www.cookshoongbackend.coupon.model.response;
 
-import java.time.LocalTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeResponse;
@@ -18,7 +17,7 @@ public class SelectPolicyResponseDto {
     private CouponTypeResponse couponTypeResponse;
     private String name;
     private String description;
-    private LocalTime expirationTime;
+    private Integer usagePeriod;
     private final Long unclaimedCouponCount;
     private final Long issueCouponCount;
 }

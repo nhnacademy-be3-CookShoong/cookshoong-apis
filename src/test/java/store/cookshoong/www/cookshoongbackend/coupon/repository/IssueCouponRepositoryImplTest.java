@@ -2,7 +2,7 @@ package store.cookshoong.www.cookshoongbackend.coupon.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +18,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.util.ReflectionTestUtils;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponPolicy;
@@ -94,15 +95,15 @@ class IssueCouponRepositoryImplTest {
         CouponUsageAll couponUsageAll = te.getCouponUsageAll();
 
         CouponPolicy couponPolicyExpired = em.persist(
-            new CouponPolicy(couponTypeCash, couponUsageAll, "만료된 쿠폰", "",
-                LocalTime.of(0, 0, 0)));
+            new CouponPolicy(couponTypeCash, couponUsageAll, "만료된 쿠폰", "", 0));
         CouponPolicy couponPolicyMerchant = te.getCouponPolicy(couponTypeCash, couponUsageMerchant);
         CouponPolicy couponPolicyAllUsageStore = te.getCouponPolicy(couponTypeCash, couponAllUsageStore);
         CouponPolicy couponPolicyStoreUsageStore = te.getCouponPolicy(couponTypeCash, couponStoreUsageStore);
         CouponPolicy couponPolicyAll = te.getCouponPolicy(couponTypeCash, couponUsageAll);
 
         List<IssueCoupon> issueCoupons = new ArrayList<>();
-        issueCoupons.add(te.getIssueCoupon(couponPolicyExpired));
+        IssueCoupon expiredIssueCoupon = te.getIssueCoupon(couponPolicyExpired);
+        issueCoupons.add(expiredIssueCoupon);
         issueCoupons.add(te.getIssueCoupon(couponPolicyMerchant));
         issueCoupons.add(te.getIssueCoupon(couponPolicyAllUsageStore));
         issueCoupons.add(te.getIssueCoupon(couponPolicyStoreUsageStore));
@@ -122,7 +123,11 @@ class IssueCouponRepositoryImplTest {
 
         issueCoupons.forEach(issueCoupon -> issueCoupon.provideToUser(customer));
 
+        ReflectionTestUtils.setField(expiredIssueCoupon, "expirationDate",
+            LocalDate.of(1000, 1, 1));
+
         Order order = tpe.createTestOrder();
+
         issueCoupons.stream()
             .skip(5)
             .forEach(issueCoupon -> te.getCouponLog(
