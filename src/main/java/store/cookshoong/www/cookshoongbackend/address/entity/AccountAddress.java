@@ -67,7 +67,19 @@ public class AccountAddress {
 
         private Long addressId;
     }
-    public void modifyRenewalAt(){
+
+    /**
+     * 주소를 등록할 때, 주소를 선택할 때.
+     * 회원과 주소에 대한 관계에서 갱신날짜를 업데이트해준다.
+     * 이렇게 업데이트가 이루어지면
+     * 회원과 주소간에 촤근 갱신된 주소를 가지고 와서 매장을 검색하고
+     * 주문할 때 최근 생신된 주소를 가지고 와서 보여줄 수 있게 된다.
+     *
+     * @author jeongjewan
+     * @contributer seungyeon
+     * @since 2023 /07/18
+     */
+    public void modifyRenewalAt() {
         this.renewalAt = LocalDateTime.now();
     }
 }
