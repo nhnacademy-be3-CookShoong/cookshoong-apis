@@ -82,7 +82,7 @@ public class MerchantService {
      * @return the list
      */
     public List<SelectAllMerchantsForUserResponseDto> selectAllMerchantsForUser() {
-        return merchantRepository.lookupMerchants();
+        return merchantRepository.findAllByOrderByNameAsc();
     }
 
 }

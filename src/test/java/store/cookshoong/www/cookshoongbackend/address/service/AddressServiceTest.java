@@ -221,9 +221,9 @@ class AddressServiceTest {
     @DisplayName("회원이 최근에 등록한 주소와 좌표 조회")
     void selectAccountAddressRecentRegistration() {
 
-        AddressResponseDto expectedAddress = new AddressResponseDto("Main Place", "Detail Place",
+        AddressResponseDto expectedAddress = new AddressResponseDto(1L, "Main Place", "Detail Place",
             new BigDecimal("23.23233323"), new BigDecimal("23.232333255"));
-        AddressResponseDto expectedAddress1 = new AddressResponseDto("Main Place", "Detail Place",
+        AddressResponseDto expectedAddress1 = new AddressResponseDto(1L, "Main Place", "Detail Place",
             new BigDecimal("23.23233323"), new BigDecimal("23.232333255"));
 
         when(accountRepository.findById(testAccount.getId())).thenReturn(Optional.of(testAccount));
@@ -243,7 +243,7 @@ class AddressServiceTest {
     }
 
     @Test
-    @DisplayName("회원이 주문할 때 필요한 메인주소와 상세주소, 회원의 위치를 맵에서 보여줄 좌표를 조회 실패: 회원이 존재하지 않을 때")
+    @DisplayName("회원이 최근에 등록한 주소와 좌표 조회 실패: 회원이 존재하지 않을 때")
     void selectAccountAddress_NotFound_Account_Throw() {
 
         when(accountRepository.findById(testAccount.getId())).thenReturn(Optional.empty());
@@ -252,6 +252,43 @@ class AddressServiceTest {
             () -> addressService.selectAccountAddressRecentRegistration(testAccount.getId()));
 
         verify(accountRepository, times(1)).findById(testAccount.getId());
+    }
+
+    @Test
+    @DisplayName("회원이 주소록에서 선택한 주소 조회")
+    void selectAccountChoiceAddress() {
+
+        AddressResponseDto expectedAddress = new AddressResponseDto(1L, "Main Place1", "Detail Place1",
+            new BigDecimal("23.23233323"), new BigDecimal("23.232333255"));
+        AddressResponseDto expectedAddress1 = new AddressResponseDto(1L, "Main Place", "Detail Place",
+            new BigDecimal("23.23233323"), new BigDecimal("23.232333255"));
+
+        when(addressRepository.findById(testAddress.getId())).thenReturn(Optional.of(testAddress));
+        when(accountAddressRepository.lookupByAccountSelectAddressId(testAddress.getId()))
+            .thenReturn(expectedAddress1);
+
+        AddressResponseDto actual = addressService.selectAccountChoiceAddress(testAddress.getId());
+
+        assertEquals(expectedAddress1, actual);
+        verify(addressRepository, times(1)).findById(testAddress.getId());
+        verify(accountAddressRepository, times(1)).lookupByAccountSelectAddressId(testAddress.getId());
+
+        assertEquals(actual.getMainPlace(), expectedAddress1.getMainPlace());
+        assertEquals(actual.getDetailPlace(), expectedAddress1.getDetailPlace());
+        assertEquals(actual.getLatitude(), expectedAddress1.getLatitude());
+        assertEquals(actual.getLongitude(), expectedAddress1.getLongitude());
+    }
+
+    @Test
+    @DisplayName("회원이 주소록에서 선택한 주소 조회 실패: 주소가 존재하지 않을 때")
+    void selectAccountChoiceAddress_NotFound_Account_Throw() {
+
+        when(addressRepository.findById(testAddress.getId())).thenReturn(Optional.empty());
+
+        assertThrows(AccountAddressNotFoundException.class,
+            () -> addressService.selectAccountChoiceAddress(testAddress.getId()));
+
+        verify(addressRepository, times(1)).findById(testAddress.getId());
     }
 
     @Test

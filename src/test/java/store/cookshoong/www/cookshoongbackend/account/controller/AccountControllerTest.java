@@ -21,6 +21,7 @@ import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -46,6 +47,8 @@ import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpReques
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountAuthResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountAuthDto;
 import store.cookshoong.www.cookshoongbackend.account.service.AccountService;
+import store.cookshoong.www.cookshoongbackend.address.model.request.CreateAccountAddressRequestDto;
+import store.cookshoong.www.cookshoongbackend.address.service.AddressService;
 
 /**
  * 회원 컨트롤러 테스트.
@@ -62,12 +65,22 @@ class AccountControllerTest {
     ObjectMapper objectMapper;
     @MockBean
     AccountService accountService;
+    @MockBean
+    AddressService addressService;
 
     SignUpRequestDto signUpRequestDto;
+    CreateAccountAddressRequestDto createAccountAddressRequestDto;
 
     @BeforeEach
     void setup() {
         signUpRequestDto = ReflectionUtils.newInstance(SignUpRequestDto.class);
+        createAccountAddressRequestDto = ReflectionUtils.newInstance(CreateAccountAddressRequestDto.class);
+
+        ReflectionTestUtils.setField(createAccountAddressRequestDto, "alias", "NHN");
+        ReflectionTestUtils.setField(createAccountAddressRequestDto, "mainPlace", "경기도 성남시 분당구 대왕판교로645번길 16");
+        ReflectionTestUtils.setField(createAccountAddressRequestDto, "detailPlace", "NHN 플레이뮤지엄");
+        ReflectionTestUtils.setField(createAccountAddressRequestDto, "latitude", new BigDecimal("37.40096549041187"));
+        ReflectionTestUtils.setField(createAccountAddressRequestDto, "longitude", new BigDecimal("127.1040493631922"));
 
         ReflectionTestUtils.setField(signUpRequestDto, "loginId", "user1");
         ReflectionTestUtils.setField(signUpRequestDto, "password", "1234");
@@ -76,6 +89,7 @@ class AccountControllerTest {
         ReflectionTestUtils.setField(signUpRequestDto, "email", "user@cookshoong.store");
         ReflectionTestUtils.setField(signUpRequestDto, "birthday", LocalDate.of(1997, 6, 4));
         ReflectionTestUtils.setField(signUpRequestDto, "phoneNumber", "01012345678");
+        ReflectionTestUtils.setField(signUpRequestDto, "createAccountAddressRequestDto", createAccountAddressRequestDto);
     }
 
     @Test
@@ -100,7 +114,12 @@ class AccountControllerTest {
                         fieldWithPath("nickname").description("별명"),
                         fieldWithPath("email").description("이메일"),
                         fieldWithPath("birthday").description("생일"),
-                        fieldWithPath("phoneNumber").description("핸드폰 번호")
+                        fieldWithPath("phoneNumber").description("핸드폰 번호"),
+                        fieldWithPath("createAccountAddressRequestDto.alias").description("별칭"),
+                        fieldWithPath("createAccountAddressRequestDto.mainPlace").description("메인 주소"),
+                        fieldWithPath("createAccountAddressRequestDto.detailPlace").description("상세 주소"),
+                        fieldWithPath("createAccountAddressRequestDto.latitude").description("위도"),
+                        fieldWithPath("createAccountAddressRequestDto.longitude").description("경도")
                     )));
 
         verify(accountService, times(1)).createAccount(any(SignUpRequestDto.class), eq(Authority.Code.CUSTOMER));

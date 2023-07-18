@@ -96,7 +96,7 @@ class MerchantRepositoryTest {
         Page<SelectAllMerchantsForUserResponseDto> expects = merchantRepository.lookupMerchantPage(pageable);
 
         assertThat(expects.get().count()).isEqualTo(3);
-        assertThat(expects.get().findFirst().get().getMerchantName()).isEqualTo("카테고리7");
+        assertThat(expects.get().findFirst().get().getName()).isEqualTo("카테고리7");
     }
 
 }

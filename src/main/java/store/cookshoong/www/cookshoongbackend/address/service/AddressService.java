@@ -113,6 +113,21 @@ public class AddressService {
     }
 
     /**
+     * 회원이 주소록 중 선택한 주소 정보.
+     *
+     * @param addressId     주소 아이디
+     * @return              회원이 가지고 있는 주소와 좌표를 반환
+     */
+    @Transactional(readOnly = true)
+    public AddressResponseDto selectAccountChoiceAddress(Long addressId) {
+
+        Address address = addressRepository.findById(addressId)
+            .orElseThrow(AccountAddressNotFoundException::new);
+
+        return accountAddressRepository.lookupByAccountSelectAddressId(address.getId());
+    }
+
+    /**
      * 회원이 지정한 해당 주소를 삭제하는 메서드.
      *
      * @param accountId     회원 아이디

@@ -13,7 +13,6 @@ import lombok.Getter;
  */
 @Getter
 public class SelectStoreResponseDto {
-    private final String loginId;
     private final String businessLicenseNumber;
     private final String representativeName;
     private final LocalDate openingDate;
@@ -31,7 +30,6 @@ public class SelectStoreResponseDto {
     /**
      * 사업자 회원 : 사업자 회원이 본인 매장 정보 조회.
      *
-     * @param loginId               로그인 아이디
      * @param businessLicenseNumber 사압자등록번호
      * @param representativeName    대표자 이름
      * @param openingDate           개업일자
@@ -47,11 +45,10 @@ public class SelectStoreResponseDto {
      * @param bankAccountNumber     정산받을 계좌번호
      */
     @QueryProjection
-    public SelectStoreResponseDto(String loginId, String businessLicenseNumber, String representativeName,
+    public SelectStoreResponseDto(String businessLicenseNumber, String representativeName,
                                   LocalDate openingDate, String storeName, String phoneNumber, String mainPlace,
                                   String detailPlace, BigDecimal latitude, BigDecimal longitude, BigDecimal defaultEarningRate, String description, String bankCode,
                                   String bankAccountNumber) {
-        this.loginId = loginId;
         this.businessLicenseNumber = businessLicenseNumber;
         this.representativeName = representativeName;
         this.openingDate = openingDate;

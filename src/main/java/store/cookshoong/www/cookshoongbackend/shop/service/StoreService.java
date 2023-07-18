@@ -1,10 +1,12 @@
 package store.cookshoong.www.cookshoongbackend.shop.service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +14,8 @@ import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
+import store.cookshoong.www.cookshoongbackend.address.model.response.AddressResponseDto;
+import store.cookshoong.www.cookshoongbackend.address.repository.accountaddress.AccountAddressRepository;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
@@ -21,11 +25,14 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.StoresHasCategory;
 import store.cookshoong.www.cookshoongbackend.shop.exception.banktype.BankTypeNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.category.StoreCategoryNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.DuplicatedBusinessLicenseException;
-import store.cookshoong.www.cookshoongbackend.shop.exception.store.SelectStoreNotFoundException;
+import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreNotFoundException;
+import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreStatusNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.UserAccessDeniedException;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateStoreRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateCategoryRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreRequestDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreStatusRequestDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseDto;
@@ -33,7 +40,7 @@ import store.cookshoong.www.cookshoongbackend.shop.repository.bank.BankTypeRepos
 import store.cookshoong.www.cookshoongbackend.shop.repository.category.StoreCategoryRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.merchant.MerchantRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreRepository;
-import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreStatusRepository;
+import store.cookshoong.www.cookshoongbackend.shop.repository.stauts.StoreStatusRepository;
 
 /**
  * 매장리스트 조회, 등록, 삭제, 수정 서비스 구현.
@@ -42,6 +49,7 @@ import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreStatusR
  * @since 2023.07.05
  */
 @Service
+@Slf4j
 @RequiredArgsConstructor
 @Transactional
 public class StoreService {
@@ -51,6 +59,8 @@ public class StoreService {
     private final MerchantRepository merchantRepository;
     private final StoreStatusRepository storeStatusRepository;
     private final StoreCategoryRepository storeCategoryRepository;
+    private final AccountAddressRepository accountAddressRepository;
+    private static final BigDecimal DISTANCE = new BigDecimal("3.0");
 
     private static void accessDeniedException(Long accountId, Store store) {
         if (!store.getAccount().getId().equals(accountId)) {
@@ -91,7 +101,7 @@ public class StoreService {
     @Transactional(readOnly = true)
     public SelectStoreResponseDto selectStore(Long accountId, Long storeId) {
         return storeRepository.lookupStore(accountId, storeId)
-            .orElseThrow(SelectStoreNotFoundException::new);
+            .orElseThrow(StoreNotFoundException::new);
     }
 
     /**
@@ -103,7 +113,7 @@ public class StoreService {
     @Transactional(readOnly = true)
     public SelectStoreForUserResponseDto selectStoreForUser(Long storeId) {
         return storeRepository.lookupStoreForUser(storeId)
-            .orElseThrow(SelectStoreNotFoundException::new);
+            .orElseThrow(StoreNotFoundException::new);
     }
 
     /**
@@ -158,7 +168,7 @@ public class StoreService {
      * @param requestDto 매장 수정 정보
      */
     public void updateStore(Long accountId, Long storeId, UpdateStoreRequestDto requestDto) {
-        Store store = storeRepository.findById(storeId).orElseThrow(SelectStoreNotFoundException::new);
+        Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
         accessDeniedException(accountId, store);
         Merchant merchant = merchantRepository.findMerchantByName(requestDto.getMerchantName()).orElse(null);
         Account account = accountRepository.findById(accountId)
@@ -195,11 +205,78 @@ public class StoreService {
      * @param requestDto 매장 카테고리 code list
      */
     public void updateStoreCategories(Long accountId, Long storeId, UpdateCategoryRequestDto requestDto) {
-        Store store = storeRepository.findById(storeId).orElseThrow(SelectStoreNotFoundException::new);
+        Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
         accessDeniedException(accountId, store);
 
         store.initStoreCategories();
 
         addStoreCategory(requestDto.getStoreCategories(), store);
+    }
+
+    public void updateStoreStatus(Long accountId, Long storeId, UpdateStoreStatusRequestDto requestDto){
+        Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
+        accessDeniedException(accountId, store);
+        // TODO 7. OUTED 된 매장 다시 부활시킬 수 있을까?
+        StoreStatus storeStatus = storeStatusRepository.findById(requestDto.getStatusCode())
+            .orElseThrow(StoreStatusNotFoundException::new);
+
+        store.modifyStoreStatus(storeStatus);
+    }
+
+    /**
+     * 회원의 위치를 기반으로 3km 이내에 위차한 매장만을 조회하는 메서드.
+     *
+     * @param addressId 주소 아이디
+     * @param pageable  페이지 정보
+     * @return          3km 이내에 위치한 매장만을 반환
+     */
+    public Page<SelectAllStoresNotOutedResponseDto> selectAllStoresNotOutedResponsePage(Long addressId,
+                                                                                        Pageable pageable) {
+        Page<SelectAllStoresNotOutedResponseDto> allStore =
+            storeRepository.lookupStoreLatLanPage(pageable);
+        AddressResponseDto addressLatLng =
+            accountAddressRepository.lookupByAccountSelectAddressId(addressId);
+        log.info("ADDRESS: {}", addressLatLng);
+        List<SelectAllStoresNotOutedResponseDto> nearbyStores = allStore
+            .stream()
+            .filter(store -> isWithDistance(addressLatLng, store))
+            .collect(Collectors.toList());
+        return new PageImpl<>(nearbyStores, pageable, nearbyStores.size());
+    }
+
+    private boolean isWithDistance(AddressResponseDto address, SelectAllStoresNotOutedResponseDto store) {
+
+        BigDecimal storeDistance =  calculateDistance(
+            address.getLatitude(), address.getLongitude(),
+            store.getLatitude(), store.getLongitude()
+        );
+
+        return storeDistance.compareTo(DISTANCE) <= 0;
+    }
+
+    private BigDecimal calculateDistance(BigDecimal x1, BigDecimal y1, BigDecimal x2, BigDecimal y2) {
+
+        Double distance;
+        Double radius = 6371.0; // 지구 반지름(km)
+        Double toRadian = Math.PI / 180;
+
+        Double deltaLatitude = Math.abs(x1.doubleValue() - x2.doubleValue()) * toRadian;
+        Double deltaLongitude = Math.abs(y1.doubleValue() - y2.doubleValue()) * toRadian;
+
+        Double sinDeltaLat = Math.sin(deltaLatitude / 2);
+        Double sinDeltaLng = Math.sin(deltaLongitude / 2);
+
+        Double mulSinDelLat = sinDeltaLat * sinDeltaLat;
+        Double cosX1ToTadian = Math.cos(x1.doubleValue() * toRadian);
+        Double cosX2ToTadian = Math.cos(x2.doubleValue() * toRadian);
+        Double mulSinDelLng = sinDeltaLng * sinDeltaLng;
+
+        Double squareRoot = Math.sqrt(
+            mulSinDelLat + cosX1ToTadian * cosX2ToTadian * mulSinDelLng);
+
+        distance = 2 * radius * Math.asin(squareRoot);
+        log.info("distance: {}", distance);
+
+        return BigDecimal.valueOf(distance);
     }
 }
