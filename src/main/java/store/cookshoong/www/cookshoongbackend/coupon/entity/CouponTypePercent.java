@@ -1,6 +1,5 @@
 package store.cookshoong.www.cookshoongbackend.coupon.entity;
 
-import java.math.BigDecimal;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -25,12 +24,12 @@ import lombok.NoArgsConstructor;
 public class CouponTypePercent extends CouponType {
 
     @Column(name = "rate", nullable = false)
-    private BigDecimal rate;
+    private Integer rate;
 
-    @Column(name = "minimum_price")
-    private Integer minimumPrice;
+    @Column(name = "minimum_order_price")
+    private Integer minimumOrderPrice;
 
-    @Column(name = "maximum_price", nullable = false)
-    private Integer maximumPrice;
+    @Column(name = "maximum_discount_amount", nullable = false)
+    private Integer maximumDiscountAmount;
 
 }

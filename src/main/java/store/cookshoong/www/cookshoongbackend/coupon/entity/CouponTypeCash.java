@@ -26,6 +26,6 @@ public class CouponTypeCash extends CouponType {
     @Column(name = "discount_amount", nullable = false)
     private Integer discountAmount;
 
-    @Column(name = "minimum_price")
-    private Integer minimumPrice;
+    @Column(name = "minimum_order_price")
+    private Integer minimumOrderPrice;
 }
