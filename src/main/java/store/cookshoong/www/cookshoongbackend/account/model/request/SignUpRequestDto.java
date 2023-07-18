@@ -26,7 +26,7 @@ import store.cookshoong.www.cookshoongbackend.common.util.ValidationFailureMessa
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SignUpRequestDto {
     @NotBlank
-    @Length(min = 1, max = 30)
+    @Length(min = 1, max = 255)
     private String loginId;
     @NotBlank
     private String password;
