@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 /**
- * 쿠폰 정책 생성 시 필요한 메서드를 정의한 인터페이스.
+ * 쿠폰 정책 생성 시 동일 필드를 정의한 abstract class.
  *
  * @author eora21
  * @since 2023.07.05
