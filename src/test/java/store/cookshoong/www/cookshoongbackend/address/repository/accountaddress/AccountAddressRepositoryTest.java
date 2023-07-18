@@ -116,7 +116,7 @@ class AccountAddressRepositoryTest {
     }
 
     @Test
-    @DisplayName("회원이 최근에 등록한 주소")
+    @DisplayName("회원이 최근에 갱신한 주소")
     void getFindAccountByAddressRecentRegistration() {
 
         AccountStatus status = new AccountStatus("ACTIVE", "활성");
@@ -159,7 +159,7 @@ class AccountAddressRepositoryTest {
 
 
         AddressResponseDto actual =
-            accountAddressRepository.lookupByAccountIdAddressRecentRegistration(account.getId());
+            accountAddressRepository.lookupByAccountAddressRenewalAt(account.getId());
 
         assertThat(actual.getMainPlace()).isEqualTo(accountAddress1.getAddress().getMainPlace());
         assertThat(actual.getDetailPlace()).isEqualTo(accountAddress1.getAddress().getDetailPlace());

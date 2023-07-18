@@ -12,10 +12,12 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
+import com.epages.restdocs.apispec.Schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -132,6 +134,19 @@ class AddressControllerTest {
     }
 
     @Test
+    @DisplayName("회원이 선택한 주소에 대해 갱신 날짜를 업데이트")
+    void patchSelectAccountAddressRenewalAt() throws Exception {
+
+        mockMvc.perform(patch("/api/addresses/{accountId}/select/{addressId}", 1L, 1L))
+            .andExpect(status().isOk())
+            .andDo(document("patch-select-account-address-renewal-at",
+                ResourceSnippetParameters.builder()
+                    .pathParameters(parameterWithName("accountId").description("회원 아이디"))
+                    .pathParameters(parameterWithName("addressId").description("주소 아이디"))
+                    .responseSchema(Schema.schema("getStorePolicy.Response"))));
+    }
+
+    @Test
     @DisplayName("회원이 가지고 있느 모든 메인 주소와 별칭 조회")
     void getAccountAddressList() throws Exception {
 
@@ -162,7 +177,7 @@ class AddressControllerTest {
         AddressResponseDto responseDto = new AddressResponseDto(1L, "경기도 성남시 분당구 대왕판교로645번길 16", "NHN 플레이뮤지엄",
             new BigDecimal("37.40096549041187"), new BigDecimal("127.1040493631922"));
 
-        when(addressService.selectAccountAddressRecentRegistration(1L)).thenReturn(responseDto);
+        when(addressService.selectAccountAddressRenewalAt(1L)).thenReturn(responseDto);
 
         mockMvc.perform(get("/api/addresses/{accountId}/recent-registration",  1L))
             .andExpect(status().isOk())
