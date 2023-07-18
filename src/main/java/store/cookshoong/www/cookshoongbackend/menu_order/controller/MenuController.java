@@ -18,7 +18,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectMe
 import store.cookshoong.www.cookshoongbackend.menu_order.service.MenuService;
 
 /**
- * 메뉴 컨트롤러 구현.
+ * 메뉴 컨트롤러.
  *
  * @author papel
  * @since 2023.07.13
@@ -30,12 +30,12 @@ public class MenuController {
     private final MenuService menuService;
 
     /**
-     * 메뉴 등록을 위한 컨트롤러 구현.
+     * 메뉴 등록 컨트롤러.
      *
-     * @param storeId                 the store id
-     * @param createMenuRequestDto    메뉴 등록을 위한 Request Body
-     * @param bindingResult           validation 결과
-     * @return 201
+     * @param storeId              매장 아이디
+     * @param createMenuRequestDto 메뉴 등록 Dto
+     * @param bindingResult        validation
+     * @return 201 response
      */
     @PostMapping("/menu")
     public ResponseEntity<Void> postMenu(@PathVariable("storeId") Long storeId,
@@ -52,10 +52,10 @@ public class MenuController {
     }
 
     /**
-     * 일반 유저 : 매장의 메뉴들을 보여주는 조회 페이지.
+     * 메뉴 조회 컨트롤러.
      *
      * @param storeId 주소 아이디
-     * @return          상태코드 200(Ok)와 함께 응답을 반환 & 클라이언트에게 매장의 메뉴 리스트로 반환
+     * @return 200 response, 메뉴리스트
      */
     @GetMapping("/menu")
     public ResponseEntity<List<SelectMenuResponseDto>> getMenus(@PathVariable("storeId") Long storeId) {

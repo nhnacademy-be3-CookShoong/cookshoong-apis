@@ -47,13 +47,13 @@ public class Option {
     private Boolean isDeleted;
 
     /**
-     * 옵션 생성자.
+     * 옵션 엔티티 생성자.
      *
-     * @param optionGroup       옵션 그룹
-     * @param name              이름
-     * @param price             가격
-     * @param optionSequence    순서
-     * @param isDeleted         삭제여부
+     * @param optionGroup    옵션 그룹
+     * @param name           이름
+     * @param price          가격
+     * @param optionSequence 순서
+     * @param isDeleted      삭제여부
      */
     public Option(OptionGroup optionGroup, String name, Integer price, Integer optionSequence, Boolean isDeleted) {
         this.optionGroup = optionGroup;

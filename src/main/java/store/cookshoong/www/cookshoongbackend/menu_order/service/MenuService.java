@@ -16,8 +16,7 @@ import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreNotFound
 import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreRepository;
 
 /**
- * 관리자가 가맹점의 메뉴를 관리.
- * 메뉴 추가, 수정, 삭제.
+ * 메뉴 관리 서비스.
  *
  * @author papel
  * @since 2023.07.11
@@ -31,8 +30,7 @@ public class MenuService {
     private final StoreRepository storeRepository;
 
     /**
-     * 사업자 회원 : 메뉴 등록 서비스 구현.
-     * 메뉴 등록, 처음 상태는 판매중으로 고정.
+     * 메뉴 등록 서비스.
      *
      * @param storeId              매장 아이디
      * @param createMenuRequestDto 메뉴 등록을 위한 정보
@@ -55,7 +53,7 @@ public class MenuService {
     }
 
     /**
-     * 일반 회원 : 매장의 메뉴 조회 서비스 구현.
+     * 메뉴 조회 서비스.
      *
      * @param storeId 매장 아이디
      * @return 매장의 메뉴 리스트

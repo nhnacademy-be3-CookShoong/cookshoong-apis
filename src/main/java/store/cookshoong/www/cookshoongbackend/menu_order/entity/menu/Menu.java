@@ -68,16 +68,16 @@ public class Menu {
     private final Set<MenuHasMenuGroup> menuHasMenuGroups = new HashSet<>();
 
     /**
-     * 메뉴 생성자.
+     * 메뉴 엔티티 생성자.
      *
-     * @param menuStatusCode      가맹점
-     * @param store               회원
-     * @param name                은행타입
-     * @param price               가게 상태
-     * @param description         사업자등록증
-     * @param image               사업자등록번호
-     * @param cookingTime         대표자 이름
-     * @param earningRate         개업일자
+     * @param menuStatusCode 가맹점
+     * @param store          회원
+     * @param name           은행타입
+     * @param price          가게 상태
+     * @param description    사업자등록증
+     * @param image          사업자등록번호
+     * @param cookingTime    대표자 이름
+     * @param earningRate    개업일자
      */
     public Menu(MenuStatus menuStatusCode, Store store, String name, Integer price, String description, String image, Integer cookingTime, BigDecimal earningRate) {
         this.menuStatusCode = menuStatusCode;

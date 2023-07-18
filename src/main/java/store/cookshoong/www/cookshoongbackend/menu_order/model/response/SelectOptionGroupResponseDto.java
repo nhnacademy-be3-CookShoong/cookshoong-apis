@@ -4,7 +4,7 @@ import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 
 /**
- * 사업자입장에서 옵션 그룹 조회를 위한 Dto.
+ * 옵션 그룹 조회 Dto.
  *
  * @author papel
  * @since 2023.07.11

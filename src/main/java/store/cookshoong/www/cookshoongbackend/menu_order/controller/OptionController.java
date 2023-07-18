@@ -18,7 +18,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectOp
 import store.cookshoong.www.cookshoongbackend.menu_order.service.OptionService;
 
 /**
- * 옵션 컨트롤러 구현.
+ * 옵션 컨트롤러.
  *
  * @author papel
  * @since 2023.07.13
@@ -30,12 +30,12 @@ public class OptionController {
     private final OptionService optionService;
 
     /**
-     * 옵션 등록을 위한 컨트롤러 구현.
+     * 옵션 등록 컨트롤러.
      *
-     * @param optionGroupId             옵션 그룹 아이디
-     * @param createOptionRequestDto    옵션 등록을 위한 Request Body
-     * @param bindingResult             validation 결과
-     * @return 201
+     * @param optionGroupId          옵션 그룹 아이디
+     * @param createOptionRequestDto 옵션 등록 Dto
+     * @param bindingResult          validation
+     * @return 201 response
      */
     @PostMapping("/option-group/{optionGroupId}/option")
     public ResponseEntity<Void> postOption(@PathVariable("optionGroupId") Integer optionGroupId,
@@ -52,10 +52,10 @@ public class OptionController {
     }
 
     /**
-     * 일반 유저 : 매장의 메뉴들을 보여주는 조회 페이지.
+     * 옵션 조회 컨트롤러.
      *
-     * @param storeId 주소 아이디
-     * @return          상태코드 200(Ok)와 함께 응답을 반환 & 클라이언트에게 매장의 옵션 리스트로 반환
+     * @param storeId 매장 아이디
+     * @return 200 response, 옵션 리스트
      */
     @GetMapping("/option")
     public ResponseEntity<List<SelectOptionResponseDto>> getOptions(@PathVariable("storeId") Long storeId) {

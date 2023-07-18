@@ -11,7 +11,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.model.response.QSelectM
 import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectMenuResponseDto;
 
 /**
- * 메뉴 Custom 레포지토리 구현.
+ * 메뉴 커스텀 레포지토리 구현.
  *
  * @author papel
  * @since 2023.07.17

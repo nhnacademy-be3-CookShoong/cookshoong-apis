@@ -13,8 +13,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.repository.option.Optio
 import store.cookshoong.www.cookshoongbackend.menu_order.repository.optiongroup.OptionGroupRepository;
 
 /**
- * 관리자가 가맹점의 옵션을 관리.
- * 옵션 추가, 수정, 삭제.
+ * 옵션 관리 서비스.
  *
  * @author papel
  * @since 2023.07.11
@@ -27,9 +26,9 @@ public class OptionService {
     private final OptionGroupRepository optionGroupRepository;
 
     /**
-     * 사업자 회원 : 옵션 등록 서비스 구현.
-     * 옵션 등록.
+     * 옵션 등록 서비스.
      *
+     * @param optionGroupId          옵션 그룹 아이디
      * @param createOptionRequestDto 옵션 등록을 위한 정보
      */
     public void createOption(Integer optionGroupId, CreateOptionRequestDto createOptionRequestDto) {
@@ -47,7 +46,7 @@ public class OptionService {
     }
 
     /**
-     * 일반 회원 : 매장의 옵션 조회 서비스 구현.
+     * 옵션 조회 서비스.
      *
      * @param storeId 매장 아이디
      * @return 매장의 옵션 리스트

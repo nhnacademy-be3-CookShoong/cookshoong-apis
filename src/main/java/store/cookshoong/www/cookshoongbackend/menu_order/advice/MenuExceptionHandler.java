@@ -16,7 +16,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.exception.option.Option
 import store.cookshoong.www.cookshoongbackend.menu_order.exception.option.OptionValidationException;
 
 /**
- * menu 패키지 아래에서 RestController 내에서 일어나는 모든 예외들을 처리한다.
+ * menu 패키지 아래 RestController 내에서 일어나는 모든 예외 처리.
  *
  * @author papel
  * @since 2023.07.13

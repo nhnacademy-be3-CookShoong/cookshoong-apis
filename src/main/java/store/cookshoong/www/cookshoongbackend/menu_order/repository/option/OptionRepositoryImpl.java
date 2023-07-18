@@ -9,7 +9,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.model.response.QSelectO
 import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectOptionResponseDto;
 
 /**
- * 옵션 Custom 레포지토리 구현.
+ * 옵션 커스텀 레포지토리 구현.
  *
  * @author papel
  * @since 2023.07.17

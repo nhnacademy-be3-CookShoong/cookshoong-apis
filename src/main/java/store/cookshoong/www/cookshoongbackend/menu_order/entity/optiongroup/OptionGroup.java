@@ -47,13 +47,13 @@ public class OptionGroup {
     private Boolean isDeleted;
 
     /**
-     * 옵션 그룹 생성자.
+     * 옵션 그룹 엔티티 생성자.
      *
-     * @param store             매장
-     * @param name              이름
-     * @param minSelectCount    최소 선택수
-     * @param maxSelectCount    최대 선택수
-     * @param isDeleted         삭제여부
+     * @param store          매장
+     * @param name           이름
+     * @param minSelectCount 최소 선택수
+     * @param maxSelectCount 최대 선택수
+     * @param isDeleted      삭제여부
      */
     public OptionGroup(Store store, String name, Integer minSelectCount, Integer maxSelectCount, Boolean isDeleted) {
         this.store = store;
