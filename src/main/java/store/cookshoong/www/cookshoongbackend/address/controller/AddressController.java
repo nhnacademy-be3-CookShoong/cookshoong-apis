@@ -68,8 +68,7 @@ public class AddressController {
      */
     @PatchMapping("/{accountId}/{addressId}")
     public ResponseEntity<Void> patchModifyAccountDetailAddress(
-        @PathVariable("accountId") Long accountId,
-        @PathVariable("addressId") Long addressId,
+        @PathVariable("accountId") Long accountId, @PathVariable("addressId") Long addressId,
         @RequestBody @Valid ModifyAccountAddressRequestDto requestDto,
         BindingResult bindingResult) {
 
@@ -78,6 +77,22 @@ public class AddressController {
         }
 
         addressService.updateAccountDetailAddress(accountId, addressId, requestDto);
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * 회원이 선택한 주소에 대해 갱신 날짜를 업데이트하는 Controller.
+     *
+     * @param accountId     회원 아이디
+     * @param addressId     주소 아이디
+     * @return              상태코드 200(Ok)와 함께 응답을 반환
+     */
+    @PatchMapping("/{accountId}/select/{addressId}")
+    public ResponseEntity<Void> patchSelectAccountAddressRenewalAt(@PathVariable("accountId") Long accountId,
+                                                                   @PathVariable("addressId") Long addressId) {
+
+        addressService.updateSelectAccountAddressRenewalAt(accountId, addressId);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -95,22 +110,21 @@ public class AddressController {
     }
 
     /**
-     * 회원이 주문하기 누른 후 결제 화면에서 보여주는 메인 주소와 상세 주소.
-     * 회원의 현재 위치를 찍어주기 위한 좌표
+     * 회원이 가지고 있는 주소 중 최근 갱신된 주소를 조회하는 Controller.
      *
      * @param accountId     회원 아이디
      * @return              상태코드 200(Ok)와 함께 응답을 반환 & 클라이언트에게 해당 메인 주소와 상세 주소를 반환
      */
-    @GetMapping("/{accountId}/recent-registration")
-    public ResponseEntity<AddressResponseDto> getAccountAddressRecentRegistration(@PathVariable("accountId") Long accountId) {
+    @GetMapping("/{accountId}/renewal-at")
+    public ResponseEntity<AddressResponseDto> getAccountAddressRenewalAt(@PathVariable("accountId") Long accountId) {
 
-        AddressResponseDto address = addressService.selectAccountAddressRecentRegistration(accountId);
+        AddressResponseDto address = addressService.selectAccountAddressRenewalAt(accountId);
 
         return ResponseEntity.status(HttpStatus.OK).body(address);
     }
 
     /**
-     * 회원이 선택한 주소에 대한 주소 정보.
+     * 회원이 선택한 주소에 대한 주소 정보 Controller.
      *
      * @param addressId     주소 아이디
      * @return              상태코드 200(Ok)와 함께 응답을 반환 & 클라이언트에게 해당 주소 정보를 반환
