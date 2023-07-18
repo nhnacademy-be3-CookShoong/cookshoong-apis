@@ -39,13 +39,14 @@ import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreRes
 import store.cookshoong.www.cookshoongbackend.shop.repository.bank.BankTypeRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.category.StoreCategoryRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.merchant.MerchantRepository;
-import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.stauts.StoreStatusRepository;
+import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreRepository;
 
 /**
  * 매장리스트 조회, 등록, 삭제, 수정 서비스 구현.
  *
  * @author seungyeon
+ * @contributer jeongjewan
  * @since 2023.07.05
  */
 @Service
@@ -61,6 +62,8 @@ public class StoreService {
     private final StoreCategoryRepository storeCategoryRepository;
     private final AccountAddressRepository accountAddressRepository;
     private static final BigDecimal DISTANCE = new BigDecimal("3.0");
+    private static final Double RADIUS = 6371.0;
+    private static final Double TO_RADIAN = Math.PI / 180;
 
     private static void accessDeniedException(Long accountId, Store store) {
         if (!store.getAccount().getId().equals(accountId)) {
@@ -213,7 +216,8 @@ public class StoreService {
         addStoreCategory(requestDto.getStoreCategories(), store);
     }
 
-    public void updateStoreStatus(Long accountId, Long storeId, UpdateStoreStatusRequestDto requestDto){
+    // 승연님 javadoc 달아주세요.
+    public void updateStoreStatus(Long accountId, Long storeId, UpdateStoreStatusRequestDto requestDto) {
         Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
         accessDeniedException(accountId, store);
         // TODO 7. OUTED 된 매장 다시 부활시킬 수 있을까?
@@ -226,6 +230,7 @@ public class StoreService {
     /**
      * 회원의 위치를 기반으로 3km 이내에 위차한 매장만을 조회하는 메서드.
      *
+     * @author          jeongjewan
      * @param addressId 주소 아이디
      * @param pageable  페이지 정보
      * @return          3km 이내에 위치한 매장만을 반환
@@ -236,7 +241,7 @@ public class StoreService {
             storeRepository.lookupStoreLatLanPage(pageable);
         AddressResponseDto addressLatLng =
             accountAddressRepository.lookupByAccountSelectAddressId(addressId);
-        log.info("ADDRESS: {}", addressLatLng);
+
         List<SelectAllStoresNotOutedResponseDto> nearbyStores = allStore
             .stream()
             .filter(store -> isWithDistance(addressLatLng, store))
@@ -257,25 +262,22 @@ public class StoreService {
     private BigDecimal calculateDistance(BigDecimal x1, BigDecimal y1, BigDecimal x2, BigDecimal y2) {
 
         Double distance;
-        Double radius = 6371.0; // 지구 반지름(km)
-        Double toRadian = Math.PI / 180;
 
-        Double deltaLatitude = Math.abs(x1.doubleValue() - x2.doubleValue()) * toRadian;
-        Double deltaLongitude = Math.abs(y1.doubleValue() - y2.doubleValue()) * toRadian;
+        Double deltaLatitude = Math.abs(x1.doubleValue() - x2.doubleValue()) * TO_RADIAN;
+        Double deltaLongitude = Math.abs(y1.doubleValue() - y2.doubleValue()) * TO_RADIAN;
 
         Double sinDeltaLat = Math.sin(deltaLatitude / 2);
         Double sinDeltaLng = Math.sin(deltaLongitude / 2);
 
         Double mulSinDelLat = sinDeltaLat * sinDeltaLat;
-        Double cosX1ToTadian = Math.cos(x1.doubleValue() * toRadian);
-        Double cosX2ToTadian = Math.cos(x2.doubleValue() * toRadian);
+        Double cosX1ToTadian = Math.cos(x1.doubleValue() * TO_RADIAN);
+        Double cosX2ToTadian = Math.cos(x2.doubleValue() * TO_RADIAN);
         Double mulSinDelLng = sinDeltaLng * sinDeltaLng;
 
         Double squareRoot = Math.sqrt(
             mulSinDelLat + cosX1ToTadian * cosX2ToTadian * mulSinDelLng);
 
-        distance = 2 * radius * Math.asin(squareRoot);
-        log.info("distance: {}", distance);
+        distance = 2 * RADIUS * Math.asin(squareRoot);
 
         return BigDecimal.valueOf(distance);
     }
