@@ -25,6 +25,7 @@ import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
 import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
+import store.cookshoong.www.cookshoongbackend.file.Image;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
@@ -66,6 +67,8 @@ class StoreRepositoryTest {
     static Store store;
     static Account account;
     static Merchant merchant;
+    static Image businessImage;
+    static Image storeImage;
     @Autowired
     private AccountRepository accountRepository;
 
@@ -80,9 +83,11 @@ class StoreRepositoryTest {
 
         StoreStatus storeStatus = testEntity.getStoreStatusOpen();
         BankType bankType = testEntity.getBankTypeKb();
-        store = new Store(merchant, account, bankType, storeStatus, "businessLicenseImage1",
+        businessImage = testEntity.getImage(false);
+        storeImage = testEntity.getImage(true);
+        store = new Store(merchant, account, bankType, storeStatus,businessImage ,
             "1234567891", "나기업", LocalDate.parse("1999-02-03"), "나기업의 김치찌개",
-            "01088889991", new BigDecimal("1.1"), "우리 매장음식이 가장 맛있어요.", null, "11022223333");
+            "01088889991", new BigDecimal("1.1"), "우리 매장음식이 가장 맛있어요.", storeImage, "11022223333");
 
 
         em.persist(accountStatus);
@@ -92,6 +97,8 @@ class StoreRepositoryTest {
         em.persist(merchant);
         em.persist(storeStatus);
         em.persist(bankType);
+        em.persist(businessImage);
+        em.persist(storeImage);
     }
 
     @Test
@@ -113,7 +120,7 @@ class StoreRepositoryTest {
         assertThat(actual.getBusinessLicense()).isEqualTo(store.getBusinessLicense());
         assertThat(actual.getMerchant()).isEqualTo(store.getMerchant());
         assertThat(actual.getAccount()).isEqualTo(store.getAccount());
-        assertThat(actual.getImage()).isNull();
+        assertThat(actual.getImage()).isEqualTo(store.getImage());
     }
 
     @Test
@@ -150,9 +157,9 @@ class StoreRepositoryTest {
         em.persist(address);
 
         for (int i = 1; i < 10; i++) {
-            Store store = new Store(merchant, account, bankType, storeStatus, "businessImage" + i,
+            Store store = new Store(merchant, account, bankType, storeStatus, businessImage,
                 "1111111" + i, "유회장", LocalDate.of(2020, 11, 11), i + "호점",
-                "01011112222", new BigDecimal("1.1"), "가장 맛있는 집", null, "011122222");
+                "01011112222", new BigDecimal("1.1"), "가장 맛있는 집", storeImage, "011122222");
             store.modifyAddress(address);
             storeRepository.save(store);
         }
@@ -220,9 +227,9 @@ class StoreRepositoryTest {
         Address address = new Address("조선대학교 11번길", "33-1", new BigDecimal(111), new BigDecimal(122));
         em.persist(address);
 
-        Store store = new Store(merchant, account, bankType, storeStatus, "businessLicenseImage1",
+        Store store = new Store(merchant, account, bankType, storeStatus, businessImage,
             "1234567891", "나기업", LocalDate.parse("1999-02-03"), "나기업의 김치찌개",
-            "01088889991", new BigDecimal("1.1"), "우리 매장음식이 가장 맛있어요.", null, "11022223333");
+            "01088889991", new BigDecimal("1.1"), "우리 매장음식이 가장 맛있어요.", storeImage, "11022223333");
         store.modifyAddress(address);
 
         StoreCategory storeCategory = new StoreCategory("CHK", "네네치킨");
@@ -235,9 +242,9 @@ class StoreRepositoryTest {
 
         log.info("Categories: {}", store.getStoresHasCategories());
 
-        Store store2 = new Store(merchant, account, bankType, storeStatus, "businessLicenseImage1",
+        Store store2 = new Store(merchant, account, bankType, storeStatus, businessImage,
             "1234567891", "나기업", LocalDate.parse("1999-02-03"), "나기업의 김치찌개",
-            "01088889991", new BigDecimal("1.1"), "우리 매장음식이 가장 맛있어요.", null, "11022223333");
+            "01088889991", new BigDecimal("1.1"), "우리 매장음식이 가장 맛있어요.", storeImage, "11022223333");
         store2.modifyAddress(address);
 
         store2.getStoresHasCategories().add(new StoresHasCategory(
@@ -250,9 +257,9 @@ class StoreRepositoryTest {
         ReflectionTestUtils.setField(storeStatus1, "description", "VKD");
         em.persist(storeStatus1);
 
-        Store store3 = new Store(merchant, account, bankType, storeStatus1, "businessLicenseImage1",
+        Store store3 = new Store(merchant, account, bankType, storeStatus1, businessImage,
             "1234567891", "나기업", LocalDate.parse("1999-02-03"), "나기업의 김치찌개",
-            "01088889991", new BigDecimal("1.1"), "우리 매장음식이 가장 맛있어요.", null, "11022223333");
+            "01088889991", new BigDecimal("1.1"), "우리 매장음식이 가장 맛있어요.", storeImage, "11022223333");
 
         StoreCategory storeCategory1 = ReflectionUtils.newInstance(StoreCategory.class);
         ReflectionTestUtils.setField(storeCategory1, "categoryCode", "DER");

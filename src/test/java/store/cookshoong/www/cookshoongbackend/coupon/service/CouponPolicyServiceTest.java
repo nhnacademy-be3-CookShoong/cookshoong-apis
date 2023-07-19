@@ -22,6 +22,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeCashVo;
 import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypePercentVo;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.*;
 import store.cookshoong.www.cookshoongbackend.coupon.util.CouponTypeConverter;
+import store.cookshoong.www.cookshoongbackend.file.Image;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.shop.repository.merchant.MerchantRepository;
@@ -215,7 +216,9 @@ class CouponPolicyServiceTest {
             .thenAnswer(invocation -> Optional.of(
                 new CouponTypeCash(invocation.getArgument(0), invocation.getArgument(1))));
 
-        Store store = te.getStore(te.getMerchant(), account, te.getBankTypeKb(), te.getStoreStatusOpen());
+        Image businessImage = te.getImage(false);
+        Image storeImage = te.getImage(true);
+        Store store = te.getStore(te.getMerchant(), account, te.getBankTypeKb(), te.getStoreStatusOpen(), businessImage, storeImage);
 
         when(couponUsageStoreRepository.findByStoreId(anyLong()))
             .thenAnswer(invocation -> {
@@ -244,8 +247,9 @@ class CouponPolicyServiceTest {
 
         when(couponUsageStoreRepository.findByStoreId(anyLong()))
             .thenReturn(Optional.empty());
-
-        Store store = te.getStore(te.getMerchant(), account, te.getBankTypeKb(), te.getStoreStatusOpen());
+        Image businessImage = te.getImage(false);
+        Image storeImage = te.getImage(true);
+        Store store = te.getStore(te.getMerchant(), account, te.getBankTypeKb(), te.getStoreStatusOpen(), businessImage, storeImage);
 
         when(storeRepository.getReferenceById(any(Long.class)))
             .thenReturn(persist(store));
@@ -274,7 +278,10 @@ class CouponPolicyServiceTest {
             .thenAnswer(invocation -> Optional.of(new CouponTypePercent(
                 invocation.getArgument(0), invocation.getArgument(1), invocation.getArgument(2))));
 
-        Store store = te.getStore(te.getMerchant(), account, te.getBankTypeKb(), te.getStoreStatusOpen());
+        Image businessImage = te.getImage(false);
+        Image storeImage = te.getImage(true);
+
+        Store store = te.getStore(te.getMerchant(), account, te.getBankTypeKb(), te.getStoreStatusOpen(),businessImage, storeImage);
 
         when(couponUsageStoreRepository.findByStoreId(anyLong()))
             .thenAnswer(invocation -> {
