@@ -22,6 +22,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
+import store.cookshoong.www.cookshoongbackend.file.Image;
+import store.cookshoong.www.cookshoongbackend.file.model.UploadFile;
 
 /**
  * 매장 엔티티.
@@ -60,8 +62,9 @@ public class Store {
     @JoinColumn(name = "store_status_code", nullable = false)
     private StoreStatus storeStatusCode;
 
-    @Column(name = "business_license", nullable = false, length = 40)
-    private String businessLicense;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "business_license_image_id", nullable = false)
+    private Image businessLicense;
 
     @Column(name = "business_license_number", nullable = false, length = 10)
     private String businessLicenseNumber;
@@ -84,8 +87,9 @@ public class Store {
     @Lob
     private String description;
 
-    @Column(length = 40)
-    private String image;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_image_id", nullable = false)
+    private Image image;
 
     @Column(name = "bank_account_number", nullable = false, length = 20)
     private String bankAccountNumber;
@@ -112,9 +116,9 @@ public class Store {
      * @param bankAccountNumber     은행 계좌 번호
      */
     public Store(Merchant merchant, Account account, BankType bankTypeCode, StoreStatus storeStatus,
-                 String businessLicense, String businessLicenseNumber, String representativeName,
+                 Image businessLicense, String businessLicenseNumber, String representativeName,
                  LocalDate openingDate, String name, String phoneNumber, BigDecimal defaultEarningRate,
-                 String description, String image, String bankAccountNumber) {
+                 String description, Image image, String bankAccountNumber) {
         this.merchant = merchant;
         this.account = account;
         this.bankTypeCode = bankTypeCode;
@@ -160,7 +164,7 @@ public class Store {
     public void modifyStoreInfo(Merchant merchant, Account account, BankType bankTypeCode, StoreStatus storeStatus,
                                 String businessLicenseNumber, String representativeName,
                                 LocalDate openingDate, String name, String phoneNumber, BigDecimal defaultEarningRate,
-                                String description, String image, String bankAccountNumber) {
+                                String description, Image image, String bankAccountNumber) {
         this.merchant = merchant;
         this.account = account;
         this.bankTypeCode = bankTypeCode;

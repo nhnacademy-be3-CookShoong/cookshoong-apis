@@ -14,10 +14,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.cookshoong.www.cookshoongbackend.file.Image;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menugroup.MenuHasMenuGroup;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 
@@ -55,8 +57,9 @@ public class Menu {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "image", length = 40)
-    private String image;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "menu_image_id",nullable = false)
+    private Image image;
 
     @Column(name = "cooking_time", nullable = false)
     private Integer cookingTime;
@@ -79,7 +82,7 @@ public class Menu {
      * @param cookingTime    대표자 이름
      * @param earningRate    개업일자
      */
-    public Menu(MenuStatus menuStatusCode, Store store, String name, Integer price, String description, String image, Integer cookingTime, BigDecimal earningRate) {
+    public Menu(MenuStatus menuStatusCode, Store store, String name, Integer price, String description, Image image, Integer cookingTime, BigDecimal earningRate) {
         this.menuStatusCode = menuStatusCode;
         this.store = store;
         this.name = name;
