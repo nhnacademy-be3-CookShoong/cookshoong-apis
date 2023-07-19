@@ -15,6 +15,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponPolicy;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
+import store.cookshoong.www.cookshoongbackend.file.Image;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.Order;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.OrderStatus;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
@@ -46,7 +47,9 @@ public class TestPersistEntity {
         Account account = getLevelOneActiveCustomer();
         BankType bankTypeKb = testEntity.getBankTypeKb();
         StoreStatus storeStatusOpen = testEntity.getStoreStatusOpen();
-        return testEntity.getStore(null, account, bankTypeKb, storeStatusOpen);
+        Image businessImage = testEntity.getImage(false);
+        Image storeImage = testEntity.getImage(true);
+        return testEntity.getStore(null, account, bankTypeKb, storeStatusOpen, businessImage, storeImage);
     }
 
     public Store getOpenMerchantStore() {
@@ -54,7 +57,9 @@ public class TestPersistEntity {
         Account account = getLevelOneActiveCustomer();
         BankType bankTypeKb = testEntity.getBankTypeKb();
         StoreStatus storeStatusOpen = testEntity.getStoreStatusOpen();
-        return testEntity.getStore(merchant, account, bankTypeKb, storeStatusOpen);
+        Image businessImage = testEntity.getImage(false);
+        Image storeImage = testEntity.getImage(true);
+        return testEntity.getStore(merchant, account, bankTypeKb, storeStatusOpen, businessImage, storeImage);
     }
 
     public IssueCoupon getIssueCoupon() {
