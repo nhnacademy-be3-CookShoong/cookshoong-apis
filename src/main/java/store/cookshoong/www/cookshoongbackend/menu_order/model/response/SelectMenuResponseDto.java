@@ -3,6 +3,7 @@ package store.cookshoong.www.cookshoongbackend.menu_order.model.response;
 import com.querydsl.core.annotations.QueryProjection;
 import java.math.BigDecimal;
 import lombok.Getter;
+import store.cookshoong.www.cookshoongbackend.file.Image;
 
 /**
  * 메뉴 조회 Dto.
@@ -16,7 +17,7 @@ public class SelectMenuResponseDto {
     private final String name;
     private final Integer price;
     private final String description;
-    private final String image;
+    private final Image image;
     private final Integer cookingTime;
     private final BigDecimal earningRate;
     private final String menuStatus;
@@ -38,7 +39,7 @@ public class SelectMenuResponseDto {
      * @param menuGroupId        the menuGroup
      */
     @QueryProjection
-    public SelectMenuResponseDto(Long id, String name, Integer price, String description, String image, Integer cookingTime, BigDecimal earningRate, String menuStatus, Integer menuSequence, Long menuGroupId) {
+    public SelectMenuResponseDto(Long id, String name, Integer price, String description, Image image, Integer cookingTime, BigDecimal earningRate, String menuStatus, Integer menuSequence, Long menuGroupId) {
         this.id = id;
         this.name = name;
         this.price = price;

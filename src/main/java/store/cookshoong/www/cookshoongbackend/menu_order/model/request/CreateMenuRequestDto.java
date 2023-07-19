@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.cookshoong.www.cookshoongbackend.file.Image;
 
 /**
  * 메뉴 등록 Dto.
@@ -22,7 +23,7 @@ public class CreateMenuRequestDto {
     @NotNull
     private Integer price;
     private String description;
-    private String image;
+    private Image image;
     @NotNull
     private Integer cookingTime;
     @Digits(integer = 3, fraction = 1)

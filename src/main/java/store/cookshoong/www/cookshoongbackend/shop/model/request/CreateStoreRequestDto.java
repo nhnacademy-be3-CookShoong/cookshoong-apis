@@ -9,6 +9,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
+import store.cookshoong.www.cookshoongbackend.file.Image;
 
 /**
  * 매장 등록 Dto.
@@ -39,12 +41,12 @@ public class CreateStoreRequestDto {
     @NotBlank
     private String phoneNumber;
     @NotBlank
-    private String businessLicense;
+    private Image businessLicense;
     @NotBlank
     private String description;
     @NotNull
     private BigDecimal earningRate;
-    private String image;
+    private Image image;
     @NotNull
     private List<String> storeCategories;
     @NotBlank
