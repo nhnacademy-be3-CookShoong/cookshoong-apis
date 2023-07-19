@@ -9,5 +9,5 @@ import store.cookshoong.www.cookshoongbackend.menu_order.entity.optiongroup.Opti
  * @author papel
  * @since 2023.07.11
  */
-public interface OptionGroupRepository extends JpaRepository<OptionGroup, Integer> {
+public interface OptionGroupRepository extends JpaRepository<OptionGroup, Long>, OptionGroupRepositoryCustom {
 }

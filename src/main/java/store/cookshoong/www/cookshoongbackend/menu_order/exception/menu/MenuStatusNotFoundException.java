@@ -9,7 +9,8 @@ import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException
  * @since 2023.07.13
  */
 public class MenuStatusNotFoundException extends NotFoundException {
+    private static final String ERRORMESSAGE = "해당 이름의 메뉴 상태가 없습니다.";
     public MenuStatusNotFoundException() {
-        super("해당 이름의 메뉴 상태가 없습니다.");
+        super(ERRORMESSAGE);
     }
 }

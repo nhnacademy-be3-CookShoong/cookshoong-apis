@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.MenuStatus;
+import store.cookshoong.www.cookshoongbackend.menu_order.exception.menu.MenuNotFoundException;
 import store.cookshoong.www.cookshoongbackend.menu_order.exception.menu.MenuStatusNotFoundException;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.request.CreateMenuRequestDto;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectMenuResponseDto;
@@ -33,7 +34,7 @@ public class MenuService {
      * 메뉴 등록 서비스.
      *
      * @param storeId              매장 아이디
-     * @param createMenuRequestDto 메뉴 등록을 위한 정보
+     * @param createMenuRequestDto 메뉴 등록 Dto
      */
     public void createMenu(Long storeId, CreateMenuRequestDto createMenuRequestDto) {
         Store store = storeRepository.findById(storeId)
@@ -53,12 +54,23 @@ public class MenuService {
     }
 
     /**
-     * 메뉴 조회 서비스.
+     * 메뉴 리스트 조회 서비스.
      *
      * @param storeId 매장 아이디
      * @return 매장의 메뉴 리스트
      */
     public List<SelectMenuResponseDto> selectMenus(Long storeId) {
         return menuRepository.lookupMenus(storeId);
+    }
+
+    /**
+     * 메뉴 조회 서비스.
+     *
+     * @param menuId 메뉴 아이디
+     * @return 매장의 메뉴
+     */
+    public SelectMenuResponseDto selectMenu(Long menuId) {
+        return menuRepository.lookupMenu(menuId)
+            .orElseThrow(MenuNotFoundException::new);
     }
 }
