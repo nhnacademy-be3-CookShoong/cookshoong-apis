@@ -25,7 +25,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.service.OptionService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/stores/{storeId}")
+@RequestMapping("/api")
 public class OptionController {
     private final OptionService optionService;
 
@@ -37,8 +37,8 @@ public class OptionController {
      * @param bindingResult          validation
      * @return 201 response
      */
-    @PostMapping("/option-group/{optionGroupId}/option")
-    public ResponseEntity<Void> postOption(@PathVariable("optionGroupId") Integer optionGroupId,
+    @PostMapping("/stores/{storeId}/option-group/{optionGroupId}/option")
+    public ResponseEntity<Void> postOption(@PathVariable("optionGroupId") Long optionGroupId,
                                          @RequestBody @Valid CreateOptionRequestDto createOptionRequestDto,
                                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -52,14 +52,28 @@ public class OptionController {
     }
 
     /**
-     * 옵션 조회 컨트롤러.
+     * 옵션 리스트 조회 컨트롤러.
      *
      * @param storeId 매장 아이디
      * @return 200 response, 옵션 리스트
      */
-    @GetMapping("/option")
+    @GetMapping("/stores/{storeId}/option")
     public ResponseEntity<List<SelectOptionResponseDto>> getOptions(@PathVariable("storeId") Long storeId) {
         List<SelectOptionResponseDto> options = optionService.selectOptions(storeId);
         return ResponseEntity.ok(options);
+    }
+
+    /**
+     * 옵션 조회 컨트롤러.
+     *
+     * @param optionId 옵션 아이디
+     * @return 200 response, 옵션
+     */
+    @GetMapping("/stores/{storeId}/option/{optionId}")
+    public ResponseEntity<SelectOptionResponseDto> getOption(
+        @PathVariable("storeId") Long storeId,
+        @PathVariable("optionId") Long optionId) {
+        SelectOptionResponseDto option = optionService.selectOption(optionId);
+        return ResponseEntity.ok(option);
     }
 }

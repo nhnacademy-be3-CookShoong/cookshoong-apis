@@ -2,13 +2,13 @@ package store.cookshoong.www.cookshoongbackend.menu_order.repository.menu;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.QMenu;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.QMenuStatus;
-import store.cookshoong.www.cookshoongbackend.menu_order.entity.menugroup.QMenuGroup;
-import store.cookshoong.www.cookshoongbackend.menu_order.entity.menugroup.QMenuHasMenuGroup;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.response.QSelectMenuResponseDto;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectMenuResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.entity.QStore;
 
 /**
  * 메뉴 커스텀 레포지토리 구현.
@@ -20,27 +20,52 @@ import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectMe
 public class MenuRepositoryImpl implements MenuRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
+
     /**
-     * {@inheritDoc}
+     * 매장 메뉴 조회.
+     *
+     * @param menuId 메뉴 아이디
+     * @return 매장의 메뉴
+     */
+    @Override
+    public Optional<SelectMenuResponseDto> lookupMenu(Long menuId) {
+        QMenu menu = QMenu.menu;
+        QMenuStatus menuStatus = QMenuStatus.menuStatus;
+        QStore store = QStore.store;
+
+        return Optional.ofNullable(jpaQueryFactory
+            .select(new QSelectMenuResponseDto(
+                menu.id, menuStatus.menuStatusCode, store.id,
+                menu.name, menu.price, menu.description,
+                menu.image, menu.cookingTime, menu.earningRate))
+            .from(menu)
+            .innerJoin(menu.menuStatusCode, menuStatus)
+            .innerJoin(menu.store, store)
+            .where(menu.id.eq(menuId))
+            .fetchOne());
+    }
+
+    /**
+     * 매장 메뉴 리스트 조회.
+     *
+     * @param storeId 매장 아이디
+     * @return 매장의 메뉴 리스트
      */
     @Override
     public List<SelectMenuResponseDto> lookupMenus(Long storeId) {
         QMenu menu = QMenu.menu;
-        QMenuHasMenuGroup menuHasMenuGroup = QMenuHasMenuGroup.menuHasMenuGroup;
-        QMenuGroup menuGroup = QMenuGroup.menuGroup;
-        QMenuStatus status = QMenuStatus.menuStatus;
+        QMenuStatus menuStatus = QMenuStatus.menuStatus;
+        QStore store = QStore.store;
 
         return jpaQueryFactory
             .select(new QSelectMenuResponseDto(
-                menu.id, menu.name, menu.price, menu.description,
-                menu.image, menu.cookingTime, menu.earningRate,
-                status.menuStatusCode, menuHasMenuGroup.menuSequence,
-                menuGroup.id))
+                menu.id, menuStatus.menuStatusCode, store.id,
+                menu.name, menu.price, menu.description,
+                menu.image, menu.cookingTime, menu.earningRate))
             .from(menu)
-            .innerJoin(menu.menuStatusCode, status)
-            .innerJoin(menu.menuHasMenuGroups, menuHasMenuGroup)
-            .innerJoin(menuHasMenuGroup.menuGroup, menuGroup)
-            .where(menu.store.id.eq(storeId))
+            .innerJoin(menu.menuStatusCode, menuStatus)
+            .innerJoin(menu.store, store)
+            .where(store.id.eq(storeId))
             .fetch();
     }
 }
