@@ -147,7 +147,7 @@ public class StoreService {
             registerRequestDto.getPhoneNumber(),
             registerRequestDto.getEarningRate(),
             registerRequestDto.getDescription(),
-            null,
+            registerRequestDto.getImage(),
             registerRequestDto.getBankAccount());
 
         List<String> categories = registerRequestDto.getStoreCategories();
