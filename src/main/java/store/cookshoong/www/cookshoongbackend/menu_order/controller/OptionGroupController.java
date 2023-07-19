@@ -69,8 +69,10 @@ public class OptionGroupController {
      * @param optionGroupId 옵션 그룹 아이디
      * @return 200 response, 옵션 그룹 리스트
      */
-    @GetMapping("/option-group/{optionGroupId}")
-    public ResponseEntity<SelectOptionGroupResponseDto> getOptionGroup(@PathVariable("optionGroupId") Long optionGroupId) {
+    @GetMapping("/stores/{storeId}/option-group/{optionGroupId}")
+    public ResponseEntity<SelectOptionGroupResponseDto> getOptionGroup(
+        @PathVariable("storeId") Long storeId,
+        @PathVariable("optionGroupId") Long optionGroupId) {
         SelectOptionGroupResponseDto optionGroup = optionGroupService.selectOptionGroup(optionGroupId);
         return ResponseEntity.ok(optionGroup);
     }

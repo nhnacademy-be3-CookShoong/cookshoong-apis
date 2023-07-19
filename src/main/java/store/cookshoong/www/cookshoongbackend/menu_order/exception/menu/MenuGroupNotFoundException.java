@@ -9,7 +9,8 @@ import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException
  * @since 2023.07.13
  */
 public class MenuGroupNotFoundException extends NotFoundException {
+    private static final String ERRORMESSAGE = "해당 이름의 메뉴 그룹이 없습니다.";
     public MenuGroupNotFoundException() {
-        super("해당 이름의 메뉴 그룹이 없습니다.");
+        super(ERRORMESSAGE);
     }
 }

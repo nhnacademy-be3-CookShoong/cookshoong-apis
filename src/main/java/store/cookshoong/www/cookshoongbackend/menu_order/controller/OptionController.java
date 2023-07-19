@@ -69,8 +69,10 @@ public class OptionController {
      * @param optionId 옵션 아이디
      * @return 200 response, 옵션
      */
-    @GetMapping("/option/{optionId}")
-    public ResponseEntity<SelectOptionResponseDto> getOption(@PathVariable("optionId") Long optionId) {
+    @GetMapping("/stores/{storeId}/option/{optionId}")
+    public ResponseEntity<SelectOptionResponseDto> getOption(
+        @PathVariable("storeId") Long storeId,
+        @PathVariable("optionId") Long optionId) {
         SelectOptionResponseDto option = optionService.selectOption(optionId);
         return ResponseEntity.ok(option);
     }

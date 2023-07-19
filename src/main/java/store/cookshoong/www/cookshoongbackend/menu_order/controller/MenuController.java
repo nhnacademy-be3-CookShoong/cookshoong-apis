@@ -69,8 +69,9 @@ public class MenuController {
      * @param menuId 메뉴 아이디
      * @return 200 response, 메뉴
      */
-    @GetMapping("/menu/{menuId}")
+    @GetMapping("/stores/{storeId}/menu/{menuId}")
     public ResponseEntity<SelectMenuResponseDto> getMenu(
+        @PathVariable("storeId") Long storeId,
         @PathVariable("menuId") Long menuId) {
         SelectMenuResponseDto menu = menuService.selectMenu(menuId);
         return ResponseEntity.ok(menu);

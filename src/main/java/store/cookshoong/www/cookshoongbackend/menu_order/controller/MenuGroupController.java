@@ -69,8 +69,10 @@ public class MenuGroupController {
      * @param menuGroupId 메뉴 그룹 아이디
      * @return 200 response, 메뉴 그룹
      */
-    @GetMapping("/menu-group/{menuGroupId}")
-    public ResponseEntity<SelectMenuGroupResponseDto> getMenuGroup(@PathVariable("menuGroupId") Long menuGroupId) {
+    @GetMapping("/stores/{storeId}/menu-group/{menuGroupId}")
+    public ResponseEntity<SelectMenuGroupResponseDto> getMenuGroup(
+        @PathVariable("storeId") Long storeId,
+        @PathVariable("menuGroupId") Long menuGroupId) {
         SelectMenuGroupResponseDto menuGroup = menuGroupService.selectMenuGroup(menuGroupId);
         return ResponseEntity.ok(menuGroup);
     }
