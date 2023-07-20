@@ -36,4 +36,12 @@ public interface CouponPolicyRepositoryCustom {
      * @return the page
      */
     Page<SelectPolicyResponseTempDto> lookupAllPolicy(Pageable pageable);
+
+    /**
+     * 사용자가 받지 않은 쿠폰 개수 확인 메서드.
+     *
+     * @param couponPolicyId the coupon policy id
+     * @return the long
+     */
+    Long lookupUnclaimedCouponCount(Long couponPolicyId);
 }
