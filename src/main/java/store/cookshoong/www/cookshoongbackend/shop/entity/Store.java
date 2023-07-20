@@ -158,11 +158,10 @@ public class Store {
      * @param storeImage            the store image
      * @param bankAccountNumber     the bank account number
      */
-    public void modifyStoreInfo(Merchant merchant, Account account, BankType bankTypeCode, StoreStatus storeStatus,
+    public void modifyStoreInfo(Account account, BankType bankTypeCode, StoreStatus storeStatus,
                                 String businessLicenseNumber, String representativeName,
                                 LocalDate openingDate, String name, String phoneNumber, BigDecimal defaultEarningRate,
                                 String description, Image storeImage, String bankAccountNumber) {
-        this.merchant = merchant;
         this.account = account;
         this.bankTypeCode = bankTypeCode;
         this.storeStatusCode = storeStatus;
