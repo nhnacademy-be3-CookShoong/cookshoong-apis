@@ -8,7 +8,7 @@ import lombok.Getter;
 /**
  * 회원의 모든 정보를 전달하는 Dto.
  *
- * @author koesnam
+ * @author koesnam (추만석)
  * @since 2023.07.08
  */
 @Getter

@@ -32,7 +32,9 @@ import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundExce
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountAuthResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
+import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountAuthDto;
+import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountStatusDto;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountStatusRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.AuthorityRepository;
@@ -185,6 +187,16 @@ class AccountServiceTest {
         assertThatThrownBy(() -> accountService.selectAccount(loginId))
             .isInstanceOf(UserNotFoundException.class)
             .hasMessageContaining("존재하지 않는 회원");
+    }
+
+    @Test
+    @DisplayName("회원상태 조회 - 현재 회원의 상태 조회")
+    void selectAccountStatus() {
+        SelectAccountStatusDto expect = new SelectAccountStatusDto(new AccountStatus("ACTIVE", "활성"));
+
+        when(accountRepository.findAccountStatusById(anyLong())).thenReturn(Optional.of(expect));
+
+        assertThat(accountService.selectAccountStatus(1L).getStatus()).isEqualTo("ACTIVE");
     }
 }
 
