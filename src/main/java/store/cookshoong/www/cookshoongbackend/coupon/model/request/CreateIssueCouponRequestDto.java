@@ -13,6 +13,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CreateIssueCouponRequestDto {
-    Long issueQuantity;
-    Long couponPolicyId;
+    private Long issueQuantity;
+    private Long couponPolicyId;
 }
