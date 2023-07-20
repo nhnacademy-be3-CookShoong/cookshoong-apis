@@ -88,7 +88,6 @@ public class BusinessAccountController {
                                           BindingResult bindingResult,
                                           @RequestPart("businessLicense") MultipartFile businessLicense,
                                           @RequestPart("storeImage") MultipartFile image) throws IOException {
-        //TODO 1. 회원정보 어디서 가져와서 넣어줘야함.
 
         if (bindingResult.hasErrors()) {
             throw new StoreValidException(bindingResult);

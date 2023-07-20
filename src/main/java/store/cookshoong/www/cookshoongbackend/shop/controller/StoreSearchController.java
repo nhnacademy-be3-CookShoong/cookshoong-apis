@@ -29,7 +29,7 @@ public class StoreSearchController {
      *
      * @param addressId 주소 아이디
      * @param pageable  매장 페이지
-     * @return          상태코드 200(Ok)와 함께 응답을 반환 & 클라이언트에게 매장에 대한 정보 페이지로 반환
+     * @return 상태코드 200(Ok)와 함께 응답을 반환 & 클라이언트에게 매장에 대한 정보 페이지로 반환
      */
     @GetMapping("/stores")
     public ResponseEntity<Page<SelectAllStoresNotOutedResponseDto>> getNotOutedStores(
