@@ -8,7 +8,7 @@ import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountAuth
 /**
  * 회원 CRU 를 위한 레포지토리.
  *
- * @author koesnam
+ * @author koesnam (추만석)
  * @since 2023.07.04
  */
 public interface AccountRepository extends JpaRepository<Account, Long>, AccountRepositoryCustom {

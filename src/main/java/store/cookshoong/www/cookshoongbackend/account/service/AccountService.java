@@ -21,7 +21,7 @@ import store.cookshoong.www.cookshoongbackend.account.repository.RankRepository;
 /**
  * 회원 가입, 조회, 정보 수정을 다루는 서비스.
  *
- * @author koesnam
+ * @author koesnam (추만석)
  * @since 2023.07.05
  */
 @Service
