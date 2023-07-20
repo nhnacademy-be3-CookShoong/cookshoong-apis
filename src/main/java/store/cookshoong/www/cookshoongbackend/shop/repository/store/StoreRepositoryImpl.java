@@ -121,13 +121,16 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
     public Optional<SelectStoreForUserResponseDto> lookupStoreForUser(Long storeId) {
         QStore store = QStore.store;
         QAddress address = QAddress.address;
+        QImage image = QImage.image;
 
         return Optional.ofNullable(jpaQueryFactory
             .select(new QSelectStoreForUserResponseDto(
                 store.businessLicenseNumber, store.representativeName, store.openingDate, store.name,
-                store.phoneNumber, address.mainPlace, address.detailPlace, store.description))
+                store.phoneNumber, address.mainPlace, address.detailPlace, store.description,
+                image.savedName))
             .from(store)
             .innerJoin(store.address, address)
+            .innerJoin(store.storeImage, image)
             .where(store.id.eq(storeId))
             .fetchOne());
     }
@@ -148,16 +151,18 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
         QStoresHasCategory storesHasCategory = QStoresHasCategory.storesHasCategory;
         QStoreCategory storeCategory = QStoreCategory.storeCategory;
         QAddress address = QAddress.address;
+        QImage image = QImage.image;
 
         return jpaQueryFactory
             .select(new QSelectAllStoresNotOutedResponseDto(
                 store.id, store.name, storeStatus.description, address.mainPlace,
-                address.detailPlace, address.latitude, address.longitude, storeCategory.categoryCode))
+                address.detailPlace, address.latitude, address.longitude, storeCategory.categoryCode, image.savedName))
             .from(store)
             .innerJoin(store.storeStatusCode, storeStatus)
             .innerJoin(store.address, address)
             .innerJoin(store.storesHasCategories, storesHasCategory)
             .innerJoin(storesHasCategory.categoryCode, storeCategory)
+            .innerJoin(store.storeImage, image)
             .where(storeStatus.storeStatusCode.ne("OUTED"))
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
