@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.coupon.entity;
 
+import java.util.OptionalInt;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
@@ -29,4 +30,10 @@ public abstract class CouponUsage {
     @Column(name = "coupon_usage_id", nullable = false)
     private Long id;
 
+    /**
+     * 쿠폰 제한 개수를 정의하는 메서드.
+     *
+     * @return the optional int
+     */
+    public abstract OptionalInt limitCount();
 }

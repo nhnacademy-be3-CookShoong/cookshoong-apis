@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.coupon.entity;
 
+import java.util.OptionalInt;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -17,4 +18,11 @@ import lombok.Getter;
 @DiscriminatorValue("ALL")
 public class CouponUsageAll extends CouponUsage {
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public OptionalInt limitCount() {
+        return OptionalInt.empty();
+    }
 }

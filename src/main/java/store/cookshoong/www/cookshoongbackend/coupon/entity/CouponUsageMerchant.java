@@ -1,7 +1,9 @@
 package store.cookshoong.www.cookshoongbackend.coupon.entity;
 
+import java.util.OptionalInt;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -25,7 +27,15 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 @DiscriminatorValue("MERCHANT")
 public class CouponUsageMerchant extends CouponUsage {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "merchant_id", nullable = false)
     private Merchant merchant;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public OptionalInt limitCount() {
+        return OptionalInt.empty();
+    }
 }
