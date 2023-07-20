@@ -22,6 +22,7 @@ public class SelectAllStoresNotOutedResponseDto {
     private final BigDecimal latitude;
     private final BigDecimal longitude;
     private final String category;
+    private final String savedName;
 
     /**
      * 회원 위치에서 3km 이내에 있는 매장을 보여줄 QueryDsl 로 사용될 메서드.
@@ -36,7 +37,8 @@ public class SelectAllStoresNotOutedResponseDto {
      */
     @QueryProjection
     public SelectAllStoresNotOutedResponseDto(Long id, String name, String storeStatus, String mainPlace,
-                                              String detailPlace, BigDecimal latitude, BigDecimal longitude, String category) {
+                                              String detailPlace, BigDecimal latitude, BigDecimal longitude, String category,
+                                              String savedName) {
         this.id = id;
         this.name = name;
         this.storeStatus = storeStatus;
@@ -45,5 +47,6 @@ public class SelectAllStoresNotOutedResponseDto {
         this.latitude = latitude;
         this.longitude = longitude;
         this.category = category;
+        this.savedName = savedName;
     }
 }
