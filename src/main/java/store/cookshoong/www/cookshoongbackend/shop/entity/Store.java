@@ -22,8 +22,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
-import store.cookshoong.www.cookshoongbackend.file.Image;
-import store.cookshoong.www.cookshoongbackend.file.model.UploadFile;
+import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 
 /**
  * 매장 엔티티.
@@ -89,7 +88,7 @@ public class Store {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_image_id", nullable = false)
-    private Image image;
+    private Image storeImage;
 
     @Column(name = "bank_account_number", nullable = false, length = 20)
     private String bankAccountNumber;
@@ -104,7 +103,6 @@ public class Store {
      * @param account               회원
      * @param bankTypeCode          은행타입
      * @param storeStatus           가게 상태
-     * @param businessLicense       사업자등록증
      * @param businessLicenseNumber 사업자등록번호
      * @param representativeName    대표자 이름
      * @param openingDate           개업일자
@@ -112,13 +110,12 @@ public class Store {
      * @param phoneNumber           가게 번호
      * @param defaultEarningRate    매장 별 기본 적립률
      * @param description           매장 설명
-     * @param image                 매장 대표이미지
      * @param bankAccountNumber     은행 계좌 번호
      */
     public Store(Merchant merchant, Account account, BankType bankTypeCode, StoreStatus storeStatus,
                  Image businessLicense, String businessLicenseNumber, String representativeName,
                  LocalDate openingDate, String name, String phoneNumber, BigDecimal defaultEarningRate,
-                 String description, Image image, String bankAccountNumber) {
+                 String description, Image storeImage, String bankAccountNumber) {
         this.merchant = merchant;
         this.account = account;
         this.bankTypeCode = bankTypeCode;
@@ -131,7 +128,7 @@ public class Store {
         this.phoneNumber = phoneNumber;
         this.defaultEarningRate = defaultEarningRate;
         this.description = description;
-        this.image = image;
+        this.storeImage = storeImage;
         this.bankAccountNumber = bankAccountNumber;
     }
 
@@ -158,13 +155,13 @@ public class Store {
      * @param phoneNumber           the phone number
      * @param defaultEarningRate    the default earning rate
      * @param description           the description
-     * @param image                 the image
+     * @param storeImage            the store image
      * @param bankAccountNumber     the bank account number
      */
     public void modifyStoreInfo(Merchant merchant, Account account, BankType bankTypeCode, StoreStatus storeStatus,
                                 String businessLicenseNumber, String representativeName,
                                 LocalDate openingDate, String name, String phoneNumber, BigDecimal defaultEarningRate,
-                                String description, Image image, String bankAccountNumber) {
+                                String description, Image storeImage, String bankAccountNumber) {
         this.merchant = merchant;
         this.account = account;
         this.bankTypeCode = bankTypeCode;
@@ -176,12 +173,15 @@ public class Store {
         this.phoneNumber = phoneNumber;
         this.defaultEarningRate = defaultEarningRate;
         this.description = description;
-        this.image = image;
+        this.storeImage = storeImage;
         this.bankAccountNumber = bankAccountNumber;
     }
 
     /**
-     * 매장의 카테고리 초기화.
+     * 매장 카테고리 초기화.
+     *
+     * @author seungyeon
+     * @since 2023.07.18
      */
     public void initStoreCategories() {
         this.storesHasCategories.clear();

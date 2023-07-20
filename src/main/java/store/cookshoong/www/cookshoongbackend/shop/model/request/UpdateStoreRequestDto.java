@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import store.cookshoong.www.cookshoongbackend.file.Image;
+import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 
 /**
  * 매장 수정을 위한 dto.
