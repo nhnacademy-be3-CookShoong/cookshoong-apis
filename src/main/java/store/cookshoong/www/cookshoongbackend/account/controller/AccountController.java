@@ -19,8 +19,8 @@ import store.cookshoong.www.cookshoongbackend.account.exception.SignUpValidation
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountAuthResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
+import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.service.AccountService;
-import store.cookshoong.www.cookshoongbackend.address.model.request.CreateAccountAddressRequestDto;
 import store.cookshoong.www.cookshoongbackend.address.service.AddressService;
 
 /**
@@ -91,4 +91,16 @@ public class AccountController {
     }
 
 
+    /**
+     * 현재 회원상태 정보를 조회한다.
+     *
+     * @param accountId the account id
+     * @return the account status
+     */
+    @GetMapping("/{accountId}/status")
+    public ResponseEntity<SelectAccountStatusResponseDto> getAccountStatus(@PathVariable Long accountId) {
+        SelectAccountStatusResponseDto response = accountService.selectAccountStatus(accountId);
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(response);
+    }
 }

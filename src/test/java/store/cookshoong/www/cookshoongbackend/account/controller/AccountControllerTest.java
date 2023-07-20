@@ -45,7 +45,9 @@ import store.cookshoong.www.cookshoongbackend.account.exception.SignUpValidation
 import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountAuthResponseDto;
+import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountAuthDto;
+import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountStatusDto;
 import store.cookshoong.www.cookshoongbackend.account.service.AccountService;
 import store.cookshoong.www.cookshoongbackend.address.model.request.CreateAccountAddressRequestDto;
 import store.cookshoong.www.cookshoongbackend.address.service.AddressService;
@@ -307,6 +309,33 @@ class AccountControllerTest {
                         fieldWithPath("attributes.accountId").description("사용자 시퀀스"),
                         fieldWithPath("attributes.status").description("사용자 상태"),
                         fieldWithPath("attributes.authority").description("사용자 권한")
+                    ))
+            );
+    }
+
+    @Test
+    @DisplayName("회원상태 조회 - (accountId 기준) 있는 회원 조회")
+    void findAccountStatus() throws Exception {
+        SelectAccountStatusDto testStatusDto = new SelectAccountStatusDto(new AccountStatus("ACTIVE", "활성"));
+        SelectAccountStatusResponseDto expect = SelectAccountStatusResponseDto.responseDtoFrom(testStatusDto);
+
+        when(accountService.selectAccountStatus(anyLong())).thenReturn(expect);
+
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .get("/api/accounts/{loginId}/status", 1L)
+            .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(request)
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.status").value(expect.getStatus()))
+            .andDo(MockMvcRestDocumentationWrapper.document("findAccountStatus",
+                ResourceSnippetParameters.builder()
+                    .requestSchema(Schema.schema("SelectAccountStatusResponseDto"))
+                    .pathParameters(
+                        parameterWithName("accountId").description("회원 시퀀스"))
+                    .responseFields(
+                        fieldWithPath("status").description("사용자 상태")
                     ))
             );
     }
