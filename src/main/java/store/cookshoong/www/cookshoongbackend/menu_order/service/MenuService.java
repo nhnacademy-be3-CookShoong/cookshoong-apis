@@ -1,9 +1,13 @@
 package store.cookshoong.www.cookshoongbackend.menu_order.service;
 
+import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import store.cookshoong.www.cookshoongbackend.file.entity.Image;
+import store.cookshoong.www.cookshoongbackend.file.service.FileStoreService;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.MenuStatus;
 import store.cookshoong.www.cookshoongbackend.menu_order.exception.menu.MenuNotFoundException;
@@ -29,6 +33,7 @@ public class MenuService {
     private final MenuRepository menuRepository;
     private final MenuStatusRepository menuStatusRepository;
     private final StoreRepository storeRepository;
+    private final FileStoreService fileStoreService;
 
     /**
      * 메뉴 등록 서비스.
@@ -36,10 +41,11 @@ public class MenuService {
      * @param storeId              매장 아이디
      * @param createMenuRequestDto 메뉴 등록 Dto
      */
-    public void createMenu(Long storeId, CreateMenuRequestDto createMenuRequestDto) {
+    public void createMenu(Long storeId, CreateMenuRequestDto createMenuRequestDto, MultipartFile file) throws IOException {
         Store store = storeRepository.findById(storeId)
             .orElseThrow(StoreNotFoundException::new);
         MenuStatus menuStatus = menuStatusRepository.findById("OPEN").orElseThrow(MenuStatusNotFoundException::new);
+        Image image = fileStoreService.storeFile(file, true);
         Menu menu =
             new Menu(
                 menuStatus,
@@ -47,7 +53,7 @@ public class MenuService {
                 createMenuRequestDto.getName(),
                 createMenuRequestDto.getPrice(),
                 createMenuRequestDto.getDescription(),
-                createMenuRequestDto.getImage(),
+                image,
                 createMenuRequestDto.getCookingTime(),
                 createMenuRequestDto.getEarningRate());
         menuRepository.save(menu);
