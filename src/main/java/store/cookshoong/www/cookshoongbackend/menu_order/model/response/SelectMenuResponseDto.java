@@ -36,6 +36,7 @@ public class SelectMenuResponseDto {
      * @param earningRate        the earningRate
      */
     @QueryProjection
+
     public SelectMenuResponseDto(Long id, String menuStatus, Long storeId, String name, Integer price, String description, String image, Integer cookingTime, BigDecimal earningRate) {
         this.id = id;
         this.menuStatus = menuStatus;

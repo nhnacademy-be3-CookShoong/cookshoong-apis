@@ -22,7 +22,6 @@ public class CreateMenuRequestDto {
     @NotNull
     private Integer price;
     private String description;
-    private String image;
     @NotNull
     private Integer cookingTime;
     @Digits(integer = 3, fraction = 1)

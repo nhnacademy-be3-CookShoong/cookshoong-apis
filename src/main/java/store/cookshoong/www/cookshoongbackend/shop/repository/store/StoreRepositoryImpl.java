@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import store.cookshoong.www.cookshoongbackend.account.entity.QAccount;
 import store.cookshoong.www.cookshoongbackend.address.entity.QAddress;
+import store.cookshoong.www.cookshoongbackend.file.entity.QImage;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QBankType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QStore;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QStoreCategory;
@@ -96,6 +96,7 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
         QStore store = QStore.store;
         QAddress address = QAddress.address;
         QBankType bankType = QBankType.bankType;
+        QImage image = QImage.image;
 
         return Optional.ofNullable(jpaQueryFactory
             .select(new QSelectStoreResponseDto(
@@ -104,10 +105,11 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
                 store.openingDate,
                 store.name, store.phoneNumber,
                 address.mainPlace, address.detailPlace, address.latitude, address.longitude, store.defaultEarningRate,
-                store.description, bankType.description, store.bankAccountNumber))
+                store.description, bankType.description, store.bankAccountNumber, image.savedName))
             .from(store)
             .innerJoin(store.address, address)
             .innerJoin(store.bankTypeCode, bankType)
+            .innerJoin(store.storeImage, image)
             .where(store.id.eq(storeId))
             .fetchOne());
     }

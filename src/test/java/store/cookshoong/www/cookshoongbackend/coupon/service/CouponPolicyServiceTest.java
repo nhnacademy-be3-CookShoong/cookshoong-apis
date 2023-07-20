@@ -22,13 +22,13 @@ import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeCashVo;
 import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypePercentVo;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.*;
 import store.cookshoong.www.cookshoongbackend.coupon.util.CouponTypeConverter;
+import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.shop.repository.merchant.MerchantRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreRepository;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
 
-import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -215,7 +215,9 @@ class CouponPolicyServiceTest {
             .thenAnswer(invocation -> Optional.of(
                 new CouponTypeCash(invocation.getArgument(0), invocation.getArgument(1))));
 
-        Store store = te.getStore(te.getMerchant(), account, te.getBankTypeKb(), te.getStoreStatusOpen());
+        Image businessImage = te.getImage("사업자등록증.jpg", false);
+        Image storeImage = te.getImage("우리 매장 대표사진.jpg",true);
+        Store store = te.getStore(te.getMerchant(), account, te.getBankTypeKb(), te.getStoreStatusOpen(), businessImage, storeImage);
 
         when(couponUsageStoreRepository.findByStoreId(anyLong()))
             .thenAnswer(invocation -> {
@@ -244,8 +246,9 @@ class CouponPolicyServiceTest {
 
         when(couponUsageStoreRepository.findByStoreId(anyLong()))
             .thenReturn(Optional.empty());
-
-        Store store = te.getStore(te.getMerchant(), account, te.getBankTypeKb(), te.getStoreStatusOpen());
+        Image businessImage = te.getImage("사업자등록증.jpg", false);
+        Image storeImage = te.getImage("우리 매장 대표사진.jpg",true);
+        Store store = te.getStore(te.getMerchant(), account, te.getBankTypeKb(), te.getStoreStatusOpen(), businessImage, storeImage);
 
         when(storeRepository.getReferenceById(any(Long.class)))
             .thenReturn(persist(store));
@@ -274,7 +277,10 @@ class CouponPolicyServiceTest {
             .thenAnswer(invocation -> Optional.of(new CouponTypePercent(
                 invocation.getArgument(0), invocation.getArgument(1), invocation.getArgument(2))));
 
-        Store store = te.getStore(te.getMerchant(), account, te.getBankTypeKb(), te.getStoreStatusOpen());
+        Image businessImage = te.getImage("사업자등록증.png",false);
+        Image storeImage = te.getImage("매장대표사진.png",true);
+
+        Store store = te.getStore(te.getMerchant(), account, te.getBankTypeKb(), te.getStoreStatusOpen(),businessImage, storeImage);
 
         when(couponUsageStoreRepository.findByStoreId(anyLong()))
             .thenAnswer(invocation -> {
