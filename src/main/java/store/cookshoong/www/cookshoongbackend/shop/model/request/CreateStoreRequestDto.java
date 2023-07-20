@@ -39,12 +39,9 @@ public class CreateStoreRequestDto {
     @NotBlank
     private String phoneNumber;
     @NotBlank
-    private String businessLicense;
-    @NotBlank
     private String description;
     @NotNull
     private BigDecimal earningRate;
-    private String image;
     @NotNull
     private List<String> storeCategories;
     @NotBlank

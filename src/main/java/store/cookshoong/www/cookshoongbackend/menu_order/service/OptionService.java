@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.option.Option;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.optiongroup.OptionGroup;
 import store.cookshoong.www.cookshoongbackend.menu_order.exception.option.OptionGroupNotFoundException;
+import store.cookshoong.www.cookshoongbackend.menu_order.exception.option.OptionNotFoundException;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.request.CreateOptionRequestDto;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectOptionResponseDto;
 import store.cookshoong.www.cookshoongbackend.menu_order.repository.option.OptionGroupRepository;
@@ -29,9 +30,9 @@ public class OptionService {
      * 옵션 등록 서비스.
      *
      * @param optionGroupId          옵션 그룹 아이디
-     * @param createOptionRequestDto 옵션 등록을 위한 정보
+     * @param createOptionRequestDto 옵션 등록 Dto
      */
-    public void createOption(Integer optionGroupId, CreateOptionRequestDto createOptionRequestDto) {
+    public void createOption(Long optionGroupId, CreateOptionRequestDto createOptionRequestDto) {
         OptionGroup optionGroup = optionGroupRepository.findById(optionGroupId)
             .orElseThrow(OptionGroupNotFoundException::new);
         Option option =
@@ -46,12 +47,23 @@ public class OptionService {
     }
 
     /**
-     * 옵션 조회 서비스.
+     * 옵션 리스트 조회 서비스.
      *
      * @param storeId 매장 아이디
      * @return 매장의 옵션 리스트
      */
     public List<SelectOptionResponseDto> selectOptions(Long storeId) {
         return optionRepository.lookupOptions(storeId);
+    }
+
+    /**
+     * 옵션 조회 서비스.
+     *
+     * @param optionId 옵션 아이디
+     * @return 매장의 옵션
+     */
+    public SelectOptionResponseDto selectOption(Long optionId) {
+        return optionRepository.lookupOption(optionId)
+            .orElseThrow(OptionNotFoundException::new);
     }
 }

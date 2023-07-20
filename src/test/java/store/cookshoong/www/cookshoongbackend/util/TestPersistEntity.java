@@ -1,12 +1,9 @@
 package store.cookshoong.www.cookshoongbackend.util;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.util.ReflectionTestUtils;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
@@ -15,6 +12,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponPolicy;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
+import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.Order;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.OrderStatus;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
@@ -46,7 +44,9 @@ public class TestPersistEntity {
         Account account = getLevelOneActiveCustomer();
         BankType bankTypeKb = testEntity.getBankTypeKb();
         StoreStatus storeStatusOpen = testEntity.getStoreStatusOpen();
-        return testEntity.getStore(null, account, bankTypeKb, storeStatusOpen);
+        Image businessImage = testEntity.getImage("사업자등록증.jpg",false);
+        Image storeImage = testEntity.getImage("매장사진.png",true);
+        return testEntity.getStore(null, account, bankTypeKb, storeStatusOpen, businessImage, storeImage);
     }
 
     public Store getOpenMerchantStore() {
@@ -54,7 +54,9 @@ public class TestPersistEntity {
         Account account = getLevelOneActiveCustomer();
         BankType bankTypeKb = testEntity.getBankTypeKb();
         StoreStatus storeStatusOpen = testEntity.getStoreStatusOpen();
-        return testEntity.getStore(merchant, account, bankTypeKb, storeStatusOpen);
+        Image businessImage = testEntity.getImage("사업자등록증.png",false);
+        Image storeImage = testEntity.getImage("매장시진.jpg",true);
+        return testEntity.getStore(merchant, account, bankTypeKb, storeStatusOpen, businessImage, storeImage);
     }
 
     public IssueCoupon getIssueCoupon() {

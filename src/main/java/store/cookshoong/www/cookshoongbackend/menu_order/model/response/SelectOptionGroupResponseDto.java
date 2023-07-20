@@ -11,27 +11,30 @@ import lombok.Getter;
  */
 @Getter
 public class SelectOptionGroupResponseDto {
+    private final Long id;
+    private final Long storeId;
     private final String name;
     private final Integer minSelectCount;
     private final Integer maxSelectCount;
     private final Boolean isDeleted;
-    private final Integer optionGroupSequence;
 
     /**
      * QueryDSL DTO Projection 을 위한 생성자.
      *
+     * @param id                    the id
+     * @param storeId               the storeId
      * @param name                  the name
      * @param minSelectCount        the minSelectCount
      * @param maxSelectCount        the maxSelectCount
      * @param isDeleted             the isDeleted
-     * @param optionGroupSequence   the optionGroupSequence
      */
     @QueryProjection
-    public SelectOptionGroupResponseDto(String name, Integer minSelectCount, Integer maxSelectCount, Boolean isDeleted, Integer optionGroupSequence) {
+    public SelectOptionGroupResponseDto(Long id, Long storeId, String name, Integer minSelectCount, Integer maxSelectCount, Boolean isDeleted) {
+        this.id = id;
+        this.storeId = storeId;
         this.name = name;
         this.minSelectCount = minSelectCount;
         this.maxSelectCount = maxSelectCount;
         this.isDeleted = isDeleted;
-        this.optionGroupSequence = optionGroupSequence;
     }
 }

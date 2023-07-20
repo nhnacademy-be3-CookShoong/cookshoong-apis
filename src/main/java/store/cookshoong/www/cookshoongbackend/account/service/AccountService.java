@@ -11,8 +11,10 @@ import store.cookshoong.www.cookshoongbackend.account.exception.DuplicatedUserEx
 import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountAuthResponseDto;
-import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountAuthDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
+import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountStatusResponseDto;
+import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountAuthDto;
+import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountStatusDto;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountStatusRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.AuthorityRepository;
@@ -21,7 +23,7 @@ import store.cookshoong.www.cookshoongbackend.account.repository.RankRepository;
 /**
  * 회원 가입, 조회, 정보 수정을 다루는 서비스.
  *
- * @author koesnam
+ * @author koesnam (추만석)
  * @since 2023.07.05
  */
 @Service
@@ -71,5 +73,18 @@ public class AccountService {
             .orElseThrow(UserNotFoundException::new);
 
         return SelectAccountAuthResponseDto.responseDtoFrom(authDto);
+    }
+
+    /**
+     * 해당 회원의 현재 상태를 조회한다.
+     *
+     * @param loginId the login id
+     * @return the select account status response dto
+     */
+    public SelectAccountStatusResponseDto selectAccountStatus(Long loginId) {
+        SelectAccountStatusDto statusDto = accountRepository.findAccountStatusById(loginId)
+            .orElseThrow();
+
+        return SelectAccountStatusResponseDto.responseDtoFrom(statusDto);
     }
 }

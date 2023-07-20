@@ -6,6 +6,7 @@ import javax.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 
 /**
  * 매장 수정을 위한 dto.
@@ -29,7 +30,7 @@ public class UpdateStoreRequestDto {
     private String phoneNumber;
     private String description;
     private BigDecimal earningRate;
-    private String image;
+    private Image image;
     private String bankName;
     private String bankAccount;
 }

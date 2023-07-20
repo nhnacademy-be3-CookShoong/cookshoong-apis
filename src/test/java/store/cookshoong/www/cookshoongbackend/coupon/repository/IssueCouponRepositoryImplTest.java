@@ -28,6 +28,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectOwnCouponResponseTempDto;
+import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.Order;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
@@ -79,10 +80,12 @@ class IssueCouponRepositoryImplTest {
     void beforeEach() {
         customer = tpe.getLevelOneActiveCustomer();
         Merchant merchant = te.getMerchant();
+        Image businessImage = te.getImage("사업자등록증.jpg", false);
+        Image storeImage = te.getImage("우리 매장 대표사진.jpg",true);
         hasAllUsageCouponMerchant =
-            te.getStore(merchant, tpe.getLevelOneActiveCustomer(), te.getBankTypeKb(), te.getStoreStatusOpen());
+            te.getStore(merchant, tpe.getLevelOneActiveCustomer(), te.getBankTypeKb(), te.getStoreStatusOpen(), businessImage, storeImage);
         hasMerchantUsageCouponMerchant =
-            te.getStore(merchant, tpe.getLevelOneActiveCustomer(), te.getBankTypeKb(), te.getStoreStatusOpen());
+            te.getStore(merchant, tpe.getLevelOneActiveCustomer(), te.getBankTypeKb(), te.getStoreStatusOpen(), businessImage, storeImage);
         hasStoreUsageCoupon = tpe.getOpenStore();
         hasNoCoupon = tpe.getOpenStore();
 

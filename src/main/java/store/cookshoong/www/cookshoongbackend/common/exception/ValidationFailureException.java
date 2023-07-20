@@ -7,7 +7,7 @@ import org.springframework.validation.BindingResult;
 /**
  * 입력값에 대한 공통적인 검증실패 예외.
  *
- * @author koesnam
+ * @author koesnam (추만석)
  * @since 2023.07.05
  */
 public abstract class ValidationFailureException extends RuntimeException {

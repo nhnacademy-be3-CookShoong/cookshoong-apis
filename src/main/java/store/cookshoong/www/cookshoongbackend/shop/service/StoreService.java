@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.shop.service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,12 +11,16 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
 import store.cookshoong.www.cookshoongbackend.address.model.response.AddressResponseDto;
 import store.cookshoong.www.cookshoongbackend.address.repository.accountaddress.AccountAddressRepository;
+import store.cookshoong.www.cookshoongbackend.file.entity.Image;
+import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
+import store.cookshoong.www.cookshoongbackend.file.service.FileStoreService;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
@@ -45,8 +50,8 @@ import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreReposit
 /**
  * 매장리스트 조회, 등록, 삭제, 수정 서비스 구현.
  *
- * @author seungyeon
- * @contributer jeongjewan
+ * @author seungyeon (유승연)
+ * @contributer jeongjewan (정제완)
  * @since 2023.07.05
  */
 @Service
@@ -64,6 +69,8 @@ public class StoreService {
     private static final BigDecimal DISTANCE = new BigDecimal("3.0");
     private static final Double RADIUS = 6371.0;
     private static final Double TO_RADIAN = Math.PI / 180;
+    private final FileStoreService fileStoreService;
+    private final ImageRepository imageRepository;
 
     private static void accessDeniedException(Long accountId, Store store) {
         if (!store.getAccount().getId().equals(accountId)) {
@@ -126,7 +133,7 @@ public class StoreService {
      * @param accountId          회원 아이디
      * @param registerRequestDto 매장 등록을 위한 정보
      */
-    public void createStore(Long accountId, CreateStoreRequestDto registerRequestDto) {
+    public void createStore(Long accountId, CreateStoreRequestDto registerRequestDto, MultipartFile businessImage, MultipartFile storeImage) throws IOException {
         if (storeRepository.existsStoreByBusinessLicenseNumber(registerRequestDto.getBusinessLicenseNumber())) {
             throw new DuplicatedBusinessLicenseException(registerRequestDto.getBusinessLicenseNumber());
         }
@@ -137,12 +144,13 @@ public class StoreService {
         BankType bankType = bankTypeRepository.findById(registerRequestDto.getBankCode())
             .orElseThrow(BankTypeNotFoundException::new);
         StoreStatus storeStatus = storeStatusRepository.getReferenceById(StoreStatus.StoreStatusCode.CLOSE.name());
-
+        Image businessLicenseImage = fileStoreService.storeFile(businessImage, false);
+        Image storeMainImage = fileStoreService.storeFile(storeImage, true);
         Store store = new Store(merchant,
             account,
             bankType,
             storeStatus,
-            registerRequestDto.getBusinessLicense(),
+            businessLicenseImage,
             registerRequestDto.getBusinessLicenseNumber(),
             registerRequestDto.getRepresentativeName(),
             registerRequestDto.getOpeningDate(),
@@ -150,7 +158,7 @@ public class StoreService {
             registerRequestDto.getPhoneNumber(),
             registerRequestDto.getEarningRate(),
             registerRequestDto.getDescription(),
-            null,
+            storeMainImage,
             registerRequestDto.getBankAccount());
 
         List<String> categories = registerRequestDto.getStoreCategories();
@@ -179,6 +187,7 @@ public class StoreService {
         BankType bankType = bankTypeRepository.findByDescription(requestDto.getBankName())
             .orElseThrow(BankTypeNotFoundException::new);
         StoreStatus storeStatus = store.getStoreStatusCode();
+
         store.modifyStoreInfo(
             merchant,
             account,
@@ -216,24 +225,28 @@ public class StoreService {
         addStoreCategory(requestDto.getStoreCategories(), store);
     }
 
-    // TODO 승연님 javadoc 달아주세요@.@
+    /**
+     * 사업자 : 매장 상태 변경.
+     *
+     * @param accountId the account id
+     * @param storeId the store id
+     * @param requestDto 매장 상태 변경 코드
+     */
     public void updateStoreStatus(Long accountId, Long storeId, UpdateStoreStatusRequestDto requestDto) {
         Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
         accessDeniedException(accountId, store);
-        // TODO 7. OUTED 된 매장 다시 부활시킬 수 있을까?
         StoreStatus storeStatus = storeStatusRepository.findById(requestDto.getStatusCode())
             .orElseThrow(StoreStatusNotFoundException::new);
-
         store.modifyStoreStatus(storeStatus);
     }
 
     /**
      * 회원의 위치를 기반으로 3km 이내에 위차한 매장만을 조회하는 메서드.
      *
-     * @author          jeongjewan
      * @param addressId 주소 아이디
      * @param pageable  페이지 정보
-     * @return          3km 이내에 위치한 매장만을 반환
+     * @return 3km 이내에 위치한 매장만을 반환
+     * @author jeongjewan
      */
     public Page<SelectAllStoresNotOutedResponseDto> selectAllStoresNotOutedResponsePage(Long addressId,
                                                                                         Pageable pageable) {
@@ -251,7 +264,7 @@ public class StoreService {
 
     private boolean isWithDistance(AddressResponseDto address, SelectAllStoresNotOutedResponseDto store) {
 
-        BigDecimal storeDistance =  calculateDistance(
+        BigDecimal storeDistance = calculateDistance(
             address.getLatitude(), address.getLongitude(),
             store.getLatitude(), store.getLongitude()
         );

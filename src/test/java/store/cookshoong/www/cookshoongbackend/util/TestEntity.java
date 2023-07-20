@@ -4,7 +4,6 @@ import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.UUID;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.context.annotation.Import;
@@ -25,6 +24,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageAll;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
+import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.OrderStatus;
 import store.cookshoong.www.cookshoongbackend.payment.entity.ChargeType;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.Order;
@@ -83,13 +83,17 @@ public class TestEntity {
         return new Merchant("네네치킨");
     }
 
-    public Store getStore(Merchant merchant, Account account, BankType bankType, StoreStatus storeStatus) {
+    public Store getStore(Merchant merchant, Account account, BankType bankType,
+                          StoreStatus storeStatus, Image businessImage, Image storeImage) {
         return new Store(merchant, account, bankType,
-            storeStatus, UUID.randomUUID() + ".jpg", "123456", "김주호",
+            storeStatus,businessImage, "123456", "김주호",
             LocalDate.of(2020, 2, 20), "주호타코", "01012345678", BigDecimal.ONE,
-            null, null, "123456");
+            null, storeImage, "123456");
     }
 
+    public Image getImage(String name,boolean isPublic){
+        return createImage(name,isPublic);
+    }
     public StoreCategory getStoreCategory() {
         return new StoreCategory("CHK", "치킨");
     }
@@ -180,6 +184,15 @@ public class TestEntity {
         ReflectionTestUtils.setField(orderStatus, "description", description);
         return orderStatus;
     }
+
+    public Image createImage(String name, boolean isPublic){
+        Image image = createUsingDeclared(Image.class);
+        ReflectionTestUtils.setField(image,"originName", name);
+        ReflectionTestUtils.setField(image, "savedName", UUID.randomUUID()+".jpg");
+        ReflectionTestUtils.setField(image, "isPublic", isPublic);
+        return image;
+    }
+
 
     public <T> T createUsingDeclared(Class<T> clazz) {
         try {

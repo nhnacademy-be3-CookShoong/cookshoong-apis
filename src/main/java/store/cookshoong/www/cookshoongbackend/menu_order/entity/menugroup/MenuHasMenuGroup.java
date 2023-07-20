@@ -53,5 +53,4 @@ public class MenuHasMenuGroup {
         private Long menuId;
         private Long menuGroupId;
     }
-
 }

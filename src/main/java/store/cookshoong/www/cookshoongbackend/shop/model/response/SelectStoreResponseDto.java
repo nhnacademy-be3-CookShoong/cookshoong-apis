@@ -4,6 +4,7 @@ import com.querydsl.core.annotations.QueryProjection;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * 사업자입장에서 매장 조회를 위한 Dto.
@@ -26,6 +27,7 @@ public class SelectStoreResponseDto {
     private final String description;
     private final String bankCode;
     private final String bankAccountNumber;
+    private final String savedName;
 
     /**
      * 사업자 회원 : 사업자 회원이 본인 매장 정보 조회.
@@ -48,7 +50,7 @@ public class SelectStoreResponseDto {
     public SelectStoreResponseDto(String businessLicenseNumber, String representativeName,
                                   LocalDate openingDate, String storeName, String phoneNumber, String mainPlace,
                                   String detailPlace, BigDecimal latitude, BigDecimal longitude, BigDecimal defaultEarningRate, String description, String bankCode,
-                                  String bankAccountNumber) {
+                                  String bankAccountNumber, String savedName) {
         this.businessLicenseNumber = businessLicenseNumber;
         this.representativeName = representativeName;
         this.openingDate = openingDate;
@@ -62,5 +64,6 @@ public class SelectStoreResponseDto {
         this.description = description;
         this.bankCode = bankCode;
         this.bankAccountNumber = bankAccountNumber;
+        this.savedName = savedName;
     }
 }
