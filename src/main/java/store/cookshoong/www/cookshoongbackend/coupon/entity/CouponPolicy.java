@@ -68,4 +68,11 @@ public class CouponPolicy {
 
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted;
+
+    /**
+     * 삭제 메서드.
+     */
+    public void delete() {
+        this.isDeleted = true;
+    }
 }
