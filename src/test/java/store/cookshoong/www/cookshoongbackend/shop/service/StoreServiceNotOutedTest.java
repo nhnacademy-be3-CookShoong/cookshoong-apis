@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,7 +51,7 @@ class StoreServiceNotOutedTest {
 
         List<SelectAllStoresNotOutedResponseDto> stores = new ArrayList<>();
         stores.add(new SelectAllStoresNotOutedResponseDto(1L, "미술대", "영업중", "주소 1", "상세주소 1",
-            new BigDecimal("35.14385822588584"), new BigDecimal("126.93046054250793"), storeCategoryCode));
+            new BigDecimal("35.14385822588584"), new BigDecimal("126.93046054250793"), storeCategoryCode, UUID.randomUUID()+".jpg"));
 
         Page<SelectAllStoresNotOutedResponseDto> storePage = new PageImpl<>(stores, pageable, stores.size());
         when(storeRepository.lookupStoreLatLanPage(pageable)).thenReturn(storePage);
