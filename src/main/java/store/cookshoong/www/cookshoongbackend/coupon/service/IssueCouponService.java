@@ -43,6 +43,13 @@ public class IssueCouponService {
         }
     }
 
+    /**
+     * 유저가 아직 수령하지 않은 유효 쿠폰 개수 + 발행 요청 개수가 limitCount 초과하는지 확인.
+     *
+     * @param couponPolicyId 쿠폰 정책 id
+     * @param issueQuantity 발행 요청 개수
+     * @param limitCount 쿠폰 사용처 발행 제한값
+     */
     private void checkUnclaimedCouponCount(Long couponPolicyId, Long issueQuantity, int limitCount) {
         Long unclaimedCouponCount = couponPolicyRepository.lookupUnclaimedCouponCount(couponPolicyId);
 
