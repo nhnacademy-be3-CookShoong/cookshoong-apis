@@ -4,6 +4,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import store.cookshoong.www.cookshoongbackend.file.entity.QImage;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.QMenu;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.QMenuStatus;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.response.QSelectMenuResponseDto;
@@ -32,17 +33,20 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
         QMenu menu = QMenu.menu;
         QMenuStatus menuStatus = QMenuStatus.menuStatus;
         QStore store = QStore.store;
+        QImage image = QImage.image;
 
-        return Optional.ofNullable(jpaQueryFactory
-            .select(new QSelectMenuResponseDto(
-                menu.id, menuStatus.menuStatusCode, store.id,
-                menu.name, menu.price, menu.description,
-                menu.image, menu.cookingTime, menu.earningRate))
-            .from(menu)
-            .innerJoin(menu.menuStatusCode, menuStatus)
-            .innerJoin(menu.store, store)
-            .where(menu.id.eq(menuId))
-            .fetchOne());
+//        return Optional.ofNullable(jpaQueryFactory
+//            .select(new QSelectMenuResponseDto(
+//                menu.id, menuStatus.menuStatusCode, store.id,
+//                menu.name, menu.price, menu.description,
+//                menu.image, menu.cookingTime, menu.earningRate))
+//            .from(menu)
+//            .innerJoin(menu.menuStatusCode, menuStatus)
+//            .innerJoin(menu.store, store)
+//            .innerJoin(menu.image, image)
+//            .where(menu.id.eq(menuId))
+//            .fetchOne());
+        return null;
     }
 
     /**
@@ -56,16 +60,19 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
         QMenu menu = QMenu.menu;
         QMenuStatus menuStatus = QMenuStatus.menuStatus;
         QStore store = QStore.store;
+        QImage image = QImage.image;
 
-        return jpaQueryFactory
-            .select(new QSelectMenuResponseDto(
-                menu.id, menuStatus.menuStatusCode, store.id,
-                menu.name, menu.price, menu.description,
-                menu.image, menu.cookingTime, menu.earningRate))
-            .from(menu)
-            .innerJoin(menu.menuStatusCode, menuStatus)
-            .innerJoin(menu.store, store)
-            .where(store.id.eq(storeId))
-            .fetch();
+//        return jpaQueryFactory
+//            .select(new QSelectMenuResponseDto(
+//                menu.id, menuStatus.menuStatusCode, store.id,
+//                menu.name, menu.price, menu.description,
+//                menu.image, menu.cookingTime, menu.earningRate))
+//            .from(menu)
+//            .innerJoin(menu.menuStatusCode, menuStatus)
+//            .innerJoin(menu.store, store)
+//            .innerJoin(menu.image, image)
+//            .where(store.id.eq(storeId))
+//            .fetch();
+        return null;
     }
 }
