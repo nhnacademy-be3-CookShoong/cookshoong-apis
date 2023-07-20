@@ -55,6 +55,7 @@ class CouponPolicyRepositoryImplTest {
     CouponPolicy merchantPercentCouponPolicy;
     CouponPolicy allCashCouponPolicy;
     CouponPolicy allPercentCouponPolicy;
+    CouponPolicy deleteCouponPolicy;
     Account customer;
 
 
@@ -83,6 +84,9 @@ class CouponPolicyRepositoryImplTest {
             "10000원 이상 주문 시 1000원 할인", 30);
         allPercentCouponPolicy = new CouponPolicy(couponTypePercent, couponUsageAll, "전체 퍼센트 쿠폰",
             "10000원 이상 주문 시 3%, 최대 1000원 할인", 30);
+        deleteCouponPolicy = new CouponPolicy(couponTypePercent, couponUsageAll, "전체 퍼센트 쿠폰",
+            "10000원 이상 주문 시 3%, 최대 1000원 할인", 30);
+        deleteCouponPolicy.delete();
 
         em.persist(storeCashCouponPolicy);
         em.persist(storePercentCouponPolicy);
