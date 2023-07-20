@@ -204,6 +204,7 @@ class AccountRepositoryTest {
 
         SelectAccountStatusDto actual = accountRepository.findAccountStatusById(accountId).orElseThrow();
 
-        System.out.println(actual);
+        assertThat(actual.getStatus().getStatusCode()).isEqualTo(expected.getStatus().getStatusCode());
+        assertThat(actual.getStatus().getDescription()).isEqualTo(expected.getStatus().getDescription());
     }
 }

@@ -18,6 +18,12 @@ import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountStat
 public class SelectAccountStatusResponseDto {
     private String status;
 
+    /**
+     * 조회한 회원상태 객체를 응답용 객체로 변환.
+     *
+     * @param statusDto the status dto
+     * @return the select account status response dto
+     */
     public static SelectAccountStatusResponseDto responseDtoFrom(SelectAccountStatusDto statusDto) {
         return new SelectAccountStatusResponseDto(statusDto.getStatus().getStatusCode());
     }

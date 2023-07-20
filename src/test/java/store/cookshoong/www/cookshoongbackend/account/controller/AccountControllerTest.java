@@ -9,10 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -267,10 +264,10 @@ class AccountControllerTest {
                 .isInstanceOf(UserNotFoundException.class)
                 .hasMessageContaining("존재하지 않는 회원"))
             .andDo(MockMvcRestDocumentationWrapper.document("findAccount",
-                ResourceSnippetParameters.builder()
-                    .requestSchema(Schema.schema("UserNotFoundException"))
-                    .pathParameters(parameterWithName("loginId").description("로그인할 때 사용자 아이디"))
-                    .responseFields(fieldWithPath("message").description("에러 메세지"))
+                    ResourceSnippetParameters.builder()
+                        .requestSchema(Schema.schema("UserNotFoundException"))
+                        .pathParameters(parameterWithName("loginId").description("로그인할 때 사용자 아이디"))
+                        .responseFields(fieldWithPath("message").description("에러 메세지"))
                 )
             );
     }
