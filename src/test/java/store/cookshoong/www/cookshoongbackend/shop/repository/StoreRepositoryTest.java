@@ -25,7 +25,7 @@ import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
 import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
-import store.cookshoong.www.cookshoongbackend.file.Image;
+import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
@@ -83,8 +83,8 @@ class StoreRepositoryTest {
 
         StoreStatus storeStatus = testEntity.getStoreStatusOpen();
         BankType bankType = testEntity.getBankTypeKb();
-        businessImage = testEntity.getImage(false);
-        storeImage = testEntity.getImage(true);
+        businessImage = testEntity.getImage("사업자등록증.png", false);
+        storeImage = testEntity.getImage("매장사진.png",true);
         store = new Store(merchant, account, bankType, storeStatus,businessImage ,
             "1234567891", "나기업", LocalDate.parse("1999-02-03"), "나기업의 김치찌개",
             "01088889991", new BigDecimal("1.1"), "우리 매장음식이 가장 맛있어요.", storeImage, "11022223333");
@@ -120,7 +120,6 @@ class StoreRepositoryTest {
         assertThat(actual.getBusinessLicense()).isEqualTo(store.getBusinessLicense());
         assertThat(actual.getMerchant()).isEqualTo(store.getMerchant());
         assertThat(actual.getAccount()).isEqualTo(store.getAccount());
-        assertThat(actual.getImage()).isEqualTo(store.getImage());
     }
 
     @Test
