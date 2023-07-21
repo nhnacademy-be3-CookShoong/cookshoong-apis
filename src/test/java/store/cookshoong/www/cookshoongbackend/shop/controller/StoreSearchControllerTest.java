@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -61,11 +62,13 @@ class StoreSearchControllerTest {
         List<SelectAllStoresNotOutedResponseDto> storeList = new ArrayList<>();
         storeList.add(new SelectAllStoresNotOutedResponseDto(
             1L, "네네치킨", "OPEN", "광주광역시 동구 필문대로287번길 19-24", "평양빌딩",
-            new BigDecimal("35.1453447604175"), new BigDecimal("126.9292302170903"), "CHK"
+            new BigDecimal("35.1453447604175"), new BigDecimal("126.9292302170903"), "CHK",
+            UUID.randomUUID()+".jpg"
         ));
         storeList.add(new SelectAllStoresNotOutedResponseDto(
             1L, "굽네치킨", "OPEN", "광주광역시 동구 필문대로273번길 8-5", "평양빌딩",
-            new BigDecimal("35.1464529445461"), new BigDecimal("126.9283952407910"), "CHK"
+            new BigDecimal("35.1464529445461"), new BigDecimal("126.9283952407910"), "CHK",
+            UUID.randomUUID()+".jpg"
         ));
 
         Page<SelectAllStoresNotOutedResponseDto> storePage = new PageImpl<>(storeList, pageable, storeList.size());
@@ -93,6 +96,7 @@ class StoreSearchControllerTest {
                     fieldWithPath("content[].latitude").description("위도"),
                     fieldWithPath("content[].longitude").description("경도"),
                     fieldWithPath("content[].category").description("카테고리"),
+                    fieldWithPath("content[].savedName").description("저장된이름"),
                     fieldWithPath("pageable.sort.empty").description("정렬 데이터 공백 여부"),
                     fieldWithPath("pageable.sort.sorted").description("정렬 여부"),
                     fieldWithPath("pageable.sort.unsorted").description("비정렬 여부"),

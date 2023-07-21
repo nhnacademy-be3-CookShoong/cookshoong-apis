@@ -18,33 +18,34 @@ public class SelectMenuResponseDto {
     private final String name;
     private final Integer price;
     private final String description;
-    private final String image;
+    private final String savedName;
     private final Integer cookingTime;
     private final BigDecimal earningRate;
 
     /**
      * QueryDSL DTO Projection 을 위한 생성자.
      *
-     * @param id                 the id
-     * @param menuStatus         the menuStatus
-     * @param storeId            the storeId
-     * @param name               the name
-     * @param price              the price
-     * @param description        the description
-     * @param image              the image
-     * @param cookingTime        the cookingTime
-     * @param earningRate        the earningRate
+     * @param id          the id
+     * @param menuStatus  the menuStatus
+     * @param storeId     the storeId
+     * @param name        the name
+     * @param price       the price
+     * @param description the description
+     * @param savedName   the saved name
+     * @param cookingTime the cookingTime
+     * @param earningRate the earningRate
      */
     @QueryProjection
 
-    public SelectMenuResponseDto(Long id, String menuStatus, Long storeId, String name, Integer price, String description, String image, Integer cookingTime, BigDecimal earningRate) {
+    public SelectMenuResponseDto(Long id, String menuStatus, Long storeId, String name,
+                                 Integer price, String description, String savedName, Integer cookingTime, BigDecimal earningRate) {
         this.id = id;
         this.menuStatus = menuStatus;
         this.storeId = storeId;
         this.name = name;
         this.price = price;
         this.description = description;
-        this.image = image;
+        this.savedName = savedName;
         this.cookingTime = cookingTime;
         this.earningRate = earningRate;
     }

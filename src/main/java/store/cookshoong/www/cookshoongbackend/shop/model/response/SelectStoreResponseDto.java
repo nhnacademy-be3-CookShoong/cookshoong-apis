@@ -4,7 +4,6 @@ import com.querydsl.core.annotations.QueryProjection;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import lombok.Getter;
-import lombok.Setter;
 
 /**
  * 사업자입장에서 매장 조회를 위한 Dto.

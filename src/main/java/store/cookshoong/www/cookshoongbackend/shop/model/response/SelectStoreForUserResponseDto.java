@@ -20,6 +20,7 @@ public class SelectStoreForUserResponseDto {
     private final String mainPlace;
     private final String detailPlace;
     private final String description;
+    private final String savedName;
 
     /**
      * 일반회원 : 일반회원이 조회할 수 있는 매장의 정보.
@@ -35,7 +36,8 @@ public class SelectStoreForUserResponseDto {
      */
     @QueryProjection
     public SelectStoreForUserResponseDto(String businessLicenseNumber, String representativeName, LocalDate openingDate,
-                                         String storeName, String phoneNumber, String mainPlace, String detailPlace, String description) {
+                                         String storeName, String phoneNumber, String mainPlace, String detailPlace, String description,
+                                         String savedName) {
         this.businessLicenseNumber = businessLicenseNumber;
         this.representativeName = representativeName;
         this.openingDate = openingDate;
@@ -44,5 +46,6 @@ public class SelectStoreForUserResponseDto {
         this.mainPlace = mainPlace;
         this.detailPlace = detailPlace;
         this.description = description;
+        this.savedName = savedName;
     }
 }

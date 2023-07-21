@@ -132,8 +132,12 @@ public class StoreService {
      *
      * @param accountId          회원 아이디
      * @param registerRequestDto 매장 등록을 위한 정보
+     * @param businessImage      the business image
+     * @param storeImage         the store image
+     * @throws IOException the io exception
      */
-    public void createStore(Long accountId, CreateStoreRequestDto registerRequestDto, MultipartFile businessImage, MultipartFile storeImage) throws IOException {
+    public void createStore(Long accountId, CreateStoreRequestDto registerRequestDto,
+                            MultipartFile businessImage, MultipartFile storeImage) throws IOException {
         if (storeRepository.existsStoreByBusinessLicenseNumber(registerRequestDto.getBusinessLicenseNumber())) {
             throw new DuplicatedBusinessLicenseException(registerRequestDto.getBusinessLicenseNumber());
         }
@@ -178,18 +182,17 @@ public class StoreService {
      * @param storeId    the store id
      * @param requestDto 매장 수정 정보
      */
-    public void updateStore(Long accountId, Long storeId, UpdateStoreRequestDto requestDto) {
+    public void updateStore(Long accountId, Long storeId, UpdateStoreRequestDto requestDto, MultipartFile storeImage) throws IOException {
         Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
         accessDeniedException(accountId, store);
-        Merchant merchant = merchantRepository.findMerchantByName(requestDto.getMerchantName()).orElse(null);
         Account account = accountRepository.findById(accountId)
             .orElseThrow(UserNotFoundException::new);
         BankType bankType = bankTypeRepository.findByDescription(requestDto.getBankName())
             .orElseThrow(BankTypeNotFoundException::new);
         StoreStatus storeStatus = store.getStoreStatusCode();
 
+        Image storeMainImage = fileStoreService.storeFile(storeImage, true);
         store.modifyStoreInfo(
-            merchant,
             account,
             bankType,
             storeStatus,
@@ -200,7 +203,7 @@ public class StoreService {
             requestDto.getPhoneNumber(),
             requestDto.getEarningRate(),
             requestDto.getDescription(),
-            requestDto.getImage(),
+            storeMainImage,
             requestDto.getBankAccount()
         );
 
@@ -228,8 +231,8 @@ public class StoreService {
     /**
      * 사업자 : 매장 상태 변경.
      *
-     * @param accountId the account id
-     * @param storeId the store id
+     * @param accountId  the account id
+     * @param storeId    the store id
      * @param requestDto 매장 상태 변경 코드
      */
     public void updateStoreStatus(Long accountId, Long storeId, UpdateStoreStatusRequestDto requestDto) {
