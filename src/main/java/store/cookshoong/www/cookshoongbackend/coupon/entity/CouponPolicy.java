@@ -1,6 +1,5 @@
 package store.cookshoong.www.cookshoongbackend.coupon.entity;
 
-import java.time.LocalTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -29,19 +28,20 @@ public class CouponPolicy {
     /**
      * Instantiates a new Coupon policy.
      *
-     * @param couponType     the coupon type
-     * @param couponUsage    the coupon usage
-     * @param name           the name
-     * @param description    the description
-     * @param expirationTime the expiration time
+     * @param couponType  the coupon type
+     * @param couponUsage the coupon usage
+     * @param name        the name
+     * @param description the description
+     * @param usagePeriod the expiration time
      */
     public CouponPolicy(CouponType couponType, CouponUsage couponUsage, String name, String description,
-                        LocalTime expirationTime) {
+                        Integer usagePeriod) {
         this.couponType = couponType;
         this.couponUsage = couponUsage;
         this.name = name;
         this.description = description;
-        this.expirationTime = expirationTime;
+        this.usagePeriod = usagePeriod;
+        this.isDeleted = false;
     }
 
     @Id
@@ -63,7 +63,16 @@ public class CouponPolicy {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "expiration_time", nullable = false)
-    private LocalTime expirationTime;
+    @Column(name = "usage_period", nullable = false)
+    private Integer usagePeriod;
 
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted;
+
+    /**
+     * 삭제 메서드.
+     */
+    public void delete() {
+        this.isDeleted = true;
+    }
 }

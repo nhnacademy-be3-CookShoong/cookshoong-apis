@@ -13,7 +13,6 @@ import lombok.Getter;
  */
 @Getter
 public class SelectStoreResponseDto {
-    private final String loginId;
     private final String businessLicenseNumber;
     private final String representativeName;
     private final LocalDate openingDate;
@@ -25,13 +24,13 @@ public class SelectStoreResponseDto {
     private final BigDecimal longitude;
     private final BigDecimal defaultEarningRate;
     private final String description;
-    private final String bankName;
+    private final String bankCode;
     private final String bankAccountNumber;
+    private final String savedName;
 
     /**
      * 사업자 회원 : 사업자 회원이 본인 매장 정보 조회.
      *
-     * @param loginId               로그인 아이디
      * @param businessLicenseNumber 사압자등록번호
      * @param representativeName    대표자 이름
      * @param openingDate           개업일자
@@ -43,15 +42,14 @@ public class SelectStoreResponseDto {
      * @param longitude             경도
      * @param defaultEarningRate    기본 적립률
      * @param description           매장 설명
-     * @param bankName              정산 은행 이름
+     * @param bankCode              정산 은행 이름
      * @param bankAccountNumber     정산받을 계좌번호
      */
     @QueryProjection
-    public SelectStoreResponseDto(String loginId, String businessLicenseNumber, String representativeName,
+    public SelectStoreResponseDto(String businessLicenseNumber, String representativeName,
                                   LocalDate openingDate, String storeName, String phoneNumber, String mainPlace,
-                                  String detailPlace, BigDecimal latitude, BigDecimal longitude, BigDecimal defaultEarningRate, String description, String bankName,
-                                  String bankAccountNumber) {
-        this.loginId = loginId;
+                                  String detailPlace, BigDecimal latitude, BigDecimal longitude, BigDecimal defaultEarningRate, String description, String bankCode,
+                                  String bankAccountNumber, String savedName) {
         this.businessLicenseNumber = businessLicenseNumber;
         this.representativeName = representativeName;
         this.openingDate = openingDate;
@@ -63,7 +61,8 @@ public class SelectStoreResponseDto {
         this.longitude = longitude;
         this.defaultEarningRate = defaultEarningRate;
         this.description = description;
-        this.bankName = bankName;
+        this.bankCode = bankCode;
         this.bankAccountNumber = bankAccountNumber;
+        this.savedName = savedName;
     }
 }

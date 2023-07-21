@@ -30,7 +30,7 @@ public class AccountAddressRepositoryImpl implements AccountAddressRepositoryCus
 
         return jpaQueryFactory
             .select(Projections.constructor(AccountAddressResponseDto.class,
-                accountAddress.address.id, accountAddress.alias, address.mainPlace))
+                address.id, accountAddress.alias, address.mainPlace))
             .from(accountAddress)
             .innerJoin(accountAddress.address, address)
             .where(accountAddress.pk.accountId.eq(accountId))
@@ -41,17 +41,32 @@ public class AccountAddressRepositoryImpl implements AccountAddressRepositoryCus
      * {@inheritDoc}
      */
     @Override
-    public AddressResponseDto lookupByAccountIdAddressRecentRegistration(Long accountId) {
+    public AddressResponseDto lookupByAccountAddressRenewalAt(Long accountId) {
         QAccountAddress accountAddress = QAccountAddress.accountAddress;
         QAddress address = QAddress.address;
 
         return jpaQueryFactory
             .select(Projections.constructor(AddressResponseDto.class,
-                address.mainPlace, address.detailPlace, address.latitude, address.longitude))
+                address.id, address.mainPlace, address.detailPlace, address.latitude, address.longitude))
             .from(accountAddress)
             .innerJoin(accountAddress.address, address)
             .where(accountAddress.pk.accountId.eq(accountId))
-            .orderBy(accountAddress.pk.addressId.desc())
+            .orderBy(accountAddress.renewalAt.desc())
+            .fetchFirst();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AddressResponseDto lookupByAccountSelectAddressId(Long addressId) {
+        QAddress address = QAddress.address;
+
+        return jpaQueryFactory
+            .select(Projections.constructor(AddressResponseDto.class,
+                address.id, address.mainPlace, address.detailPlace, address.latitude, address.longitude))
+            .from(address)
+            .where(address.id.eq(addressId))
             .fetchFirst();
     }
 }

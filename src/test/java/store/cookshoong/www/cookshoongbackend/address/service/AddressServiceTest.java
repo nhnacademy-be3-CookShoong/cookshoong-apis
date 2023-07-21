@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -94,7 +95,7 @@ class AddressServiceTest {
             new BigDecimal("23.2323223"), new BigDecimal("24.12312312"));
 
         accountAddress = new AccountAddress(new AccountAddress.Pk(testAccount.getId(), testAddress.getId()),
-            testAccount, testAddress, "alias");
+            testAccount, testAddress, "alias", LocalDateTime.now());
     }
 
     @Test
@@ -162,7 +163,6 @@ class AddressServiceTest {
         addressService.updateAccountDetailAddress(testAccount.getId(), testAddress.getId(), requestDto);
 
         verify(accountAddressRepository, times(1)).findById(pk);
-        verify(accountAddressRepository, times(1)).save(accountAddress);
 
         assertEquals(requestDto.getDetailPlace(), accountAddress.getAddress().getDetailPlace());
     }
@@ -182,7 +182,33 @@ class AddressServiceTest {
             () -> addressService.updateAccountDetailAddress(testAccount.getId(), testAddress.getId(), requestDto));
 
         verify(accountAddressRepository, times(1)).findById(pk);
-        verify(accountAddressRepository, never()).save(accountAddress);
+    }
+
+    @Test
+    @DisplayName("회원이 선택한 주소에 대해 갱신 날짜를 업데이트")
+    void updateSelectAccountAddressRenewalAt() {
+
+        AccountAddress.Pk pk = new AccountAddress.Pk(testAccount.getId(), testAddress.getId());
+
+        when(accountAddressRepository.findById(pk)).thenReturn(Optional.of(accountAddress));
+
+        addressService.updateSelectAccountAddressRenewalAt(testAccount.getId(), testAddress.getId());
+
+        verify(accountAddressRepository, times(1)).findById(pk);
+    }
+
+    @Test
+    @DisplayName("회원이 선택한 주소에 대해 갱신 날짜를 업데이트 실패: 해당 주소가 존재하지 않을 때")
+    void updateSelectAccountAddressRenewalAt_NotFound_Address_Throw() {
+
+        AccountAddress.Pk pk = new AccountAddress.Pk(testAccount.getId(), testAddress.getId());
+
+        when(accountAddressRepository.findById(pk)).thenReturn(Optional.empty());
+
+        assertThrows(AccountAddressNotFoundException.class,
+            () -> addressService.updateSelectAccountAddressRenewalAt(testAccount.getId(), testAddress.getId()));
+
+        verify(accountAddressRepository, times(1)).findById(pk);
     }
 
 
@@ -218,23 +244,23 @@ class AddressServiceTest {
     }
 
     @Test
-    @DisplayName("회원이 최근에 등록한 주소와 좌표 조회")
+    @DisplayName("회원이 최근에 갱신한 주소와 좌표 조회")
     void selectAccountAddressRecentRegistration() {
 
-        AddressResponseDto expectedAddress = new AddressResponseDto("Main Place", "Detail Place",
+        AddressResponseDto expectedAddress = new AddressResponseDto(1L, "Main Place", "Detail Place",
             new BigDecimal("23.23233323"), new BigDecimal("23.232333255"));
-        AddressResponseDto expectedAddress1 = new AddressResponseDto("Main Place", "Detail Place",
+        AddressResponseDto expectedAddress1 = new AddressResponseDto(1L, "Main Place", "Detail Place",
             new BigDecimal("23.23233323"), new BigDecimal("23.232333255"));
 
         when(accountRepository.findById(testAccount.getId())).thenReturn(Optional.of(testAccount));
-        when(accountAddressRepository.lookupByAccountIdAddressRecentRegistration(testAccount.getId()))
+        when(accountAddressRepository.lookupByAccountAddressRenewalAt(testAccount.getId()))
             .thenReturn(expectedAddress, expectedAddress1);
 
-        AddressResponseDto actual = addressService.selectAccountAddressRecentRegistration(testAccount.getId());
+        AddressResponseDto actual = addressService.selectAccountAddressRenewalAt(testAccount.getId());
 
         assertEquals(expectedAddress, actual);
         verify(accountRepository, times(1)).findById(testAccount.getId());
-        verify(accountAddressRepository, times(1)).lookupByAccountIdAddressRecentRegistration(testAccount.getId());
+        verify(accountAddressRepository, times(1)).lookupByAccountAddressRenewalAt(testAccount.getId());
 
         assertEquals(actual.getMainPlace(), expectedAddress1.getMainPlace());
         assertEquals(actual.getDetailPlace(), expectedAddress1.getDetailPlace());
@@ -243,15 +269,52 @@ class AddressServiceTest {
     }
 
     @Test
-    @DisplayName("회원이 주문할 때 필요한 메인주소와 상세주소, 회원의 위치를 맵에서 보여줄 좌표를 조회 실패: 회원이 존재하지 않을 때")
+    @DisplayName("회원이 최근에 갱신한 주소와 좌표 조회 실패: 회원이 존재하지 않을 때")
     void selectAccountAddress_NotFound_Account_Throw() {
 
         when(accountRepository.findById(testAccount.getId())).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class,
-            () -> addressService.selectAccountAddressRecentRegistration(testAccount.getId()));
+            () -> addressService.selectAccountAddressRenewalAt(testAccount.getId()));
 
         verify(accountRepository, times(1)).findById(testAccount.getId());
+    }
+
+    @Test
+    @DisplayName("회원이 주소록에서 선택한 주소 조회")
+    void selectAccountChoiceAddress() {
+
+        AddressResponseDto expectedAddress = new AddressResponseDto(1L, "Main Place1", "Detail Place1",
+            new BigDecimal("23.23233323"), new BigDecimal("23.232333255"));
+        AddressResponseDto expectedAddress1 = new AddressResponseDto(1L, "Main Place", "Detail Place",
+            new BigDecimal("23.23233323"), new BigDecimal("23.232333255"));
+
+        when(addressRepository.findById(testAddress.getId())).thenReturn(Optional.of(testAddress));
+        when(accountAddressRepository.lookupByAccountSelectAddressId(testAddress.getId()))
+            .thenReturn(expectedAddress1);
+
+        AddressResponseDto actual = addressService.selectAccountChoiceAddress(testAddress.getId());
+
+        assertEquals(expectedAddress1, actual);
+        verify(addressRepository, times(1)).findById(testAddress.getId());
+        verify(accountAddressRepository, times(1)).lookupByAccountSelectAddressId(testAddress.getId());
+
+        assertEquals(actual.getMainPlace(), expectedAddress1.getMainPlace());
+        assertEquals(actual.getDetailPlace(), expectedAddress1.getDetailPlace());
+        assertEquals(actual.getLatitude(), expectedAddress1.getLatitude());
+        assertEquals(actual.getLongitude(), expectedAddress1.getLongitude());
+    }
+
+    @Test
+    @DisplayName("회원이 주소록에서 선택한 주소 조회 실패: 주소가 존재하지 않을 때")
+    void selectAccountChoiceAddress_NotFound_Account_Throw() {
+
+        when(addressRepository.findById(testAddress.getId())).thenReturn(Optional.empty());
+
+        assertThrows(AccountAddressNotFoundException.class,
+            () -> addressService.selectAccountChoiceAddress(testAddress.getId()));
+
+        verify(addressRepository, times(1)).findById(testAddress.getId());
     }
 
     @Test

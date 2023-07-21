@@ -82,13 +82,13 @@ class CategoryRepositoryTest {
             StoreCategory storeCategory = new StoreCategory("Code" + i, "카테고리" + i);
             storeCategoryRepository.save(storeCategory);
         }
-        storeCategoryRepository.flush();
+
 
         Pageable pageable = PageRequest.of(2, 3);
         Page<SelectAllCategoriesResponseDto> expects = storeCategoryRepository.lookupStoreCategoriesPage(pageable);
 
         assertThat(expects.get().count()).isEqualTo(3);
-        assertThat(expects.get().findFirst().get().getCategoryName()).isEqualTo("카테고리7");
+        assertThat(expects.get().findFirst().get().getDescription()).isEqualTo("카테고리7");
     }
 
     @Test

@@ -1,6 +1,5 @@
 package store.cookshoong.www.cookshoongbackend.coupon.model.vo;
 
-import java.math.BigDecimal;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -17,12 +16,12 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypePercent;
 @EqualsAndHashCode
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CouponTypePercentVo implements CouponTypeResponse {
-    private BigDecimal rate;
-    private int minimumPrice;
-    private int maximumPrice;
+    private int rate;
+    private int minimumOrderPrice;
+    private int maximumDiscountAmount;
 
     public static CouponTypePercentVo newInstance(CouponTypePercent couponTypePercent) {
-        return new CouponTypePercentVo(couponTypePercent.getRate(), couponTypePercent.getMinimumPrice(),
-            couponTypePercent.getMaximumPrice());
+        return new CouponTypePercentVo(couponTypePercent.getRate(), couponTypePercent.getMinimumOrderPrice(),
+            couponTypePercent.getMaximumDiscountAmount());
     }
 }

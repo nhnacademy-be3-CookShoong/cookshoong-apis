@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.shop.exception.banktype.DuplicatedBankException;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateBankRequestDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllBanksForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllBanksResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.repository.bank.BankTypeRepository;
 
@@ -51,8 +50,8 @@ public class BankTypeService {
     }
 
     @Transactional(readOnly = true)
-    public List<SelectAllBanksForUserResponseDto> selectBanksForUser() {
-        return bankTypeRepository.lookupBanks();
+    public List<SelectAllBanksResponseDto> selectBanksForUser() {
+        return bankTypeRepository.findAllByOrderByDescriptionAsc();
     }
 
 }

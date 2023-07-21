@@ -1,6 +1,11 @@
 package store.cookshoong.www.cookshoongbackend.coupon.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponPolicy;
@@ -12,15 +17,19 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageAll;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponUsageNotFoundException;
-import store.cookshoong.www.cookshoongbackend.coupon.model.request.CouponPolicyRequest;
+import store.cookshoong.www.cookshoongbackend.coupon.model.request.AbstractCouponPolicyRequest;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateCashCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreatePercentCouponPolicyRequestDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicyResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectPolicyResponseTempDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeResponse;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponTypeCashRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponTypePercentRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponUsageAllRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponUsageMerchantRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponUsageStoreRepository;
+import store.cookshoong.www.cookshoongbackend.coupon.util.CouponTypeConverter;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.shop.repository.merchant.MerchantRepository;
@@ -45,6 +54,56 @@ public class CouponPolicyService {
     private final CouponPolicyRepository couponPolicyRepository;
     private final StoreRepository storeRepository;
     private final MerchantRepository merchantRepository;
+    private final CouponTypeConverter couponTypeConverter;
+
+    /**
+     * 매장 정책 확인.
+     *
+     * @param storeId  the store id
+     * @param pageable the pageable
+     * @return the page
+     */
+    public Page<SelectPolicyResponseDto> selectStorePolicy(Long storeId, Pageable pageable) {
+        Page<SelectPolicyResponseTempDto> temps = couponPolicyRepository.lookupStorePolicy(storeId, pageable);
+        return tempPageToPermanentPage(temps);
+    }
+
+    /**
+     * 가맹점 정책 확인.
+     *
+     * @param merchantId the merchant id
+     * @param pageable   the pageable
+     * @return the page
+     */
+    public Page<SelectPolicyResponseDto> selectMerchantPolicy(Long merchantId, Pageable pageable) {
+        Page<SelectPolicyResponseTempDto> temps = couponPolicyRepository.lookupMerchantPolicy(merchantId, pageable);
+        return tempPageToPermanentPage(temps);
+    }
+
+    /**
+     * 모든 사용처 정책 확인.
+     *
+     * @param pageable the pageable
+     * @return the page
+     */
+    public Page<SelectPolicyResponseDto> selectUsageAllPolicy(Pageable pageable) {
+        Page<SelectPolicyResponseTempDto> temps = couponPolicyRepository.lookupAllPolicy(pageable);
+        return tempPageToPermanentPage(temps);
+    }
+
+    private Page<SelectPolicyResponseDto> tempPageToPermanentPage(Page<SelectPolicyResponseTempDto> temps) {
+        List<SelectPolicyResponseDto> policyResponses = temps.stream()
+            .map(this::tempToPermanent)
+            .collect(Collectors.toList());
+
+        return new PageImpl<>(policyResponses, temps.getPageable(), temps.getTotalElements());
+    }
+
+    private SelectPolicyResponseDto tempToPermanent(SelectPolicyResponseTempDto temp) {
+        CouponTypeResponse couponTypeResponse = couponTypeConverter.convert(temp.getCouponType());
+        return new SelectPolicyResponseDto(temp.getId(), couponTypeResponse, temp.getName(), temp.getDescription(),
+            temp.getUsagePeriod(), temp.getUnclaimedCouponCount(), temp.getIssueCouponCount());
+    }
 
     /**
      * 매장 금액 쿠폰 정책 생성.
@@ -119,15 +178,15 @@ public class CouponPolicyService {
     }
 
     private CouponTypeCash getOrCreateCouponTypeCash(CreateCashCouponPolicyRequestDto dto) {
-        return couponTypeCashRepository.findByDiscountAmountAndMinimumPrice(
-                dto.getDiscountAmount(), dto.getMinimumPrice())
+        return couponTypeCashRepository.findByDiscountAmountAndMinimumOrderPrice(
+                dto.getDiscountAmount(), dto.getMinimumOrderPrice())
             .orElseGet(() -> couponTypeCashRepository.save(
                 CreateCashCouponPolicyRequestDto.toEntity(dto)));
     }
 
     private CouponTypePercent getOrCreateCouponTypePercent(CreatePercentCouponPolicyRequestDto dto) {
-        return couponTypePercentRepository.findByRateAndMinimumPriceAndMaximumPrice(
-                dto.getRate(), dto.getMinimumPrice(), dto.getMaximumPrice())
+        return couponTypePercentRepository.findByRateAndMinimumOrderPriceAndMaximumDiscountAmount(
+                dto.getRate(), dto.getMinimumOrderPrice(), dto.getMaximumDiscountAmount())
             .orElseGet(() -> couponTypePercentRepository.save(
                 CreatePercentCouponPolicyRequestDto.toEntity(dto)));
     }
@@ -152,9 +211,9 @@ public class CouponPolicyService {
         return couponUsageMerchantRepository.save(new CouponUsageMerchant(merchant));
     }
 
-    private void createCouponPolicy(CouponType couponType, CouponUsage couponUsage, CouponPolicyRequest req) {
+    private void createCouponPolicy(CouponType couponType, CouponUsage couponUsage, AbstractCouponPolicyRequest req) {
         couponPolicyRepository.save(new CouponPolicy(couponType, couponUsage, req.getName(), req.getDescription(),
-                req.getExpirationTime()));
+            req.getUsagePeriod()));
     }
 
     /**
@@ -165,5 +224,15 @@ public class CouponPolicyService {
     private CouponUsageAll getOnlyOneUsageAll() {
         return couponUsageAllRepository.findTopByOrderByIdAsc()
             .orElseThrow(CouponUsageNotFoundException::new);
+    }
+
+    /**
+     * 쿠폰 정책 삭제.
+     *
+     * @param policyId the policy id
+     */
+    public void deletePolicy(Long policyId) {
+        couponPolicyRepository.findById(policyId)
+            .ifPresent(CouponPolicy::delete);
     }
 }

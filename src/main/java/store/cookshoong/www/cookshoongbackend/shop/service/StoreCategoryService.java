@@ -11,7 +11,6 @@ import store.cookshoong.www.cookshoongbackend.shop.exception.category.Duplicated
 import store.cookshoong.www.cookshoongbackend.shop.exception.category.StoreCategoryNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateStoreCategoryRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreCategoryRequestDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllCategoriesForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllCategoriesResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.repository.category.StoreCategoryRepository;
 
@@ -81,8 +80,8 @@ public class StoreCategoryService {
      *
      * @return the list
      */
-    public List<SelectAllCategoriesForUserResponseDto> selectAllCategoriesForUser() {
-        return storeCategoryRepository.lookupStoreCategories();
+    public List<SelectAllCategoriesResponseDto> selectAllCategoriesForUser() {
+        return storeCategoryRepository.findAllByOrderByCategoryCodeAsc();
     }
 
     //TODO 10. 카테고리 삭제는 오늘 작성.

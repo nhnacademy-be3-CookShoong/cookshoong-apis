@@ -14,7 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectMerchantResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllMerchantsForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.repository.merchant.MerchantRepository;
 
 /**
@@ -92,13 +92,11 @@ class MerchantRepositoryTest {
             Merchant merchant = new Merchant("카테고리" + i);
             merchantRepository.save(merchant);
         }
-        merchantRepository.flush();
-
         Pageable pageable = PageRequest.of(2, 3);
-        Page<SelectMerchantResponseDto> expects = merchantRepository.lookupMerchantPage(pageable);
+        Page<SelectAllMerchantsForUserResponseDto> expects = merchantRepository.lookupMerchantPage(pageable);
 
         assertThat(expects.get().count()).isEqualTo(3);
-        assertThat(expects.get().findFirst().get().getMerchantName()).isEqualTo("카테고리7");
+        assertThat(expects.get().findFirst().get().getName()).isEqualTo("카테고리7");
     }
 
 }

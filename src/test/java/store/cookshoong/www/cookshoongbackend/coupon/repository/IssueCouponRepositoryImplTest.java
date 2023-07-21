@@ -2,7 +2,7 @@ package store.cookshoong.www.cookshoongbackend.coupon.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +18,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.util.ReflectionTestUtils;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponPolicy;
@@ -27,7 +28,8 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectOwnCouponResponseTempDto;
-import store.cookshoong.www.cookshoongbackend.payment.entity.Order;
+import store.cookshoong.www.cookshoongbackend.file.entity.Image;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.Order;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
@@ -78,10 +80,12 @@ class IssueCouponRepositoryImplTest {
     void beforeEach() {
         customer = tpe.getLevelOneActiveCustomer();
         Merchant merchant = te.getMerchant();
+        Image businessImage = te.getImage("사업자등록증.jpg", false);
+        Image storeImage = te.getImage("우리 매장 대표사진.jpg",true);
         hasAllUsageCouponMerchant =
-            te.getStore(merchant, tpe.getLevelOneActiveCustomer(), te.getBankTypeKb(), te.getStoreStatusOpen());
+            te.getStore(merchant, tpe.getLevelOneActiveCustomer(), te.getBankTypeKb(), te.getStoreStatusOpen(), businessImage, storeImage);
         hasMerchantUsageCouponMerchant =
-            te.getStore(merchant, tpe.getLevelOneActiveCustomer(), te.getBankTypeKb(), te.getStoreStatusOpen());
+            te.getStore(merchant, tpe.getLevelOneActiveCustomer(), te.getBankTypeKb(), te.getStoreStatusOpen(), businessImage, storeImage);
         hasStoreUsageCoupon = tpe.getOpenStore();
         hasNoCoupon = tpe.getOpenStore();
 
@@ -94,15 +98,15 @@ class IssueCouponRepositoryImplTest {
         CouponUsageAll couponUsageAll = te.getCouponUsageAll();
 
         CouponPolicy couponPolicyExpired = em.persist(
-            new CouponPolicy(couponTypeCash, couponUsageAll, "만료된 쿠폰", "",
-                LocalTime.of(0, 0, 0)));
+            new CouponPolicy(couponTypeCash, couponUsageAll, "만료된 쿠폰", "", 0));
         CouponPolicy couponPolicyMerchant = te.getCouponPolicy(couponTypeCash, couponUsageMerchant);
         CouponPolicy couponPolicyAllUsageStore = te.getCouponPolicy(couponTypeCash, couponAllUsageStore);
         CouponPolicy couponPolicyStoreUsageStore = te.getCouponPolicy(couponTypeCash, couponStoreUsageStore);
         CouponPolicy couponPolicyAll = te.getCouponPolicy(couponTypeCash, couponUsageAll);
 
         List<IssueCoupon> issueCoupons = new ArrayList<>();
-        issueCoupons.add(te.getIssueCoupon(couponPolicyExpired));
+        IssueCoupon expiredIssueCoupon = te.getIssueCoupon(couponPolicyExpired);
+        issueCoupons.add(expiredIssueCoupon);
         issueCoupons.add(te.getIssueCoupon(couponPolicyMerchant));
         issueCoupons.add(te.getIssueCoupon(couponPolicyAllUsageStore));
         issueCoupons.add(te.getIssueCoupon(couponPolicyStoreUsageStore));
@@ -122,7 +126,11 @@ class IssueCouponRepositoryImplTest {
 
         issueCoupons.forEach(issueCoupon -> issueCoupon.provideToUser(customer));
 
-        Order order = te.getOrder();
+        ReflectionTestUtils.setField(expiredIssueCoupon, "expirationDate",
+            LocalDate.of(1000, 1, 1));
+
+        Order order = tpe.createTestOrder();
+
         issueCoupons.stream()
             .skip(5)
             .forEach(issueCoupon -> te.getCouponLog(

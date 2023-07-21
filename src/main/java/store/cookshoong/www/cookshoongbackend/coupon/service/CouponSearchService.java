@@ -59,6 +59,6 @@ public class CouponSearchService {
         return new SelectOwnCouponResponseDto(
             selectOwnCouponResponseTempDto.getIssueCouponCode(), couponTypeResponse, couponUsageName,
             selectOwnCouponResponseTempDto.getName(), selectOwnCouponResponseTempDto.getDescription(),
-            selectOwnCouponResponseTempDto.getExpirationAt(), selectOwnCouponResponseTempDto.getLogTypeDescription());
+            selectOwnCouponResponseTempDto.getExpirationDate(), selectOwnCouponResponseTempDto.getLogTypeDescription());
     }
 }

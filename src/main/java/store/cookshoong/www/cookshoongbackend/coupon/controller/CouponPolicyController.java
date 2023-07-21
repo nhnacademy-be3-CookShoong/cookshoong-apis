@@ -2,9 +2,13 @@ package store.cookshoong.www.cookshoongbackend.coupon.controller;
 
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponPolicyRequestValidationException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateCashCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreatePercentCouponPolicyRequestDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicyResponseDto;
 import store.cookshoong.www.cookshoongbackend.coupon.service.CouponPolicyService;
 
 /**
@@ -29,10 +34,47 @@ public class CouponPolicyController {
     private final CouponPolicyService couponPolicyService;
 
     /**
+     * 매장 쿠폰 정책 조회.
+     *
+     * @param storeId  the store id
+     * @param pageable the pageable
+     * @return the store policy
+     */
+    @GetMapping("/stores/{storeId}")
+    public ResponseEntity<Page<SelectPolicyResponseDto>> getStorePolicy(@PathVariable Long storeId, Pageable pageable) {
+        return ResponseEntity.ok(couponPolicyService.selectStorePolicy(storeId, pageable));
+    }
+
+    /**
+     * 가맹점 쿠폰 정책 조회.
+     *
+     * @param merchantId the merchant id
+     * @param pageable   the pageable
+     * @return the merchant policy
+     */
+    @GetMapping("/merchants/{merchantId}")
+    public ResponseEntity<Page<SelectPolicyResponseDto>> getMerchantPolicy(@PathVariable Long merchantId,
+                                                                           Pageable pageable) {
+        return ResponseEntity.ok(couponPolicyService.selectMerchantPolicy(merchantId, pageable));
+    }
+
+    /**
+     * 어느 곳이든 사용 가능한 쿠폰 정책 조회.
+     *
+     * @param pageable the pageable
+     * @return the usage all policy
+     */
+    @GetMapping("/all")
+    public ResponseEntity<Page<SelectPolicyResponseDto>> getUsageAllPolicy(Pageable pageable) {
+        return ResponseEntity.ok(couponPolicyService.selectUsageAllPolicy(pageable));
+    }
+
+    /**
      * 매장 금액 쿠폰 정책 생성을 위한 엔드포인트.
      *
-     * @param storeId the store id
-     * @param dto     가게에서 쿠폰 금액 정책을 생성할 때 사용되는 dto
+     * @param storeId       the store id
+     * @param dto           가게에서 쿠폰 금액 정책을 생성할 때 사용되는 dto
+     * @param bindingResult the binding result
      * @return CREATED status 및 쿠폰 정책 id
      */
     @PostMapping("/stores/{storeId}/cash")
@@ -50,8 +92,9 @@ public class CouponPolicyController {
     /**
      * 매장 포인트 쿠폰 정책 생성을 위한 엔드포인트.
      *
-     * @param storeId the store id
-     * @param dto     가게에서 쿠폰 포인트 정책을 생성할 때 사용되는 dto
+     * @param storeId       the store id
+     * @param dto           가게에서 쿠폰 포인트 정책을 생성할 때 사용되는 dto
+     * @param bindingResult the binding result
      * @return CREATED status 및 쿠폰 정책 id
      */
     @PostMapping("/stores/{storeId}/percent")
@@ -70,8 +113,9 @@ public class CouponPolicyController {
     /**
      * 가맹점 금액 쿠폰 정책 생성을 위한 엔드포인트.
      *
-     * @param merchantId the merchant id
-     * @param dto        가맹점에서 쿠폰 금액 정책을 생성할 때 사용되는 dto
+     * @param merchantId    the merchant id
+     * @param dto           가맹점에서 쿠폰 금액 정책을 생성할 때 사용되는 dto
+     * @param bindingResult the binding result
      * @return CREATED status 및 쿠폰 정책 id
      */
     @PostMapping("/merchants/{merchantId}/cash")
@@ -89,8 +133,9 @@ public class CouponPolicyController {
     /**
      * 가맹점 포인트 쿠폰 정책 생성을 위한 엔드포인트.
      *
-     * @param merchantId the merchant id
-     * @param dto        가맹점에서 쿠폰 포인트 정책을 생성할 때 사용되는 dto
+     * @param merchantId    the merchant id
+     * @param dto           가맹점에서 쿠폰 포인트 정책을 생성할 때 사용되는 dto
+     * @param bindingResult the binding result
      * @return CREATED status 및 쿠폰 정책 id
      */
     @PostMapping("/merchants/{merchantId}/percent")
@@ -109,7 +154,8 @@ public class CouponPolicyController {
     /**
      * 모든 범위 금액 쿠폰 정책 생성을 위한 엔드포인트.
      *
-     * @param dto 쿠폰 금액 정책을 생성할 때 사용되는 dto
+     * @param dto           쿠폰 금액 정책을 생성할 때 사용되는 dto
+     * @param bindingResult the binding result
      * @return CREATED status 및 쿠폰 정책 id
      */
     @PostMapping("/all/cash")
@@ -126,7 +172,8 @@ public class CouponPolicyController {
     /**
      * 모든 범위 포인트 쿠폰 정책 생성을 위한 엔드포인트.
      *
-     * @param dto 쿠폰 포인트 정책을 생성할 때 사용되는 dto
+     * @param dto           쿠폰 포인트 정책을 생성할 때 사용되는 dto
+     * @param bindingResult the binding result
      * @return CREATED status 및 쿠폰 정책 id
      */
     @PostMapping("/all/percent")
@@ -137,6 +184,20 @@ public class CouponPolicyController {
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
+            .build();
+    }
+
+    /**
+     * 쿠폰 정책 삭제 엔드포인트.
+     *
+     * @param policyId the policy id
+     * @return the response entity
+     */
+    @DeleteMapping("/{policyId}")
+    public ResponseEntity<Void> deletePolicy(@PathVariable Long policyId) {
+        couponPolicyService.deletePolicy(policyId);
+        return ResponseEntity
+            .noContent()
             .build();
     }
 

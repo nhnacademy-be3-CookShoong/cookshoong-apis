@@ -10,7 +10,7 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.DayType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Holiday;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.shop.exception.businesshour.DayTypeNotFoundException;
-import store.cookshoong.www.cookshoongbackend.shop.exception.store.SelectStoreNotFoundException;
+import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateBusinessHourRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateHolidayRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectBusinessHourResponseDto;
@@ -24,7 +24,7 @@ import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreReposit
  * 관리자가 가맹점의 휴업일, 영업시간을 관리.
  * 휴업일 추가, 휴업일 삭제, 영업시간 추가, 영업시간 삭제.
  *
- * @author papel
+ * @author papel (윤동현)
  * @since 2023.07.07
  */
 @Service
@@ -59,7 +59,7 @@ public class BusinessHourService {
      */
     public void createHoliday(Long storeId, CreateHolidayRequestDto createHolidayRequestDto) {
         Store store = storeRepository.findById(storeId)
-            .orElseThrow(SelectStoreNotFoundException::new);
+            .orElseThrow(StoreNotFoundException::new);
         Holiday holiday = new Holiday(store,
             createHolidayRequestDto.getHolidayStartDate(),
             createHolidayRequestDto.getHolidayEndDate());
@@ -96,7 +96,7 @@ public class BusinessHourService {
      */
     public void createBusinessHour(Long storeId, CreateBusinessHourRequestDto createBusinessHourRequestDto) {
         Store store = storeRepository.findById(storeId)
-            .orElseThrow(SelectStoreNotFoundException::new);
+            .orElseThrow(StoreNotFoundException::new);
         DayType dayType = dayTypeRepository.findByDescription(createBusinessHourRequestDto.getDayCodeName())
             .orElseThrow(DayTypeNotFoundException::new);
         BusinessHour businessHour = new BusinessHour(store,

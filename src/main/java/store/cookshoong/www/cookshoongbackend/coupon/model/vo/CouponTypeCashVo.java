@@ -17,9 +17,9 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CouponTypeCashVo implements CouponTypeResponse {
     private int discountAmount;
-    private int minimumPrice;
+    private int minimumOrderPrice;
 
     public static CouponTypeCashVo newInstance(CouponTypeCash couponTypeCash) {
-        return new CouponTypeCashVo(couponTypeCash.getDiscountAmount(), couponTypeCash.getMinimumPrice());
+        return new CouponTypeCashVo(couponTypeCash.getDiscountAmount(), couponTypeCash.getMinimumOrderPrice());
     }
 }

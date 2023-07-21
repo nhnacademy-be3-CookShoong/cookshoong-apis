@@ -4,8 +4,9 @@ import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -25,8 +26,10 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageAll;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
+import store.cookshoong.www.cookshoongbackend.file.entity.Image;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.OrderStatus;
 import store.cookshoong.www.cookshoongbackend.payment.entity.ChargeType;
-import store.cookshoong.www.cookshoongbackend.payment.entity.Order;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.Order;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Holiday;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
@@ -44,6 +47,9 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.StoreStatus;
 @TestComponent
 @Import(TestEntityAspect.class)
 public class TestEntity {
+    AtomicInteger atomicInt = new AtomicInteger();
+    AtomicLong atomicLong = new AtomicLong();
+
     public Address getAddress() {
         return new Address("main", "detail", BigDecimal.ONE, BigDecimal.ZERO);
     }
@@ -82,19 +88,23 @@ public class TestEntity {
         return new Merchant("네네치킨");
     }
 
-    public Store getStore(Merchant merchant, Account account, BankType bankType, StoreStatus storeStatus) {
+    public Store getStore(Merchant merchant, Account account, BankType bankType,
+                          StoreStatus storeStatus, Image businessImage, Image storeImage) {
         return new Store(merchant, account, bankType,
-            storeStatus, UUID.randomUUID() + ".jpg", "123456", "김주호",
+            storeStatus,businessImage, "123456", "김주호",
             LocalDate.of(2020, 2, 20), "주호타코", "01012345678", BigDecimal.ONE,
-            null, null, "123456");
+            null, storeImage, "123456");
     }
 
+    public Image getImage(String name,boolean isPublic){
+        return createImage(name,isPublic);
+    }
     public StoreCategory getStoreCategory() {
         return new StoreCategory("CHK", "치킨");
     }
 
     public CouponTypePercent getCouponTypePercent_3_1000_10000() {
-        return new CouponTypePercent(new BigDecimal("3"), 1_000, 10_000);
+        return new CouponTypePercent(3, 1_000, 10_000);
     }
 
     public CouponTypeCash getCouponTypeCash_1000_10000() {
@@ -114,8 +124,7 @@ public class TestEntity {
     }
 
     public CouponPolicy getCouponPolicy(CouponType couponType, CouponUsage couponUsage) {
-        return new CouponPolicy(couponType, couponUsage, "testCoupon", "just Test",
-            LocalTime.of(1, 0, 0));
+        return new CouponPolicy(couponType, couponUsage, "testCoupon", "just Test", 30);
     }
 
     public IssueCoupon getIssueCoupon(CouponPolicy couponPolicy) {
@@ -134,8 +143,12 @@ public class TestEntity {
         return new Holiday(store, LocalDate.of(2020, 2, 20), LocalDate.of(2020, 2, 22));
     }
 
-    public Order getOrder() {
-        return createTestOrder();
+    public OrderStatus getOrderStatus(String orderStatusCode, String description) {
+        return createTestOrderStatus(orderStatusCode, description);
+    }
+
+    public Order getOrder(Account account, Store store, OrderStatus orderStatus) {
+        return createTestOrder(account, store, orderStatus);
     }
 
     private BankType createTestBankType(String bankTypeCode, String description) {
@@ -159,13 +172,32 @@ public class TestEntity {
         return couponLogType;
     }
 
-    private Order createTestOrder() {
+    private Order createTestOrder(Account account, Store store, OrderStatus orderStatus) {
         Order order = createUsingDeclared(Order.class);
         ReflectionTestUtils.setField(order, "orderCode", UUID.randomUUID());
         ReflectionTestUtils.setField(order, "orderedAt", LocalDateTime.now());
         ReflectionTestUtils.setField(order, "memo", "memo");
+        ReflectionTestUtils.setField(order, "orderStatusCode", orderStatus);
+        ReflectionTestUtils.setField(order, "store", store);
+        ReflectionTestUtils.setField(order, "account", account);
         return order;
     }
+
+    private OrderStatus createTestOrderStatus(String orderStatusCode, String description){
+        OrderStatus orderStatus = createUsingDeclared(OrderStatus.class);
+        ReflectionTestUtils.setField(orderStatus, "orderStatusCode", orderStatusCode);
+        ReflectionTestUtils.setField(orderStatus, "description", description);
+        return orderStatus;
+    }
+
+    public Image createImage(String name, boolean isPublic){
+        Image image = createUsingDeclared(Image.class);
+        ReflectionTestUtils.setField(image,"originName", name);
+        ReflectionTestUtils.setField(image, "savedName", UUID.randomUUID()+".jpg");
+        ReflectionTestUtils.setField(image, "isPublic", isPublic);
+        return image;
+    }
+
 
     public <T> T createUsingDeclared(Class<T> clazz) {
         try {
@@ -175,5 +207,28 @@ public class TestEntity {
         } catch (Exception e) {
             throw new RuntimeException();
         }
+    }
+
+    public <T> T persist(T t) {
+        try {
+            ReflectionTestUtils.setField(t, "id", atomicLong.getAndIncrement());
+            return t;
+        } catch (IllegalArgumentException e) {
+            ReflectionTestUtils.setField(t, "id", atomicInt.getAndIncrement());
+            return t;
+        }
+    }
+
+    public <T> T persist(T t, long id) {
+        ReflectionTestUtils.setField(t, "id", id);
+        return t;
+    }
+
+    public long getLong() {
+        return atomicLong.incrementAndGet();
+    }
+
+    public int getInt() {
+        return atomicInt.incrementAndGet();
     }
 }

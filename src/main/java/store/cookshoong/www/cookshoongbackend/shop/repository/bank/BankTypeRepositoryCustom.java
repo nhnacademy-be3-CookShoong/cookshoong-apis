@@ -4,7 +4,6 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllBanksForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllBanksResponseDto;
 
 /**
@@ -21,5 +20,4 @@ public interface BankTypeRepositoryCustom {
      * @return 페이지 별 은행이름
      */
     Page<SelectAllBanksResponseDto> lookupBanksPage(Pageable pageable);
-    List<SelectAllBanksForUserResponseDto> lookupBanks();
 }

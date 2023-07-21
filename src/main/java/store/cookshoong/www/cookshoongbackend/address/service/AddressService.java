@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.address.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -57,7 +58,7 @@ public class AddressService {
         addressRepository.save(address);
 
         AccountAddress accountAddress = new AccountAddress(new AccountAddress.Pk(accountId, address.getId()),
-            account, address, requestDto.getAlias());
+            account, address, requestDto.getAlias(), LocalDateTime.now());
 
         accountAddressRepository.save(accountAddress);
     }
@@ -77,7 +78,26 @@ public class AddressService {
             .orElseThrow(AccountAddressNotFoundException::new);
 
         accountAddress.getAddress().updateDetailAddress(requestDto);
-        accountAddressRepository.save(accountAddress);
+        accountAddress.modifyRenewalAt();
+    }
+
+    /**
+     * 회원이 선택한 주소에 대해 날짜를 갱신해 줌.
+     * 이렇게 사용하는 이유는 선택된 주소를 가지고
+     * 웹에서 계속 사용할 수 있기 때문에 선택된 주소가 최근 갱신된 날짜로 업데이트 되어야
+     * 유동적으로 매장이나 주문할 때 가지고 와서 사용이 가능하다.
+     *
+     * @param accountId     회원 아이디
+     * @param addressId     주소 아이디
+     */
+    public void updateSelectAccountAddressRenewalAt(Long accountId, Long addressId) {
+
+        AccountAddress.Pk pk = new AccountAddress.Pk(accountId, addressId);
+
+        AccountAddress accountAddress = accountAddressRepository.findById(pk)
+            .orElseThrow(AccountAddressNotFoundException::new);
+
+        accountAddress.modifyRenewalAt();
     }
 
     /**
@@ -96,20 +116,33 @@ public class AddressService {
     }
 
     /**
-     * 회원이 최근에 등록한 주소를 가지고.
-     * 주문할 때 보여주는 메인주소와 상세주소를 보여주고
-     * 회원이 주소를 등록할 때 지도에 위도와 경도를 가지고 위치를 보여주는 메서드
+     * 회원이 가지고 있는 주소 중 최근 갱신된 주소를 가져오는 메서드.
      *
      * @param accountId     회원 아이디
      * @return              회원이 가지고 있는 주소와 좌표를 반환
      */
     @Transactional(readOnly = true)
-    public AddressResponseDto selectAccountAddressRecentRegistration(Long accountId) {
+    public AddressResponseDto selectAccountAddressRenewalAt(Long accountId) {
 
         Account account = accountRepository.findById(accountId)
             .orElseThrow(UserNotFoundException::new);
 
-        return accountAddressRepository.lookupByAccountIdAddressRecentRegistration(account.getId());
+        return accountAddressRepository.lookupByAccountAddressRenewalAt(account.getId());
+    }
+
+    /**
+     * 회원이 주소록 중 선택한 주소 정보.
+     *
+     * @param addressId     주소 아이디
+     * @return              회원이 가지고 있는 주소와 좌표를 반환
+     */
+    @Transactional(readOnly = true)
+    public AddressResponseDto selectAccountChoiceAddress(Long addressId) {
+
+        Address address = addressRepository.findById(addressId)
+            .orElseThrow(AccountAddressNotFoundException::new);
+
+        return accountAddressRepository.lookupByAccountSelectAddressId(address.getId());
     }
 
     /**

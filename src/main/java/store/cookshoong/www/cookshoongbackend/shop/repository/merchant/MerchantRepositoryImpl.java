@@ -8,9 +8,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QMerchant;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectAllMerchantsForUserResponseDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectMerchantResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllMerchantsForUserResponseDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectMerchantResponseDto;
 
 /**
  * 가맹점 Custom Repository.
@@ -27,16 +25,16 @@ public class MerchantRepositoryImpl implements MerchantRepositoryCustom {
      * {@inheritDoc}
      */
     @Override
-    public Page<SelectMerchantResponseDto> lookupMerchantPage(Pageable pageable) {
-        List<SelectMerchantResponseDto> responseDtos = lookupMerchants(pageable);
+    public Page<SelectAllMerchantsForUserResponseDto> lookupMerchantPage(Pageable pageable) {
+        List<SelectAllMerchantsForUserResponseDto> responseDtos = lookupMerchants(pageable);
         long total = lookupTotal();
         return new PageImpl<>(responseDtos, pageable, total);
     }
 
-    private List<SelectMerchantResponseDto> lookupMerchants(Pageable pageable) {
+    private List<SelectAllMerchantsForUserResponseDto> lookupMerchants(Pageable pageable) {
         QMerchant merchant = QMerchant.merchant;
         return jpaQueryFactory
-            .select(new QSelectMerchantResponseDto(merchant.name))
+            .select(new QSelectAllMerchantsForUserResponseDto(merchant.id, merchant.name))
             .from(merchant)
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
@@ -49,14 +47,5 @@ public class MerchantRepositoryImpl implements MerchantRepositoryCustom {
             .select(merchant.count())
             .from(merchant)
             .fetchOne();
-    }
-
-    @Override
-    public List<SelectAllMerchantsForUserResponseDto> lookupMerchants() {
-        QMerchant merchant = QMerchant.merchant;
-        return jpaQueryFactory
-            .select(new QSelectAllMerchantsForUserResponseDto(merchant.id, merchant.name))
-            .from(merchant)
-            .fetch();
     }
 }

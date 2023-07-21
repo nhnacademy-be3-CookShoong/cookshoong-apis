@@ -16,6 +16,7 @@ import com.epages.restdocs.apispec.Schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -65,22 +66,22 @@ class CouponSearchControllerTest {
         ownCouponResponseTemps = List.of(
             new SelectOwnCouponResponseDto(UUID.randomUUID(), storeCouponTypeCashVo, "매장",
                 "매장 금액 쿠폰", "10000원 이상 시 1000원 할인",
-                LocalDateTime.now().plusHours(1), null),
+                LocalDate.now(), null),
             new SelectOwnCouponResponseDto(UUID.randomUUID(), storeCouponTypePercentVo,
                 "매장", "매장 퍼센트 쿠폰", "10000원 이상 시 3%, 최대 1000원 할인",
-                LocalDateTime.now().plusHours(1), null),
+                LocalDate.now(), null),
             new SelectOwnCouponResponseDto(UUID.randomUUID(), merchantCouponTypeCashVo, "가맹점",
                 "가맹점 금액 쿠폰", "10000원 이상 시 1000원 할인",
-                LocalDateTime.now().plusHours(1), null),
+                LocalDate.now(), null),
             new SelectOwnCouponResponseDto(UUID.randomUUID(), merchantCouponTypePercentVo,
                 "가맹점", "가맹점 퍼센트 쿠폰", "10000원 이상 시 3%, 최대 1000원 할인",
-                LocalDateTime.now().plusHours(1), null),
+                LocalDate.now(), null),
             new SelectOwnCouponResponseDto(UUID.randomUUID(), allCouponTypeCashVo,
                 "전체", "전체 금액 쿠폰", "10000원 이상 시 1000원 할인",
-                LocalDateTime.now().plusHours(1), null),
+                LocalDate.now(), null),
             new SelectOwnCouponResponseDto(UUID.randomUUID(), allCouponTypePercentVo,
                 "전체", "전체 금액 쿠폰", "10000원 이상 시 3%, 최대 1000원 할인",
-                LocalDateTime.now().plusHours(1), null)
+                LocalDate.now(), null)
         );
     }
 
@@ -111,33 +112,34 @@ class CouponSearchControllerTest {
                 ),
                 responseFields(
                     fieldWithPath("content[].issueCouponCode").description("쿠폰 코드"),
+                    fieldWithPath("content[].couponTypeResponse.type").description("쿠폰 타입 설명"),
                     fieldWithPath("content[].couponTypeResponse.discountAmount").optional().description("할인금"),
                     fieldWithPath("content[].couponTypeResponse.rate").optional().description("할인율"),
-                    fieldWithPath("content[].couponTypeResponse.minimumPrice").optional().description("최소주문금액"),
-                    fieldWithPath("content[].couponTypeResponse.maximumPrice").optional().description("최대할인금액"),
+                    fieldWithPath("content[].couponTypeResponse.minimumOrderPrice").optional().description("최소주문금액"),
+                    fieldWithPath("content[].couponTypeResponse.maximumDiscountAmount").optional().description("최대할인금액"),
                     fieldWithPath("content[].couponUsageName").description("쿠폰 사용처 이름"),
                     fieldWithPath("content[].name").description("쿠폰명"),
                     fieldWithPath("content[].description").description("쿠폰 설명"),
-                    fieldWithPath("content[].expirationAt").description("쿠폰 만료일"),
+                    fieldWithPath("content[].expirationDate").description("쿠폰 만료일"),
                     fieldWithPath("content[].logTypeDescription").description("쿠폰 최근 사용 내역"),
                     fieldWithPath("pageable.sort.empty").description("정렬 데이터 공백 여부"),
                     fieldWithPath("pageable.sort.sorted").description("정렬 여부"),
                     fieldWithPath("pageable.sort.unsorted").description("비정렬 여부"),
                     fieldWithPath("pageable.offset").description("데이터 순번"),
                     fieldWithPath("pageable.pageNumber").description("페이지 번호"),
-                    fieldWithPath("pageable.pageSize").description("한 페이지당 조회할 데이터 갯수"),
+                    fieldWithPath("pageable.pageSize").description("한 페이지당 조회할 데이터 개수"),
                     fieldWithPath("pageable.paged").description("페이징 정보 포함 여부"),
                     fieldWithPath("pageable.unpaged").description("페이징 정보 미포함 여부"),
                     fieldWithPath("last").description("마지막 페이지 여부"),
-                    fieldWithPath("totalPages").description("전체 페이지 갯수"),
-                    fieldWithPath("totalElements").description("총 데이터 갯수"),
+                    fieldWithPath("totalPages").description("전체 페이지 개수"),
+                    fieldWithPath("totalElements").description("총 데이터 개수"),
                     fieldWithPath("first").description("첫 페이지 여부"),
-                    fieldWithPath("size").description("한 페이지당 조회할 데이터 갯수"),
+                    fieldWithPath("size").description("한 페이지당 조회할 데이터 개수"),
                     fieldWithPath("number").description("현재 페이지 번호"),
                     fieldWithPath("sort.empty").description("정렬 데이터 공백 여부"),
                     fieldWithPath("sort.sorted").description("정렬 여부"),
                     fieldWithPath("sort.unsorted").description("비정렬 여부"),
-                    fieldWithPath("numberOfElements").description("요청 페이지에서 조회된 데이터 갯수"),
+                    fieldWithPath("numberOfElements").description("요청 페이지에서 조회된 데이터 개수"),
                     fieldWithPath("empty").description("데이터 미존재 여부")
                 )
             ));
@@ -157,9 +159,9 @@ class CouponSearchControllerTest {
     private CouponTypePercentVo createCouponTypePercentVo() {
         try {
             Constructor<CouponTypePercentVo> constructor = CouponTypePercentVo.class
-                .getDeclaredConstructor(BigDecimal.class, int.class, int.class);
+                .getDeclaredConstructor(int.class, int.class, int.class);
             constructor.setAccessible(true);
-            return constructor.newInstance(new BigDecimal("3.0"), 1_000, 10_000);
+            return constructor.newInstance(3, 1_000, 10_000);
         } catch (Exception e) {
             throw new RuntimeException();
         }

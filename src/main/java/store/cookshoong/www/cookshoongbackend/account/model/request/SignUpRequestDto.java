@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.account.model.request;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -11,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
+import store.cookshoong.www.cookshoongbackend.address.model.request.CreateAccountAddressRequestDto;
 import store.cookshoong.www.cookshoongbackend.common.util.RegularExpressions;
 import store.cookshoong.www.cookshoongbackend.common.util.ValidationFailureMessages;
 
@@ -24,7 +26,7 @@ import store.cookshoong.www.cookshoongbackend.common.util.ValidationFailureMessa
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SignUpRequestDto {
     @NotBlank
-    @Length(min = 1, max = 30)
+    @Length(min = 1, max = 255)
     private String loginId;
     @NotBlank
     private String password;
@@ -45,4 +47,7 @@ public class SignUpRequestDto {
     @NotBlank
     @Pattern(regexp = RegularExpressions.NUMBER_ONLY, message = ValidationFailureMessages.NUMBER_ONLY)
     private String phoneNumber;
+
+    @NotNull
+    private CreateAccountAddressRequestDto createAccountAddressRequestDto;
 }

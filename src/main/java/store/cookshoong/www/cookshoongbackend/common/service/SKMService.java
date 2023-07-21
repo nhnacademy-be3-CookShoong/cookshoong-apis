@@ -15,7 +15,7 @@ import store.cookshoong.www.cookshoongbackend.common.property.SecureKeyManagerUr
 /**
  * Secure Key Manager 서비스를 호출하기 위한 서비스 클래스.
  *
- * @author koesnam
+ * @author koesnam (추만석)
  * @since 2023.07.11
  */
 @Profile("!default")

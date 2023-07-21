@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
@@ -49,22 +49,22 @@ class CouponSearchServiceTest {
         List<SelectOwnCouponResponseTempDto> ownCouponResponseTemps = List.of(
             new SelectOwnCouponResponseTempDto(UUID.randomUUID(), te.getCouponTypeCash_1000_10000(),
                 te.getCouponUsageStore(tpe.getOpenStore()), "매장 금액 쿠폰", "10000원 이상 시 1000원 할인",
-                LocalDateTime.now().plusHours(1), null),
+                LocalDate.now(), null),
             new SelectOwnCouponResponseTempDto(UUID.randomUUID(), te.getCouponTypePercent_3_1000_10000(),
                 te.getCouponUsageStore(tpe.getOpenStore()), "매장 퍼센트 쿠폰",
-                "10000원 이상 시 3%, 최대 1000원 할인", LocalDateTime.now().plusHours(1), null),
+                "10000원 이상 시 3%, 최대 1000원 할인", LocalDate.now(), null),
             new SelectOwnCouponResponseTempDto(UUID.randomUUID(), te.getCouponTypeCash_1000_10000(),
                 te.getCouponUsageMerchant(te.getMerchant()), "가맹점 금액 쿠폰", "10000원 이상 시 1000원 할인",
-                LocalDateTime.now().plusHours(1), null),
+                LocalDate.now(), null),
             new SelectOwnCouponResponseTempDto(UUID.randomUUID(), te.getCouponTypePercent_3_1000_10000(),
                 te.getCouponUsageMerchant(te.getMerchant()), "가맹점 퍼센트 쿠폰",
-                "10000원 이상 시 3%, 최대 1000원 할인", LocalDateTime.now().plusHours(1), null),
+                "10000원 이상 시 3%, 최대 1000원 할인", LocalDate.now(), null),
             new SelectOwnCouponResponseTempDto(UUID.randomUUID(), te.getCouponTypeCash_1000_10000(),
                 te.getCouponUsageAll(), "전체 금액 쿠폰", "10000원 이상 시 1000원 할인",
-                LocalDateTime.now().plusHours(1), null),
+                LocalDate.now(), null),
             new SelectOwnCouponResponseTempDto(UUID.randomUUID(), te.getCouponTypePercent_3_1000_10000(),
                 te.getCouponUsageAll(), "전체 금액 쿠폰", "10000원 이상 시 3%, 최대 1000원 할인",
-                LocalDateTime.now().plusHours(1), null)
+                LocalDate.now(), null)
         );
 
         when(issueCouponRepository.lookupAllOwnCoupons(
@@ -91,7 +91,7 @@ class CouponSearchServiceTest {
                 .isEqualTo(couponUsageConverter.convert(tempCoupon.getCouponUsage()));
             assertThat(ownCoupon.getName()).isEqualTo(tempCoupon.getName());
             assertThat(ownCoupon.getDescription()).isEqualTo(tempCoupon.getDescription());
-            assertThat(ownCoupon.getExpirationAt()).isEqualTo(tempCoupon.getExpirationAt());
+            assertThat(ownCoupon.getExpirationDate()).isEqualTo(tempCoupon.getExpirationDate());
             assertThat(ownCoupon.getLogTypeDescription()).isEqualTo(tempCoupon.getLogTypeDescription());
         }
     }

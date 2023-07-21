@@ -1,7 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.coupon.model.temp;
 
 import com.querydsl.core.annotations.QueryProjection;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.UUID;
 import lombok.Getter;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponType;
@@ -21,7 +21,7 @@ public class SelectOwnCouponResponseTempDto {
     private final CouponUsage couponUsage;
     private final String name;
     private final String description;
-    private final LocalDateTime expirationAt;
+    private final LocalDate expirationDate;
     private final String logTypeDescription;
 
     /**
@@ -32,19 +32,19 @@ public class SelectOwnCouponResponseTempDto {
      * @param couponUsage        쿠폰 사용처
      * @param name               쿠폰 이름
      * @param description        쿠폰 설명
-     * @param expirationAt       쿠폰 만료일
+     * @param expirationDate     쿠폰 만료일
      * @param logTypeDescription 쿠폰 기록 정보
      */
     @QueryProjection
     public SelectOwnCouponResponseTempDto(UUID issueCouponCode, CouponType couponType, CouponUsage couponUsage,
-                                          String name, String description, LocalDateTime expirationAt,
+                                          String name, String description, LocalDate expirationDate,
                                           String logTypeDescription) {
         this.issueCouponCode = issueCouponCode;
         this.couponType = couponType;
         this.couponUsage = couponUsage;
         this.name = name;
         this.description = description;
-        this.expirationAt = expirationAt;
+        this.expirationDate = expirationDate;
         this.logTypeDescription = logTypeDescription;
     }
 }

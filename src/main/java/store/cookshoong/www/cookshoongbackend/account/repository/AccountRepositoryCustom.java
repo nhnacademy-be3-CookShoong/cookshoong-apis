@@ -7,7 +7,7 @@ import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccou
 /**
  * 회원 정보(등급, 권한, 상태를 포함)를 가져오는 Repository.
  *
- * @author koesnam
+ * @author koesnam (추만석)
  * @since 2023.07.08
  */
 @NoRepositoryBean

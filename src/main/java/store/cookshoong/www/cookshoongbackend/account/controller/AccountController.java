@@ -19,12 +19,14 @@ import store.cookshoong.www.cookshoongbackend.account.exception.SignUpValidation
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountAuthResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
+import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.service.AccountService;
+import store.cookshoong.www.cookshoongbackend.address.service.AddressService;
 
 /**
  * 회원가입, 회원 조회, 회원 관련 정보 수정를 다루는 컨트롤러.
  *
- * @author koesnam
+ * @author koesnam (추만석)
  * @since 2023.07.05
  */
 @Slf4j
@@ -33,9 +35,10 @@ import store.cookshoong.www.cookshoongbackend.account.service.AccountService;
 @RequestMapping("/api/accounts")
 public class AccountController {
     private final AccountService accountService;
+    private final AddressService addressService;
 
     /**
-     * 회원 정보를 전달받아 DB에 저장 요청하는 메서드.
+     * 회원 정보를 전달받아 DB에 저장하게한다.
      *
      * @param authorityCode    ex) customer, business
      * @param signUpRequestDto 회원가입 Dto
@@ -43,9 +46,8 @@ public class AccountController {
      */
     @PostMapping
     public ResponseEntity<Void> postAccount(@RequestBody @Valid SignUpRequestDto signUpRequestDto,
-                                                    BindingResult bindingResult,
-                                                    @RequestParam String authorityCode) {
-        // TODO: Admin으로 가입시 어떻게 할 것인가. 현재는 Admin을 파라미터로 넣으면 가입가능.
+                                            BindingResult bindingResult,
+                                            @RequestParam String authorityCode) {
         String authorityCodeUpperCase = authorityCode.toUpperCase();
         if (!Authority.Code.matches(authorityCodeUpperCase)) {
             throw new AuthorityNotFoundException();
@@ -55,14 +57,15 @@ public class AccountController {
             throw new SignUpValidationException(bindingResult);
         }
 
-        accountService.createAccount(signUpRequestDto, Authority.Code.valueOf(authorityCodeUpperCase));
+        Long accountId = accountService.createAccount(signUpRequestDto, Authority.Code.valueOf(authorityCodeUpperCase));
+        addressService.createAccountAddress(accountId, signUpRequestDto.getCreateAccountAddressRequestDto());
 
         return ResponseEntity.status(HttpStatus.CREATED)
             .build();
     }
 
     /**
-     * accountId 기준으로 회원의 모든 정보(password 제외)를 조회.
+     * accountId 기준으로 회원의 모든 정보(password 제외)를 조회한다.
      *
      * @param accountId the account id
      * @return the account
@@ -75,7 +78,7 @@ public class AccountController {
     }
 
     /**
-     * 로그인아이디를 경로로 받아와 자격증명에 필요한 정보를 응답한다.
+     * 로그인아이디를 경로로 받아와 자격증명에 필요한 정보를 조회한다.
      *
      * @param loginId the login id
      * @return the account for authentication
@@ -88,4 +91,16 @@ public class AccountController {
     }
 
 
+    /**
+     * 현재 회원상태 정보를 조회한다.
+     *
+     * @param accountId the account id
+     * @return the account status
+     */
+    @GetMapping("/{accountId}/status")
+    public ResponseEntity<SelectAccountStatusResponseDto> getAccountStatus(@PathVariable Long accountId) {
+        SelectAccountStatusResponseDto response = accountService.selectAccountStatus(accountId);
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(response);
+    }
 }

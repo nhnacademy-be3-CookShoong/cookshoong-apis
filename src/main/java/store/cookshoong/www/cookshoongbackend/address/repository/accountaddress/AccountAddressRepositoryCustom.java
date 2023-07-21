@@ -24,10 +24,18 @@ public interface AccountAddressRepositoryCustom {
     List<AccountAddressResponseDto> lookupByAccountIdAddressAll(Long accountId);
 
     /**
-     * 회원이 최근의 등록한 주소와 좌표를 가져옵니다.
+     * 회원이 가지고 있는 주소 중 최근의 갱신된 주소 조회.
      *
      * @param accountId     회원 아이디
      * @return              회원이 최근의 등록한 주소와 좌표를 반환
      */
-    AddressResponseDto lookupByAccountIdAddressRecentRegistration(Long accountId);
+    AddressResponseDto lookupByAccountAddressRenewalAt(Long accountId);
+
+    /**
+     * 회원이 주소록 중 선택한 주소와 좌표를 가져옵니다.
+     *
+     * @param addressId     주소 아이디
+     * @return              회원이 최근의 등록한 주소와 좌표를 반환
+     */
+    AddressResponseDto lookupByAccountSelectAddressId(Long addressId);
 }

@@ -25,7 +25,7 @@ import store.cookshoong.www.cookshoongbackend.shop.service.BusinessHourService;
 /**
  * 매장 휴업일, 영업시간 컨트롤러 구현.
  *
- * @author papel
+ * @author papel (윤동현)
  * @since 2023.07.07
  */
 @RestController
@@ -88,9 +88,9 @@ public class BusinessHourController {
     /**
      * 영업시간 등록을 위한 컨트롤러 구현.
      *
-     * @param storeId                 the store id
+     * @param storeId                      the store id
      * @param createBusinessHourRequestDto 영업시간 등록을 위한 Request Body
-     * @param bindingResult           validation 결과
+     * @param bindingResult                validation 결과
      * @return 201
      */
     @PostMapping("/businesshour")
