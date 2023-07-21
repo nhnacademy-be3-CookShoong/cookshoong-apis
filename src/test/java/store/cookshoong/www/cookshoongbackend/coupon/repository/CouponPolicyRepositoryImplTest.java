@@ -55,6 +55,7 @@ class CouponPolicyRepositoryImplTest {
     CouponPolicy merchantPercentCouponPolicy;
     CouponPolicy allCashCouponPolicy;
     CouponPolicy allPercentCouponPolicy;
+    CouponPolicy deleteCouponPolicy;
     Account customer;
 
 
@@ -83,6 +84,9 @@ class CouponPolicyRepositoryImplTest {
             "10000원 이상 주문 시 1000원 할인", 30);
         allPercentCouponPolicy = new CouponPolicy(couponTypePercent, couponUsageAll, "전체 퍼센트 쿠폰",
             "10000원 이상 주문 시 3%, 최대 1000원 할인", 30);
+        deleteCouponPolicy = new CouponPolicy(couponTypePercent, couponUsageAll, "전체 퍼센트 쿠폰",
+            "10000원 이상 주문 시 3%, 최대 1000원 할인", 30);
+        deleteCouponPolicy.delete();
 
         em.persist(storeCashCouponPolicy);
         em.persist(storePercentCouponPolicy);
@@ -277,5 +281,24 @@ class CouponPolicyRepositoryImplTest {
         for (int i = 0; i < count; i++) {
             em.persist(new IssueCoupon(couponPolicy)).provideToUser(customer);
         }
+    }
+
+    @ParameterizedTest
+    @MethodSource("parameters")
+    @DisplayName("수령 가능한 쿠폰 개수 확인")
+    void lookupUnclaimedCouponCountTest(int provideCount, int provideToCustomerCount,
+                                        int provideSecondCount, int provideToCustomerSecondCount) throws Exception {
+        provide(allCashCouponPolicy, provideCount);
+        provideToCustomer(allCashCouponPolicy, provideToCustomerCount);
+        provide(allPercentCouponPolicy, provideSecondCount);
+        provideToCustomer(allPercentCouponPolicy, provideToCustomerSecondCount);
+
+        Long unclaimedAllCashCouponCount =
+            couponPolicyRepository.lookupUnclaimedCouponCount(allCashCouponPolicy.getId());
+        assertThat(unclaimedAllCashCouponCount).isEqualTo(provideCount);
+
+        Long unclaimedAllPercentCouponCount =
+            couponPolicyRepository.lookupUnclaimedCouponCount(allPercentCouponPolicy.getId());
+        assertThat(unclaimedAllPercentCouponCount).isEqualTo(provideSecondCount);
     }
 }

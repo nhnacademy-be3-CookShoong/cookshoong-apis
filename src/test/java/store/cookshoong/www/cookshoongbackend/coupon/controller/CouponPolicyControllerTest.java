@@ -551,7 +551,7 @@ class CouponPolicyControllerTest {
     @DisplayName("전체 퍼센트 쿠폰 정책 생성 성공")
     void postAllPercentCouponPolicySuccessTest() throws Exception {
         RequestBuilder request = RestDocumentationRequestBuilders
-            .post("/api/coupon/policies/all/percent", Long.MIN_VALUE)
+            .post("/api/coupon/policies/all/percent")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(percentRequestDto));
 
@@ -572,5 +572,23 @@ class CouponPolicyControllerTest {
 
         verify(couponPolicyService, Mockito.times(1))
             .createAllPercentCouponPolicy(any(CreatePercentCouponPolicyRequestDto.class));
+    }
+
+    @Test
+    @DisplayName("쿠폰 정책 삭제 성공")
+    void deletePolicyTest() throws Exception {
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .delete("/api/coupon/policies/{policyId}", Long.MIN_VALUE);
+
+        mockMvc.perform(request)
+            .andDo(print())
+            .andExpect(status().isNoContent())
+            .andDo(MockMvcRestDocumentationWrapper.document("deletePolicy",
+                ResourceSnippetParameters.builder()
+                    .pathParameters(parameterWithName("policyId").description("쿠폰 정책 id"))
+            ));
+
+        verify(couponPolicyService, Mockito.times(1))
+            .deletePolicy(any(Long.class));
     }
 }

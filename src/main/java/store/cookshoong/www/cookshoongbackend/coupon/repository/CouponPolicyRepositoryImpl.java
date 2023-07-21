@@ -53,6 +53,18 @@ public class CouponPolicyRepositoryImpl implements CouponPolicyRepositoryCustom 
      * {@inheritDoc}
      */
     @Override
+    public Long lookupUnclaimedCouponCount(Long couponPolicyId) {
+        return queryFactory
+            .select(getIssueCouponCount(true))
+            .from(couponPolicy)
+            .where(couponPolicy.id.eq(couponPolicyId))
+            .fetchOne();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Page<SelectPolicyResponseTempDto> lookupAllPolicy(Pageable pageable) {
         return getCouponPolicyPage(getCouponUsageAllId(), pageable);
     }
@@ -79,8 +91,9 @@ public class CouponPolicyRepositoryImpl implements CouponPolicyRepositoryCustom 
 
             .innerJoin(couponPolicy.couponType, couponType)
             .innerJoin(couponPolicy.couponUsage, couponUsage)
+            .on(couponUsage.id.eq(couponUsageId))
 
-            .where(couponUsage.id.eq(couponUsageId))
+            .where(couponPolicy.isDeleted.isFalse())
 
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())

@@ -225,4 +225,14 @@ public class CouponPolicyService {
         return couponUsageAllRepository.findTopByOrderByIdAsc()
             .orElseThrow(CouponUsageNotFoundException::new);
     }
+
+    /**
+     * 쿠폰 정책 삭제.
+     *
+     * @param policyId the policy id
+     */
+    public void deletePolicy(Long policyId) {
+        couponPolicyRepository.findById(policyId)
+            .ifPresent(CouponPolicy::delete);
+    }
 }
