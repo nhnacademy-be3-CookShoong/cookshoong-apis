@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -45,6 +47,9 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.StoreStatus;
 @TestComponent
 @Import(TestEntityAspect.class)
 public class TestEntity {
+    AtomicInteger atomicInt = new AtomicInteger();
+    AtomicLong atomicLong = new AtomicLong();
+
     public Address getAddress() {
         return new Address("main", "detail", BigDecimal.ONE, BigDecimal.ZERO);
     }
@@ -202,5 +207,28 @@ public class TestEntity {
         } catch (Exception e) {
             throw new RuntimeException();
         }
+    }
+
+    public <T> T persist(T t) {
+        try {
+            ReflectionTestUtils.setField(t, "id", atomicLong.getAndIncrement());
+            return t;
+        } catch (IllegalArgumentException e) {
+            ReflectionTestUtils.setField(t, "id", atomicInt.getAndIncrement());
+            return t;
+        }
+    }
+
+    public <T> T persist(T t, long id) {
+        ReflectionTestUtils.setField(t, "id", id);
+        return t;
+    }
+
+    public long getLong() {
+        return atomicLong.incrementAndGet();
+    }
+
+    public int getInt() {
+        return atomicInt.incrementAndGet();
     }
 }
