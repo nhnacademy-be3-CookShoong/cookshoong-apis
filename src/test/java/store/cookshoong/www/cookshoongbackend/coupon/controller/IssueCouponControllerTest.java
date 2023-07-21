@@ -2,7 +2,9 @@ package store.cookshoong.www.cookshoongbackend.coupon.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -28,6 +30,7 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
+import store.cookshoong.www.cookshoongbackend.coupon.exception.IssueCouponOverCountException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateIssueCouponRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.service.IssueCouponService;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
@@ -103,8 +106,8 @@ class IssueCouponControllerTest {
 
     @ParameterizedTest
     @ValueSource(longs = {-100, -1, 0})
-    @DisplayName("쿠폰 발행 실패 - 발행량 범위 초과")
-    void postIssueCouponIssueQuantityOutOfRangeFailTest(Long issueQuantity) throws Exception {
+    @DisplayName("쿠폰 발행 실패 - 발행량 범위 미만")
+    void postIssueCouponIssueQuantityLessFailTest(Long issueQuantity) throws Exception {
         ReflectionTestUtils.setField(createIssueCouponRequestDto, "issueQuantity", issueQuantity);
 
         RequestBuilder request = RestDocumentationRequestBuilders
@@ -118,5 +121,23 @@ class IssueCouponControllerTest {
 
         verify(issueCouponService, Mockito.never())
             .createIssueCoupon(any(CreateIssueCouponRequestDto.class));
+    }
+
+    @Test
+    @DisplayName("쿠폰 발행 실패 - 발행량 범위 초과")
+    void postIssueCouponIssueQuantityOverFailTest() throws Exception {
+        ReflectionTestUtils.setField(createIssueCouponRequestDto, "issueQuantity", Long.MAX_VALUE);
+
+        doThrow(IssueCouponOverCountException.class)
+            .when(issueCouponService).createIssueCoupon(any(CreateIssueCouponRequestDto.class));
+
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .post("/api/coupon/issue")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(createIssueCouponRequestDto));
+
+        mockMvc.perform(request)
+            .andDo(print())
+            .andExpect(status().isBadRequest());
     }
 }
