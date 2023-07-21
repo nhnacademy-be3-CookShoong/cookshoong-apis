@@ -127,7 +127,7 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
             .select(new QSelectStoreForUserResponseDto(
                 store.businessLicenseNumber, store.representativeName, store.openingDate, store.name,
                 store.phoneNumber, address.mainPlace, address.detailPlace, store.description,
-                image.savedName))
+                store.storeImage.savedName))
             .from(store)
             .innerJoin(store.address, address)
             .innerJoin(store.storeImage, image)
@@ -156,7 +156,7 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
         return jpaQueryFactory
             .select(new QSelectAllStoresNotOutedResponseDto(
                 store.id, store.name, storeStatus.description, address.mainPlace,
-                address.detailPlace, address.latitude, address.longitude, storeCategory.categoryCode, image.savedName))
+                address.detailPlace, address.latitude, address.longitude, storeCategory.categoryCode, store.storeImage.savedName))
             .from(store)
             .innerJoin(store.storeStatusCode, storeStatus)
             .innerJoin(store.address, address)
@@ -173,12 +173,14 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
         QStore store = QStore.store;
         QStoreStatus storeStatus = QStoreStatus.storeStatus;
         QAddress address = QAddress.address;
+        QImage image = QImage.image;
 
         return jpaQueryFactory
             .select(store.count())
             .from(store)
             .innerJoin(store.storeStatusCode, storeStatus)
             .innerJoin(store.address, address)
+            .innerJoin(store.storeImage, image)
             .where(storeStatus.storeStatusCode.ne("OUTED"))
             .fetchOne();
     }
