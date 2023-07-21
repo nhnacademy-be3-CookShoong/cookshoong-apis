@@ -97,7 +97,7 @@ public class Store {
     private final Set<StoresHasCategory> storesHasCategories = new HashSet<>();
 
     /**
-     * 주소 생성자.
+     * 매장 생성자.
      *
      * @param merchant              가맹점
      * @param account               회원

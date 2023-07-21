@@ -25,7 +25,7 @@ import store.cookshoong.www.cookshoongbackend.shop.service.BusinessHourService;
 /**
  * 매장 휴업일, 영업시간 컨트롤러 구현.
  *
- * @author papel
+ * @author papel (윤동현)
  * @since 2023.07.07
  */
 @RestController
