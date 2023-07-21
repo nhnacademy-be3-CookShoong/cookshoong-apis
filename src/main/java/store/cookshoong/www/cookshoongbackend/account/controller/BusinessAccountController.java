@@ -1,8 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.account.controller;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -109,16 +107,16 @@ public class BusinessAccountController {
      * @param bindingResult valid 결과값
      * @return 200 response entity
      */
-//TODO 4. 수정이 아니라 추가 정보로 영업일, 휴무일을 넣을 수 있도록 하는건?
     @PutMapping("/stores/{storeId}")
     public ResponseEntity<Void> putStore(@PathVariable("storeId") Long storeId,
                                          @PathVariable("accountId") Long accountId,
-                                         @RequestBody @Valid UpdateStoreRequestDto requestDto,
-                                         BindingResult bindingResult) {
+                                         @RequestPart("requestDto") @Valid UpdateStoreRequestDto requestDto,
+                                         BindingResult bindingResult,
+                                         @RequestPart("storeImage") MultipartFile storeImage) throws IOException {
         if (bindingResult.hasErrors()) {
             throw new StoreValidException(bindingResult);
         }
-        storeService.updateStore(accountId, storeId, requestDto);
+        storeService.updateStore(accountId, storeId, requestDto, storeImage);
         return ResponseEntity
             .ok()
             .build();
@@ -134,8 +132,8 @@ public class BusinessAccountController {
      */
     @PatchMapping("/stores/{storeId}/categories")
     public ResponseEntity<Void> patchStoreCategory(@PathVariable("accountId") Long accountId,
-                                                 @PathVariable("storeId") Long storeId,
-                                                 @RequestBody UpdateCategoryRequestDto requestDto) {
+                                                   @PathVariable("storeId") Long storeId,
+                                                   @RequestBody UpdateCategoryRequestDto requestDto) {
         storeService.updateStoreCategories(accountId, storeId, requestDto);
         return ResponseEntity
             .ok()
@@ -152,8 +150,8 @@ public class BusinessAccountController {
      */
     @PatchMapping("/stores/{storeId}/status")
     public ResponseEntity<Void> patchStoreStatus(@PathVariable("accountId") Long accountId,
-                                               @PathVariable("storeId") Long storeId,
-                                               @RequestBody @Valid UpdateStoreStatusRequestDto requestDto){
+                                                 @PathVariable("storeId") Long storeId,
+                                                 @RequestBody @Valid UpdateStoreStatusRequestDto requestDto) {
         storeService.updateStoreStatus(accountId, storeId, requestDto);
         return ResponseEntity
             .ok()

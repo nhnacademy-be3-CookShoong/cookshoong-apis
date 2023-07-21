@@ -35,18 +35,17 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
         QStore store = QStore.store;
         QImage image = QImage.image;
 
-//        return Optional.ofNullable(jpaQueryFactory
-//            .select(new QSelectMenuResponseDto(
-//                menu.id, menuStatus.menuStatusCode, store.id,
-//                menu.name, menu.price, menu.description,
-//                menu.image, menu.cookingTime, menu.earningRate))
-//            .from(menu)
-//            .innerJoin(menu.menuStatusCode, menuStatus)
-//            .innerJoin(menu.store, store)
-//            .innerJoin(menu.image, image)
-//            .where(menu.id.eq(menuId))
-//            .fetchOne());
-        return null;
+        return Optional.ofNullable(jpaQueryFactory
+            .select(new QSelectMenuResponseDto(
+                menu.id, menuStatus.menuStatusCode, store.id,
+                menu.name, menu.price, menu.description,
+                image.savedName, menu.cookingTime, menu.earningRate))
+            .from(menu)
+            .innerJoin(menu.menuStatusCode, menuStatus)
+            .innerJoin(menu.store, store)
+            .innerJoin(menu.image, image)
+            .where(menu.id.eq(menuId))
+            .fetchOne());
     }
 
     /**
@@ -62,17 +61,16 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
         QStore store = QStore.store;
         QImage image = QImage.image;
 
-//        return jpaQueryFactory
-//            .select(new QSelectMenuResponseDto(
-//                menu.id, menuStatus.menuStatusCode, store.id,
-//                menu.name, menu.price, menu.description,
-//                menu.image, menu.cookingTime, menu.earningRate))
-//            .from(menu)
-//            .innerJoin(menu.menuStatusCode, menuStatus)
-//            .innerJoin(menu.store, store)
-//            .innerJoin(menu.image, image)
-//            .where(store.id.eq(storeId))
-//            .fetch();
-        return null;
+        return jpaQueryFactory
+            .select(new QSelectMenuResponseDto(
+                menu.id, menuStatus.menuStatusCode, store.id,
+                menu.name, menu.price, menu.description,
+                image.savedName, menu.cookingTime, menu.earningRate))
+            .from(menu)
+            .innerJoin(menu.menuStatusCode, menuStatus)
+            .innerJoin(menu.store, store)
+            .innerJoin(menu.image, image)
+            .where(store.id.eq(storeId))
+            .fetch();
     }
 }

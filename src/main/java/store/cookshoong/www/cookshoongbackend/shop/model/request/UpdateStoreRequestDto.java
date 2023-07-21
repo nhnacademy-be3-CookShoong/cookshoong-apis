@@ -17,8 +17,6 @@ import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UpdateStoreRequestDto {
-    private String merchantName;
-    @NotBlank
     private String businessLicenseNumber;
     private String representativeName;
     private LocalDate openingDate;
@@ -30,7 +28,7 @@ public class UpdateStoreRequestDto {
     private String phoneNumber;
     private String description;
     private BigDecimal earningRate;
-    private Image image;
     private String bankName;
     private String bankAccount;
+    private String savedName;
 }
