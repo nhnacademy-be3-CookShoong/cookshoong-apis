@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
-import store.cookshoong.www.cookshoongbackend.file.service.FileStoreService;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreValidException;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateStoreRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateCategoryRequestDto;
@@ -40,8 +38,6 @@ import store.cookshoong.www.cookshoongbackend.shop.service.StoreService;
 @RequestMapping("/api/accounts/{accountId}")
 public class BusinessAccountController {
     private final StoreService storeService;
-    private final FileStoreService fileStoreService;
-    private final ImageRepository imageRepository;
 
     /**
      * 사업자 회원 : 매장 리스트 조회, 페이지로 구현.
