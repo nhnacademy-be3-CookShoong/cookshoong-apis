@@ -282,4 +282,23 @@ class CouponPolicyRepositoryImplTest {
             em.persist(new IssueCoupon(couponPolicy)).provideToUser(customer);
         }
     }
+
+    @ParameterizedTest
+    @MethodSource("parameters")
+    @DisplayName("수령 가능한 쿠폰 개수 확인")
+    void lookupUnclaimedCouponCountTest(int provideCount, int provideToCustomerCount,
+                                        int provideSecondCount, int provideToCustomerSecondCount) throws Exception {
+        provide(allCashCouponPolicy, provideCount);
+        provideToCustomer(allCashCouponPolicy, provideToCustomerCount);
+        provide(allPercentCouponPolicy, provideSecondCount);
+        provideToCustomer(allPercentCouponPolicy, provideToCustomerSecondCount);
+
+        Long unclaimedAllCashCouponCount =
+            couponPolicyRepository.lookupUnclaimedCouponCount(allCashCouponPolicy.getId());
+        assertThat(unclaimedAllCashCouponCount).isEqualTo(provideCount);
+
+        Long unclaimedAllPercentCouponCount =
+            couponPolicyRepository.lookupUnclaimedCouponCount(allPercentCouponPolicy.getId());
+        assertThat(unclaimedAllPercentCouponCount).isEqualTo(provideSecondCount);
+    }
 }
