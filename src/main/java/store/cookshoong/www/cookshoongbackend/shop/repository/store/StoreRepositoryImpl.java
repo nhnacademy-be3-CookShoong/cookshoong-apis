@@ -105,7 +105,7 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
                 store.openingDate,
                 store.name, store.phoneNumber,
                 address.mainPlace, address.detailPlace, address.latitude, address.longitude, store.defaultEarningRate,
-                store.description, bankType.description, store.bankAccountNumber, image.savedName))
+                store.description, bankType.description, store.bankAccountNumber, store.storeImage.savedName))
             .from(store)
             .innerJoin(store.address, address)
             .innerJoin(store.bankTypeCode, bankType)

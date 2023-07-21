@@ -20,7 +20,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
 /**
  * 메뉴 - 메뉴그룹 엔티티.
  *
- * @author papel
+ * @author papel (윤동현)
  * @since 2023.07.11
  */
 @Getter

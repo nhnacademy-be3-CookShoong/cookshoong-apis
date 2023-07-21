@@ -7,7 +7,7 @@ import lombok.Getter;
 /**
  * 메뉴 조회 Dto.
  *
- * @author papel
+ * @author papel (윤동현)
  * @since 2023.07.11
  */
 @Getter

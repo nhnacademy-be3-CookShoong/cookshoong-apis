@@ -16,7 +16,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.repository.option.Optio
 /**
  * 옵션 관리 서비스.
  *
- * @author papel
+ * @author papel (윤동현)
  * @since 2023.07.11
  */
 @Service
