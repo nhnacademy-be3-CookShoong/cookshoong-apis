@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.coupon.service;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +39,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -66,10 +68,7 @@ class CouponPolicyServiceTest {
 
     TestEntity te = new TestEntity();
 
-    AtomicInteger atomicInt = new AtomicInteger();
-    AtomicLong atomicLong = new AtomicLong();
-
-    Account account = persist(
+    Account account = te.persist(
         te.getAccount(te.getAccountStatusActive(), te.getAuthorityCustomer(), te.getRankLevelOne()));
 
     @Test
@@ -79,11 +78,11 @@ class CouponPolicyServiceTest {
         CouponTypePercent couponTypePercent = te.getCouponTypePercent_3_1000_10000();
 
         SelectPolicyResponseTempDto storeCashPolicy = new SelectPolicyResponseTempDto(
-            atomicLong.getAndIncrement(), couponTypeCash, "매장 금액 쿠폰", "매장에서만 쓰입니다.",
+            te.getLong(), couponTypeCash, "매장 금액 쿠폰", "매장에서만 쓰입니다.",
             0, 1L, 10L);
 
         SelectPolicyResponseTempDto storePercentPolicy = new SelectPolicyResponseTempDto(
-            atomicLong.getAndIncrement(), couponTypePercent, "매장 금액 쿠폰", "매장에서만 쓰입니다.",
+            te.getLong(), couponTypePercent, "매장 금액 쿠폰", "매장에서만 쓰입니다.",
             0, 2L, 9L);
 
         List<SelectPolicyResponseTempDto> couponStorePolicies = List.of(storeCashPolicy, storePercentPolicy);
@@ -122,11 +121,11 @@ class CouponPolicyServiceTest {
         CouponTypePercent couponTypePercent = te.getCouponTypePercent_3_1000_10000();
 
         SelectPolicyResponseTempDto merchantCashPolicy = new SelectPolicyResponseTempDto(
-            atomicLong.getAndIncrement(), couponTypeCash, "가맹점 금액 쿠폰", "가맹점에서 쓰입니다.",
+            te.getLong(), couponTypeCash, "가맹점 금액 쿠폰", "가맹점에서 쓰입니다.",
             0, 3L, 8L);
 
         SelectPolicyResponseTempDto merchantPercentPolicy = new SelectPolicyResponseTempDto(
-            atomicLong.getAndIncrement(), couponTypePercent, "가맹점 금액 쿠폰", "가맹점에서 쓰입니다.",
+            te.getLong(), couponTypePercent, "가맹점 금액 쿠폰", "가맹점에서 쓰입니다.",
             0, 4L, 7L);
 
         List<SelectPolicyResponseTempDto> couponMerchantPolicies = List.of(merchantCashPolicy, merchantPercentPolicy);
@@ -165,11 +164,11 @@ class CouponPolicyServiceTest {
         CouponTypePercent couponTypePercent = te.getCouponTypePercent_3_1000_10000();
 
         SelectPolicyResponseTempDto allCashPolicy = new SelectPolicyResponseTempDto(
-            atomicLong.getAndIncrement(), couponTypeCash, "전체 금액 쿠폰", "어디든",
+            te.getLong(), couponTypeCash, "전체 금액 쿠폰", "어디든",
             0, 5L, 6L);
 
         SelectPolicyResponseTempDto allPercentPolicy = new SelectPolicyResponseTempDto(
-            atomicLong.getAndIncrement(), couponTypePercent, "전체 금액 쿠폰", "어디든",
+            te.getLong(), couponTypePercent, "전체 금액 쿠폰", "어디든",
             0, 6L, 50L);
 
         List<SelectPolicyResponseTempDto> couponAllPolicies = List.of(allCashPolicy, allPercentPolicy);
@@ -222,7 +221,7 @@ class CouponPolicyServiceTest {
         when(couponUsageStoreRepository.findByStoreId(anyLong()))
             .thenAnswer(invocation -> {
                 long id = invocation.getArgument(0);
-                Store persistStore = persist(store, id);
+                Store persistStore = te.persist(store, id);
                 return Optional.of(new CouponUsageStore(persistStore));
             });
 
@@ -251,10 +250,10 @@ class CouponPolicyServiceTest {
         Store store = te.getStore(te.getMerchant(), account, te.getBankTypeKb(), te.getStoreStatusOpen(), businessImage, storeImage);
 
         when(storeRepository.getReferenceById(any(Long.class)))
-            .thenReturn(persist(store));
+            .thenReturn(te.persist(store));
 
         when(couponUsageStoreRepository.save(any(CouponUsageStore.class)))
-            .thenAnswer(invocation -> persist(invocation.getArgument(0)));
+            .thenAnswer(invocation -> te.persist(invocation.getArgument(0)));
 
         couponPolicyService.createStoreCashCouponPolicy(Long.MIN_VALUE, requestDto);
         verify(couponPolicyRepository).save(any(CouponPolicy.class));
@@ -285,7 +284,7 @@ class CouponPolicyServiceTest {
         when(couponUsageStoreRepository.findByStoreId(anyLong()))
             .thenAnswer(invocation -> {
                 long id = invocation.getArgument(0);
-                Store persistStore = persist(store, id);
+                Store persistStore = te.persist(store, id);
                 return Optional.of(new CouponUsageStore(persistStore));
             });
 
@@ -311,7 +310,7 @@ class CouponPolicyServiceTest {
         when(couponUsageMerchantRepository.findByMerchantId(anyLong()))
             .thenAnswer(invocation -> {
                 long id = invocation.getArgument(0);
-                Merchant merchant = persist(te.getMerchant(), id);
+                Merchant merchant = te.persist(te.getMerchant(), id);
                 return Optional.of(new CouponUsageMerchant(merchant));
             });
 
@@ -338,10 +337,10 @@ class CouponPolicyServiceTest {
             .thenReturn(Optional.empty());
 
         when(merchantRepository.getReferenceById(any(Long.class)))
-            .thenReturn(persist(te.getMerchant()));
+            .thenReturn(te.persist(te.getMerchant()));
 
         when(couponUsageMerchantRepository.save(any(CouponUsageMerchant.class)))
-            .thenAnswer(invocation -> persist(invocation.getArgument(0)));
+            .thenAnswer(invocation -> te.persist(invocation.getArgument(0)));
 
         couponPolicyService.createMerchantCashCouponPolicy(Long.MIN_VALUE, requestDto);
         verify(couponPolicyRepository).save(any(CouponPolicy.class));
@@ -367,7 +366,7 @@ class CouponPolicyServiceTest {
         when(couponUsageMerchantRepository.findByMerchantId(anyLong()))
             .thenAnswer(invocation -> {
                 long id = invocation.getArgument(0);
-                Merchant merchant = persist(te.getMerchant(), id);
+                Merchant merchant = te.persist(te.getMerchant(), id);
                 return Optional.of(new CouponUsageMerchant(merchant));
             });
         couponPolicyService.createMerchantPercentCouponPolicy(Long.MIN_VALUE, requestDto);
@@ -390,7 +389,7 @@ class CouponPolicyServiceTest {
                 new CouponTypeCash(invocation.getArgument(0), invocation.getArgument(1))));
 
         when(couponUsageAllRepository.findTopByOrderByIdAsc())
-            .thenAnswer(invocation -> Optional.of(persist(new CouponUsageAll())));
+            .thenAnswer(invocation -> Optional.of(te.persist(new CouponUsageAll())));
 
         couponPolicyService.createAllCashCouponPolicy(requestDto);
         verify(couponPolicyRepository).save(any(CouponPolicy.class));
@@ -414,7 +413,7 @@ class CouponPolicyServiceTest {
                 invocation.getArgument(0), invocation.getArgument(1), invocation.getArgument(2))));
 
         when(couponUsageAllRepository.findTopByOrderByIdAsc())
-            .thenAnswer(invocation -> Optional.of(persist(new CouponUsageAll())));
+            .thenAnswer(invocation -> Optional.of(te.persist(new CouponUsageAll())));
 
         couponPolicyService.createAllPercentCouponPolicy(requestDto);
         verify(couponPolicyRepository).save(any(CouponPolicy.class));
@@ -435,10 +434,10 @@ class CouponPolicyServiceTest {
             .thenReturn(Optional.empty());
 
         when(couponTypeCashRepository.save(any(CouponTypeCash.class)))
-            .thenAnswer(invocation -> persist(invocation.getArgument(0)));
+            .thenAnswer(invocation -> te.persist(invocation.getArgument(0)));
 
         when(couponUsageAllRepository.findTopByOrderByIdAsc())
-            .thenAnswer(invocation -> Optional.of(persist(new CouponUsageAll())));
+            .thenAnswer(invocation -> Optional.of(te.persist(new CouponUsageAll())));
 
         couponPolicyService.createAllCashCouponPolicy(requestDto);
         verify(couponPolicyRepository).save(any(CouponPolicy.class));
@@ -461,10 +460,10 @@ class CouponPolicyServiceTest {
             .thenReturn(Optional.empty());
 
         when(couponTypePercentRepository.save(any(CouponTypePercent.class)))
-            .thenAnswer(invocation -> persist(invocation.getArgument(0)));
+            .thenAnswer(invocation -> te.persist(invocation.getArgument(0)));
 
         when(couponUsageAllRepository.findTopByOrderByIdAsc())
-            .thenAnswer(invocation -> Optional.of(persist(new CouponUsageAll())));
+            .thenAnswer(invocation -> Optional.of(te.persist(new CouponUsageAll())));
 
         couponPolicyService.createAllPercentCouponPolicy(requestDto);
         verify(couponPolicyRepository).save(any(CouponPolicy.class));
@@ -487,7 +486,7 @@ class CouponPolicyServiceTest {
             .thenReturn(Optional.empty());
 
         when(couponTypePercentRepository.save(any(CouponTypePercent.class)))
-            .thenAnswer(invocation -> persist(invocation.getArgument(0)));
+            .thenAnswer(invocation -> te.persist(invocation.getArgument(0)));
 
         when(couponUsageAllRepository.findTopByOrderByIdAsc())
             .thenAnswer(invocation -> Optional.empty());
@@ -496,18 +495,26 @@ class CouponPolicyServiceTest {
             .isInstanceOf(CouponUsageNotFoundException.class);
     }
 
-    private <T> T persist(T t) {
-        try {
-            ReflectionTestUtils.setField(t, "id", atomicLong.getAndIncrement());
-            return t;
-        } catch (IllegalArgumentException e) {
-            ReflectionTestUtils.setField(t, "id", atomicInt.getAndIncrement());
-            return t;
-        }
+    @Test
+    @DisplayName("정책 삭제 테스트 - 정책 존재")
+    void deletePolicyTest() throws Exception {
+        CouponPolicy couponPolicy =
+            te.persist(te.getCouponPolicy(te.getCouponTypeCash_1000_10000(), te.getCouponUsageAll()));
+        when(couponPolicyRepository.findById(any(Long.class)))
+            .thenReturn(Optional.of(couponPolicy));
+
+        assertThat(couponPolicy.getIsDeleted()).isFalse();
+
+        couponPolicyService.deletePolicy(couponPolicy.getId());
+        assertThat(couponPolicy.getIsDeleted()).isTrue();
     }
 
-    private <T> T persist(T t, long id) {
-        ReflectionTestUtils.setField(t, "id", id);
-        return t;
+    @Test
+    @DisplayName("정책 삭제 테스트 - 정책 미존재")
+    void deleteEmptyPolicyTest() throws Exception {
+        when(couponPolicyRepository.findById(any(Long.class)))
+            .thenReturn(Optional.empty());
+
+        Assertions.assertDoesNotThrow(() -> couponPolicyService.deletePolicy(Long.MIN_VALUE));
     }
 }

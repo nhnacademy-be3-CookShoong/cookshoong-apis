@@ -1,5 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.coupon.model.request;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +15,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CreateIssueCouponRequestDto {
+    @NotNull
+    @Min(1)
     private Long issueQuantity;
+
+    @NotNull
     private Long couponPolicyId;
 }
