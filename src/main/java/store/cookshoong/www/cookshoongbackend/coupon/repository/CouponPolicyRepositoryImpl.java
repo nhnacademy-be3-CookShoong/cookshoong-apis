@@ -127,7 +127,7 @@ public class CouponPolicyRepositoryImpl implements CouponPolicyRepositoryCustom 
             .innerJoin(couponPolicy.couponType, couponType)
             .innerJoin(couponPolicy.couponUsage, couponUsage)
 
-            .where(couponUsage.id.eq(couponUsageId))
+            .where(couponUsage.id.eq(couponUsageId), couponPolicy.isDeleted.isFalse())
             .fetchOne();
     }
 
