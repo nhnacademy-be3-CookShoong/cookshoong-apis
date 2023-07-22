@@ -65,7 +65,7 @@ public class IssueCoupon {
      *
      * @param account 쿠폰을 제공받을 사용자
      */
-    public void provideToUser(Account account) {
+    public void provideToAccount(Account account) {
         this.account = account;
         this.expirationDate = LocalDate.now()
             .plusDays(getCouponPolicy().getUsagePeriod());

@@ -279,7 +279,7 @@ class CouponPolicyRepositoryImplTest {
 
     void provideToCustomer(CouponPolicy couponPolicy, int count) {
         for (int i = 0; i < count; i++) {
-            em.persist(new IssueCoupon(couponPolicy)).provideToUser(customer);
+            em.persist(new IssueCoupon(couponPolicy)).provideToAccount(customer);
         }
     }
 

@@ -124,7 +124,7 @@ class IssueCouponRepositoryImplTest {
 
         issueCoupons.add(te.getIssueCoupon(couponPolicyStoreUsageStore));
 
-        issueCoupons.forEach(issueCoupon -> issueCoupon.provideToUser(customer));
+        issueCoupons.forEach(issueCoupon -> issueCoupon.provideToAccount(customer));
 
         ReflectionTestUtils.setField(expiredIssueCoupon, "expirationDate",
             LocalDate.of(1000, 1, 1));
