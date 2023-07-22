@@ -24,6 +24,7 @@ public class StoreDocument {
     private Long id;
     private String name;
     private String description;
+    private String category;
     private String keywordText;
 
     public static StoreDocument from(StoreDocumentRequestDto storeDocumentRequestDto) {
@@ -31,6 +32,7 @@ public class StoreDocument {
             .id(storeDocumentRequestDto.getId())
             .name(storeDocumentRequestDto.getName())
             .description(storeDocumentRequestDto.getDescription())
+            .category(storeDocumentRequestDto.getCategory())
             .keywordText(storeDocumentRequestDto.getKeywordText())
             .build();
     }
