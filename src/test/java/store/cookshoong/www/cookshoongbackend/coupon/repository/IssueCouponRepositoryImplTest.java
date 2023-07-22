@@ -180,6 +180,8 @@ class IssueCouponRepositoryImplTest {
                 searchStoreId.getOrDefault(store, null));
 
         assertThat(couponResponseTemps).hasSize(size);
+        assertThat(couponResponseTemps.getTotalElements()).isEqualTo(size);
+        assertThat(couponResponseTemps.getTotalPages()).isEqualTo(1 + size / 20);
         couponResponseTemps.forEach(
             couponResponseTempDto -> assertThat(selectDescriptionCheck(usable))
                 .contains(couponResponseTempDto.getLogTypeDescription())
