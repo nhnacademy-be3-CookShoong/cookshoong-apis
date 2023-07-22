@@ -41,7 +41,7 @@ public class CouponPolicy {
         this.name = name;
         this.description = description;
         this.usagePeriod = usagePeriod;
-        this.isDeleted = false;
+        this.deleted = false;
     }
 
     @Id
@@ -67,12 +67,12 @@ public class CouponPolicy {
     private Integer usagePeriod;
 
     @Column(name = "is_deleted", nullable = false)
-    private Boolean isDeleted;
+    private boolean deleted;
 
     /**
      * 삭제 메서드.
      */
     public void delete() {
-        this.isDeleted = true;
+        this.deleted = true;
     }
 }
