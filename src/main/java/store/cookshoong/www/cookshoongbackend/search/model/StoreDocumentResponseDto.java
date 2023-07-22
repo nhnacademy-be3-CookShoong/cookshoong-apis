@@ -15,17 +15,20 @@ public class StoreDocumentResponseDto {
     private String name;
 
     private String description;
+    private String category;
 
-    public StoreDocumentResponseDto(Long id, String name, String description) {
+    public StoreDocumentResponseDto(Long id, String name, String description, String category) {
         this.id = id;
         this.name = name;
         this.description = description;
+        this.category = category;
     }
 
     public static StoreDocumentResponseDto from(StoreDocument storeDocument) {
         return new StoreDocumentResponseDto(
             storeDocument.getId(),
             storeDocument.getName(),
-            storeDocument.getDescription());
+            storeDocument.getDescription(),
+            storeDocument.getCategory());
     }
 }
