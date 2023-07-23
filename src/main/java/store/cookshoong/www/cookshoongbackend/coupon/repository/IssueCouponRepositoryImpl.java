@@ -181,4 +181,25 @@ public class IssueCouponRepositoryImpl implements IssueCouponRepositoryCustom {
 
         return updatedCount != 0;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasUsableCouponWithinSamePolicy(Long couponPolicyId, Long accountId) {
+        return queryFactory
+            .select(issueCoupon.code)
+            .from(issueCoupon)
+
+            .innerJoin(issueCoupon.couponPolicy, couponPolicy)
+            .on(couponPolicy.id.eq(couponPolicyId))
+
+            .leftJoin(couponLog)
+            .on(couponLog.id.eq(getMaxCouponLogId()))
+
+            .leftJoin(couponLog.couponLogType, couponLogType)
+
+            .where(checkUsableCoupon(true))
+            .fetchFirst() != null;
+    }
 }
