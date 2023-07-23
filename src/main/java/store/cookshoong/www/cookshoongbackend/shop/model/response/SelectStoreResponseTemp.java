@@ -12,7 +12,7 @@ import lombok.Getter;
  * @since 2023.07.06
  */
 @Getter
-public class SelectStoreResponseVo {
+public class SelectStoreResponseTemp {
     private final String businessLicenseNumber;
     private final String representativeName;
     private final LocalDate openingDate;
@@ -47,10 +47,10 @@ public class SelectStoreResponseVo {
      * @param bankAccountNumber     정산받을 계좌번호
      */
     @QueryProjection
-    public SelectStoreResponseVo(String businessLicenseNumber, String representativeName,
-                                 LocalDate openingDate, String storeName, String phoneNumber, String mainPlace,
-                                 String detailPlace, BigDecimal latitude, BigDecimal longitude, BigDecimal defaultEarningRate, String description, String bankCode,
-                                 String bankAccountNumber, String savedName) {
+    public SelectStoreResponseTemp(String businessLicenseNumber, String representativeName,
+                                   LocalDate openingDate, String storeName, String phoneNumber, String mainPlace,
+                                   String detailPlace, BigDecimal latitude, BigDecimal longitude, BigDecimal defaultEarningRate, String description, String bankCode,
+                                   String bankAccountNumber, String savedName) {
         this.businessLicenseNumber = businessLicenseNumber;
         this.representativeName = representativeName;
         this.openingDate = openingDate;

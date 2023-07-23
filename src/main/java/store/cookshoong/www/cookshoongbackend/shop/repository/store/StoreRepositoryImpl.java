@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import store.cookshoong.www.cookshoongbackend.account.entity.QAccount;
 import store.cookshoong.www.cookshoongbackend.address.entity.QAddress;
 import store.cookshoong.www.cookshoongbackend.file.entity.QImage;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QBankType;
@@ -15,7 +14,6 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.QStore;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QStoreCategory;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QStoreStatus;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QStoresHasCategory;
-import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectStoreForUserResponseDto;
@@ -23,7 +21,7 @@ import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectStoreRe
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreForUserResponseDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseVo;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseTemp;
 
 /**
  * 매장 커스텀 레포지토리 구현.
@@ -95,7 +93,7 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
      * {@inheritDoc}
      */
     @Override
-    public Optional<SelectStoreResponseVo> lookupStore(Long accountId, Long storeId) {
+    public Optional<SelectStoreResponseTemp> lookupStore(Long accountId, Long storeId) {
         QStore store = QStore.store;
         QAddress address = QAddress.address;
         QBankType bankType = QBankType.bankType;

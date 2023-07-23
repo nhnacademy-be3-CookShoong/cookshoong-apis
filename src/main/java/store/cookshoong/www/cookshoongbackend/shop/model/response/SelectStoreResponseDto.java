@@ -36,7 +36,7 @@ public class SelectStoreResponseDto {
      * @param vo       데이터베이스에서 해당 매장 관련 정보를 가져옴
      * @param pathName 매장 사진 경로 + 저장된 이름 + 형식
      */
-    public SelectStoreResponseDto(SelectStoreResponseVo vo, String pathName) {
+    public SelectStoreResponseDto(SelectStoreResponseTemp vo, String pathName) {
         this.businessLicenseNumber = vo.getBusinessLicenseNumber();
         this.representativeName = vo.getRepresentativeName();
         this.openingDate = vo.getOpeningDate();

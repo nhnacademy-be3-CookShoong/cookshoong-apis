@@ -42,7 +42,7 @@ import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStore
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseVo;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseTemp;
 import store.cookshoong.www.cookshoongbackend.shop.repository.bank.BankTypeRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.category.StoreCategoryRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.merchant.MerchantRepository;
@@ -114,7 +114,7 @@ public class StoreService {
         Store store = storeRepository.findById(storeId)
             .orElseThrow(StoreNotFoundException::new);
         accessDeniedException(accountId, store);
-        SelectStoreResponseVo responseVo = storeRepository.lookupStore(accountId, storeId)
+        SelectStoreResponseTemp responseVo = storeRepository.lookupStore(accountId, storeId)
             .orElseThrow(StoreNotFoundException::new);
 
         return new SelectStoreResponseDto(responseVo, fileStoreService.getFullPath(responseVo.getSavedName()));

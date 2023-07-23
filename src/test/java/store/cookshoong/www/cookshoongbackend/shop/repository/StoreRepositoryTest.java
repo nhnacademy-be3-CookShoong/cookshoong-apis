@@ -35,7 +35,7 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.StoresHasCategory;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreForUserResponseDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseVo;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseTemp;
 import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreRepository;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
 
@@ -177,7 +177,7 @@ class StoreRepositoryTest {
         store.modifyAddress(address);
 
         Long accountId = storeRepository.save(store).getId();
-        SelectStoreResponseVo actual = storeRepository.lookupStore(accountId, store.getId()).orElseThrow();
+        SelectStoreResponseTemp actual = storeRepository.lookupStore(accountId, store.getId()).orElseThrow();
 
         assertThat(actual.getStoreName()).isEqualTo(store.getName());
         assertThat(actual.getOpeningDate()).isEqualTo(store.getOpeningDate());
