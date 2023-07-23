@@ -32,6 +32,7 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.shop.entity.StoreCategory;
 import store.cookshoong.www.cookshoongbackend.shop.entity.StoreStatus;
 import store.cookshoong.www.cookshoongbackend.shop.entity.StoresHasCategory;
+import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreForUserResponseDto;
@@ -177,7 +178,7 @@ class StoreRepositoryTest {
         store.modifyAddress(address);
 
         Long accountId = storeRepository.save(store).getId();
-        SelectStoreResponseTemp actual = storeRepository.lookupStore(accountId, store.getId()).orElseThrow();
+        SelectStoreResponseTemp actual = storeRepository.lookupStore(accountId, store.getId()).orElseThrow(StoreNotFoundException::new);
 
         assertThat(actual.getStoreName()).isEqualTo(store.getName());
         assertThat(actual.getOpeningDate()).isEqualTo(store.getOpeningDate());
@@ -204,7 +205,7 @@ class StoreRepositoryTest {
 
         storeRepository.save(store);
 
-        SelectStoreForUserResponseDto actual = storeRepository.lookupStoreForUser(store.getId()).orElseThrow();
+        SelectStoreForUserResponseDto actual = storeRepository.lookupStoreForUser(store.getId()).orElseThrow(StoreNotFoundException::new);
 
         assertThat(actual.getStoreName()).isEqualTo(store.getName());
         assertThat(actual.getDescription()).isEqualTo(store.getDescription());
