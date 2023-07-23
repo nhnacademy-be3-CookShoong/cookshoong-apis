@@ -21,8 +21,6 @@ import store.cookshoong.www.cookshoongbackend.shop.service.StoreService;
 public class StoreController {
     private final StoreService storeService;
 
-    //TODO 5. 일반 회원 입장에서 OPEN, 혹은 CLOSE된 매장들만 볼 수 있도록 해야함.
-
     /**
      * 일반 유저 : 매장 정보 조회 페이지.
      *
@@ -30,7 +28,7 @@ public class StoreController {
      * @return 매장 정보
      */
     @GetMapping("/{storeId}/info")
-    public ResponseEntity<SelectStoreForUserResponseDto> getStore(@PathVariable("storeId") Long storeId) {
+    public ResponseEntity<SelectStoreForUserResponseDto> getStoreInformation(@PathVariable("storeId") Long storeId) {
         return ResponseEntity.ok(storeService.selectStoreForUser(storeId));
     }
 }
