@@ -34,6 +34,17 @@ public interface IssueCouponRepositoryCustom {
      * @param issueCouponId  the issue coupon id
      * @param expirationDate the expiration date
      * @param account        the account
+     * @return the boolean
      */
-    void modifyIssueCouponAccount(UUID issueCouponId, LocalDate expirationDate, Account account);
+    boolean provideCouponToAccount(UUID issueCouponId, LocalDate expirationDate, Account account);
+
+
+    /**
+     * 이미 사용 가능한 쿠폰을 받았는지의 여부를 알려주는 메서드.
+     *
+     * @param couponPolicyId the coupon policy id
+     * @param accountId      the account id
+     * @return the boolean
+     */
+    boolean hasUsableCouponWithinSamePolicy(Long couponPolicyId, Long accountId);
 }
