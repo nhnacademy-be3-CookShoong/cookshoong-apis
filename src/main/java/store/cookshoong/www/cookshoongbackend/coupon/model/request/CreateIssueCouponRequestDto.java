@@ -16,9 +16,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CreateIssueCouponRequestDto {
     @NotNull
-    @Min(1)
-    private Long issueQuantity;
+    private Long couponPolicyId;
 
     @NotNull
-    private Long couponPolicyId;
+    @Min(1)
+    private Long issueQuantity;
 }
