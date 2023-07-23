@@ -14,7 +14,7 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.QStore;
 /**
  * 메뉴 커스텀 레포지토리 구현.
  *
- * @author papel
+ * @author papel (윤동현)
  * @since 2023.07.17
  */
 @RequiredArgsConstructor

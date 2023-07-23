@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 /**
  * 메뉴 상태 엔티티.
  *
- * @author papel
+ * @author papel (윤동현)
  * @since 2023.07.11
  */
 @Getter

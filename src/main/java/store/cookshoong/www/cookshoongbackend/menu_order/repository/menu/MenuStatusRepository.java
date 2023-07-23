@@ -6,7 +6,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.MenuStatus;
 /**
  * 메뉴 상태 레포지토리.
  *
- * @author papel
+ * @author papel (윤동현)
  * @since 2023.07.11
  */
 public interface MenuStatusRepository extends JpaRepository<MenuStatus, String> {

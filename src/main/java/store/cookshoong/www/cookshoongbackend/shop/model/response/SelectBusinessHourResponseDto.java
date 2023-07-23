@@ -6,7 +6,7 @@ import java.time.LocalTime;
 /**
  * 영업시간 리스트 응답을 위한 Dto
  *
- * @author papel
+ * @author papel (윤동현)
  * @since 2023.07.10
  */
 public class SelectBusinessHourResponseDto {

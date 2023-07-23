@@ -8,7 +8,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectOp
 /**
  * 옵션 그룹 커스텀 레포지토리 인터페이스.
  *
- * @author papel
+ * @author papel (윤동현)
  * @since 2023.07.17
  */
 @NoRepositoryBean
