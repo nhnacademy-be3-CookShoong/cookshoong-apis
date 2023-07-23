@@ -43,8 +43,8 @@ public class IssueCoupon {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @Column(name = "issue_at", nullable = false)
-    private LocalDateTime issueAt;
+    @Column(name = "receipt_date")
+    private LocalDate receiptDate;
 
     @Column(name = "expiration_date")
     private LocalDate expirationDate;
@@ -57,7 +57,6 @@ public class IssueCoupon {
      */
     public IssueCoupon(CouponPolicy couponPolicy) {
         this.couponPolicy = couponPolicy;
-        this.issueAt = LocalDateTime.now();
     }
 
     /**
@@ -67,6 +66,7 @@ public class IssueCoupon {
      */
     public void provideToAccount(Account account) {
         this.account = account;
+        this.receiptDate = LocalDate.now();
         this.expirationDate = LocalDate.now()
             .plusDays(getCouponPolicy().getUsagePeriod());
     }
