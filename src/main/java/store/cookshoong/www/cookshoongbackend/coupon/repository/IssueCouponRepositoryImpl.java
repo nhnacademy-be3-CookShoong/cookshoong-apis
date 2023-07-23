@@ -19,10 +19,12 @@ import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.coupon.model.temp.QSelectOwnCouponResponseTempDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectOwnCouponResponseTempDto;
 
@@ -166,4 +168,17 @@ public class IssueCouponRepositoryImpl implements IssueCouponRepositoryCustom {
             .fetchOne();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean provideCouponToAccount(UUID issueCouponId, LocalDate expirationDate, Account account) {
+        long updatedCount = queryFactory.update(issueCoupon)
+            .set(issueCoupon.account, account)
+            .set(issueCoupon.expirationDate, expirationDate)
+            .where(issueCoupon.code.eq(issueCouponId), issueCoupon.account.isNull())
+            .execute();
+
+        return updatedCount != 0;
+    }
 }
