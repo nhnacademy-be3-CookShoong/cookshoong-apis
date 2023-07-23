@@ -17,11 +17,11 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.QStoresHasCategory;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectStoreForUserResponseDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectStoreResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectStoreResponseTemp;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreForUserResponseDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseTemp;
 
 /**
  * 매장 커스텀 레포지토리 구현.
@@ -63,6 +63,7 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
             .innerJoin(store.storeStatusCode, storeStatus)
             .innerJoin(store.address, address)
             .where(store.account.id.eq(accountId))
+            .orderBy(store.id.desc())
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
@@ -92,14 +93,14 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
      * {@inheritDoc}
      */
     @Override
-    public Optional<SelectStoreResponseDto> lookupStore(Long accountId, Long storeId) {
+    public Optional<SelectStoreResponseTemp> lookupStore(Long accountId, Long storeId) {
         QStore store = QStore.store;
         QAddress address = QAddress.address;
         QBankType bankType = QBankType.bankType;
         QImage image = QImage.image;
 
         return Optional.ofNullable(jpaQueryFactory
-            .select(new QSelectStoreResponseDto(
+            .select(new QSelectStoreResponseTemp(
                 store.businessLicenseNumber,
                 store.representativeName,
                 store.openingDate,
