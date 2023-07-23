@@ -3,6 +3,7 @@ package store.cookshoong.www.cookshoongbackend.shop.service;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,6 @@ import store.cookshoong.www.cookshoongbackend.address.entity.Address;
 import store.cookshoong.www.cookshoongbackend.address.model.response.AddressResponseDto;
 import store.cookshoong.www.cookshoongbackend.address.repository.accountaddress.AccountAddressRepository;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
-import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
 import store.cookshoong.www.cookshoongbackend.file.service.FileStoreService;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
@@ -29,6 +29,7 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.StoreStatus;
 import store.cookshoong.www.cookshoongbackend.shop.entity.StoresHasCategory;
 import store.cookshoong.www.cookshoongbackend.shop.exception.banktype.BankTypeNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.category.StoreCategoryNotFoundException;
+import store.cookshoong.www.cookshoongbackend.shop.exception.merchant.MerchantNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.DuplicatedBusinessLicenseException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreStatusNotFoundException;
@@ -41,6 +42,7 @@ import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStore
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseVo;
 import store.cookshoong.www.cookshoongbackend.shop.repository.bank.BankTypeRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.category.StoreCategoryRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.merchant.MerchantRepository;
@@ -70,7 +72,6 @@ public class StoreService {
     private static final Double RADIUS = 6371.0;
     private static final Double TO_RADIAN = Math.PI / 180;
     private final FileStoreService fileStoreService;
-    private final ImageRepository imageRepository;
 
     private static void accessDeniedException(Long accountId, Store store) {
         if (!store.getAccount().getId().equals(accountId)) {
@@ -110,8 +111,13 @@ public class StoreService {
      */
     @Transactional(readOnly = true)
     public SelectStoreResponseDto selectStore(Long accountId, Long storeId) {
-        return storeRepository.lookupStore(accountId, storeId)
+        Store store = storeRepository.findById(storeId)
             .orElseThrow(StoreNotFoundException::new);
+        accessDeniedException(accountId, store);
+        SelectStoreResponseVo responseVo = storeRepository.lookupStore(accountId, storeId)
+            .orElseThrow(StoreNotFoundException::new);
+
+        return new SelectStoreResponseDto(responseVo, fileStoreService.getFullPath(responseVo.getSavedName()));
     }
 
     /**
@@ -181,6 +187,8 @@ public class StoreService {
      * @param accountId  the account id
      * @param storeId    the store id
      * @param requestDto 매장 수정 정보
+     * @param storeImage the store image
+     * @throws IOException the io exception
      */
     public void updateStore(Long accountId, Long storeId, UpdateStoreRequestDto requestDto, MultipartFile storeImage) throws IOException {
         Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
