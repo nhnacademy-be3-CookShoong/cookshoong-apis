@@ -147,8 +147,11 @@ public class StoreService {
         if (storeRepository.existsStoreByBusinessLicenseNumber(registerRequestDto.getBusinessLicenseNumber())) {
             throw new DuplicatedBusinessLicenseException(registerRequestDto.getBusinessLicenseNumber());
         }
-
-        Merchant merchant = merchantRepository.findById(registerRequestDto.getMerchantId()).orElse(null);
+        Merchant merchant = null;
+        if(Objects.nonNull(registerRequestDto.getMerchantId())){
+            merchant = merchantRepository.findById(registerRequestDto.getMerchantId())
+                .orElseThrow(MerchantNotFoundException::new);
+        }
         Account account = accountRepository.findById(accountId)
             .orElseThrow(UserNotFoundException::new);
         BankType bankType = bankTypeRepository.findById(registerRequestDto.getBankCode())
