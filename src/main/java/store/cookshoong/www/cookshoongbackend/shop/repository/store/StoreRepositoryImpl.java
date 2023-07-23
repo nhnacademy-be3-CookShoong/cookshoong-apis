@@ -17,7 +17,7 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.QStoresHasCategory;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectStoreForUserResponseDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectStoreResponseVo;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectStoreResponseTemp;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreForUserResponseDto;
@@ -100,7 +100,7 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
         QImage image = QImage.image;
 
         return Optional.ofNullable(jpaQueryFactory
-            .select(new QSelectStoreResponseVo(
+            .select(new QSelectStoreResponseTemp(
                 store.businessLicenseNumber,
                 store.representativeName,
                 store.openingDate,
