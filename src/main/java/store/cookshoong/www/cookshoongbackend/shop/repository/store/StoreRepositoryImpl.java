@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import store.cookshoong.www.cookshoongbackend.account.entity.QAccount;
 import store.cookshoong.www.cookshoongbackend.address.entity.QAddress;
 import store.cookshoong.www.cookshoongbackend.file.entity.QImage;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QBankType;
@@ -14,14 +15,15 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.QStore;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QStoreCategory;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QStoreStatus;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QStoresHasCategory;
+import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectStoreForUserResponseDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectStoreResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectStoreResponseVo;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreForUserResponseDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseVo;
 
 /**
  * 매장 커스텀 레포지토리 구현.
@@ -63,6 +65,7 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
             .innerJoin(store.storeStatusCode, storeStatus)
             .innerJoin(store.address, address)
             .where(store.account.id.eq(accountId))
+            .orderBy(store.id.desc())
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
@@ -92,14 +95,14 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
      * {@inheritDoc}
      */
     @Override
-    public Optional<SelectStoreResponseDto> lookupStore(Long accountId, Long storeId) {
+    public Optional<SelectStoreResponseVo> lookupStore(Long accountId, Long storeId) {
         QStore store = QStore.store;
         QAddress address = QAddress.address;
         QBankType bankType = QBankType.bankType;
         QImage image = QImage.image;
 
         return Optional.ofNullable(jpaQueryFactory
-            .select(new QSelectStoreResponseDto(
+            .select(new QSelectStoreResponseVo(
                 store.businessLicenseNumber,
                 store.representativeName,
                 store.openingDate,

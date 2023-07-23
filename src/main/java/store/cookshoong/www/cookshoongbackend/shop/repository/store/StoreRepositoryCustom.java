@@ -4,10 +4,11 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;
+import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreForUserResponseDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseVo;
 
 /**
  * 매장 Custom 레포지토리 인터페이스.
@@ -34,7 +35,7 @@ public interface StoreRepositoryCustom {
      * @param storeId   매장 아이디
      * @return 매장에 대한 정보
      */
-    Optional<SelectStoreResponseDto> lookupStore(Long accountId, Long storeId);
+    Optional<SelectStoreResponseVo> lookupStore(Long accountId, Long storeId);
 
     /**
      * 일반 회원이 선택한 매장의 정보 조회.
