@@ -32,7 +32,7 @@ public class FileStoreService {
      * @return the full path
      */
     public String getFullPath(String filename) {
-        return rootPath+fileDir + filename;
+        return rootPath + fileDir + filename;
     }
 
     /**
