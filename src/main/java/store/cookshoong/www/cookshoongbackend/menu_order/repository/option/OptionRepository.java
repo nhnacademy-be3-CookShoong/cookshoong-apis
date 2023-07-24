@@ -6,7 +6,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.entity.option.Option;
 /**
  * 옵션 레포지토리.
  *
- * @author papel
+ * @author papel (윤동현)
  * @since 2023.07.11
  */
 public interface OptionRepository extends JpaRepository<Option, Long>, OptionRepositoryCustom {

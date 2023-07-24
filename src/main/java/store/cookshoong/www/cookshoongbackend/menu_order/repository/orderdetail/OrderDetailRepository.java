@@ -6,7 +6,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.entity.orderdetail.Orde
 /**
  * 주문 상세 레포지토리.
  *
- * @author papel
+ * @author papel (윤동현)
  * @since 2023.07.11
  */
 public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> {

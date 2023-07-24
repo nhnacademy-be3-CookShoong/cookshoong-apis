@@ -6,7 +6,7 @@ import store.cookshoong.www.cookshoongbackend.common.exception.ValidationFailure
 /**
  * 옵션 그룹 생성 요청 데이터의 위반사항 발견 예외.
  *
- * @author papel
+ * @author papel (윤동현)
  * @since 2023.07.13
  */
 public class OptionGroupValidationException extends ValidationFailureException {

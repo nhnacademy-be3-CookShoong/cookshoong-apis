@@ -24,7 +24,7 @@ import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreReposit
  * 관리자가 가맹점의 휴업일, 영업시간을 관리.
  * 휴업일 추가, 휴업일 삭제, 영업시간 추가, 영업시간 삭제.
  *
- * @author papel
+ * @author papel (윤동현)
  * @since 2023.07.07
  */
 @Service

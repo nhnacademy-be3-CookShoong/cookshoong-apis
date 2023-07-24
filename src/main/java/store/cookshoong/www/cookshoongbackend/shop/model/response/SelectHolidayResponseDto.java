@@ -7,7 +7,7 @@ import lombok.Getter;
 /**
  * 휴업일 리스트 응답을 위한 Dto.
  *
- * @author papel
+ * @author papel (윤동현)
  * @since 2023.07.07
  */
 @Getter

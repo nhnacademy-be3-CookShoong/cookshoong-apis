@@ -6,7 +6,7 @@ import store.cookshoong.www.cookshoongbackend.common.exception.ValidationFailure
 /**
  * 휴업일 생성 요청 데이터의 위반사항 발견 발생되는 예외.
  *
- * @author papel
+ * @author papel (윤동현)
  * @since 2023.07.07
  */
 public class HolidayValidationException extends ValidationFailureException {

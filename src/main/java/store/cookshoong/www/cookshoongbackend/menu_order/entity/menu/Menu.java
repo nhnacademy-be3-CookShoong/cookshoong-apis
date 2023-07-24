@@ -26,7 +26,7 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 /**
  * 메뉴 엔티티.
  *
- * @author papel
+ * @author papel (윤동현)
  * @since 2023.07.11
  */
 @Getter
