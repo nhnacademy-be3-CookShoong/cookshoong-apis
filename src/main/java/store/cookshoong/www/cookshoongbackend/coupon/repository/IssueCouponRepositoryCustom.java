@@ -40,11 +40,12 @@ public interface IssueCouponRepositoryCustom {
 
 
     /**
-     * 이미 사용 가능한 쿠폰을 받았는지의 여부를 알려주는 메서드.
+     * 이전에 해당 쿠폰을 받았는지의 여부를 알려주는 메서드.
      *
      * @param couponPolicyId the coupon policy id
      * @param accountId      the account id
+     * @param usagePeriod    the usage period
      * @return the boolean
      */
-    boolean hasUsableCouponWithinSamePolicy(Long couponPolicyId, Long accountId);
+    boolean isReceivedBefore(Long couponPolicyId, Long accountId, Integer usagePeriod);
 }
