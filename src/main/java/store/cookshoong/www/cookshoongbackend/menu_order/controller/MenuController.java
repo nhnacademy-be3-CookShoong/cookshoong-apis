@@ -10,7 +10,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +22,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.service.MenuService;
 /**
  * 메뉴 컨트롤러.
  *
- * @author papel
+ * @author papel (윤동현)
  * @since 2023.07.13
  */
 @RestController

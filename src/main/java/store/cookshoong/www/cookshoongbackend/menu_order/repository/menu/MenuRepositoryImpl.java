@@ -14,7 +14,7 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.QStore;
 /**
  * 메뉴 커스텀 레포지토리 구현.
  *
- * @author papel
+ * @author papel (윤동현)
  * @since 2023.07.17
  */
 @RequiredArgsConstructor
@@ -39,7 +39,7 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
             .select(new QSelectMenuResponseDto(
                 menu.id, menuStatus.menuStatusCode, store.id,
                 menu.name, menu.price, menu.description,
-                image.savedName, menu.cookingTime, menu.earningRate))
+                menu.image.savedName, menu.cookingTime, menu.earningRate))
             .from(menu)
             .innerJoin(menu.menuStatusCode, menuStatus)
             .innerJoin(menu.store, store)
@@ -65,7 +65,7 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
             .select(new QSelectMenuResponseDto(
                 menu.id, menuStatus.menuStatusCode, store.id,
                 menu.name, menu.price, menu.description,
-                image.savedName, menu.cookingTime, menu.earningRate))
+                menu.image.savedName, menu.cookingTime, menu.earningRate))
             .from(menu)
             .innerJoin(menu.menuStatusCode, menuStatus)
             .innerJoin(menu.store, store)

@@ -20,7 +20,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.service.MenuGroupServic
 /**
  * 메뉴 그룹 컨트롤러.
  *
- * @author papel
+ * @author papel (윤동현)
  * @since 2023.07.13
  */
 @RestController

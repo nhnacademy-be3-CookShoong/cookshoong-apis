@@ -11,7 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 /**
  * 영업시간 등록 Dto.
  *
- * @author papel
+ * @author papel (윤동현)
  * @since 2023.07.10
  */
 @Getter

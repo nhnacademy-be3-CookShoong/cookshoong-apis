@@ -8,7 +8,7 @@ import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectBusiness
 /**
  * 영업시간 커스텀 레포지토리 인터페이스.
  *
- * @author papel
+ * @author papel (윤동현)
  * @since 2023.07.10
  */
 @NoRepositoryBean

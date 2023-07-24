@@ -5,7 +5,7 @@ import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException
 /**
  * 요일 코드 요청에 대한 예외발생.
  *
- * @author papel
+ * @author papel (윤동현)
  * @since 2023.07.10
  */
 public class DayTypeNotFoundException extends NotFoundException {
