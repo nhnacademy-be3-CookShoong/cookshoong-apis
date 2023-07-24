@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import store.cookshoong.www.cookshoongbackend.cart.redis.exception.DuplicationMenuException;
 import store.cookshoong.www.cookshoongbackend.cart.redis.exception.InvalidStoreException;
 import store.cookshoong.www.cookshoongbackend.cart.redis.exception.NotFoundCartRedisKey;
 import store.cookshoong.www.cookshoongbackend.cart.redis.exception.NotFoundMenuRedisHashKey;
@@ -48,7 +47,7 @@ public class CartRedisService {
         }
 
         if (cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)) {
-            throw new DuplicationMenuException();
+            cart.incrementCount();
         }
 
         cart.createTimeMillis();
@@ -59,13 +58,9 @@ public class CartRedisService {
 
     /**
      * 장바구니에 담아져 있는 메뉴에 대해 수정되는 메서드.
-     * 장바구니에서 수정은 옵션 위 주에 수정만 생각한다.
-     * 이때 수정은 hashKey 가 변하기 때문에 수정하기 전에 메뉴에 대해서
-     * 삭제 후 새로 put 하는 형식으로 변경을 구현한다.
-     * 이렇게 되면 새로 등록하는게 되기 때문에 순서가 유지가 안되는데
-     * 순서를 유지하려면 삭제하기전에 데이터를 가지고와서 그 데이터에 생성 시간값을 수정한 값에 주입해주면 될거 같다.
-     * 이 작업은 아마 프론트에서 주입해주면 될거 같다.
-     * 그러면 Back Api 에 들어오는 수정내용에서는 haskKey 만 새롭게 생성해주면 순서가 유지된 채로 장바구니에 보일 것이다.
+     * 옵션에 대한 수정을 할 때 hashKey 가 달라지면 추가를 해버리는 문제가 발생.
+     * 이때 변경하기전에 대한 메뉴 hashKey 를 가져오기때문에 그 key 를 가지고 삭제를 한후
+     * 변경된 메뉴에 대해서 새로운 hashKey 를 만들고 그 키를 가지고 Redis 장바구니에 담는다.
      *
      * @param redisKey      redis key
      * @param hashKey        redis hashKey
@@ -76,10 +71,53 @@ public class CartRedisService {
         if (!cartRedisRepository.existKeyInCartRedis(redisKey)) {
             throw new NotFoundCartRedisKey();
         } else if (cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)) {
-            throw new DuplicationMenuException();
+            cartRedisRepository.deleteCartMenu(redisKey, hashKey);
         }
 
         cart.setRefreshHashKey(cart.generateUniqueHashKey());
+
+        cartRedisRepository.cartMenuRedisModify(redisKey, cart.getHashKey(), cart);
+    }
+
+    /**
+     * 장바구니에 담아져 있는 메뉴에 수량을 늘리는 메서드.
+     * Front 에서 플러스 버튼을 누르면
+     * Gateway 를 타고 Back Api 로 와서 수량을 늘려준다.
+     *
+     * @param redisKey      redis key
+     * @param hashKey        redis hashKey
+     */
+    public void modifyCartMenuIncrementCount(String redisKey, String hashKey) {
+
+        CartRedisDto cart = null;
+        if (!cartRedisRepository.existKeyInCartRedis(redisKey)) {
+            throw new NotFoundCartRedisKey();
+        } else if (cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)) {
+
+            cart = (CartRedisDto) cartRedisRepository.findByCartMenu(redisKey, hashKey);
+            cart.incrementCount();
+        }
+
+        cartRedisRepository.cartMenuRedisModify(redisKey, hashKey, cart);
+    }
+
+    /**
+     * 장바구니에 담아져 있는 메뉴에 수량을 줄이는 메서드.
+     * Front 에서 플러스 버튼을 누르면
+     * Gateway 를 타고 Back Api 로 와서 수량을 줄여준다.
+     *
+     * @param redisKey      redis key
+     * @param hashKey        redis hashKey
+     */
+    public void modifyCartMenuDecrementCount(String redisKey, String hashKey) {
+        CartRedisDto cart = null;
+        if (!cartRedisRepository.existKeyInCartRedis(redisKey)) {
+            throw new NotFoundCartRedisKey();
+        } else if (cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)) {
+
+            cart = (CartRedisDto) cartRedisRepository.findByCartMenu(redisKey, hashKey);
+            cart.decrementCount();
+        }
 
         cartRedisRepository.cartMenuRedisModify(redisKey, hashKey, cart);
     }
