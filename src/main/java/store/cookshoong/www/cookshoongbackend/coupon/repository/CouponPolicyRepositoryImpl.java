@@ -93,7 +93,7 @@ public class CouponPolicyRepositoryImpl implements CouponPolicyRepositoryCustom 
             .innerJoin(couponPolicy.couponUsage, couponUsage)
             .on(couponUsage.id.eq(couponUsageId))
 
-            .where(couponPolicy.isDeleted.isFalse())
+            .where(couponPolicy.deleted.isFalse())
 
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
@@ -127,7 +127,7 @@ public class CouponPolicyRepositoryImpl implements CouponPolicyRepositoryCustom 
             .innerJoin(couponPolicy.couponType, couponType)
             .innerJoin(couponPolicy.couponUsage, couponUsage)
 
-            .where(couponUsage.id.eq(couponUsageId), couponPolicy.isDeleted.isFalse())
+            .where(couponUsage.id.eq(couponUsageId), couponPolicy.deleted.isFalse())
             .fetchOne();
     }
 

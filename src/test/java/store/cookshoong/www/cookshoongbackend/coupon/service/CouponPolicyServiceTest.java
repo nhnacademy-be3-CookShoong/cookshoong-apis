@@ -1,5 +1,16 @@
 package store.cookshoong.www.cookshoongbackend.coupon.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +24,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
-import store.cookshoong.www.cookshoongbackend.coupon.entity.*;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponPolicy;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypePercent;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageAll;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponUsageNotFoundException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateCashCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreatePercentCouponPolicyRequestDto;
@@ -21,7 +37,12 @@ import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicy
 import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectPolicyResponseTempDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeCashVo;
 import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypePercentVo;
-import store.cookshoong.www.cookshoongbackend.coupon.repository.*;
+import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;
+import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponTypeCashRepository;
+import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponTypePercentRepository;
+import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponUsageAllRepository;
+import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponUsageMerchantRepository;
+import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponUsageStoreRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.util.CouponTypeConverter;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
@@ -29,19 +50,6 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.shop.repository.merchant.MerchantRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreRepository;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CouponPolicyServiceTest {
@@ -215,7 +223,7 @@ class CouponPolicyServiceTest {
                 new CouponTypeCash(invocation.getArgument(0), invocation.getArgument(1))));
 
         Image businessImage = te.getImage("사업자등록증.jpg", false);
-        Image storeImage = te.getImage("우리 매장 대표사진.jpg",true);
+        Image storeImage = te.getImage("우리 매장 대표사진.jpg", true);
         Store store = te.getStore(te.getMerchant(), account, te.getBankTypeKb(), te.getStoreStatusOpen(), businessImage, storeImage);
 
         when(couponUsageStoreRepository.findByStoreId(anyLong()))
@@ -246,7 +254,7 @@ class CouponPolicyServiceTest {
         when(couponUsageStoreRepository.findByStoreId(anyLong()))
             .thenReturn(Optional.empty());
         Image businessImage = te.getImage("사업자등록증.jpg", false);
-        Image storeImage = te.getImage("우리 매장 대표사진.jpg",true);
+        Image storeImage = te.getImage("우리 매장 대표사진.jpg", true);
         Store store = te.getStore(te.getMerchant(), account, te.getBankTypeKb(), te.getStoreStatusOpen(), businessImage, storeImage);
 
         when(storeRepository.getReferenceById(any(Long.class)))
@@ -276,10 +284,10 @@ class CouponPolicyServiceTest {
             .thenAnswer(invocation -> Optional.of(new CouponTypePercent(
                 invocation.getArgument(0), invocation.getArgument(1), invocation.getArgument(2))));
 
-        Image businessImage = te.getImage("사업자등록증.png",false);
-        Image storeImage = te.getImage("매장대표사진.png",true);
+        Image businessImage = te.getImage("사업자등록증.png", false);
+        Image storeImage = te.getImage("매장대표사진.png", true);
 
-        Store store = te.getStore(te.getMerchant(), account, te.getBankTypeKb(), te.getStoreStatusOpen(),businessImage, storeImage);
+        Store store = te.getStore(te.getMerchant(), account, te.getBankTypeKb(), te.getStoreStatusOpen(), businessImage, storeImage);
 
         when(couponUsageStoreRepository.findByStoreId(anyLong()))
             .thenAnswer(invocation -> {
@@ -503,10 +511,10 @@ class CouponPolicyServiceTest {
         when(couponPolicyRepository.findById(any(Long.class)))
             .thenReturn(Optional.of(couponPolicy));
 
-        assertThat(couponPolicy.getIsDeleted()).isFalse();
+        assertThat(couponPolicy.isDeleted()).isFalse();
 
         couponPolicyService.deletePolicy(couponPolicy.getId());
-        assertThat(couponPolicy.getIsDeleted()).isTrue();
+        assertThat(couponPolicy.isDeleted()).isTrue();
     }
 
     @Test

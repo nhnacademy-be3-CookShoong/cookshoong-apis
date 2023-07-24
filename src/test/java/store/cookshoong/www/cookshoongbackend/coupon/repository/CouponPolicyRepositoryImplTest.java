@@ -2,9 +2,11 @@ package store.cookshoong.www.cookshoongbackend.coupon.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,6 +37,8 @@ import store.cookshoong.www.cookshoongbackend.util.TestPersistEntity;
 @DataJpaTest
 @Import({TestPersistEntity.class, QueryDslConfig.class})
 class CouponPolicyRepositoryImplTest {
+    static int DAY_OFFSET;
+
     @Autowired
     TestEntityManager em;
 
@@ -55,9 +59,14 @@ class CouponPolicyRepositoryImplTest {
     CouponPolicy merchantPercentCouponPolicy;
     CouponPolicy allCashCouponPolicy;
     CouponPolicy allPercentCouponPolicy;
-    CouponPolicy deleteCouponPolicy;
     Account customer;
 
+    @BeforeAll
+    static void beforeAll() throws NoSuchFieldException, IllegalAccessException {
+        Field dayOffset = CouponPolicy.class.getDeclaredField("DAY_OFFSET");
+        dayOffset.setAccessible(true);
+        DAY_OFFSET = dayOffset.getInt(null);
+    }
 
     @BeforeEach
     void beforeEach() {
@@ -84,9 +93,13 @@ class CouponPolicyRepositoryImplTest {
             "10000원 이상 주문 시 1000원 할인", 30);
         allPercentCouponPolicy = new CouponPolicy(couponTypePercent, couponUsageAll, "전체 퍼센트 쿠폰",
             "10000원 이상 주문 시 3%, 최대 1000원 할인", 30);
-        deleteCouponPolicy = new CouponPolicy(couponTypePercent, couponUsageAll, "전체 퍼센트 쿠폰",
-            "10000원 이상 주문 시 3%, 최대 1000원 할인", 30);
-        deleteCouponPolicy.delete();
+
+        for (int i = 0; i < 30; i++) {
+            CouponPolicy deleteCouponPolicy = new CouponPolicy(couponTypePercent, couponUsageAll, "전체 퍼센트 쿠폰",
+                "10000원 이상 주문 시 3%, 최대 1000원 할인", 30);
+            deleteCouponPolicy.delete();
+            em.persist(deleteCouponPolicy);
+        }
 
         em.persist(storeCashCouponPolicy);
         em.persist(storePercentCouponPolicy);
@@ -129,7 +142,7 @@ class CouponPolicyRepositoryImplTest {
             assertThat(temp.getCouponType().getId()).isEqualTo(policy.getCouponType().getId());
             assertThat(temp.getName()).isEqualTo(policy.getName());
             assertThat(temp.getDescription()).isEqualTo(policy.getDescription());
-            assertThat(temp.getUsagePeriod()).isEqualTo(policy.getUsagePeriod());
+            assertThat(temp.getUsagePeriod()).isEqualTo(policy.getUsagePeriod() + DAY_OFFSET);
         }
     }
 
@@ -153,7 +166,7 @@ class CouponPolicyRepositoryImplTest {
             assertThat(temp.getCouponType().getId()).isEqualTo(policy.getCouponType().getId());
             assertThat(temp.getName()).isEqualTo(policy.getName());
             assertThat(temp.getDescription()).isEqualTo(policy.getDescription());
-            assertThat(temp.getUsagePeriod()).isEqualTo(policy.getUsagePeriod());
+            assertThat(temp.getUsagePeriod()).isEqualTo(policy.getUsagePeriod() + DAY_OFFSET);
         }
     }
 
@@ -177,7 +190,7 @@ class CouponPolicyRepositoryImplTest {
             assertThat(temp.getCouponType().getId()).isEqualTo(policy.getCouponType().getId());
             assertThat(temp.getName()).isEqualTo(policy.getName());
             assertThat(temp.getDescription()).isEqualTo(policy.getDescription());
-            assertThat(temp.getUsagePeriod()).isEqualTo(policy.getUsagePeriod());
+            assertThat(temp.getUsagePeriod()).isEqualTo(policy.getUsagePeriod() + DAY_OFFSET);
         }
     }
 
@@ -233,7 +246,7 @@ class CouponPolicyRepositoryImplTest {
 
     @ParameterizedTest
     @MethodSource("parameters")
-    @DisplayName("전체 쿠폰 발행 횟수 확인")
+    @DisplayName("전체 쿠폰 발행 횟수 확인 - 삭제된 정책 카운트 무시")
     void issueAllCouponCountTest(int provideCount, int provideToCustomerCount,
                                  int provideSecondCount, int provideToCustomerSecondCount) throws Exception {
         provide(allCashCouponPolicy, provideCount);
@@ -245,6 +258,9 @@ class CouponPolicyRepositoryImplTest {
             couponPolicyRepository.lookupAllPolicy(Pageable.ofSize(10));
 
         assertThat(selectPolicyResponseTemps).hasSize(2);
+        assertThat(selectPolicyResponseTemps.getTotalElements()).isEqualTo(2);
+        assertThat(selectPolicyResponseTemps.getTotalPages())
+            .isEqualTo(1 + selectPolicyResponseTemps.getTotalElements() / 10);
 
         SelectPolicyResponseTempDto firstPolicyResponse = selectPolicyResponseTemps.getContent().get(0);
         assertThat(firstPolicyResponse.getUnclaimedCouponCount()).isEqualTo(provideCount);
@@ -279,7 +295,7 @@ class CouponPolicyRepositoryImplTest {
 
     void provideToCustomer(CouponPolicy couponPolicy, int count) {
         for (int i = 0; i < count; i++) {
-            em.persist(new IssueCoupon(couponPolicy)).provideToUser(customer);
+            em.persist(new IssueCoupon(couponPolicy)).provideToAccount(customer);
         }
     }
 

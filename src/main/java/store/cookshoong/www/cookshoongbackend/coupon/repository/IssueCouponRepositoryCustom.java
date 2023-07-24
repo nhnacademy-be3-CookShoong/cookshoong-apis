@@ -1,8 +1,11 @@
 package store.cookshoong.www.cookshoongbackend.coupon.repository;
 
+import java.time.LocalDate;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;
+import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectOwnCouponResponseTempDto;
 
 /**
@@ -24,4 +27,25 @@ public interface IssueCouponRepositoryCustom {
      */
     Page<SelectOwnCouponResponseTempDto> lookupAllOwnCoupons(Long accountId, Pageable pageable, Boolean usable,
                                                              Long storeId);
+
+    /**
+     * 쿠폰을 발급해주는 메서드.
+     *
+     * @param issueCouponId  the issue coupon id
+     * @param expirationDate the expiration date
+     * @param account        the account
+     * @return the boolean
+     */
+    boolean provideCouponToAccount(UUID issueCouponId, LocalDate expirationDate, Account account);
+
+
+    /**
+     * 이전에 해당 쿠폰을 받았는지의 여부를 알려주는 메서드.
+     *
+     * @param couponPolicyId the coupon policy id
+     * @param accountId      the account id
+     * @param usagePeriod    the usage period
+     * @return the boolean
+     */
+    boolean isReceivedBefore(Long couponPolicyId, Long accountId, Integer usagePeriod);
 }
