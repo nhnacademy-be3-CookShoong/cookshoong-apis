@@ -76,7 +76,39 @@ public class CartRedisController {
 
         cartRedisService.modifyCartMenuRedis(cartKey, menuKey, cart);
 
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Redis 장바구니에서 해당 메뉴 수량 증가.
+     *
+     * @param cartKey       redis key
+     * @param menuKey       redis hashKey
+     * @return              상태코드 200(Ok)와 함께 응답을 반환
+     */
+    @PutMapping("/{cartKey}/menu-count-up/{menuKey}")
+    public ResponseEntity<Void> putModifyCartMenuIncrement(@PathVariable String cartKey,
+                                                           @PathVariable String menuKey) {
+
+        cartRedisService.modifyCartMenuIncrementCount(cartKey, menuKey);
+
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Redis 장바구니에서 해당 메뉴 수량 감소.
+     *
+     * @param cartKey       redis key
+     * @param menuKey       redis hashKey
+     * @return              상태코드 200(Ok)와 함께 응답을 반환
+     */
+    @PutMapping("/{cartKey}/menu-count-down/{menuKey}")
+    public ResponseEntity<Void> putModifyCartMenuDecrement(@PathVariable String cartKey,
+                                                           @PathVariable String menuKey) {
+
+        cartRedisService.modifyCartMenuDecrementCount(cartKey, menuKey);
+
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -90,7 +122,7 @@ public class CartRedisController {
 
         List<CartRedisDto> carts = cartRedisService.selectCartMenuAll(cartKey);
 
-        return ResponseEntity.status(HttpStatus.OK).body(carts);
+        return ResponseEntity.ok(carts);
     }
 
     /**
@@ -106,7 +138,7 @@ public class CartRedisController {
 
         CartRedisDto cartMenu = cartRedisService.selectCartMenu(cartKey, menuKey);
 
-        return ResponseEntity.status(HttpStatus.OK).body(cartMenu);
+        return ResponseEntity.ok(cartMenu);
     }
 
     /**
@@ -120,7 +152,7 @@ public class CartRedisController {
 
         CartMenuCountDto cartCount = new CartMenuCountDto(cartRedisService.selectCartCount(cartKey));
 
-        return ResponseEntity.status(HttpStatus.OK).body(cartCount);
+        return ResponseEntity.ok(cartCount);
     }
 
     /**
