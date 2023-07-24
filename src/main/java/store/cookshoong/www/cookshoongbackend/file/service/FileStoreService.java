@@ -21,6 +21,7 @@ import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
 public class FileStoreService {
     private final ImageRepository imageRepository;
 
+    private final String rootPath = System.getProperty("user.dir");
     @Value("${file.save.base.path}")
     private String fileDir;
 
@@ -31,7 +32,7 @@ public class FileStoreService {
      * @return the full path
      */
     public String getFullPath(String filename) {
-        return fileDir + filename;
+        return rootPath + fileDir + filename;
     }
 
     /**
@@ -49,7 +50,7 @@ public class FileStoreService {
         String originFilename = multipartFile.getOriginalFilename();
         String storeFilename = UUID.randomUUID() + "." + extractExt(originFilename);
 
-        multipartFile.transferTo(Paths.get(fileDir + storeFilename));
+        multipartFile.transferTo(Paths.get(getFullPath(storeFilename)));
         return imageRepository.save(new Image(originFilename, storeFilename, isPublic));
     }
 

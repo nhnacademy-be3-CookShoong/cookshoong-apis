@@ -6,7 +6,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.entity.optiongroup.Menu
 /**
  * 메뉴 - 옵션그룹 레포지토리.
  *
- * @author papel
+ * @author papel (윤동현)
  * @since 2023.07.11
  */
 public interface MenuHasOptionGroupRepository extends JpaRepository<MenuHasOptionGroup, MenuHasOptionGroup.Pk> {

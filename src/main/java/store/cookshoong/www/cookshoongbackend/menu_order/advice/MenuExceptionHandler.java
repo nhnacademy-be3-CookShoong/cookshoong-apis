@@ -18,7 +18,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.exception.option.Option
 /**
  * menu 패키지 아래 RestController 내에서 일어나는 모든 예외 처리.
  *
- * @author papel
+ * @author papel (윤동현)
  * @since 2023.07.13
  */
 @Slf4j
