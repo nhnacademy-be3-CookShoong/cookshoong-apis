@@ -2,6 +2,7 @@ package store.cookshoong.www.cookshoongbackend.cart.redis.model.vo;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -24,11 +25,13 @@ public class CartRedisDto {
     private Long accountId;
     @NotNull
     private Long storeId;
+    @NotBlank
     private String storeName;
     private CartMenuDto menu;
     private List<CartOptionDto> options;
     private Long createTimeMillis;
     private String hashKey;
+    private int count = 1;
 
     /**
      * 메뉴와 옵션을 조합해서 hashKey 를 생성하는 메서드.
@@ -59,5 +62,13 @@ public class CartRedisDto {
 
     public void setRefreshHashKey(String hashKey) {
         this.hashKey = hashKey;
+    }
+
+    public void incrementCount() {
+        count++;
+    }
+
+    public void decrementCount() {
+        count--;
     }
 }

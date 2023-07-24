@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.cart.redis.model.vo;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -19,7 +20,10 @@ public class CartMenuDto {
 
     @NotNull
     private Long menuId;
+    @NotBlank
     private String menuName;
+    @NotBlank
     private String menuImage;
+    @NotNull
     private int menuPrice;
 }
