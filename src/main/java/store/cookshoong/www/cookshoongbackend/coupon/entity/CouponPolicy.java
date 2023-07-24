@@ -70,6 +70,11 @@ public class CouponPolicy {
     @Column(name = "is_deleted", nullable = false)
     private boolean deleted;
 
+    /**
+     * 사용 기간 획득 시 개발자의 관점에 맞추기 위해 1을 감소하여 반환하도록 함.
+     *
+     * @return the usage period
+     */
     public Integer getUsagePeriod() {
         return usagePeriod - DAY_OFFSET;
     }
