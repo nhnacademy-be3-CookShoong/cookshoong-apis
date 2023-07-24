@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import store.cookshoong.www.cookshoongbackend.cart.redis.exception.CreateCartRedisValidationException;
-import store.cookshoong.www.cookshoongbackend.cart.redis.exception.DuplicationMenuException;
 import store.cookshoong.www.cookshoongbackend.cart.redis.exception.InvalidStoreException;
 import store.cookshoong.www.cookshoongbackend.cart.redis.exception.ModifyCartMenuValidationException;
 import store.cookshoong.www.cookshoongbackend.cart.redis.exception.NotFoundCartRedisKey;
@@ -69,7 +68,7 @@ public class CartRedisRequestExceptionHandler {
      * @param request       요청 Client Ip
      * @return              주소 10개 초과 에러 메시지 반환
      */
-    @ExceptionHandler({InvalidStoreException.class, DuplicationMenuException.class})
+    @ExceptionHandler({InvalidStoreException.class})
     public ResponseEntity<ErrorMessage> maxAddressLimitException(RuntimeException e,
                                                                  HttpServletRequest request) {
 
