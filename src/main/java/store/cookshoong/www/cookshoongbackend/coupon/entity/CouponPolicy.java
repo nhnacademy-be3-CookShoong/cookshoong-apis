@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "coupon_policy")
 public class CouponPolicy {
+    private static final int DAY_OFFSET = 1;
 
     /**
      * Instantiates a new Coupon policy.
@@ -68,6 +69,10 @@ public class CouponPolicy {
 
     @Column(name = "is_deleted", nullable = false)
     private boolean deleted;
+
+    public Integer getUsagePeriod() {
+        return usagePeriod - DAY_OFFSET;
+    }
 
     /**
      * 삭제 메서드.
