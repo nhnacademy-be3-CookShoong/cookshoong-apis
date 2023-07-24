@@ -14,6 +14,7 @@ import static store.cookshoong.www.cookshoongbackend.shop.entity.QMerchant.merch
 import static store.cookshoong.www.cookshoongbackend.shop.entity.QStore.store;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -186,7 +187,10 @@ public class IssueCouponRepositoryImpl implements IssueCouponRepositoryCustom {
      * {@inheritDoc}
      */
     @Override
-    public boolean hasUsableCouponWithinSamePolicy(Long couponPolicyId, Long accountId) {
+    public boolean isReceivedBefore(Long couponPolicyId, Long accountId, Integer usagePeriod) {
+        LocalDate today = LocalDate.now();
+        LocalDate ago = LocalDate.now().minusDays(usagePeriod);
+
         return queryFactory
             .select(issueCoupon.code)
             .from(issueCoupon)
@@ -199,7 +203,7 @@ public class IssueCouponRepositoryImpl implements IssueCouponRepositoryCustom {
 
             .leftJoin(couponLog.couponLogType, couponLogType)
 
-            .where(checkUsableCoupon(true))
+            .where(issueCoupon.receiptDate.between(ago, today))
             .fetchFirst() != null;
     }
 }
