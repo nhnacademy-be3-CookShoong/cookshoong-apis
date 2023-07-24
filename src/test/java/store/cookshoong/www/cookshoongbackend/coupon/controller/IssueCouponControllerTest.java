@@ -164,7 +164,7 @@ class IssueCouponControllerTest {
 
         mockMvc.perform(request)
             .andDo(print())
-            .andExpect(status().isOk())
+            .andExpect(status().isCreated())
             .andDo(MockMvcRestDocumentationWrapper.document("postOfferCouponToAccount",
                 ResourceSnippetParameters.builder()
                     .pathParameters(parameterWithName("accountId").description("사용자 id"))
