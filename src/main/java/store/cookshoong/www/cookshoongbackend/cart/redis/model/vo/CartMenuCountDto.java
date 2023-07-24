@@ -15,7 +15,4 @@ public class CartMenuCountDto {
 
     private Long count;
 
-    public void setCartMenuCount(Long count) {
-        this.count = count;
-    }
 }
