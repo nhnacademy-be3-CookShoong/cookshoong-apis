@@ -27,7 +27,7 @@ public abstract class AbstractCouponPolicyRequest {
     private String description;
 
     @NotNull
-    @Min(value = 0)
-    @Max(value = 90)
+    @Min(value = 1)
+    @Max(value = 30)
     private Integer usagePeriod;
 }
