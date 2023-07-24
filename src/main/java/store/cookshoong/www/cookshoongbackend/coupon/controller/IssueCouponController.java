@@ -68,7 +68,7 @@ public class IssueCouponController {
 
         issueCouponService.provideCouponToAccount(accountId, updateProvideCouponRequest);
         return ResponseEntity
-            .ok()
+            .status(HttpStatus.CREATED)
             .build();
     }
 }
