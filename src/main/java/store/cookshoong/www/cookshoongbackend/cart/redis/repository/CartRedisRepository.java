@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 public class CartRedisRepository {
 
     private final RedisTemplate<Object, Object> redisTemplate;
-    private static final String CART = "cart:";
+    private static final String CART = "cart_account:";
 
     /**
      * 메뉴를 장바구니에 담으면 Redis 에 저장되는 메서드.
@@ -29,6 +29,7 @@ public class CartRedisRepository {
      * @param cartRequest   저장될 객체
      */
     public void cartRedisSave(String redisKey, String hashKey, Object cartRequest) {
+
         String cartKey = CART + redisKey;
 
         redisTemplate.opsForHash().put(cartKey, hashKey, cartRequest);
@@ -45,7 +46,6 @@ public class CartRedisRepository {
 
         String cartKey = CART + redisKey;
 
-        // 옵션 정보가 추가되거나 변경된 CartRedisCreateRequestDto를 다시 저장
         redisTemplate.opsForHash().put(cartKey, hashKey, cartRequest);
     }
 
@@ -122,6 +122,7 @@ public class CartRedisRepository {
      * @return              해당 hashKey 존재여부를 반환
      */
     public boolean existMenuInCartRedis(String redisKey, String hashKey) {
+
         String cartKey = CART + redisKey;
 
         return redisTemplate.opsForHash().hasKey(cartKey, hashKey);
@@ -134,6 +135,7 @@ public class CartRedisRepository {
      * @return 해당 key 존재 여부를 반환
      */
     public boolean existKeyInCartRedis(String redisKey) {
+
         String cartKey = CART + redisKey;
 
         return Boolean.TRUE.equals(redisTemplate.hasKey(cartKey));
@@ -146,6 +148,7 @@ public class CartRedisRepository {
      * @return              hashKey 반환
      */
     public Set<Object> cartKeyInHashKey(String redisKey) {
+
         String cartKey = CART + redisKey;
 
         return redisTemplate.opsForHash().keys(cartKey);
