@@ -26,10 +26,9 @@ public class CouponTypePercent extends CouponType {
     @Column(name = "rate", nullable = false)
     private Integer rate;
 
-    @Column(name = "minimum_order_price")
-    private Integer minimumOrderPrice;
-
     @Column(name = "maximum_discount_amount", nullable = false)
     private Integer maximumDiscountAmount;
 
+    @Column(name = "minimum_order_price")
+    private Integer minimumOrderPrice;
 }
