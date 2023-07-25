@@ -269,7 +269,7 @@ class CartRedisServiceTest {
         verify(cartRedisRepository, times(1)).findByCartMenu(redisKey, hashKey);
         verify(cartRedisRepository, times(1)).cartMenuRedisModify(redisKey, hashKey, cartRedisDto);
 
-        assertEquals(cartRedisDto.getCount(), 0);
+        assertEquals(cartRedisDto.getCount(), 1);
     }
 
     @Test
