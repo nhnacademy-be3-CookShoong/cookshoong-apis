@@ -176,6 +176,7 @@ public class IssueCouponRepositoryImpl implements IssueCouponRepositoryCustom {
         long updatedCount = queryFactory.update(issueCoupon)
             .set(issueCoupon.account, account)
             .set(issueCoupon.expirationDate, expirationDate)
+            .set(issueCoupon.receiptDate, LocalDate.now())
             .where(issueCoupon.code.eq(issueCouponId), issueCoupon.account.isNull())
             .execute();
 
