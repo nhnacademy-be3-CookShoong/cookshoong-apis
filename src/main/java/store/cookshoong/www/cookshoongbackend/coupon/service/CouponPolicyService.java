@@ -21,7 +21,6 @@ import store.cookshoong.www.cookshoongbackend.coupon.model.request.AbstractCoupo
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateCashCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreatePercentCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicyResponseDto;
-import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectPolicyResponseTempDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeResponse;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponTypeCashRepository;
@@ -54,7 +53,6 @@ public class CouponPolicyService {
     private final CouponPolicyRepository couponPolicyRepository;
     private final StoreRepository storeRepository;
     private final MerchantRepository merchantRepository;
-    private final CouponTypeConverter couponTypeConverter;
 
     /**
      * 매장 정책 확인.
@@ -64,8 +62,7 @@ public class CouponPolicyService {
      * @return the page
      */
     public Page<SelectPolicyResponseDto> selectStorePolicy(Long storeId, Pageable pageable) {
-        Page<SelectPolicyResponseTempDto> temps = couponPolicyRepository.lookupStorePolicy(storeId, pageable);
-        return tempPageToPermanentPage(temps);
+        return couponPolicyRepository.lookupStorePolicy(storeId, pageable);
     }
 
     /**
@@ -76,8 +73,7 @@ public class CouponPolicyService {
      * @return the page
      */
     public Page<SelectPolicyResponseDto> selectMerchantPolicy(Long merchantId, Pageable pageable) {
-        Page<SelectPolicyResponseTempDto> temps = couponPolicyRepository.lookupMerchantPolicy(merchantId, pageable);
-        return tempPageToPermanentPage(temps);
+        return couponPolicyRepository.lookupMerchantPolicy(merchantId, pageable);
     }
 
     /**
@@ -87,22 +83,7 @@ public class CouponPolicyService {
      * @return the page
      */
     public Page<SelectPolicyResponseDto> selectUsageAllPolicy(Pageable pageable) {
-        Page<SelectPolicyResponseTempDto> temps = couponPolicyRepository.lookupAllPolicy(pageable);
-        return tempPageToPermanentPage(temps);
-    }
-
-    private Page<SelectPolicyResponseDto> tempPageToPermanentPage(Page<SelectPolicyResponseTempDto> temps) {
-        List<SelectPolicyResponseDto> policyResponses = temps.stream()
-            .map(this::tempToPermanent)
-            .collect(Collectors.toList());
-
-        return new PageImpl<>(policyResponses, temps.getPageable(), temps.getTotalElements());
-    }
-
-    private SelectPolicyResponseDto tempToPermanent(SelectPolicyResponseTempDto temp) {
-        CouponTypeResponse couponTypeResponse = couponTypeConverter.convert(temp.getCouponType());
-        return new SelectPolicyResponseDto(temp.getId(), couponTypeResponse, temp.getName(), temp.getDescription(),
-            temp.getUsagePeriod(), temp.getUnclaimedCouponCount(), temp.getIssueCouponCount());
+        return couponPolicyRepository.lookupAllPolicy(pageable);
     }
 
     /**
