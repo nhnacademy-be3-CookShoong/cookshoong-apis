@@ -87,4 +87,18 @@ public class StoreCategoryController {
             .ok()
             .build();
     }
+
+    /**
+     * 관리자 : 매장 카테고리 삭제.
+     *
+     * @param categoryCode 카테고리 코드
+     * @return 204
+     */
+    @DeleteMapping("/{categoryCode}")
+    public ResponseEntity<Void> patchStoreCategory(@PathVariable("categoryCode") String categoryCode) {
+        storeCategoryService.removeCategory(categoryCode);
+        return ResponseEntity
+            .noContent()
+            .build();
+    }
 }
