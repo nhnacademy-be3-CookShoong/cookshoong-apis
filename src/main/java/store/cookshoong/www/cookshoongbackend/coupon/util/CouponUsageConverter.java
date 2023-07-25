@@ -2,7 +2,8 @@ package store.cookshoong.www.cookshoongbackend.coupon.util;
 
 import java.util.Map;
 import java.util.function.Function;
-import org.springframework.stereotype.Component;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsage;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageAll;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
@@ -14,7 +15,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
  * @author eora21
  * @since 2023.07.06
  */
-@Component
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CouponUsageConverter {
     private static final Map<Class<? extends CouponUsage>, Function<CouponUsage, String>> COUPON_USAGE_MAPPER = Map.of(
         CouponUsageAll.class, CouponUsageConverter::couponUsageAllToDto,
@@ -35,7 +36,7 @@ public class CouponUsageConverter {
         return ((CouponUsageStore) couponUsageStore).getStore().getName();
     }
 
-    public String convert(CouponUsage couponUsage) {
+    public static String convert(CouponUsage couponUsage) {
         return COUPON_USAGE_MAPPER.get(couponUsage.getClass())
             .apply(couponUsage);
     }

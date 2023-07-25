@@ -19,8 +19,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import store.cookshoong.www.cookshoongbackend.coupon.model.temp.QSelectPolicyResponseTempDto;
-import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectPolicyResponseTempDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.QSelectPolicyResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.QSelectStoreCouponPolicyResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicyResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectStoreCouponPolicyResponseDto;
 
 /**
  * QueryDSL CouponPolicyRepository.
@@ -37,7 +39,7 @@ public class CouponPolicyRepositoryImpl implements CouponPolicyRepositoryCustom 
      * {@inheritDoc}
      */
     @Override
-    public Page<SelectPolicyResponseTempDto> lookupStorePolicy(Long storeId, Pageable pageable) {
+    public Page<SelectPolicyResponseDto> lookupStorePolicy(Long storeId, Pageable pageable) {
         return getCouponPolicyPage(getCouponUsageStoreId(storeId), pageable);
     }
 
@@ -45,7 +47,7 @@ public class CouponPolicyRepositoryImpl implements CouponPolicyRepositoryCustom 
      * {@inheritDoc}
      */
     @Override
-    public Page<SelectPolicyResponseTempDto> lookupMerchantPolicy(Long merchantId, Pageable pageable) {
+    public Page<SelectPolicyResponseDto> lookupMerchantPolicy(Long merchantId, Pageable pageable) {
         return getCouponPolicyPage(getCouponUsageMerchantId(merchantId), pageable);
     }
 
@@ -65,20 +67,20 @@ public class CouponPolicyRepositoryImpl implements CouponPolicyRepositoryCustom 
      * {@inheritDoc}
      */
     @Override
-    public Page<SelectPolicyResponseTempDto> lookupAllPolicy(Pageable pageable) {
+    public Page<SelectPolicyResponseDto> lookupAllPolicy(Pageable pageable) {
         return getCouponPolicyPage(getCouponUsageAllId(), pageable);
     }
 
-    private Page<SelectPolicyResponseTempDto> getCouponPolicyPage(JPQLQuery<Long> couponUsageId, Pageable pageable) {
-        List<SelectPolicyResponseTempDto> couponPolicy = getCouponPolicy(couponUsageId, pageable);
+    private Page<SelectPolicyResponseDto> getCouponPolicyPage(JPQLQuery<Long> couponUsageId, Pageable pageable) {
+        List<SelectPolicyResponseDto> couponPolicy = getCouponPolicy(couponUsageId, pageable);
         Long total = getTotal(couponUsageId);
 
         return new PageImpl<>(couponPolicy, pageable, total);
     }
 
-    private List<SelectPolicyResponseTempDto> getCouponPolicy(JPQLQuery<Long> couponUsageId, Pageable pageable) {
+    private List<SelectPolicyResponseDto> getCouponPolicy(JPQLQuery<Long> couponUsageId, Pageable pageable) {
         return queryFactory
-            .select(new QSelectPolicyResponseTempDto(
+            .select(new QSelectPolicyResponseDto(
                 couponPolicy.id,
                 couponType,
                 couponPolicy.name,

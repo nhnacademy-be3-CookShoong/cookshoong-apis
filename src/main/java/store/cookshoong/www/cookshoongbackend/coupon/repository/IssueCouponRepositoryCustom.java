@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
-import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectOwnCouponResponseTempDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectOwnCouponResponseDto;
 
 /**
  * QueryDSL 사용을 위한 interface.
@@ -25,8 +25,8 @@ public interface IssueCouponRepositoryCustom {
      * @param storeId   the store id
      * @return 소유 쿠폰 중 사용 가능 등 필터링한 결과
      */
-    Page<SelectOwnCouponResponseTempDto> lookupAllOwnCoupons(Long accountId, Pageable pageable, Boolean usable,
-                                                             Long storeId);
+    Page<SelectOwnCouponResponseDto> lookupAllOwnCoupons(Long accountId, Pageable pageable, Boolean usable,
+                                                         Long storeId);
 
     /**
      * 쿠폰을 발급해주는 메서드.
