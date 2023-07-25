@@ -98,9 +98,7 @@ class CartRedisRepositoryTest {
         Comparator<CartRedisDto> sortCarts = Comparator.comparing(CartRedisDto::getCreateTimeMillis);
 
        cartList = cartList.stream().sorted(sortCarts).collect(Collectors.toList());
-       log.info("CART: {}", om.writerWithDefaultPrettyPrinter().writeValueAsString(cartList));
 
-       log.info("CART ITEM: {}", om.writerWithDefaultPrettyPrinter().writeValueAsString(carts));
     }
 
     @Test
