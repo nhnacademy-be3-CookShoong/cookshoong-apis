@@ -203,7 +203,7 @@ public class IssueCouponRepositoryImpl implements IssueCouponRepositoryCustom {
 
             .leftJoin(couponLog.couponLogType, couponLogType)
 
-            .where(issueCoupon.receiptDate.between(ago, today))
+            .where(issueCoupon.account.id.eq(accountId), issueCoupon.receiptDate.between(ago, today))
             .fetchFirst() != null;
     }
 }
