@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,11 +47,11 @@ public class StoreCategoryController {
     }
 
     /**
-     * 새로운 매장 카테고리 등록.
+     * 관리자 : 새로운 매장 카테고리 등록.
      *
      * @param requestDto    the request dto
      * @param bindingResult the binding result
-     * @return 201
+     * @return 201 response entity
      */
     @PostMapping
     public ResponseEntity<Void> postStoreCategory(@RequestBody @Valid CreateStoreCategoryRequestDto requestDto,
@@ -67,17 +68,17 @@ public class StoreCategoryController {
     }
 
     /**
-     * 매장 카테고리 수정.
+     * 관리자 : 매장 카테고리 수정.
      *
      * @param requestDto    매장 카테고리 이름
      * @param bindingResult binding 결과
      * @param categoryCode  카테고리 코드
-     * @return 200
+     * @return 200 response entity
      */
     @PatchMapping("/{categoryCode}")
     public ResponseEntity<Void> patchStoreCategory(@RequestBody @Valid UpdateStoreCategoryRequestDto requestDto,
-                                                   BindingResult bindingResult,
-                                                   @PathVariable("categoryCode") String categoryCode) {
+                                                 BindingResult bindingResult,
+                                                 @PathVariable("categoryCode") String categoryCode) {
         if (bindingResult.hasErrors()) {
             throw new StoreCategoryValidException(bindingResult);
         }
