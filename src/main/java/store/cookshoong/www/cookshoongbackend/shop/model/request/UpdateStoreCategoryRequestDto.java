@@ -16,8 +16,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UpdateStoreCategoryRequestDto {
     @NotBlank
-    private String storeCategoryCode;
-    @NotBlank
     @Size(min = 1, max = 30)
     private String storeCategoryName;
 }

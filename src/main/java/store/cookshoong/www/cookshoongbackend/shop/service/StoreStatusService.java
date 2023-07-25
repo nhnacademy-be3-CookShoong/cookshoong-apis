@@ -17,7 +17,8 @@ import store.cookshoong.www.cookshoongbackend.shop.repository.stauts.StoreStatus
 public class StoreStatusService {
     private final StoreStatusRepository storeStatusRepository;
 
-    public List<SelectAllStatusResponseDto> selectAllStatusForUser(){
+    public List<SelectAllStatusResponseDto> selectAllStatusForUser() {
         return storeStatusRepository.findAllBy();
     }
+
 }
