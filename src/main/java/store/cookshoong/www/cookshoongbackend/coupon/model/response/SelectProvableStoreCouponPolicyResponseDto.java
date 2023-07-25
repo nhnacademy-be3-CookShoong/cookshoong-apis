@@ -19,7 +19,7 @@ public class SelectProvableStoreCouponPolicyResponseDto {
     private final Integer usagePeriod;
 
     /**
-     * Instantiates a new Select provable store coupon policy response dto.
+     * 쿠폰 타입과 기간은 쿠폰의 정보를 나타내기 위해, id는 발급을 위해 담는다.
      *
      * @param couponPolicyId the coupon policy id
      * @param couponType     the coupon type
