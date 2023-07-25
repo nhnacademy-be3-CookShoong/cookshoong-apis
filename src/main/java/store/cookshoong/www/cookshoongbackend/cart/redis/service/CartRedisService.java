@@ -51,7 +51,7 @@ public class CartRedisService {
         }
 
         cart.createTimeMillis();
-        cart.setRefreshHashKey(cart.generateUniqueHashKey());
+        cart.setHashKey(cart.generateUniqueHashKey());
 
         cartRedisRepository.cartRedisSave(redisKey, hashKey, cart);
     }

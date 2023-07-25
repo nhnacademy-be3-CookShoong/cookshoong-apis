@@ -31,7 +31,7 @@ public class CartRedisDto {
     private List<CartOptionDto> options;
     private Long createTimeMillis;
     private String hashKey;
-    private int count = 1;
+    private int count;
 
     /**
      * 메뉴와 옵션을 조합해서 hashKey 를 생성하는 메서드.
@@ -52,10 +52,6 @@ public class CartRedisDto {
         this.createTimeMillis = System.currentTimeMillis();
     }
 
-    public void refreshcreateTimeMillis(Long updateAt) {
-        this.createTimeMillis = updateAt;
-    }
-
     public void setHashKey(String hashKey) {
         this.hashKey = hashKey;
     }
@@ -68,7 +64,13 @@ public class CartRedisDto {
         count++;
     }
 
+    /**
+     * 수량이 1보다 크면 감소, 1 미만이면 유지
+     */
     public void decrementCount() {
-        count--;
+
+        if (count > 1) {
+            count--;
+        }
     }
 }

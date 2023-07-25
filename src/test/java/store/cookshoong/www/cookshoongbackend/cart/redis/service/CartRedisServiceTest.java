@@ -46,12 +46,13 @@ class CartRedisServiceTest {
     @Mock
     private CartRedisRepository cartRedisRepository;
 
-    String redisKey = "ded3e890-1c32-4dbc-bf35-55152b48c11d";
+    String redisKey = "cart_account:1";
     String hashKey = "1:1,2";
     Long accountId = 1L;
     Long storeId = 1L;
     String storeName = "네네치킨";
     Long menuId = 1L;
+    int count = 1;
     CartMenuDto cartMenuDto;
     CartOptionDto cartOptionDto;
     CartOptionDto cartOptionDto1;
@@ -93,6 +94,7 @@ class CartRedisServiceTest {
         ReflectionTestUtils.setField(cartRedisDto, "options", cartOptionDtos);
         ReflectionTestUtils.setField(cartRedisDto, "createTimeMillis", System.currentTimeMillis());
         ReflectionTestUtils.setField(cartRedisDto, "hashKey", hashKey);
+        ReflectionTestUtils.setField(cartRedisDto, "count", hashKey);
 
         cartRedisService.createCartMenu(redisKey, hashKey, cartRedisDto);
 
@@ -156,6 +158,7 @@ class CartRedisServiceTest {
         ReflectionTestUtils.setField(cartRedisDto, "options", modifyOptions);
         ReflectionTestUtils.setField(cartRedisDto, "createTimeMillis", System.currentTimeMillis());
         ReflectionTestUtils.setField(cartRedisDto, "hashKey", hashKey);
+        ReflectionTestUtils.setField(cartRedisDto, "count", hashKey);
 
         when(cartRedisRepository.existKeyInCartRedis(redisKey)).thenReturn(true);
         when(cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)).thenReturn(true);
@@ -207,6 +210,7 @@ class CartRedisServiceTest {
         ReflectionTestUtils.setField(cartRedisDto, "menu", cartMenuDto);
         ReflectionTestUtils.setField(cartRedisDto, "options", cartOptionDtos);
         ReflectionTestUtils.setField(cartRedisDto, "createTimeMillis", System.currentTimeMillis());
+        ReflectionTestUtils.setField(cartRedisDto, "count", hashKey);
         ReflectionTestUtils.setField(cartRedisDto, "hashKey", hashKey);
 
         when(cartRedisRepository.existKeyInCartRedis(redisKey)).thenReturn(true);
@@ -251,6 +255,7 @@ class CartRedisServiceTest {
         ReflectionTestUtils.setField(cartRedisDto, "options", cartOptionDtos);
         ReflectionTestUtils.setField(cartRedisDto, "createTimeMillis", System.currentTimeMillis());
         ReflectionTestUtils.setField(cartRedisDto, "hashKey", hashKey);
+        ReflectionTestUtils.setField(cartRedisDto, "count", hashKey);
 
         when(cartRedisRepository.existKeyInCartRedis(redisKey)).thenReturn(true);
         when(cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)).thenReturn(true);
@@ -295,7 +300,8 @@ class CartRedisServiceTest {
         ReflectionTestUtils.setField(cartRedisDto, "menu", cartMenuDto);
         ReflectionTestUtils.setField(cartRedisDto, "options", cartOptionDtos);
         ReflectionTestUtils.setField(cartRedisDto, "createTimeMillis", System.currentTimeMillis());
-        ReflectionTestUtils.setField(cartRedisDto, "hashKey", cartRedisDto.generateUniqueHashKey());
+        ReflectionTestUtils.setField(cartRedisDto, "hashKey", hashKey);
+        ReflectionTestUtils.setField(cartRedisDto, "count", hashKey);
 
         List carts = new ArrayList();
         carts.add(cartRedisDto);
@@ -342,9 +348,6 @@ class CartRedisServiceTest {
     @DisplayName("Redis 장바구니에 해당 메뉴를 조회")
     void selectCartMenu() {
 
-        String redisKey = "redisKey";
-        String hashKey = "hashKey";
-
         CartRedisDto cartRedisDto =
             ReflectionUtils.newInstance(CartRedisDto.class);
 
@@ -355,6 +358,7 @@ class CartRedisServiceTest {
         ReflectionTestUtils.setField(cartRedisDto, "options", cartOptionDtos);
         ReflectionTestUtils.setField(cartRedisDto, "createTimeMillis", System.currentTimeMillis());
         ReflectionTestUtils.setField(cartRedisDto, "hashKey", hashKey);
+        ReflectionTestUtils.setField(cartRedisDto, "count", count);
 
         when(cartRedisRepository.existKeyInCartRedis(redisKey)).thenReturn(true);
         when(cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)).thenReturn(true);
