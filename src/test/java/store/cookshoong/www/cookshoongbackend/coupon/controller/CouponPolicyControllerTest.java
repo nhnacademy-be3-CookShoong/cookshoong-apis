@@ -16,8 +16,6 @@ import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.math.BigDecimal;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,8 +43,6 @@ import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponUsageNotFou
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateCashCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreatePercentCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicyResponseDto;
-import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeCashVo;
-import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypePercentVo;
 import store.cookshoong.www.cookshoongbackend.coupon.service.CouponPolicyService;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
 import store.cookshoong.www.cookshoongbackend.util.TestEntityAspect;
@@ -82,10 +78,10 @@ class CouponPolicyControllerTest {
         CouponTypeCash couponTypeCash = te.getCouponTypeCash_1000_10000();
         CouponTypePercent couponTypePercent = te.getCouponTypePercent_3_1000_10000();
         SelectPolicyResponseDto cashPolicy = new SelectPolicyResponseDto(atomicLong.getAndIncrement(),
-            CouponTypeCashVo.newInstance(couponTypeCash), "금액 쿠폰", "현금처럼 쓰입니다.",
+            couponTypeCash, "금액 쿠폰", "현금처럼 쓰입니다.",
             1, 1L, 10L);
         SelectPolicyResponseDto percentPolicy = new SelectPolicyResponseDto(atomicLong.getAndIncrement(),
-            CouponTypePercentVo.newInstance(couponTypePercent), "퍼센트 쿠폰", "퍼센트만큼 차감합니다.",
+            couponTypePercent, "퍼센트 쿠폰", "퍼센트만큼 차감합니다.",
             1, 1L, 10L);
 
         policies = List.of(cashPolicy, percentPolicy);
@@ -460,7 +456,7 @@ class CouponPolicyControllerTest {
     @ParameterizedTest
     @ValueSource(ints = {-10_000, 30_000})
     @DisplayName("매장 퍼센트 쿠폰 정책 생성 실패 - 최소주문금액 범위 초과")
-    void postStorePercentCouponPolicyminimumOrderPriceOutOfRangeFailTest(int minimumOrderPrice) throws Exception {
+    void postStorePercentCouponPolicyMinimumOrderPriceOutOfRangeFailTest(int minimumOrderPrice) throws Exception {
         ReflectionTestUtils.setField(percentRequestDto, "minimumOrderPrice", minimumOrderPrice);
         RequestBuilder request = RestDocumentationRequestBuilders
             .post("/api/coupon/policies/stores/{storeId}/percent", Long.MIN_VALUE)
@@ -478,7 +474,7 @@ class CouponPolicyControllerTest {
     @ParameterizedTest
     @ValueSource(ints = {0, 60_000})
     @DisplayName("매장 퍼센트 쿠폰 정책 생성 실패 - 최대할인금액 범위 초과")
-    void postStorePercentCouponPolicymaximumDiscountAmountOutOfRangeFailTest(int maximumDiscountAmount) throws Exception {
+    void postStorePercentCouponPolicyMaximumDiscountAmountOutOfRangeFailTest(int maximumDiscountAmount) throws Exception {
         ReflectionTestUtils.setField(percentRequestDto, "maximumDiscountAmount", maximumDiscountAmount);
         RequestBuilder request = RestDocumentationRequestBuilders
             .post("/api/coupon/policies/stores/{storeId}/percent", Long.MIN_VALUE)

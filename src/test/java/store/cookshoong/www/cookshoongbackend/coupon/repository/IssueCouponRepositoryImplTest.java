@@ -32,8 +32,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.IssueCouponNotFoundException;
-import store.cookshoong.www.cookshoongbackend.coupon.exception.ProvideIssueCouponFailureException;
-import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectOwnCouponResponseTempDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectOwnCouponResponseDto;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.Order;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
@@ -180,17 +179,17 @@ class IssueCouponRepositoryImplTest {
             "쿠폰없음", hasNoCoupon.getId()
         );
 
-        Page<SelectOwnCouponResponseTempDto> couponResponseTemps =
+        Page<SelectOwnCouponResponseDto> couponResponses =
             issueCouponRepository.lookupAllOwnCoupons(
                 customer.getId(), Pageable.ofSize(20), usable,
                 searchStoreId.getOrDefault(store, null));
 
-        assertThat(couponResponseTemps).hasSize(size);
-        assertThat(couponResponseTemps.getTotalElements()).isEqualTo(size);
-        assertThat(couponResponseTemps.getTotalPages()).isEqualTo(1 + size / 20);
-        couponResponseTemps.forEach(
-            couponResponseTempDto -> assertThat(selectDescriptionCheck(usable))
-                .contains(couponResponseTempDto.getLogTypeDescription())
+        assertThat(couponResponses).hasSize(size);
+        assertThat(couponResponses.getTotalElements()).isEqualTo(size);
+        assertThat(couponResponses.getTotalPages()).isEqualTo(1 + size / 20);
+        couponResponses.forEach(
+            couponResponseDto -> assertThat(selectDescriptionCheck(usable))
+                .contains(couponResponseDto.getLogTypeDescription())
         );
     }
 

@@ -22,13 +22,16 @@ import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponPolicy;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponType;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypePercent;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageAll;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
-import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectPolicyResponseTempDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicyResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeCashVo;
+import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypePercentVo;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
@@ -125,72 +128,75 @@ class CouponPolicyRepositoryImplTest {
     @Test
     @DisplayName("매장 정책 확인")
     void lookupStorePolicyTest() throws Exception {
-        Page<SelectPolicyResponseTempDto> selectPolicyResponseTemps =
+        Page<SelectPolicyResponseDto> selectPolicyResponses =
             couponPolicyRepository.lookupStorePolicy(store.getId(), Pageable.ofSize(10));
         List<CouponPolicy> storePolicies = List.of(storeCashCouponPolicy, storePercentCouponPolicy);
 
-        assertThat(selectPolicyResponseTemps.getTotalElements()).isEqualTo(storePolicies.size());
+        assertThat(selectPolicyResponses.getTotalElements()).isEqualTo(storePolicies.size());
 
-        Iterator<SelectPolicyResponseTempDto> tempIterator = selectPolicyResponseTemps.iterator();
+        Iterator<SelectPolicyResponseDto> responseIterator = selectPolicyResponses.iterator();
         Iterator<CouponPolicy> policyIterator = storePolicies.iterator();
 
-        while (tempIterator.hasNext()) {
-            SelectPolicyResponseTempDto temp = tempIterator.next();
+        while (responseIterator.hasNext()) {
+            SelectPolicyResponseDto response = responseIterator.next();
             CouponPolicy policy = policyIterator.next();
 
-            assertThat(temp.getId()).isEqualTo(policy.getId());
-            assertThat(temp.getCouponType().getId()).isEqualTo(policy.getCouponType().getId());
-            assertThat(temp.getName()).isEqualTo(policy.getName());
-            assertThat(temp.getDescription()).isEqualTo(policy.getDescription());
-            assertThat(temp.getUsagePeriod()).isEqualTo(policy.getUsagePeriod() + DAY_OFFSET);
+            assertThat(response.getId()).isEqualTo(policy.getId());
+            assertThat(response.getCouponTypeResponse()).isInstanceOfAny(
+                CouponTypeCashVo.class, CouponTypePercentVo.class);
+            assertThat(response.getName()).isEqualTo(policy.getName());
+            assertThat(response.getDescription()).isEqualTo(policy.getDescription());
+            assertThat(response.getUsagePeriod()).isEqualTo(policy.getUsagePeriod() + DAY_OFFSET);
         }
     }
 
     @Test
     @DisplayName("가맹점 정책 확인")
     void lookupMerchantPolicyTest() throws Exception {
-        Page<SelectPolicyResponseTempDto> selectPolicyResponseTemps =
+        Page<SelectPolicyResponseDto> selectPolicyResponses =
             couponPolicyRepository.lookupMerchantPolicy(merchant.getId(), Pageable.ofSize(10));
         List<CouponPolicy> merchantPolicies = List.of(merchantCashCouponPolicy, merchantPercentCouponPolicy);
 
-        assertThat(selectPolicyResponseTemps.getTotalElements()).isEqualTo(merchantPolicies.size());
+        assertThat(selectPolicyResponses.getTotalElements()).isEqualTo(merchantPolicies.size());
 
-        Iterator<SelectPolicyResponseTempDto> tempIterator = selectPolicyResponseTemps.iterator();
+        Iterator<SelectPolicyResponseDto> responseIterator = selectPolicyResponses.iterator();
         Iterator<CouponPolicy> policyIterator = merchantPolicies.iterator();
 
-        while (tempIterator.hasNext()) {
-            SelectPolicyResponseTempDto temp = tempIterator.next();
+        while (responseIterator.hasNext()) {
+            SelectPolicyResponseDto response = responseIterator.next();
             CouponPolicy policy = policyIterator.next();
 
-            assertThat(temp.getId()).isEqualTo(policy.getId());
-            assertThat(temp.getCouponType().getId()).isEqualTo(policy.getCouponType().getId());
-            assertThat(temp.getName()).isEqualTo(policy.getName());
-            assertThat(temp.getDescription()).isEqualTo(policy.getDescription());
-            assertThat(temp.getUsagePeriod()).isEqualTo(policy.getUsagePeriod() + DAY_OFFSET);
+            assertThat(response.getId()).isEqualTo(policy.getId());
+            assertThat(response.getCouponTypeResponse()).isInstanceOfAny(
+                CouponTypeCashVo.class, CouponTypePercentVo.class);
+            assertThat(response.getName()).isEqualTo(policy.getName());
+            assertThat(response.getDescription()).isEqualTo(policy.getDescription());
+            assertThat(response.getUsagePeriod()).isEqualTo(policy.getUsagePeriod() + DAY_OFFSET);
         }
     }
 
     @Test
     @DisplayName("사용처 전체 정책 확인")
     void lookupAllPolicyTest() throws Exception {
-        Page<SelectPolicyResponseTempDto> selectPolicyResponseTemps =
+        Page<SelectPolicyResponseDto> selectPolicyResponses =
             couponPolicyRepository.lookupAllPolicy(Pageable.ofSize(10));
         List<CouponPolicy> allPolicies = List.of(allCashCouponPolicy, allPercentCouponPolicy);
 
-        assertThat(selectPolicyResponseTemps.getTotalElements()).isEqualTo(allPolicies.size());
+        assertThat(selectPolicyResponses.getTotalElements()).isEqualTo(allPolicies.size());
 
-        Iterator<SelectPolicyResponseTempDto> tempIterator = selectPolicyResponseTemps.iterator();
+        Iterator<SelectPolicyResponseDto> responseIterator = selectPolicyResponses.iterator();
         Iterator<CouponPolicy> policyIterator = allPolicies.iterator();
 
-        while (tempIterator.hasNext()) {
-            SelectPolicyResponseTempDto temp = tempIterator.next();
+        while (responseIterator.hasNext()) {
+            SelectPolicyResponseDto response = responseIterator.next();
             CouponPolicy policy = policyIterator.next();
 
-            assertThat(temp.getId()).isEqualTo(policy.getId());
-            assertThat(temp.getCouponType().getId()).isEqualTo(policy.getCouponType().getId());
-            assertThat(temp.getName()).isEqualTo(policy.getName());
-            assertThat(temp.getDescription()).isEqualTo(policy.getDescription());
-            assertThat(temp.getUsagePeriod()).isEqualTo(policy.getUsagePeriod() + DAY_OFFSET);
+            assertThat(response.getId()).isEqualTo(policy.getId());
+            assertThat(response.getCouponTypeResponse()).isInstanceOfAny(
+                CouponTypeCashVo.class, CouponTypePercentVo.class);
+            assertThat(response.getName()).isEqualTo(policy.getName());
+            assertThat(response.getDescription()).isEqualTo(policy.getDescription());
+            assertThat(response.getUsagePeriod()).isEqualTo(policy.getUsagePeriod() + DAY_OFFSET);
         }
     }
 
@@ -204,16 +210,16 @@ class CouponPolicyRepositoryImplTest {
         provide(storePercentCouponPolicy, provideSecondCount);
         provideToCustomer(storePercentCouponPolicy, provideToCustomerSecondCount);
 
-        Page<SelectPolicyResponseTempDto> selectPolicyResponseTemps =
+        Page<SelectPolicyResponseDto> selectPolicyResponses =
             couponPolicyRepository.lookupStorePolicy(store.getId(), Pageable.ofSize(10));
 
-        assertThat(selectPolicyResponseTemps).hasSize(2);
+        assertThat(selectPolicyResponses).hasSize(2);
 
-        SelectPolicyResponseTempDto firstPolicyResponse = selectPolicyResponseTemps.getContent().get(0);
+        SelectPolicyResponseDto firstPolicyResponse = selectPolicyResponses.getContent().get(0);
         assertThat(firstPolicyResponse.getUnclaimedCouponCount()).isEqualTo(provideCount);
         assertThat(firstPolicyResponse.getIssueCouponCount()).isEqualTo(provideCount + provideToCustomerCount);
 
-        SelectPolicyResponseTempDto secondPolicyResponse = selectPolicyResponseTemps.getContent().get(1);
+        SelectPolicyResponseDto secondPolicyResponse = selectPolicyResponses.getContent().get(1);
         assertThat(secondPolicyResponse.getUnclaimedCouponCount()).isEqualTo(provideSecondCount);
         assertThat(secondPolicyResponse.getIssueCouponCount())
             .isEqualTo(provideSecondCount + provideToCustomerSecondCount);
@@ -229,16 +235,16 @@ class CouponPolicyRepositoryImplTest {
         provide(merchantPercentCouponPolicy, provideSecondCount);
         provideToCustomer(merchantPercentCouponPolicy, provideToCustomerSecondCount);
 
-        Page<SelectPolicyResponseTempDto> selectPolicyResponseTemps =
+        Page<SelectPolicyResponseDto> selectPolicyResponses =
             couponPolicyRepository.lookupMerchantPolicy(merchant.getId(), Pageable.ofSize(10));
 
-        assertThat(selectPolicyResponseTemps).hasSize(2);
+        assertThat(selectPolicyResponses).hasSize(2);
 
-        SelectPolicyResponseTempDto firstPolicyResponse = selectPolicyResponseTemps.getContent().get(0);
+        SelectPolicyResponseDto firstPolicyResponse = selectPolicyResponses.getContent().get(0);
         assertThat(firstPolicyResponse.getUnclaimedCouponCount()).isEqualTo(provideCount);
         assertThat(firstPolicyResponse.getIssueCouponCount()).isEqualTo(provideCount + provideToCustomerCount);
 
-        SelectPolicyResponseTempDto secondPolicyResponse = selectPolicyResponseTemps.getContent().get(1);
+        SelectPolicyResponseDto secondPolicyResponse = selectPolicyResponses.getContent().get(1);
         assertThat(secondPolicyResponse.getUnclaimedCouponCount()).isEqualTo(provideSecondCount);
         assertThat(secondPolicyResponse.getIssueCouponCount())
             .isEqualTo(provideSecondCount + provideToCustomerSecondCount);
@@ -254,19 +260,19 @@ class CouponPolicyRepositoryImplTest {
         provide(allPercentCouponPolicy, provideSecondCount);
         provideToCustomer(allPercentCouponPolicy, provideToCustomerSecondCount);
 
-        Page<SelectPolicyResponseTempDto> selectPolicyResponseTemps =
+        Page<SelectPolicyResponseDto> selectPolicyResponses =
             couponPolicyRepository.lookupAllPolicy(Pageable.ofSize(10));
 
-        assertThat(selectPolicyResponseTemps).hasSize(2);
-        assertThat(selectPolicyResponseTemps.getTotalElements()).isEqualTo(2);
-        assertThat(selectPolicyResponseTemps.getTotalPages())
-            .isEqualTo(1 + selectPolicyResponseTemps.getTotalElements() / 10);
+        assertThat(selectPolicyResponses).hasSize(2);
+        assertThat(selectPolicyResponses.getTotalElements()).isEqualTo(2);
+        assertThat(selectPolicyResponses.getTotalPages())
+            .isEqualTo(1 + selectPolicyResponses.getTotalElements() / 10);
 
-        SelectPolicyResponseTempDto firstPolicyResponse = selectPolicyResponseTemps.getContent().get(0);
+        SelectPolicyResponseDto firstPolicyResponse = selectPolicyResponses.getContent().get(0);
         assertThat(firstPolicyResponse.getUnclaimedCouponCount()).isEqualTo(provideCount);
         assertThat(firstPolicyResponse.getIssueCouponCount()).isEqualTo(provideCount + provideToCustomerCount);
 
-        SelectPolicyResponseTempDto secondPolicyResponse = selectPolicyResponseTemps.getContent().get(1);
+        SelectPolicyResponseDto secondPolicyResponse = selectPolicyResponses.getContent().get(1);
         assertThat(secondPolicyResponse.getUnclaimedCouponCount()).isEqualTo(provideSecondCount);
         assertThat(secondPolicyResponse.getIssueCouponCount())
             .isEqualTo(provideSecondCount + provideToCustomerSecondCount);
