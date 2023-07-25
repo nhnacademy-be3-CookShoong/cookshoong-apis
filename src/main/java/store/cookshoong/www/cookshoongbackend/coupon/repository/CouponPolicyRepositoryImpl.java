@@ -20,9 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.QSelectPolicyResponseDto;
-import store.cookshoong.www.cookshoongbackend.coupon.model.response.QSelectStoreCouponPolicyResponseDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicyResponseDto;
-import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectStoreCouponPolicyResponseDto;
 
 /**
  * QueryDSL CouponPolicyRepository.
