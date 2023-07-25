@@ -58,11 +58,12 @@ public class StoreCategoryService {
     public void createStoreCategory(CreateStoreCategoryRequestDto storeCategoryRequestDto) {
         duplicatedCategoryCode(storeCategoryRequestDto.getStoreCategoryCode());
         duplicatedStoreCategory(storeCategoryRequestDto.getStoreCategoryName());
-        storeCategoryRepository.save(new StoreCategory(storeCategoryRequestDto.getStoreCategoryName()));
+        storeCategoryRepository.save(new StoreCategory(storeCategoryRequestDto.getStoreCategoryCode(),
+            storeCategoryRequestDto.getStoreCategoryName()));
     }
 
     /**
-     * 관리자 : 매장 카테괼 수정.
+     * 관리자 : 매장 카테고리 수정.
      *
      * @param categoryCode the category code
      * @param requestDto   카테고리 이름
@@ -70,7 +71,6 @@ public class StoreCategoryService {
     public void updateStoreCategory(String categoryCode, UpdateStoreCategoryRequestDto requestDto) {
         StoreCategory storeCategory = storeCategoryRepository.findById(categoryCode)
             .orElseThrow(StoreCategoryNotFoundException::new);
-        duplicatedCategoryCode(requestDto.getStoreCategoryCode());
         duplicatedStoreCategory(requestDto.getStoreCategoryName());
         storeCategory.updateStoreCategory(requestDto.getStoreCategoryName());
     }
@@ -84,5 +84,15 @@ public class StoreCategoryService {
         return storeCategoryRepository.findAllByOrderByCategoryCodeAsc();
     }
 
-    //TODO 10. 카테고리 삭제는 오늘 작성.
+    /**
+     * 관리자 : 카테고리 삭제.
+     *
+     * @param code 카테고리 코드
+     */
+    public void removeCategory(String code) {
+        if (!storeCategoryRepository.existsById(code)) {
+            throw new StoreCategoryNotFoundException();
+        }
+        storeCategoryRepository.deleteById(code);
+    }
 }
