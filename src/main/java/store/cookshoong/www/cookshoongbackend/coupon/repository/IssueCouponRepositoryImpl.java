@@ -14,7 +14,6 @@ import static store.cookshoong.www.cookshoongbackend.shop.entity.QMerchant.merch
 import static store.cookshoong.www.cookshoongbackend.shop.entity.QStore.store;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -26,8 +25,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
-import store.cookshoong.www.cookshoongbackend.coupon.model.temp.QSelectOwnCouponResponseTempDto;
-import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectOwnCouponResponseTempDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.QSelectOwnCouponResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectOwnCouponResponseDto;
 
 /**
  * QueryDSL IssueCouponRepository.
@@ -45,18 +44,18 @@ public class IssueCouponRepositoryImpl implements IssueCouponRepositoryCustom {
      * {@inheritDoc}
      */
     @Override
-    public Page<SelectOwnCouponResponseTempDto> lookupAllOwnCoupons(Long accountId, Pageable pageable, Boolean useCond,
-                                                                    Long storeId) {
-        List<SelectOwnCouponResponseTempDto> content = getCouponResponseTemps(accountId, pageable, useCond, storeId);
+    public Page<SelectOwnCouponResponseDto> lookupAllOwnCoupons(Long accountId, Pageable pageable, Boolean useCond,
+                                                                Long storeId) {
+        List<SelectOwnCouponResponseDto> content = getCouponResponses(accountId, pageable, useCond, storeId);
         Long total = getTotal(accountId, useCond, storeId);
         return new PageImpl<>(content, pageable, total);
     }
 
-    private List<SelectOwnCouponResponseTempDto> getCouponResponseTemps(Long accountId, Pageable pageable,
-                                                                        Boolean usable, Long storeId) {
+    private List<SelectOwnCouponResponseDto> getCouponResponses(Long accountId, Pageable pageable,
+                                                                Boolean usable, Long storeId) {
 
         return queryFactory
-            .select(new QSelectOwnCouponResponseTempDto(
+            .select(new QSelectOwnCouponResponseDto(
                 issueCoupon.code,
                 couponType,
                 couponUsage,

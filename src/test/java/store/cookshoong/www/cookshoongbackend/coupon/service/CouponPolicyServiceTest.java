@@ -34,7 +34,6 @@ import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponUsageNotFou
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateCashCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreatePercentCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicyResponseDto;
-import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectPolicyResponseTempDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeCashVo;
 import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypePercentVo;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;
@@ -85,15 +84,15 @@ class CouponPolicyServiceTest {
         CouponTypeCash couponTypeCash = te.getCouponTypeCash_1000_10000();
         CouponTypePercent couponTypePercent = te.getCouponTypePercent_3_1000_10000();
 
-        SelectPolicyResponseTempDto storeCashPolicy = new SelectPolicyResponseTempDto(
+        SelectPolicyResponseDto storeCashPolicy = new SelectPolicyResponseDto(
             te.getLong(), couponTypeCash, "매장 금액 쿠폰", "매장에서만 쓰입니다.",
             0, 1L, 10L);
 
-        SelectPolicyResponseTempDto storePercentPolicy = new SelectPolicyResponseTempDto(
+        SelectPolicyResponseDto storePercentPolicy = new SelectPolicyResponseDto(
             te.getLong(), couponTypePercent, "매장 금액 쿠폰", "매장에서만 쓰입니다.",
             0, 2L, 9L);
 
-        List<SelectPolicyResponseTempDto> couponStorePolicies = List.of(storeCashPolicy, storePercentPolicy);
+        List<SelectPolicyResponseDto> couponStorePolicies = List.of(storeCashPolicy, storePercentPolicy);
 
         when(couponPolicyRepository.lookupStorePolicy(any(Long.class), any(Pageable.class)))
             .thenAnswer(invocation ->
@@ -105,11 +104,11 @@ class CouponPolicyServiceTest {
         assertThat(selectPolicyResponses).hasSize(couponStorePolicies.size());
 
         Iterator<SelectPolicyResponseDto> responseIterator = selectPolicyResponses.iterator();
-        Iterator<SelectPolicyResponseTempDto> tempIterator = couponStorePolicies.iterator();
+        Iterator<SelectPolicyResponseDto> tempIterator = couponStorePolicies.iterator();
 
         while (responseIterator.hasNext()) {
             SelectPolicyResponseDto response = responseIterator.next();
-            SelectPolicyResponseTempDto temp = tempIterator.next();
+            SelectPolicyResponseDto temp = tempIterator.next();
 
             assertThat(response.getId()).isEqualTo(temp.getId());
             assertThat(response.getCouponTypeResponse())
@@ -128,15 +127,15 @@ class CouponPolicyServiceTest {
         CouponTypeCash couponTypeCash = te.getCouponTypeCash_1000_10000();
         CouponTypePercent couponTypePercent = te.getCouponTypePercent_3_1000_10000();
 
-        SelectPolicyResponseTempDto merchantCashPolicy = new SelectPolicyResponseTempDto(
+        SelectPolicyResponseDto merchantCashPolicy = new SelectPolicyResponseDto(
             te.getLong(), couponTypeCash, "가맹점 금액 쿠폰", "가맹점에서 쓰입니다.",
             0, 3L, 8L);
 
-        SelectPolicyResponseTempDto merchantPercentPolicy = new SelectPolicyResponseTempDto(
+        SelectPolicyResponseDto merchantPercentPolicy = new SelectPolicyResponseDto(
             te.getLong(), couponTypePercent, "가맹점 금액 쿠폰", "가맹점에서 쓰입니다.",
             0, 4L, 7L);
 
-        List<SelectPolicyResponseTempDto> couponMerchantPolicies = List.of(merchantCashPolicy, merchantPercentPolicy);
+        List<SelectPolicyResponseDto> couponMerchantPolicies = List.of(merchantCashPolicy, merchantPercentPolicy);
 
         when(couponPolicyRepository.lookupMerchantPolicy(any(Long.class), any(Pageable.class)))
             .thenAnswer(invocation ->
@@ -148,11 +147,11 @@ class CouponPolicyServiceTest {
         assertThat(selectPolicyResponses).hasSize(couponMerchantPolicies.size());
 
         Iterator<SelectPolicyResponseDto> responseIterator = selectPolicyResponses.iterator();
-        Iterator<SelectPolicyResponseTempDto> tempIterator = couponMerchantPolicies.iterator();
+        Iterator<SelectPolicyResponseDto> tempIterator = couponMerchantPolicies.iterator();
 
         while (responseIterator.hasNext()) {
             SelectPolicyResponseDto response = responseIterator.next();
-            SelectPolicyResponseTempDto temp = tempIterator.next();
+            SelectPolicyResponseDto temp = tempIterator.next();
 
             assertThat(response.getId()).isEqualTo(temp.getId());
             assertThat(response.getCouponTypeResponse())
@@ -171,15 +170,15 @@ class CouponPolicyServiceTest {
         CouponTypeCash couponTypeCash = te.getCouponTypeCash_1000_10000();
         CouponTypePercent couponTypePercent = te.getCouponTypePercent_3_1000_10000();
 
-        SelectPolicyResponseTempDto allCashPolicy = new SelectPolicyResponseTempDto(
+        SelectPolicyResponseDto allCashPolicy = new SelectPolicyResponseDto(
             te.getLong(), couponTypeCash, "전체 금액 쿠폰", "어디든",
             0, 5L, 6L);
 
-        SelectPolicyResponseTempDto allPercentPolicy = new SelectPolicyResponseTempDto(
+        SelectPolicyResponseDto allPercentPolicy = new SelectPolicyResponseDto(
             te.getLong(), couponTypePercent, "전체 금액 쿠폰", "어디든",
             0, 6L, 50L);
 
-        List<SelectPolicyResponseTempDto> couponAllPolicies = List.of(allCashPolicy, allPercentPolicy);
+        List<SelectPolicyResponseDto> couponAllPolicies = List.of(allCashPolicy, allPercentPolicy);
 
         when(couponPolicyRepository.lookupAllPolicy(any(Pageable.class)))
             .thenAnswer(invocation ->
@@ -191,11 +190,11 @@ class CouponPolicyServiceTest {
         assertThat(selectPolicyResponses).hasSize(couponAllPolicies.size());
 
         Iterator<SelectPolicyResponseDto> responseIterator = selectPolicyResponses.iterator();
-        Iterator<SelectPolicyResponseTempDto> tempIterator = couponAllPolicies.iterator();
+        Iterator<SelectPolicyResponseDto> tempIterator = couponAllPolicies.iterator();
 
         while (responseIterator.hasNext()) {
             SelectPolicyResponseDto response = responseIterator.next();
-            SelectPolicyResponseTempDto temp = tempIterator.next();
+            SelectPolicyResponseDto temp = tempIterator.next();
 
             assertThat(response.getId()).isEqualTo(temp.getId());
             assertThat(response.getCouponTypeResponse())
