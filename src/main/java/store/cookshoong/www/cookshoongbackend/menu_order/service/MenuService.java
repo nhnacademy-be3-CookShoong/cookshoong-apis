@@ -108,7 +108,7 @@ public class MenuService {
                 MenuGroup menuGroup = menuGroupRepository.findById(menuGroupId)
                     .orElseThrow(MenuGroupNotFoundException::new);
                 Menu menu = menuRepository.findById(menuId)
-                        .orElseThrow(MenuNotFoundException::new);
+                    .orElseThrow(MenuNotFoundException::new);
                 menu.getMenuHasMenuGroups()
                     .add(new MenuHasMenuGroup(new MenuHasMenuGroup.Pk(menuId, menuGroupId), menu, menuGroup, 0));
             }
@@ -116,13 +116,13 @@ public class MenuService {
     }
 
     private void updateOptionGroup(List<Long> optionGroups, Long menuId) {
-            for (Long optionGroupId : optionGroups) {
-                OptionGroup optionGroup = optionGroupRepository.findById(optionGroupId)
-                    .orElseThrow(OptionGroupNotFoundException::new);
-                Menu menu = menuRepository.findById(menuId)
-                    .orElseThrow(MenuNotFoundException::new);
-                menu.getMenuHasOptionGroups()
-                    .add(new MenuHasOptionGroup(new MenuHasOptionGroup.Pk(menuId, optionGroupId), menu, optionGroup, 0));
-            }
+        for (Long optionGroupId : optionGroups) {
+            OptionGroup optionGroup = optionGroupRepository.findById(optionGroupId)
+                .orElseThrow(OptionGroupNotFoundException::new);
+            Menu menu = menuRepository.findById(menuId)
+                .orElseThrow(MenuNotFoundException::new);
+            menu.getMenuHasOptionGroups()
+                .add(new MenuHasOptionGroup(new MenuHasOptionGroup.Pk(menuId, optionGroupId), menu, optionGroup, 0));
+        }
     }
 }
