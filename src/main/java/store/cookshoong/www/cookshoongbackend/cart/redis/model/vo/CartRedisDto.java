@@ -31,7 +31,9 @@ public class CartRedisDto {
     private List<CartOptionDto> options;
     private Long createTimeMillis;
     private String hashKey;
-    private int count;
+    private Integer count;
+    private String menuOptName;
+    private String totalMenuPrice;
 
     /**
      * 메뉴와 옵션을 조합해서 hashKey 를 생성하는 메서드.
@@ -39,13 +41,39 @@ public class CartRedisDto {
      * @return      메뉴 + 오셥s -> hashKey 반환
      */
     public String generateUniqueHashKey() {
-        // menuId와 optionDtos에서 optionId들을 모아서 하나의 문자열로 합칩니다.
         String optionIdsString = options.stream()
             .map(cartOptionDto -> cartOptionDto.getOptionId().toString())
+            .collect(Collectors.joining(""));
+
+        return menu.getMenuId() + optionIdsString;
+    }
+
+    /**
+     * 메뉴와 옵션에 이름을 조합하는 메서드.          <br>
+     *
+     *
+     * @return      후라이드치킨 + 양념소스 -> hashKey 반환
+     */
+    public String generateMenuOptionName() {
+        String optionNamesString = options.stream()
+            .map(CartOptionDto::getOptionName)
             .collect(Collectors.joining(","));
 
-        // menuId와 optionIdsString을 조합하여 유일한 hashKey를 생성합니다.
-        return menu.getMenuId() + ":" + optionIdsString;
+        return menu.getMenuName() + "\n" + "옵션: " + optionNamesString;
+    }
+
+    /**
+     * 메뉴와 옵션에 가격에 총합을 계산하는 메서드.
+     *
+     * @return      "총합: 가격"
+     */
+    public String generateTotalMenuPrice() {
+        int menuPrice = menu.getMenuPrice();
+        int optionPrices = options.stream()
+            .mapToInt(CartOptionDto::getOptionPrice)
+            .sum();
+
+        return String.valueOf((menuPrice + optionPrices) * count);
     }
 
     /**
@@ -65,14 +93,21 @@ public class CartRedisDto {
     }
 
     /**
-     * Front 에서 옵션에 대해 수정이 일어나면 hashKey 를 새롭게 생성.
-     * 이전에 있던 key 와 hashKey 는 삭제하고
-     * 변겨된 옵션에 대해서 새롭게 메뉴:옵션s 로 hashKey 생성
+     * Front 에서 보여줄 메뉴 + 옵션 이름을 조합해서 menuOptName 값 주입.
      *
-     * @param hashKey       redis hashKey
+     * @param menuOptName       메뉴와 옵션 이름 병합
      */
-    public void setRefreshHashKey(String hashKey) {
-        this.hashKey = hashKey;
+    public void setMenuOptName(String menuOptName) {
+        this.menuOptName = menuOptName;
+    }
+
+    /**
+     * 메뉴와 옵션에 대한 가격 총합.
+     *
+     * @param totalMenuPrice        가격에 대한 총합을 반환.
+     */
+    public void setTotalMenuPrice(String totalMenuPrice) {
+        this.totalMenuPrice = totalMenuPrice;
     }
 
     /**
