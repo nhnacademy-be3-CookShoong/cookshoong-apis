@@ -20,7 +20,9 @@ import store.cookshoong.www.cookshoongbackend.address.entity.Address;
 import store.cookshoong.www.cookshoongbackend.address.model.response.AddressResponseDto;
 import store.cookshoong.www.cookshoongbackend.address.repository.accountaddress.AccountAddressRepository;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
-import store.cookshoong.www.cookshoongbackend.file.service.FileStoreService;
+import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
+import store.cookshoong.www.cookshoongbackend.file.service.ObjectStorageService;
+import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
@@ -68,10 +70,11 @@ public class StoreService {
     private final StoreStatusRepository storeStatusRepository;
     private final StoreCategoryRepository storeCategoryRepository;
     private final AccountAddressRepository accountAddressRepository;
+    private final ImageRepository imageRepository;
     private static final BigDecimal DISTANCE = new BigDecimal("3.0");
     private static final Double RADIUS = 6371.0;
     private static final Double TO_RADIAN = Math.PI / 180;
-    private final FileStoreService fileStoreService;
+    private final ObjectStorageService objectStorageService;
 
     private static void accessDeniedException(Long accountId, Store store) {
         if (!store.getAccount().getId().equals(accountId)) {
@@ -116,8 +119,9 @@ public class StoreService {
         accessDeniedException(accountId, store);
         SelectStoreResponseTemp responseVo = storeRepository.lookupStore(accountId, storeId)
             .orElseThrow(StoreNotFoundException::new);
-
-        return new SelectStoreResponseDto(responseVo, fileStoreService.getFullPath(responseVo.getSavedName()));
+        String pathName = objectStorageService
+            .getFullPath(FileDomain.STORE_IMAGE.getVariable(), responseVo.getSavedName());
+        return new SelectStoreResponseDto(responseVo, pathName);
     }
 
     /**
@@ -126,10 +130,11 @@ public class StoreService {
      * @param storeId 매장 아이디
      * @return 매장 정보 조회
      */
-    @Transactional(readOnly = true)
     public SelectStoreForUserResponseDto selectStoreForUser(Long storeId) {
-        return storeRepository.lookupStoreForUser(storeId)
+        SelectStoreForUserResponseDto responseDto = storeRepository.lookupStoreForUser(storeId)
             .orElseThrow(StoreNotFoundException::new);
+        responseDto.setSavedName(objectStorageService.getFullPath(FileDomain.STORE_IMAGE.getVariable(), responseDto.getSavedName()));
+        return responseDto;
     }
 
     /**
@@ -157,8 +162,9 @@ public class StoreService {
         BankType bankType = bankTypeRepository.findById(registerRequestDto.getBankCode())
             .orElseThrow(BankTypeNotFoundException::new);
         StoreStatus storeStatus = storeStatusRepository.getReferenceById(StoreStatus.StoreStatusCode.CLOSE.name());
-        Image businessLicenseImage = fileStoreService.storeFile(businessImage, false);
-        Image storeMainImage = fileStoreService.storeFile(storeImage, true);
+        Image businessLicenseImage = objectStorageService
+            .storeFile(businessImage, FileDomain.BUSINESS_INFO_IMAGE.getVariable(), false);
+        Image storeMainImage = objectStorageService.storeFile(storeImage, FileDomain.STORE_IMAGE.getVariable(), true);
         Store store = new Store(merchant,
             account,
             bankType,
@@ -202,7 +208,7 @@ public class StoreService {
             .orElseThrow(BankTypeNotFoundException::new);
         StoreStatus storeStatus = store.getStoreStatusCode();
 
-        Image storeMainImage = fileStoreService.storeFile(storeImage, true);
+        Image storeMainImage = objectStorageService.storeFile(storeImage, FileDomain.STORE_IMAGE.getVariable(), true);
         store.modifyStoreInfo(
             account,
             bankType,
@@ -273,6 +279,9 @@ public class StoreService {
             .stream()
             .filter(store -> isWithDistance(addressLatLng, store))
             .collect(Collectors.toList());
+        nearbyStores.forEach(selectAllStoresNotOutedResponseDto ->
+            selectAllStoresNotOutedResponseDto.setSavedName(
+                objectStorageService.getFullPath(FileDomain.STORE_IMAGE.getVariable(), selectAllStoresNotOutedResponseDto.getSavedName())));
         return new PageImpl<>(nearbyStores, pageable, nearbyStores.size());
     }
 

@@ -7,7 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
-import store.cookshoong.www.cookshoongbackend.file.service.FileStoreService;
+import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
+import store.cookshoong.www.cookshoongbackend.file.service.ObjectStorageService;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.MenuStatus;
 import store.cookshoong.www.cookshoongbackend.menu_order.exception.menu.MenuNotFoundException;
@@ -17,6 +18,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectMe
 import store.cookshoong.www.cookshoongbackend.menu_order.repository.menu.MenuRepository;
 import store.cookshoong.www.cookshoongbackend.menu_order.repository.menu.MenuStatusRepository;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
+import store.cookshoong.www.cookshoongbackend.shop.entity.StoreStatus;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreRepository;
 
@@ -24,6 +26,7 @@ import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreReposit
  * 메뉴 관리 서비스.
  *
  * @author papel (윤동현)
+ * @contributor seungyeon (유승연)
  * @since 2023.07.11
  */
 @Service
@@ -33,7 +36,7 @@ public class MenuService {
     private final MenuRepository menuRepository;
     private final MenuStatusRepository menuStatusRepository;
     private final StoreRepository storeRepository;
-    private final FileStoreService fileStoreService;
+    private final ObjectStorageService objectStorageService;
 
     /**
      * 메뉴 등록 서비스.
@@ -41,11 +44,13 @@ public class MenuService {
      * @param storeId              매장 아이디
      * @param createMenuRequestDto 메뉴 등록 Dto
      */
-    public void createMenu(Long storeId, CreateMenuRequestDto createMenuRequestDto, MultipartFile file) throws IOException {
+    public void createMenu(Long storeId, CreateMenuRequestDto createMenuRequestDto, MultipartFile file)
+        throws IOException {
         Store store = storeRepository.findById(storeId)
             .orElseThrow(StoreNotFoundException::new);
-        MenuStatus menuStatus = menuStatusRepository.findById("OPEN").orElseThrow(MenuStatusNotFoundException::new);
-        Image image = fileStoreService.storeFile(file, true);
+        MenuStatus menuStatus = menuStatusRepository.findById(StoreStatus.StoreStatusCode.OPEN.name())
+            .orElseThrow(MenuStatusNotFoundException::new);
+        Image image = objectStorageService.storeFile(file, FileDomain.MENU_IMAGE.getVariable(), true);
         Menu menu =
             new Menu(
                 menuStatus,
@@ -66,7 +71,11 @@ public class MenuService {
      * @return 매장의 메뉴 리스트
      */
     public List<SelectMenuResponseDto> selectMenus(Long storeId) {
-        return menuRepository.lookupMenus(storeId);
+        List<SelectMenuResponseDto> responseDtos = menuRepository.lookupMenus(storeId);
+        responseDtos.forEach(selectMenuResponseDto ->
+            selectMenuResponseDto.setSavedName(objectStorageService.getFullPath(FileDomain.MENU_IMAGE.getVariable(),
+                selectMenuResponseDto.getSavedName())));
+        return responseDtos;
     }
 
     /**
@@ -76,7 +85,10 @@ public class MenuService {
      * @return 매장의 메뉴
      */
     public SelectMenuResponseDto selectMenu(Long menuId) {
-        return menuRepository.lookupMenu(menuId)
+        SelectMenuResponseDto responseDto = menuRepository.lookupMenu(menuId)
             .orElseThrow(MenuNotFoundException::new);
+
+        responseDto.setSavedName(objectStorageService.getFullPath(FileDomain.MENU_IMAGE.getVariable(), responseDto.getSavedName()));
+        return responseDto;
     }
 }
