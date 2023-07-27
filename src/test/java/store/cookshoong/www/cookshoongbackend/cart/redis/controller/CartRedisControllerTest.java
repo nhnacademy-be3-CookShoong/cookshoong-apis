@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
@@ -30,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartMenuCountDto;
@@ -45,6 +45,7 @@ import store.cookshoong.www.cookshoongbackend.cart.redis.service.CartRedisServic
  * @author jeongjewan
  * @since 2023.07.23
  */
+@Slf4j
 @AutoConfigureRestDocs
 @WebMvcTest(CartRedisController.class)
 class CartRedisControllerTest {
@@ -59,11 +60,12 @@ class CartRedisControllerTest {
     private CartRedisService cartRedisService;
 
     String redisKey = "cart_account:1";
-    String hashKey = "1:1,2";
+    String hashKey = "112";
     Long accountId = 1L;
     Long storeId = 1L;
     String storeName = "네네치킨";
     Long menuId = 1L;
+    Integer count = 1;
     CartMenuDto cartMenuDto;
     CartOptionDto cartOptionDto;
     CartOptionDto cartOptionDto1;
@@ -94,6 +96,7 @@ class CartRedisControllerTest {
 
         cartRedisDto = ReflectionUtils.newInstance(CartRedisDto.class);
 
+
         ReflectionTestUtils.setField(cartRedisDto, "accountId", accountId);
         ReflectionTestUtils.setField(cartRedisDto, "storeId", storeId);
         ReflectionTestUtils.setField(cartRedisDto, "storeName", storeName);
@@ -101,6 +104,9 @@ class CartRedisControllerTest {
         ReflectionTestUtils.setField(cartRedisDto, "options", cartOptionDtos);
         ReflectionTestUtils.setField(cartRedisDto, "createTimeMillis", System.currentTimeMillis());
         ReflectionTestUtils.setField(cartRedisDto, "hashKey", hashKey);
+        ReflectionTestUtils.setField(cartRedisDto, "count", count);
+        ReflectionTestUtils.setField(cartRedisDto, "menuOptName", cartRedisDto.generateMenuOptionName());
+        ReflectionTestUtils.setField(cartRedisDto, "totalMenuPrice", cartRedisDto.generateTotalMenuPrice());
     }
 
     @Test
@@ -129,7 +135,9 @@ class CartRedisControllerTest {
                     fieldWithPath("options[].optionPrice").description("옵션가격"),
                     fieldWithPath("createTimeMillis").description("메뉴담긴날짜"),
                     fieldWithPath("hashKey").description("메뉴 hashKey"),
-                    fieldWithPath("count").description("메뉴 수량")
+                    fieldWithPath("count").description("메뉴 수량"),
+                    fieldWithPath("menuOptName").description("메뉴+옵션명"),
+                    fieldWithPath("totalMenuPrice").description("메뉴 총 가")
                 )));
     }
 
@@ -150,14 +158,14 @@ class CartRedisControllerTest {
     void putModifyCartMenu() throws Exception {
 
         CartOptionDto cartOptionDto2 = ReflectionUtils.newInstance(CartOptionDto.class);
-        ReflectionTestUtils.setField(cartOptionDto, "optionId", 3L);
-        ReflectionTestUtils.setField(cartOptionDto, "optionName", "사이다");
-        ReflectionTestUtils.setField(cartOptionDto, "optionPrice", 3000);
+        ReflectionTestUtils.setField(cartOptionDto2, "optionId", 3L);
+        ReflectionTestUtils.setField(cartOptionDto2, "optionName", "사이다");
+        ReflectionTestUtils.setField(cartOptionDto2, "optionPrice", 3000);
 
         CartOptionDto cartOptionDto3 = ReflectionUtils.newInstance(CartOptionDto.class);
-        ReflectionTestUtils.setField(cartOptionDto1, "optionId", 4L);
-        ReflectionTestUtils.setField(cartOptionDto1, "optionName", "불닭소스");
-        ReflectionTestUtils.setField(cartOptionDto1, "optionPrice", 400);
+        ReflectionTestUtils.setField(cartOptionDto3, "optionId", 4L);
+        ReflectionTestUtils.setField(cartOptionDto3, "optionName", "불닭소스");
+        ReflectionTestUtils.setField(cartOptionDto3, "optionPrice", 400);
 
 
         List<CartOptionDto> cartOptions = new ArrayList<>();
@@ -172,9 +180,12 @@ class CartRedisControllerTest {
         ReflectionTestUtils.setField(cartRedisDto2, "menu", cartMenuDto);
         ReflectionTestUtils.setField(cartRedisDto2, "options", cartOptions);
         ReflectionTestUtils.setField(cartRedisDto2, "createTimeMillis", System.currentTimeMillis());
-        ReflectionTestUtils.setField(cartRedisDto2, "hashKey", "1:3,4");
+        ReflectionTestUtils.setField(cartRedisDto2, "hashKey", "134");
+        ReflectionTestUtils.setField(cartRedisDto2, "count", count);
+        ReflectionTestUtils.setField(cartRedisDto2, "menuOptName", cartRedisDto2.generateMenuOptionName());
+        ReflectionTestUtils.setField(cartRedisDto2, "totalMenuPrice", cartRedisDto2.generateTotalMenuPrice());
 
-        mockMvc.perform(put("/api/carts/{cartKey}/modify-menu/{menuKey}", redisKey, "1:3,4")
+        mockMvc.perform(put("/api/carts/{cartKey}/modify-menu/{menuKey}", redisKey, "134")
                 .contentType(APPLICATION_JSON)
                 .content(om.writeValueAsString(cartRedisDto2)))
             .andExpect(status().isOk())
@@ -196,7 +207,9 @@ class CartRedisControllerTest {
                     fieldWithPath("options[].optionPrice").description("옵션가격"),
                     fieldWithPath("createTimeMillis").description("메뉴담긴날짜"),
                     fieldWithPath("hashKey").description("메뉴 hashKey"),
-                    fieldWithPath("count").description("메뉴 수량")
+                    fieldWithPath("count").description("메뉴 수량"),
+                    fieldWithPath("menuOptName").description("메뉴+옵션명"),
+                    fieldWithPath("totalMenuPrice").description("메뉴 총 가격")
                 )));
     }
 
@@ -265,6 +278,8 @@ class CartRedisControllerTest {
             .andExpect(jsonPath("$[0].storeName").value(cartRedisDto.getStoreName()))
             .andExpect(jsonPath("$[0].createTimeMillis").value(cartRedisDto.getCreateTimeMillis()))
             .andExpect(jsonPath("$[0].hashKey").value(cartRedisDto.getHashKey()))
+            .andExpect(jsonPath("$[0].menuOptName").value(cartRedisDto.getMenuOptName()))
+            .andExpect(jsonPath("$[0].totalMenuPrice").value(cartRedisDto.getTotalMenuPrice()))
             .andDo(document("get-select-cart-menu-all",
                 ResourceSnippetParameters.builder()
                     .pathParameters(parameterWithName("cartKey").description("장바구니 Redis Key"))
@@ -282,7 +297,9 @@ class CartRedisControllerTest {
                 fieldWithPath("[].options[].optionPrice").description("옵션가격"),
                 fieldWithPath("[].createTimeMillis").description("메뉴담긴날짜"),
                 fieldWithPath("[].hashKey").description("메뉴 hashKey"),
-                fieldWithPath("[].count").description("메뉴 수량")
+                fieldWithPath("[].count").description("메뉴 수량"),
+                fieldWithPath("[].menuOptName").description("메뉴+옵션명"),
+                fieldWithPath("[].totalMenuPrice").description("메뉴 총 가격")
             )));
     }
 
@@ -307,6 +324,8 @@ class CartRedisControllerTest {
             .andExpect(jsonPath("$.storeName").value(cartRedisDto.getStoreName()))
             .andExpect(jsonPath("$.createTimeMillis").value(cartRedisDto.getCreateTimeMillis()))
             .andExpect(jsonPath("$.hashKey").value(cartRedisDto.getHashKey()))
+            .andExpect(jsonPath("$.menuOptName").value(cartRedisDto.getMenuOptName()))
+            .andExpect(jsonPath("$.totalMenuPrice").value(cartRedisDto.getTotalMenuPrice()))
             .andDo(document("get-select-cart-menu",
                 ResourceSnippetParameters.builder()
                     .pathParameters(parameterWithName("cartKey").description("장바구니 Redis Key"))
@@ -325,7 +344,9 @@ class CartRedisControllerTest {
                     fieldWithPath("options[].optionPrice").description("옵션가격"),
                     fieldWithPath("createTimeMillis").description("메뉴담긴날짜"),
                     fieldWithPath("hashKey").description("메뉴 hashKey"),
-                    fieldWithPath("count").description("메뉴 수량")
+                    fieldWithPath("count").description("메뉴 수량"),
+                    fieldWithPath("menuOptName").description("메뉴+옵션명"),
+                    fieldWithPath("totalMenuPrice").description("메뉴 총 가격")
                 )));
     }
 
