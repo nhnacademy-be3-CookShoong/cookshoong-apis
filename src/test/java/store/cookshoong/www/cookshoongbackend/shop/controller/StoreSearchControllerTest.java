@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -28,6 +29,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.web.servlet.MockMvc;
+import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
+import store.cookshoong.www.cookshoongbackend.file.service.ObjectStorageService;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.service.StoreService;
 
@@ -50,7 +53,11 @@ class StoreSearchControllerTest {
     @MockBean
     private StoreService storeService;
 
+    @MockBean
+    private ObjectStorageService objectStorageService;
+
     static SelectAllStoresNotOutedResponseDto selectAllStoresNotOutedResponseDto;
+
 
     @Test
     void getNotOutedStores() throws Exception {
@@ -66,9 +73,13 @@ class StoreSearchControllerTest {
             UUID.randomUUID()+".jpg"
         ));
         storeList.add(new SelectAllStoresNotOutedResponseDto(
-            1L, "굽네치킨", "OPEN", "광주광역시 동구 필문대로273번길 8-5", "평양빌딩",
+            2L, "굽네치킨", "OPEN", "광주광역시 동구 필문대로273번길 8-5", "평양빌딩",
             new BigDecimal("35.1464529445461"), new BigDecimal("126.9283952407910"), "CHK",
             UUID.randomUUID()+".jpg"
+        ));
+
+        storeList.forEach(selectAllStoresNotOutedResponseDto -> selectAllStoresNotOutedResponseDto.setSavedName(
+            objectStorageService.getFullPath(FileDomain.STORE_IMAGE.getVariable(), selectAllStoresNotOutedResponseDto.getSavedName())
         ));
 
         Page<SelectAllStoresNotOutedResponseDto> storePage = new PageImpl<>(storeList, pageable, storeList.size());

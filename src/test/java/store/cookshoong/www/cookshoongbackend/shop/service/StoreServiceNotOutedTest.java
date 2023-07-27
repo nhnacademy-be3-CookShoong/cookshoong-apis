@@ -2,6 +2,7 @@ package store.cookshoong.www.cookshoongbackend.shop.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
@@ -19,6 +20,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.address.model.response.AddressResponseDto;
 import store.cookshoong.www.cookshoongbackend.address.repository.accountaddress.AccountAddressRepository;
+import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
+import store.cookshoong.www.cookshoongbackend.file.service.ObjectStorageService;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreRepository;
 
@@ -38,6 +41,9 @@ class StoreServiceNotOutedTest {
     @Mock
     private AccountAddressRepository accountAddressRepository;
 
+    @Mock
+    private ObjectStorageService objectStorageService;
+
     @InjectMocks
     private StoreService storeService;
 
@@ -47,12 +53,16 @@ class StoreServiceNotOutedTest {
         Long accountId = 1L;
         String storeCategoryCode = "CHK";
 
+
         Pageable pageable = Pageable.ofSize(10).withPage(0);
 
         List<SelectAllStoresNotOutedResponseDto> stores = new ArrayList<>();
         stores.add(new SelectAllStoresNotOutedResponseDto(1L, "미술대", "영업중", "주소 1", "상세주소 1",
             new BigDecimal("35.14385822588584"), new BigDecimal("126.93046054250793"), storeCategoryCode, UUID.randomUUID()+".jpg"));
 
+        stores.forEach(selectAllStoresNotOutedResponseDto -> selectAllStoresNotOutedResponseDto.setSavedName(
+            objectStorageService.getFullPath(FileDomain.STORE_IMAGE.getVariable(), selectAllStoresNotOutedResponseDto.getSavedName())
+        ));
         Page<SelectAllStoresNotOutedResponseDto> storePage = new PageImpl<>(stores, pageable, stores.size());
         when(storeRepository.lookupStoreLatLanPage(pageable)).thenReturn(storePage);
 
@@ -75,6 +85,7 @@ class StoreServiceNotOutedTest {
         assertEquals(actual.getStoreStatus(), stores.get(0).getStoreStatus());
         assertEquals(actual.getLatitude(), stores.get(0).getLatitude());
         assertEquals(actual.getLongitude(), stores.get(0).getLongitude());
+        assertEquals(actual.getSavedName(), stores.get(0).getSavedName());
     }
 }
 
