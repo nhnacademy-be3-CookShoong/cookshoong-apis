@@ -25,8 +25,9 @@ public class CartRedisService {
     private final CartRedisRepository cartRedisRepository;
 
     /**
-     * 장바구니에 담는 메뉴를 Redis 에 저장하는 메서드.
-     * 하나의 매장에서만 담을 수 있도록 제한.
+     * 장바구니에 담는 메뉴를 Redis 에 저장하는 메서드. <br>
+     * 하나의 매장에서만 담을 수 있도록 제한 <br>
+     * 같은 메뉴가 들어오면 redis 에 저장되어 있는 값을 불러와서 수량과 합계를 변경해서 저장
      *
      * @param redisKey      redis key
      * @param hashKey        redis hashKey
@@ -47,20 +48,26 @@ public class CartRedisService {
         }
 
         if (cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)) {
-            cart.incrementCount();
+            CartRedisDto redisCart = (CartRedisDto) cartRedisRepository.findByCartMenu(redisKey, hashKey);
+            redisCart.incrementCount();
+            redisCart.setTotalMenuPrice(redisCart.generateTotalMenuPrice());
+            cartRedisRepository.cartRedisSave(redisKey, hashKey, redisCart);
+            return;
         }
 
         cart.createTimeMillis();
         cart.setHashKey(cart.generateUniqueHashKey());
+        cart.setMenuOptName(cart.generateMenuOptionName());
+        cart.setTotalMenuPrice(cart.generateTotalMenuPrice());
 
         cartRedisRepository.cartRedisSave(redisKey, hashKey, cart);
     }
 
     /**
-     * 장바구니에 담아져 있는 메뉴에 대해 수정되는 메서드.
-     * 옵션에 대한 수정을 할 때 hashKey 가 달라지면 추가를 해버리는 문제가 발생.
-     * 이때 변경하기전에 대한 메뉴 hashKey 를 가져오기때문에 그 key 를 가지고 삭제를 한후
-     * 변경된 메뉴에 대해서 새로운 hashKey 를 만들고 그 키를 가지고 Redis 장바구니에 담는다.
+     * 장바구니에 담아져 있는 메뉴에 대해 수정되는 메서드.    <br>
+     * 옵션에 대한 수정을 할 때 hashKey 가 달라지면 추가를 해버리는 문제가 발생.   <br>
+     * 이때 변경하기전에 대한 메뉴 hashKey 를 가져오기때문에 그 key 를 가지고 삭제를 한후 <br>
+     * 변경된 메뉴에 대해서 새로운 hashKey 를 만들고 그 키를 가지고 Redis 장바구니에 담는다.  <br>
      *
      * @param redisKey      redis key
      * @param hashKey        redis hashKey
@@ -74,15 +81,17 @@ public class CartRedisService {
             cartRedisRepository.deleteCartMenu(redisKey, hashKey);
         }
 
-        cart.setRefreshHashKey(cart.generateUniqueHashKey());
+        cart.setHashKey(cart.generateUniqueHashKey());
+        cart.setMenuOptName(cart.generateMenuOptionName());
+        cart.setTotalMenuPrice(cart.generateTotalMenuPrice());
 
         cartRedisRepository.cartMenuRedisModify(redisKey, cart.getHashKey(), cart);
     }
 
     /**
-     * 장바구니에 담아져 있는 메뉴에 수량을 늘리는 메서드.
-     * Front 에서 플러스 버튼을 누르면
-     * Gateway 를 타고 Back Api 로 와서 수량을 늘려준다.
+     * 장바구니에 담아져 있는 메뉴에 수량을 늘리는 메서드.    <br>
+     * Front 에서 플러스 버튼을 누르면 <br>
+     * Gateway 를 타고 Back Api 로 와서 수량을 늘려준다. <br>
      *
      * @param redisKey      redis key
      * @param hashKey        redis hashKey
@@ -98,13 +107,16 @@ public class CartRedisService {
             cart.incrementCount();
         }
 
+        assert cart != null;
+        cart.setTotalMenuPrice(cart.generateTotalMenuPrice());
+
         cartRedisRepository.cartMenuRedisModify(redisKey, hashKey, cart);
     }
 
     /**
-     * 장바구니에 담아져 있는 메뉴에 수량을 줄이는 메서드.
-     * Front 에서 플러스 버튼을 누르면
-     * Gateway 를 타고 Back Api 로 와서 수량을 줄여준다.
+     * 장바구니에 담아져 있는 메뉴에 수량을 줄이는 메서드.    <br>
+     * Front 에서 플러스 버튼을 누르면 <br>
+     * Gateway 를 타고 Back Api 로 와서 수량을 줄여준다. <br>
      *
      * @param redisKey      redis key
      * @param hashKey        redis hashKey
@@ -118,6 +130,9 @@ public class CartRedisService {
             cart = (CartRedisDto) cartRedisRepository.findByCartMenu(redisKey, hashKey);
             cart.decrementCount();
         }
+
+        assert cart != null;
+        cart.setTotalMenuPrice(cart.generateTotalMenuPrice());
 
         cartRedisRepository.cartMenuRedisModify(redisKey, hashKey, cart);
     }
@@ -144,6 +159,7 @@ public class CartRedisService {
         // 장바구니에 등록된 순서대로 정렬
         Comparator<CartRedisDto> sortCarts = Comparator.comparing(CartRedisDto::getCreateTimeMillis);
         carts = carts.stream().sorted(sortCarts).collect(Collectors.toList());
+
 
         return carts;
     }
@@ -199,8 +215,8 @@ public class CartRedisService {
     }
 
     /**
-     * Redis 장바구니에 모든 메뉴를 삭제.
-     * key 를 삭제하는 것이기 때문에 다시 Cookie 로 생성해줘야 한다.
+     * Redis 장바구니에 모든 메뉴를 삭제.   <br>
+     * key 를 삭제하는 것이기 때문에 다시 Cookie 로 생성해줘야 한다. <br>
      *
      * @param redisKey      redis key
      */
