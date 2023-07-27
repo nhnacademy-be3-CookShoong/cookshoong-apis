@@ -26,13 +26,13 @@ public class LocalFileService implements FileService {
     private String fileDir;
 
     /**
-     * 파일 경로 가져오기.
+     * 파일 경로 가져오기 (root 경로 + 폴더명 + 파일이름).
      *
      * @param filename the filename
      * @return the full path
      */
-    public String getFullPath(String filename) {
-        return rootPath + fileDir + "/" + filename;
+    public String getFullPath(String domain, String filename) {
+        return rootPath + fileDir + domain+ "/" + filename;
     }
 
     /**
@@ -50,7 +50,7 @@ public class LocalFileService implements FileService {
         String originFilename = multipartFile.getOriginalFilename();
         String storeFilename = UUID.randomUUID() + "." + extractExt(originFilename);
 
-        multipartFile.transferTo(Paths.get(getFullPath(storeFilename)));
+        multipartFile.transferTo(Paths.get(getFullPath(domain, storeFilename)));
         return imageRepository.save(new Image(originFilename, storeFilename, isPublic));
     }
 
