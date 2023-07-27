@@ -46,7 +46,6 @@ public class MenuService {
     private final StoreRepository storeRepository;
     private final MenuGroupRepository menuGroupRepository;
     private final OptionGroupRepository optionGroupRepository;
-    private final FileStoreService fileStoreService;
     private final ObjectStorageService objectStorageService;
 
     /**
