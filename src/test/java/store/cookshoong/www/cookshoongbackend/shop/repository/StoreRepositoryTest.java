@@ -70,8 +70,6 @@ class StoreRepositoryTest {
     static Merchant merchant;
     static Image businessImage;
     static Image storeImage;
-    @Autowired
-    private AccountRepository accountRepository;
 
     @BeforeEach
     void setup() {

@@ -2,6 +2,8 @@ package store.cookshoong.www.cookshoongbackend.shop.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
@@ -13,21 +15,22 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.address.model.response.AddressResponseDto;
 import store.cookshoong.www.cookshoongbackend.address.repository.accountaddress.AccountAddressRepository;
+import store.cookshoong.www.cookshoongbackend.common.property.ObjectStorageProperties;
+import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
+import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
+import store.cookshoong.www.cookshoongbackend.file.service.ObjectStorageAuth;
+import store.cookshoong.www.cookshoongbackend.file.service.ObjectStorageService;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreRepository;
 
-/**
- * {설명을 작성해주세요}.
- *
- * @author jeongjewan
- * @since 2023.07.14
- */
 @Slf4j
 @ExtendWith(MockitoExtension.class)
 class StoreServiceNotOutedTest {
@@ -38,6 +41,11 @@ class StoreServiceNotOutedTest {
     @Mock
     private AccountAddressRepository accountAddressRepository;
 
+    @Spy
+    @InjectMocks
+    private ObjectStorageService objectStorageService =
+        new ObjectStorageService(mock(ObjectStorageAuth.class),mock(ObjectStorageProperties.class), mock(ImageRepository.class));
+
     @InjectMocks
     private StoreService storeService;
 
@@ -46,6 +54,7 @@ class StoreServiceNotOutedTest {
 
         Long accountId = 1L;
         String storeCategoryCode = "CHK";
+
 
         Pageable pageable = Pageable.ofSize(10).withPage(0);
 
@@ -75,6 +84,7 @@ class StoreServiceNotOutedTest {
         assertEquals(actual.getStoreStatus(), stores.get(0).getStoreStatus());
         assertEquals(actual.getLatitude(), stores.get(0).getLatitude());
         assertEquals(actual.getLongitude(), stores.get(0).getLongitude());
+        assertEquals(actual.getSavedName(), stores.get(0).getSavedName());
     }
 }
 

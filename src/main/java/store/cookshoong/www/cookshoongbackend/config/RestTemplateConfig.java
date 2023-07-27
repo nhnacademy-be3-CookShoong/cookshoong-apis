@@ -62,7 +62,6 @@ public class RestTemplateConfig {
      * @throws KeyManagementException    the key management exception
      */
     @Bean
-    @Profile("!default")
     public RestTemplate sslRestTemplate(SecureKeyManagerProperties properties) throws KeyStoreException,
         CertificateException, IOException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyManagementException {
         String password = properties.getPassword();

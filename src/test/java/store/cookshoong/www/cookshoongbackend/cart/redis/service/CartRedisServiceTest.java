@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,6 +30,8 @@ import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartMenuDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartOptionDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartRedisDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.repository.CartRedisRepository;
+import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
+import store.cookshoong.www.cookshoongbackend.file.service.ObjectStorageService;
 
 /**
  * Redis 장바구니에 대한 서버스 테스트 코드.
@@ -46,6 +49,9 @@ class CartRedisServiceTest {
     @Mock
     private CartRedisRepository cartRedisRepository;
 
+    @Mock
+    private ObjectStorageService objectStorageService;
+
     String redisKey = "cart_account:1";
     String hashKey = "112";
     Long accountId = 1L;
@@ -60,10 +66,11 @@ class CartRedisServiceTest {
 
     @BeforeEach
     void setup() {
+        String menuImagePath = objectStorageService.getFullPath(FileDomain.MENU_IMAGE.getVariable(), UUID.randomUUID()+".png");
         cartMenuDto = ReflectionUtils.newInstance(CartMenuDto.class);
         ReflectionTestUtils.setField(cartMenuDto, "menuId", menuId);
         ReflectionTestUtils.setField(cartMenuDto, "menuName", "menuName2");
-        ReflectionTestUtils.setField(cartMenuDto, "menuImage", "menuImage");
+        ReflectionTestUtils.setField(cartMenuDto, "menuImage", menuImagePath);
         ReflectionTestUtils.setField(cartMenuDto, "menuPrice", 3);
 
         cartOptionDto = ReflectionUtils.newInstance(CartOptionDto.class);
