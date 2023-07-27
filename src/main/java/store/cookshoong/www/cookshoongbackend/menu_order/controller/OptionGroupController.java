@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -75,5 +76,21 @@ public class OptionGroupController {
         @PathVariable("optionGroupId") Long optionGroupId) {
         SelectOptionGroupResponseDto optionGroup = optionGroupService.selectOptionGroup(optionGroupId);
         return ResponseEntity.ok(optionGroup);
+    }
+
+    /**
+     * 옵션 그룹 삭제 컨트롤러.
+     *
+     * @param storeId       매장 아이디
+     * @param optionGroupId 옵션 그룹 아이디
+     * @return 200 response
+     */
+    @DeleteMapping("/stores/{storeId}/option-group/{optionGroupId}")
+    public ResponseEntity<Void> deleteOptionGroup(@PathVariable("storeId") Long storeId,
+                                           @PathVariable("optionGroupId") Long optionGroupId) {
+        optionGroupService.deleteOptionGroup(storeId, optionGroupId);
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .build();
     }
 }

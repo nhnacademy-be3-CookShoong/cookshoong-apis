@@ -29,4 +29,12 @@ public interface OptionGroupRepositoryCustom {
      * @return 매장의 옵션 그룹 리스트
      */
     List<SelectOptionGroupResponseDto> lookupOptionGroups(Long storeId);
+
+    /**
+     * 매장 옵션 그룹 삭제.
+     *
+     * @param storeId       매장 아이디
+     * @param optionGroupId 옵션 그룹 아이디
+     */
+    void deleteOptionGroup(Long storeId, Long optionGroupId);
 }

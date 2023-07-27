@@ -29,4 +29,12 @@ public interface MenuGroupRepositoryCustom {
      * @return 매장의 메뉴 그룹 리스트
      */
     List<SelectMenuGroupResponseDto> lookupMenuGroups(Long storeId);
+
+    /**
+     * 매장 메뉴 그룹 삭제.
+     *
+     * @param storeId     매장 아이디
+     * @param menuGroupId 메뉴 그룹 아이디
+     */
+    void deleteMenuGroup(Long storeId, Long menuGroupId);
 }

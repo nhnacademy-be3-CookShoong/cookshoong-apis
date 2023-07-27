@@ -79,4 +79,14 @@ public class MenuService {
         return menuRepository.lookupMenu(menuId)
             .orElseThrow(MenuNotFoundException::new);
     }
+
+    /**
+     * 메뉴 삭제 서비스.
+     *
+     * @param storeId 매장 아이디
+     * @param menuId  메뉴 아이디
+     */
+    public void deleteMenu(Long storeId, Long menuId) {
+        menuRepository.deleteMenu(storeId, menuId);
+    }
 }

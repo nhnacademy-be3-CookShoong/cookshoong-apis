@@ -66,4 +66,14 @@ public class OptionService {
         return optionRepository.lookupOption(optionId)
             .orElseThrow(OptionNotFoundException::new);
     }
+
+    /**
+     * 옵션 삭제 서비스.
+     *
+     * @param storeId  매장 아이디
+     * @param optionId 옵션 아이디
+     */
+    public void deleteOption(Long storeId, Long optionId) {
+        optionRepository.deleteOption(storeId, optionId);
+    }
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.file.entity.QImage;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.MenuStatus;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.QMenu;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.QMenuStatus;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.response.QSelectMenuResponseDto;
@@ -61,6 +62,11 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
         QStore store = QStore.store;
         QImage image = QImage.image;
 
+        MenuStatus outedStatus = jpaQueryFactory
+            .selectFrom(menuStatus)
+            .where(menuStatus.menuStatusCode.eq("OUTED"))
+            .fetchOne();
+
         return jpaQueryFactory
             .select(new QSelectMenuResponseDto(
                 menu.id, menuStatus.menuStatusCode, store.id,
@@ -70,7 +76,30 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
             .innerJoin(menu.menuStatusCode, menuStatus)
             .innerJoin(menu.store, store)
             .innerJoin(menu.image, image)
-            .where(store.id.eq(storeId))
+            .where(store.id.eq(storeId), menu.menuStatusCode.ne(outedStatus))
             .fetch();
+    }
+
+    /**
+     * 매장 메뉴 삭제.
+     *
+     * @param storeId 매장 아이디
+     * @param menuId  메뉴 아이디
+     */
+    @Override
+    public void deleteMenu(Long storeId, Long menuId) {
+        QMenu menu = QMenu.menu;
+        QMenuStatus menuStatus = QMenuStatus.menuStatus;
+
+        MenuStatus outedStatus = jpaQueryFactory
+            .selectFrom(menuStatus)
+            .where(menuStatus.menuStatusCode.eq("OUTED"))
+            .fetchOne();
+
+        jpaQueryFactory
+            .update(menu)
+            .set(menu.menuStatusCode, outedStatus)
+            .where(menu.id.eq(menuId))
+            .execute();
     }
 }
