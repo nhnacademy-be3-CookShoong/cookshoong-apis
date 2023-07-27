@@ -4,6 +4,8 @@ import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.docume
 import static com.epages.restdocs.apispec.Schema.schema;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,16 +22,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.web.servlet.MockMvc;
+import store.cookshoong.www.cookshoongbackend.common.property.ObjectStorageProperties;
 import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
+import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
+import store.cookshoong.www.cookshoongbackend.file.service.ObjectStorageAuth;
 import store.cookshoong.www.cookshoongbackend.file.service.ObjectStorageService;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.service.StoreService;
@@ -53,8 +61,11 @@ class StoreSearchControllerTest {
     @MockBean
     private StoreService storeService;
 
-    @MockBean
-    private ObjectStorageService objectStorageService;
+    @Spy
+    @InjectMocks
+    private ObjectStorageService objectStorageService =
+        new ObjectStorageService(mock(ObjectStorageAuth.class),mock(ObjectStorageProperties.class), mock(ImageRepository.class));
+
 
     static SelectAllStoresNotOutedResponseDto selectAllStoresNotOutedResponseDto;
 
@@ -78,15 +89,9 @@ class StoreSearchControllerTest {
             UUID.randomUUID()+".jpg"
         ));
 
-        storeList.forEach(selectAllStoresNotOutedResponseDto -> selectAllStoresNotOutedResponseDto.setSavedName(
-            objectStorageService.getFullPath(FileDomain.STORE_IMAGE.getVariable(), selectAllStoresNotOutedResponseDto.getSavedName())
-        ));
-
         Page<SelectAllStoresNotOutedResponseDto> storePage = new PageImpl<>(storeList, pageable, storeList.size());
 
-        when(storeService.selectAllStoresNotOutedResponsePage(
-            eq(addressId),
-            any(Pageable.class))).thenReturn(storePage);
+        doReturn(storePage).when(storeService).selectAllStoresNotOutedResponsePage(eq(addressId), any(Pageable.class));
 
         mockMvc.perform(get("/api/accounts/customer/{addressId}/stores", addressId)
             .param("storeCategoryCode", storeCategoryCode)
