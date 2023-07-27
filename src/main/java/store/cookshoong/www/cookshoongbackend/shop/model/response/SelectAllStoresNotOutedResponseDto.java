@@ -3,6 +3,7 @@ package store.cookshoong.www.cookshoongbackend.shop.model.response;
 import com.querydsl.core.annotations.QueryProjection;
 import java.math.BigDecimal;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -12,7 +13,6 @@ import lombok.ToString;
  * @since 2023.07.14
  */
 @Getter
-@ToString
 public class SelectAllStoresNotOutedResponseDto {
     private final Long id;
     private final String name;
@@ -22,7 +22,8 @@ public class SelectAllStoresNotOutedResponseDto {
     private final BigDecimal latitude;
     private final BigDecimal longitude;
     private final String category;
-    private final String savedName;
+    @Setter
+    private String savedName;
 
     /**
      * 회원 위치에서 3km 이내에 있는 매장을 보여줄 QueryDsl 로 사용될 메서드.
