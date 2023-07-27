@@ -3,9 +3,13 @@ package store.cookshoong.www.cookshoongbackend.shop.model.response;
 import com.querydsl.core.annotations.QueryProjection;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableStoreCouponPolicyResponseDto;
+import lombok.Setter;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableStoreCouponPolicyResponseDto;
+import lombok.Setter;
 
 /**
  * 일반 고객이 볼 수 있는 매장 정보 조회.
@@ -23,7 +27,8 @@ public class SelectStoreForUserResponseDto {
     private final String mainPlace;
     private final String detailPlace;
     private final String description;
-    private final String savedName;
+    @Setter
+    private String savedName;
     @Setter
     private List<SelectProvableStoreCouponPolicyResponseDto> provableCouponPolicies;
 

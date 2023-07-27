@@ -5,20 +5,20 @@ import java.nio.file.Paths;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
 
 /**
- * file 관련 service.
+ * 파일을 업로드, 다운로드 관련 업무 로컬저장소를 이용하여 처리.
  *
- * @author seungyeon
+ * @author seungyeon (유승연)
  * @since 2023.07.18
  */
-@Component
+@Service
 @RequiredArgsConstructor
-public class FileStoreService {
+public class LocalFileService implements FileService {
     private final ImageRepository imageRepository;
 
     private final String rootPath = System.getProperty("user.dir");
@@ -26,13 +26,13 @@ public class FileStoreService {
     private String fileDir;
 
     /**
-     * 파일 경로 가져오기.
+     * 파일 경로 가져오기 (root 경로 + 폴더명 + 파일이름).
      *
      * @param filename the filename
      * @return the full path
      */
-    public String getFullPath(String filename) {
-        return rootPath + fileDir + filename;
+    public String getFullPath(String domain, String filename) {
+        return rootPath + fileDir + domain+ "/" + filename;
     }
 
     /**
@@ -43,14 +43,14 @@ public class FileStoreService {
      * @return the image
      * @throws IOException the io exception
      */
-    public Image storeFile(MultipartFile multipartFile, boolean isPublic) throws IOException {
+    public Image storeFile(MultipartFile multipartFile, String domain, boolean isPublic) throws IOException {
         if (multipartFile.isEmpty()) {
             return null;
         }
         String originFilename = multipartFile.getOriginalFilename();
         String storeFilename = UUID.randomUUID() + "." + extractExt(originFilename);
 
-        multipartFile.transferTo(Paths.get(getFullPath(storeFilename)));
+        multipartFile.transferTo(Paths.get(getFullPath(domain, storeFilename)));
         return imageRepository.save(new Image(originFilename, storeFilename, isPublic));
     }
 

@@ -27,6 +27,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
+import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.OrderStatus;
 import store.cookshoong.www.cookshoongbackend.payment.entity.ChargeType;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.Order;
@@ -96,7 +97,7 @@ public class TestEntity {
             null, storeImage, "123456");
     }
 
-    public Image getImage(String name,boolean isPublic){
+    public Image getImage(String name, boolean isPublic){
         return createImage(name,isPublic);
     }
     public StoreCategory getStoreCategory() {
