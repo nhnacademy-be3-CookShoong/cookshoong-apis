@@ -20,7 +20,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectOwnCouponResponseDto;
-import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectOwnCouponResponseTempDto;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.IssueCouponRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.util.CouponTypeConverter;
 import store.cookshoong.www.cookshoongbackend.coupon.util.CouponUsageConverter;
@@ -35,10 +34,6 @@ class CouponSearchServiceTest {
     @Mock
     IssueCouponRepository issueCouponRepository;
     @Spy
-    CouponTypeConverter couponTypeConverter;
-    @Spy
-    CouponUsageConverter couponUsageConverter;
-    @Spy
     TestEntity te;
     @InjectMocks
     TestPersistEntity tpe;
@@ -46,23 +41,23 @@ class CouponSearchServiceTest {
     @Test
     @DisplayName("쿠폰 전체 조회 테스트")
     void getOwnCouponsTest() throws Exception {
-        List<SelectOwnCouponResponseTempDto> ownCouponResponseTemps = List.of(
-            new SelectOwnCouponResponseTempDto(UUID.randomUUID(), te.getCouponTypeCash_1000_10000(),
+        List<SelectOwnCouponResponseDto> ownCouponResponses = List.of(
+            new SelectOwnCouponResponseDto(UUID.randomUUID(), te.getCouponTypeCash_1000_10000(),
                 te.getCouponUsageStore(tpe.getOpenStore()), "매장 금액 쿠폰", "10000원 이상 시 1000원 할인",
                 LocalDate.now(), null),
-            new SelectOwnCouponResponseTempDto(UUID.randomUUID(), te.getCouponTypePercent_3_1000_10000(),
+            new SelectOwnCouponResponseDto(UUID.randomUUID(), te.getCouponTypePercent_3_1000_10000(),
                 te.getCouponUsageStore(tpe.getOpenStore()), "매장 퍼센트 쿠폰",
                 "10000원 이상 시 3%, 최대 1000원 할인", LocalDate.now(), null),
-            new SelectOwnCouponResponseTempDto(UUID.randomUUID(), te.getCouponTypeCash_1000_10000(),
+            new SelectOwnCouponResponseDto(UUID.randomUUID(), te.getCouponTypeCash_1000_10000(),
                 te.getCouponUsageMerchant(te.getMerchant()), "가맹점 금액 쿠폰", "10000원 이상 시 1000원 할인",
                 LocalDate.now(), null),
-            new SelectOwnCouponResponseTempDto(UUID.randomUUID(), te.getCouponTypePercent_3_1000_10000(),
+            new SelectOwnCouponResponseDto(UUID.randomUUID(), te.getCouponTypePercent_3_1000_10000(),
                 te.getCouponUsageMerchant(te.getMerchant()), "가맹점 퍼센트 쿠폰",
                 "10000원 이상 시 3%, 최대 1000원 할인", LocalDate.now(), null),
-            new SelectOwnCouponResponseTempDto(UUID.randomUUID(), te.getCouponTypeCash_1000_10000(),
+            new SelectOwnCouponResponseDto(UUID.randomUUID(), te.getCouponTypeCash_1000_10000(),
                 te.getCouponUsageAll(), "전체 금액 쿠폰", "10000원 이상 시 1000원 할인",
                 LocalDate.now(), null),
-            new SelectOwnCouponResponseTempDto(UUID.randomUUID(), te.getCouponTypePercent_3_1000_10000(),
+            new SelectOwnCouponResponseDto(UUID.randomUUID(), te.getCouponTypePercent_3_1000_10000(),
                 te.getCouponUsageAll(), "전체 금액 쿠폰", "10000원 이상 시 3%, 최대 1000원 할인",
                 LocalDate.now(), null)
         );
@@ -70,25 +65,23 @@ class CouponSearchServiceTest {
         when(issueCouponRepository.lookupAllOwnCoupons(
             any(Long.class), any(Pageable.class), any(), any()))
             .thenAnswer(invocation ->
-                new PageImpl<>(ownCouponResponseTemps, invocation.getArgument(1), ownCouponResponseTemps.size()));
+                new PageImpl<>(ownCouponResponses, invocation.getArgument(1), ownCouponResponses.size()));
 
         Page<SelectOwnCouponResponseDto> ownCoupons =
             couponSearchService.getOwnCoupons(Long.MIN_VALUE, Pageable.ofSize(10), null, null);
 
-        assertThat(ownCoupons).hasSize(ownCouponResponseTemps.size());
+        assertThat(ownCoupons).hasSize(ownCouponResponses.size());
 
         Iterator<SelectOwnCouponResponseDto> ownCouponIterator = ownCoupons.iterator();
-        Iterator<SelectOwnCouponResponseTempDto> tempIterator = ownCouponResponseTemps.iterator();
+        Iterator<SelectOwnCouponResponseDto> tempIterator = ownCouponResponses.iterator();
 
         while (ownCouponIterator.hasNext()) {
             SelectOwnCouponResponseDto ownCoupon = ownCouponIterator.next();
-            SelectOwnCouponResponseTempDto tempCoupon = tempIterator.next();
+            SelectOwnCouponResponseDto tempCoupon = tempIterator.next();
 
             assertThat(ownCoupon.getIssueCouponCode()).isEqualTo(tempCoupon.getIssueCouponCode());
-            assertThat(ownCoupon.getCouponTypeResponse())
-                .isEqualTo(couponTypeConverter.convert(tempCoupon.getCouponType()));
-            assertThat(ownCoupon.getCouponUsageName())
-                .isEqualTo(couponUsageConverter.convert(tempCoupon.getCouponUsage()));
+            assertThat(ownCoupon.getCouponTypeResponse()).isEqualTo(tempCoupon.getCouponTypeResponse());
+            assertThat(ownCoupon.getCouponUsageName()).isEqualTo(tempCoupon.getCouponUsageName());
             assertThat(ownCoupon.getName()).isEqualTo(tempCoupon.getName());
             assertThat(ownCoupon.getDescription()).isEqualTo(tempCoupon.getDescription());
             assertThat(ownCoupon.getExpirationDate()).isEqualTo(tempCoupon.getExpirationDate());

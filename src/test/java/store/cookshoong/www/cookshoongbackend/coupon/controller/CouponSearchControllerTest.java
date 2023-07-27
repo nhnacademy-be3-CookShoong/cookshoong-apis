@@ -23,6 +23,8 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -33,10 +35,18 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypePercent;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageAll;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectOwnCouponResponseDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeCashVo;
 import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypePercentVo;
 import store.cookshoong.www.cookshoongbackend.coupon.service.CouponSearchService;
+import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
+import store.cookshoong.www.cookshoongbackend.util.TestEntity;
+import store.cookshoong.www.cookshoongbackend.util.TestPersistEntity;
 
 @AutoConfigureRestDocs
 @WebMvcTest(CouponSearchController.class)
@@ -50,37 +60,42 @@ class CouponSearchControllerTest {
     @MockBean
     CouponSearchService couponSearchService;
 
+    @Spy
+    TestEntity te;
+
+    @InjectMocks
+    TestPersistEntity tpe;
+
     List<SelectOwnCouponResponseDto> ownCouponResponseTemps;
+
 
     @BeforeEach
     void beforeEach() {
-        CouponTypeCashVo storeCouponTypeCashVo = createCouponTypeCashVo();
-        CouponTypePercentVo storeCouponTypePercentVo = createCouponTypePercentVo();
+        CouponTypeCash couponTypeCash = te.getCouponTypeCash_1000_10000();
+        CouponTypePercent couponTypePercent = te.getCouponTypePercent_3_1000_10000();
 
-        CouponTypeCashVo merchantCouponTypeCashVo = createCouponTypeCashVo();
-        CouponTypePercentVo merchantCouponTypePercentVo = createCouponTypePercentVo();
-
-        CouponTypeCashVo allCouponTypeCashVo = createCouponTypeCashVo();
-        CouponTypePercentVo allCouponTypePercentVo = createCouponTypePercentVo();
+        CouponUsageStore couponUsageStore = new CouponUsageStore(tpe.getOpenStore());
+        CouponUsageMerchant couponUsageMerchant = new CouponUsageMerchant(te.getMerchant());
+        CouponUsageAll couponUsageAll = new CouponUsageAll();
 
         ownCouponResponseTemps = List.of(
-            new SelectOwnCouponResponseDto(UUID.randomUUID(), storeCouponTypeCashVo, "매장",
+            new SelectOwnCouponResponseDto(UUID.randomUUID(), couponTypeCash, couponUsageStore,
                 "매장 금액 쿠폰", "10000원 이상 시 1000원 할인",
                 LocalDate.now(), null),
-            new SelectOwnCouponResponseDto(UUID.randomUUID(), storeCouponTypePercentVo,
-                "매장", "매장 퍼센트 쿠폰", "10000원 이상 시 3%, 최대 1000원 할인",
+            new SelectOwnCouponResponseDto(UUID.randomUUID(), couponTypePercent, couponUsageStore,
+                "매장 퍼센트 쿠폰", "10000원 이상 시 3%, 최대 1000원 할인",
                 LocalDate.now(), null),
-            new SelectOwnCouponResponseDto(UUID.randomUUID(), merchantCouponTypeCashVo, "가맹점",
+            new SelectOwnCouponResponseDto(UUID.randomUUID(), couponTypeCash, couponUsageMerchant,
                 "가맹점 금액 쿠폰", "10000원 이상 시 1000원 할인",
                 LocalDate.now(), null),
-            new SelectOwnCouponResponseDto(UUID.randomUUID(), merchantCouponTypePercentVo,
-                "가맹점", "가맹점 퍼센트 쿠폰", "10000원 이상 시 3%, 최대 1000원 할인",
+            new SelectOwnCouponResponseDto(UUID.randomUUID(), couponTypePercent, couponUsageMerchant,
+                "가맹점 퍼센트 쿠폰", "10000원 이상 시 3%, 최대 1000원 할인",
                 LocalDate.now(), null),
-            new SelectOwnCouponResponseDto(UUID.randomUUID(), allCouponTypeCashVo,
-                "전체", "전체 금액 쿠폰", "10000원 이상 시 1000원 할인",
+            new SelectOwnCouponResponseDto(UUID.randomUUID(), couponTypeCash, couponUsageAll,
+                "전체 금액 쿠폰", "10000원 이상 시 1000원 할인",
                 LocalDate.now(), null),
-            new SelectOwnCouponResponseDto(UUID.randomUUID(), allCouponTypePercentVo,
-                "전체", "전체 금액 쿠폰", "10000원 이상 시 3%, 최대 1000원 할인",
+            new SelectOwnCouponResponseDto(UUID.randomUUID(), couponTypePercent, couponUsageAll,
+                "전체 금액 쿠폰", "10000원 이상 시 3%, 최대 1000원 할인",
                 LocalDate.now(), null)
         );
     }
@@ -143,27 +158,5 @@ class CouponSearchControllerTest {
                     fieldWithPath("empty").description("데이터 미존재 여부")
                 )
             ));
-    }
-
-    private CouponTypeCashVo createCouponTypeCashVo() {
-        try {
-            Constructor<CouponTypeCashVo> constructor = CouponTypeCashVo.class
-                .getDeclaredConstructor(int.class, int.class);
-            constructor.setAccessible(true);
-            return constructor.newInstance(1_000, 10_000);
-        } catch (Exception e) {
-            throw new RuntimeException();
-        }
-    }
-
-    private CouponTypePercentVo createCouponTypePercentVo() {
-        try {
-            Constructor<CouponTypePercentVo> constructor = CouponTypePercentVo.class
-                .getDeclaredConstructor(int.class, int.class, int.class);
-            constructor.setAccessible(true);
-            return constructor.newInstance(3, 1_000, 10_000);
-        } catch (Exception e) {
-            throw new RuntimeException();
-        }
     }
 }

@@ -1,6 +1,8 @@
 package store.cookshoong.www.cookshoongbackend.coupon.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -9,9 +11,11 @@ import java.util.Map;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -27,7 +31,8 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageAll;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
-import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectOwnCouponResponseTempDto;
+import store.cookshoong.www.cookshoongbackend.coupon.exception.IssueCouponNotFoundException;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectOwnCouponResponseDto;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.Order;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
@@ -81,7 +86,7 @@ class IssueCouponRepositoryImplTest {
         customer = tpe.getLevelOneActiveCustomer();
         Merchant merchant = te.getMerchant();
         Image businessImage = te.getImage("사업자등록증.jpg", false);
-        Image storeImage = te.getImage("우리 매장 대표사진.jpg",true);
+        Image storeImage = te.getImage("우리 매장 대표사진.jpg", true);
         hasAllUsageCouponMerchant =
             te.getStore(merchant, tpe.getLevelOneActiveCustomer(), te.getBankTypeKb(), te.getStoreStatusOpen(), businessImage, storeImage);
         hasMerchantUsageCouponMerchant =
@@ -124,7 +129,7 @@ class IssueCouponRepositoryImplTest {
 
         issueCoupons.add(te.getIssueCoupon(couponPolicyStoreUsageStore));
 
-        issueCoupons.forEach(issueCoupon -> issueCoupon.provideToUser(customer));
+        issueCoupons.forEach(issueCoupon -> issueCoupon.provideToAccount(customer));
 
         ReflectionTestUtils.setField(expiredIssueCoupon, "expirationDate",
             LocalDate.of(1000, 1, 1));
@@ -174,15 +179,17 @@ class IssueCouponRepositoryImplTest {
             "쿠폰없음", hasNoCoupon.getId()
         );
 
-        Page<SelectOwnCouponResponseTempDto> couponResponseTemps =
+        Page<SelectOwnCouponResponseDto> couponResponses =
             issueCouponRepository.lookupAllOwnCoupons(
                 customer.getId(), Pageable.ofSize(20), usable,
                 searchStoreId.getOrDefault(store, null));
 
-        assertThat(couponResponseTemps).hasSize(size);
-        couponResponseTemps.forEach(
-            couponResponseTempDto -> assertThat(selectDescriptionCheck(usable))
-                .contains(couponResponseTempDto.getLogTypeDescription())
+        assertThat(couponResponses).hasSize(size);
+        assertThat(couponResponses.getTotalElements()).isEqualTo(size);
+        assertThat(couponResponses.getTotalPages()).isEqualTo(1 + size / 20);
+        couponResponses.forEach(
+            couponResponseDto -> assertThat(selectDescriptionCheck(usable))
+                .contains(couponResponseDto.getLogTypeDescription())
         );
     }
 
@@ -211,6 +218,77 @@ class IssueCouponRepositoryImplTest {
             Arguments.of("모든 매장 쿠폰 중 사용 가능한 쿠폰", true, "쿠폰없음", 2),
             Arguments.of("모든 매장 쿠폰 중 사용 불가능한 쿠폰", false, "쿠폰없음", 2)
         );
+    }
+
+    @Test
+    @DisplayName("쿠폰 발급 테스트 성공")
+    void modifyIssueCouponAccountSuccessTest() throws Exception {
+        CouponPolicy couponPolicy = te.getCouponPolicy(te.getCouponTypeCash_1000_10000(), te.getCouponUsageAll());
+        IssueCoupon issueCoupon = te.getIssueCoupon(couponPolicy);
+
+        assertDoesNotThrow(
+            () -> issueCouponRepository.provideCouponToAccount(issueCoupon.getCode(), LocalDate.now(), customer));
+
+        em.flush();
+        em.clear();
+
+        IssueCoupon updateIssueCoupon = issueCouponRepository.findById(issueCoupon.getCode())
+            .orElseThrow(IssueCouponNotFoundException::new);
+
+        assertThat(updateIssueCoupon.getAccount().getId()).isEqualTo(customer.getId());
+        assertThat(updateIssueCoupon.getExpirationDate()).isEqualTo(LocalDate.now());
+    }
+
+    @Test
+    @DisplayName("쿠폰 발급 테스트 실패 - 이미 유저에게 발급된 쿠폰")
+    void modifyIssueCouponAccountFailTest() throws Exception {
+        CouponPolicy couponPolicy = te.getCouponPolicy(te.getCouponTypeCash_1000_10000(), te.getCouponUsageAll());
+        IssueCoupon issueCoupon = te.getIssueCoupon(couponPolicy);
+        issueCoupon.provideToAccount(customer);
+
+        assertThat(issueCouponRepository.provideCouponToAccount(issueCoupon.getCode(), LocalDate.now(), customer))
+            .isFalse();
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, 5, 10, 15, 20, 25})
+    @DisplayName("쿠폰 발급 기록 테스트 - 이전에 받은 적 있는 경우")
+    void isReceivedBeforeTest(int minusDays) throws Exception {
+        CouponPolicy couponPolicy = te.getCouponPolicy(te.getCouponTypeCash_1000_10000(), te.getCouponUsageAll());
+        IssueCoupon issueCoupon = te.getIssueCoupon(couponPolicy);
+        issueCoupon.provideToAccount(customer);
+        ReflectionTestUtils.setField(issueCoupon, "receiptDate", LocalDate.now().minusDays(minusDays));
+
+        boolean receivedBefore = issueCouponRepository.isReceivedBefore(
+            couponPolicy.getId(), customer.getId(), couponPolicy.getUsagePeriod());
+
+        assertThat(receivedBefore).isTrue();
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {30, 31, 32, 33, 100})
+    @DisplayName("쿠폰 발급 기록 테스트 - 이전에 받은 적 있으나 기간이 지난 경우")
+    void isReceivedBeforeButOverTest(int minusDays) throws Exception {
+        CouponPolicy couponPolicy = te.getCouponPolicy(te.getCouponTypeCash_1000_10000(), te.getCouponUsageAll());
+        IssueCoupon issueCoupon = te.getIssueCoupon(couponPolicy);
+        issueCoupon.provideToAccount(customer);
+        ReflectionTestUtils.setField(issueCoupon, "receiptDate", LocalDate.now().minusDays(minusDays));
+
+        boolean receivedBefore = issueCouponRepository.isReceivedBefore(
+            couponPolicy.getId(), customer.getId(), couponPolicy.getUsagePeriod());
+
+        assertThat(receivedBefore).isFalse();
+    }
+
+    @Test
+    @DisplayName("쿠폰 발급 기록 테스트 - 이전에 받은 적 없는 경우")
+    void isNonReceivedBeforeTest() throws Exception {
+        CouponPolicy couponPolicy = te.getCouponPolicy(te.getCouponTypeCash_1000_10000(), te.getCouponUsageAll());
+
+        boolean receivedBefore = issueCouponRepository.isReceivedBefore(
+            couponPolicy.getId(), customer.getId(), couponPolicy.getUsagePeriod());
+
+        assertThat(receivedBefore).isFalse();
     }
 }
 

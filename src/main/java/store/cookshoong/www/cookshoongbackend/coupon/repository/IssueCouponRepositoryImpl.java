@@ -19,12 +19,14 @@ import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import store.cookshoong.www.cookshoongbackend.coupon.model.temp.QSelectOwnCouponResponseTempDto;
-import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectOwnCouponResponseTempDto;
+import store.cookshoong.www.cookshoongbackend.account.entity.Account;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.QSelectOwnCouponResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectOwnCouponResponseDto;
 
 /**
  * QueryDSL IssueCouponRepository.
@@ -42,27 +44,25 @@ public class IssueCouponRepositoryImpl implements IssueCouponRepositoryCustom {
      * {@inheritDoc}
      */
     @Override
-    public Page<SelectOwnCouponResponseTempDto> lookupAllOwnCoupons(Long accountId, Pageable pageable, Boolean useCond,
-                                                                    Long storeId) {
-        List<SelectOwnCouponResponseTempDto> content = getCouponResponseTemps(accountId, pageable, useCond, storeId);
+    public Page<SelectOwnCouponResponseDto> lookupAllOwnCoupons(Long accountId, Pageable pageable, Boolean useCond,
+                                                                Long storeId) {
+        List<SelectOwnCouponResponseDto> content = getCouponResponses(accountId, pageable, useCond, storeId);
         Long total = getTotal(accountId, useCond, storeId);
         return new PageImpl<>(content, pageable, total);
-
     }
 
-    private List<SelectOwnCouponResponseTempDto> getCouponResponseTemps(Long accountId, Pageable pageable,
-                                                                        Boolean usable, Long storeId) {
-        JPQLQuery<String> couponLogTypeDescription = getCouponLogTypeDescription();
+    private List<SelectOwnCouponResponseDto> getCouponResponses(Long accountId, Pageable pageable,
+                                                                Boolean usable, Long storeId) {
 
         return queryFactory
-            .select(new QSelectOwnCouponResponseTempDto(
+            .select(new QSelectOwnCouponResponseDto(
                 issueCoupon.code,
                 couponType,
                 couponUsage,
                 couponPolicy.name,
                 couponPolicy.description,
                 issueCoupon.expirationDate,
-                couponLogTypeDescription))
+                couponLogType.description))
 
             .from(issueCoupon)
 
@@ -71,21 +71,18 @@ public class IssueCouponRepositoryImpl implements IssueCouponRepositoryCustom {
             .innerJoin(couponPolicy.couponUsage, couponUsage)
             .innerJoin(issueCoupon.account, account)
 
+            .leftJoin(couponLog)
+            .on(couponLog.id.eq(getMaxCouponLogId()))
+
+            .leftJoin(couponLog.couponLogType, couponLogType)
+
             .where(account.id.eq(accountId),
-                checkUsableCoupon(couponLogTypeDescription, usable),
+                checkUsableCoupon(usable),
                 checkCouponUsage(storeId))
 
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
-    }
-
-    private static JPQLQuery<String> getCouponLogTypeDescription() {
-        return JPAExpressions
-            .select(couponLogType.description)
-            .from(couponLog)
-            .innerJoin(couponLog.couponLogType, couponLogType)
-            .where(couponLog.id.eq(getMaxCouponLogId()));
     }
 
     private static JPQLQuery<Long> getMaxCouponLogId() {
@@ -95,26 +92,19 @@ public class IssueCouponRepositoryImpl implements IssueCouponRepositoryCustom {
             .where(couponLog.issueCoupon.eq(issueCoupon));
     }
 
-    private static BooleanExpression checkUsableCoupon(JPQLQuery<String> couponLogTypeDescription, Boolean usable) {
+    private static BooleanExpression checkUsableCoupon(Boolean usable) {
         if (usable == null) {
             return null;
         }
 
         if (usable) {
-            return couponLogTypeDescription.ne(getCouponLogTypeUseDescription())
-                .or(couponLogTypeDescription.isNull()
+            return couponLogType.code.ne(COUPON_LOG_TYPE_CODE_USE)
+                .or(couponLogType.isNull()
                     .and(issueCoupon.expirationDate.goe(LocalDate.now())));
         }
 
-        return couponLogTypeDescription.eq(getCouponLogTypeUseDescription())
+        return couponLogType.code.eq(COUPON_LOG_TYPE_CODE_USE)
             .or(issueCoupon.expirationDate.lt(LocalDate.now()));
-    }
-
-    private static JPQLQuery<String> getCouponLogTypeUseDescription() {
-        return JPAExpressions
-            .select(couponLogType.description)
-            .from(couponLogType)
-            .where(couponLogType.code.eq(COUPON_LOG_TYPE_CODE_USE));
     }
 
     private static BooleanExpression checkCouponUsage(Long storeId) {
@@ -167,10 +157,53 @@ public class IssueCouponRepositoryImpl implements IssueCouponRepositoryCustom {
             .innerJoin(couponPolicy.couponUsage, couponUsage)
             .innerJoin(issueCoupon.account, account)
 
+            .leftJoin(couponLog)
+            .on(couponLog.id.eq(getMaxCouponLogId()))
+
+            .leftJoin(couponLog.couponLogType, couponLogType)
+
             .where(account.id.eq(accountId),
-                checkUsableCoupon(getCouponLogTypeDescription(), usable),
+                checkUsableCoupon(usable),
                 checkCouponUsage(storeId))
             .fetchOne();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean provideCouponToAccount(UUID issueCouponId, LocalDate expirationDate, Account account) {
+        long updatedCount = queryFactory.update(issueCoupon)
+            .set(issueCoupon.account, account)
+            .set(issueCoupon.expirationDate, expirationDate)
+            .set(issueCoupon.receiptDate, LocalDate.now())
+            .where(issueCoupon.code.eq(issueCouponId), issueCoupon.account.isNull())
+            .execute();
+
+        return updatedCount != 0;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isReceivedBefore(Long couponPolicyId, Long accountId, Integer usagePeriod) {
+        LocalDate today = LocalDate.now();
+        LocalDate ago = LocalDate.now().minusDays(usagePeriod);
+
+        return queryFactory
+            .select(issueCoupon.code)
+            .from(issueCoupon)
+
+            .innerJoin(issueCoupon.couponPolicy, couponPolicy)
+            .on(couponPolicy.id.eq(couponPolicyId))
+
+            .leftJoin(couponLog)
+            .on(couponLog.id.eq(getMaxCouponLogId()))
+
+            .leftJoin(couponLog.couponLogType, couponLogType)
+
+            .where(issueCoupon.account.id.eq(accountId), issueCoupon.receiptDate.between(ago, today))
+            .fetchFirst() != null;
+    }
 }
