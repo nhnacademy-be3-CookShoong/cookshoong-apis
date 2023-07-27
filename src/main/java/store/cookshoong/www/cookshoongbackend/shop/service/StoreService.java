@@ -20,9 +20,8 @@ import store.cookshoong.www.cookshoongbackend.address.entity.Address;
 import store.cookshoong.www.cookshoongbackend.address.model.response.AddressResponseDto;
 import store.cookshoong.www.cookshoongbackend.address.repository.accountaddress.AccountAddressRepository;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
-import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
-import store.cookshoong.www.cookshoongbackend.file.service.ObjectStorageService;
 import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
+import store.cookshoong.www.cookshoongbackend.file.service.ObjectStorageService;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
@@ -59,7 +58,6 @@ import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreReposit
  * @since 2023.07.05
  */
 @Service
-@Slf4j
 @RequiredArgsConstructor
 @Transactional
 public class StoreService {
@@ -70,7 +68,6 @@ public class StoreService {
     private final StoreStatusRepository storeStatusRepository;
     private final StoreCategoryRepository storeCategoryRepository;
     private final AccountAddressRepository accountAddressRepository;
-    private final ImageRepository imageRepository;
     private static final BigDecimal DISTANCE = new BigDecimal("3.0");
     private static final Double RADIUS = 6371.0;
     private static final Double TO_RADIAN = Math.PI / 180;
@@ -153,7 +150,7 @@ public class StoreService {
             throw new DuplicatedBusinessLicenseException(registerRequestDto.getBusinessLicenseNumber());
         }
         Merchant merchant = null;
-        if(Objects.nonNull(registerRequestDto.getMerchantId())){
+        if (Objects.nonNull(registerRequestDto.getMerchantId())) {
             merchant = merchantRepository.findById(registerRequestDto.getMerchantId())
                 .orElseThrow(MerchantNotFoundException::new);
         }

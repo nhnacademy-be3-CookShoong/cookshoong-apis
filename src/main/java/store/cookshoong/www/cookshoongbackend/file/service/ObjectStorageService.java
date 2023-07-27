@@ -31,6 +31,7 @@ public class ObjectStorageService implements FileService {
     private final ObjectStorageProperties objectStorageProperties;
     private final ImageRepository imageRepository;
 
+
     /**
      * 파일이 저장된 전체 경로로 생성.
      *

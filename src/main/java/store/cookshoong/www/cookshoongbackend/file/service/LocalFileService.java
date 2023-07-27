@@ -5,7 +5,6 @@ import java.nio.file.Paths;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
@@ -33,7 +32,7 @@ public class LocalFileService implements FileService {
      * @return the full path
      */
     public String getFullPath(String filename) {
-        return rootPath + fileDir +"/"+ filename;
+        return rootPath + fileDir + "/" + filename;
     }
 
     /**
@@ -44,7 +43,7 @@ public class LocalFileService implements FileService {
      * @return the image
      * @throws IOException the io exception
      */
-    public Image storeFile(MultipartFile multipartFile,String domain, boolean isPublic) throws IOException {
+    public Image storeFile(MultipartFile multipartFile, String domain, boolean isPublic) throws IOException {
         if (multipartFile.isEmpty()) {
             return null;
         }
