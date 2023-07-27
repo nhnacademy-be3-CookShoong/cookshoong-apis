@@ -15,12 +15,10 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartMenuDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartOptionDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartRedisDto;
-import store.cookshoong.www.cookshoongbackend.config.RedisConfig;
 
 /**
  * Redis 기능 테스트.
@@ -29,7 +27,6 @@ import store.cookshoong.www.cookshoongbackend.config.RedisConfig;
  * @since 2023.07.20
  */
 @Slf4j
-@Import(RedisConfig.class)
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CartRedisRepositoryTest {
@@ -45,6 +42,7 @@ class CartRedisRepositoryTest {
     Long storeId = 2L;
     String storeName = "네네치킨";
     Long menuId = 1L;
+    Integer count = 1;
 
     @Test
     @DisplayName("Redis 서버에서 장바구니에 들어갈 메뉴 정보 담기")
@@ -54,7 +52,7 @@ class CartRedisRepositoryTest {
         ReflectionTestUtils.setField(cartMenuDto, "menuId", menuId);
         ReflectionTestUtils.setField(cartMenuDto, "menuName", "CHK");
         ReflectionTestUtils.setField(cartMenuDto, "menuImage", "menuImage");
-        ReflectionTestUtils.setField(cartMenuDto, "menuPrice", 1);
+        ReflectionTestUtils.setField(cartMenuDto, "menuPrice", 3000);
 
         CartOptionDto cartOptionDto = ReflectionUtils.newInstance(CartOptionDto.class);
         ReflectionTestUtils.setField(cartOptionDto, "optionId", 1L);
@@ -64,7 +62,7 @@ class CartRedisRepositoryTest {
         CartOptionDto cartOptionDto1 = ReflectionUtils.newInstance(CartOptionDto.class);
         ReflectionTestUtils.setField(cartOptionDto1, "optionId", 2L);
         ReflectionTestUtils.setField(cartOptionDto1, "optionName", "optionName3");
-        ReflectionTestUtils.setField(cartOptionDto1, "optionPrice", 1);
+        ReflectionTestUtils.setField(cartOptionDto1, "optionPrice", 2000);
 
         List<CartOptionDto> cartOptionDtos = new ArrayList<>();
         cartOptionDtos.add(cartOptionDto);
@@ -80,6 +78,9 @@ class CartRedisRepositoryTest {
         ReflectionTestUtils.setField(cartRedisDto, "options", cartOptionDtos);
         ReflectionTestUtils.setField(cartRedisDto, "createTimeMillis", System.currentTimeMillis());
         ReflectionTestUtils.setField(cartRedisDto, "hashKey", cartRedisDto.generateUniqueHashKey());
+        ReflectionTestUtils.setField(cartRedisDto, "count", count);
+        ReflectionTestUtils.setField(cartRedisDto, "menuOptName", cartRedisDto.generateMenuOptionName());
+        ReflectionTestUtils.setField(cartRedisDto, "totalMenuPrice", cartRedisDto.generateTotalMenuPrice());
 
         cartRedisRepository.cartRedisSave(redisKey, cartRedisDto.generateUniqueHashKey(), cartRedisDto);
     }
@@ -98,6 +99,8 @@ class CartRedisRepositoryTest {
         Comparator<CartRedisDto> sortCarts = Comparator.comparing(CartRedisDto::getCreateTimeMillis);
 
        cartList = cartList.stream().sorted(sortCarts).collect(Collectors.toList());
+
+       log.info("CART: {}", om.writerWithDefaultPrettyPrinter().writeValueAsString(cartList));
 
     }
 
@@ -159,8 +162,11 @@ class CartRedisRepositoryTest {
 
         ReflectionTestUtils.setField(cartRedisDto, "createTimeMillis", System.currentTimeMillis());
         ReflectionTestUtils.setField(cartRedisDto, "hashKey", cartRedisDto.generateUniqueHashKey());
+        ReflectionTestUtils.setField(cartRedisDto, "count", count);
+        ReflectionTestUtils.setField(cartRedisDto, "menuOptName", cartRedisDto.generateMenuOptionName());
+        ReflectionTestUtils.setField(cartRedisDto, "totalMenuPrice", cartRedisDto.generateTotalMenuPrice());
 
-        CartRedisDto deleteCartMenu = (CartRedisDto) cartRedisRepository.findByCartMenu(redisKey, "1:1,2");
+        CartRedisDto deleteCartMenu = (CartRedisDto) cartRedisRepository.findByCartMenu(redisKey, "112");
 
         cartRedisRepository.deleteCartMenu(redisKey, deleteCartMenu.getHashKey());
 

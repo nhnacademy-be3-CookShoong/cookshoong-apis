@@ -21,6 +21,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.model.request.AbstractCoupo
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateCashCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreatePercentCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicyResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableStoreCouponPolicyResponseDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeResponse;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponTypeCashRepository;
@@ -215,5 +216,15 @@ public class CouponPolicyService {
     public void deletePolicy(Long policyId) {
         couponPolicyRepository.findById(policyId)
             .ifPresent(CouponPolicy::delete);
+    }
+
+    /**
+     * 제공 가능한 쿠폰 정책 목록 전달.
+     *
+     * @param storeId the store id
+     * @return the provable store coupon policies
+     */
+    public List<SelectProvableStoreCouponPolicyResponseDto> getProvableStoreCouponPolicies(Long storeId) {
+        return couponPolicyRepository.lookupProvableStoreCouponPolicies(storeId);
     }
 }

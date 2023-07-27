@@ -1,8 +1,10 @@
 package store.cookshoong.www.cookshoongbackend.coupon.repository;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicyResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableStoreCouponPolicyResponseDto;
 
 /**
  * QueryDSL 사용을 위한 interface.
@@ -44,4 +46,12 @@ public interface CouponPolicyRepositoryCustom {
      * @return the long
      */
     Long lookupUnclaimedCouponCount(Long couponPolicyId);
+
+    /**
+     * 매장에서 발급 가능한 쿠폰 정책 목록을 제공하는 메서드.
+     *
+     * @param storeId the store id
+     * @return the list
+     */
+    List<SelectProvableStoreCouponPolicyResponseDto> lookupProvableStoreCouponPolicies(Long storeId);
 }

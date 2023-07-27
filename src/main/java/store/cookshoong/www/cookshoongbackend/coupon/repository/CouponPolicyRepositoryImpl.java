@@ -20,7 +20,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.QSelectPolicyResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.QSelectProvableStoreCouponPolicyResponseDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicyResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableStoreCouponPolicyResponseDto;
 
 /**
  * QueryDSL CouponPolicyRepository.
@@ -143,5 +145,34 @@ public class CouponPolicyRepositoryImpl implements CouponPolicyRepositoryCustom 
         }
 
         return issueCoupon.account.isNull();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<SelectProvableStoreCouponPolicyResponseDto> lookupProvableStoreCouponPolicies(Long storeId) {
+        return queryFactory
+            .select(new QSelectProvableStoreCouponPolicyResponseDto(
+                couponPolicy.id,
+                couponType,
+                couponPolicy.usagePeriod
+            ))
+            .from(couponPolicy)
+
+            .innerJoin(couponPolicy.couponType, couponType)
+
+            .innerJoin(couponPolicy.couponUsage, couponUsage)
+            .on(couponUsage.id.eq(getCouponUsageStoreId(storeId)))
+
+            .where(couponPolicy.deleted.isFalse(), existReceivableIssueCoupon())
+            .fetch();
+    }
+
+    private BooleanExpression existReceivableIssueCoupon() {
+        return JPAExpressions
+            .selectFrom(issueCoupon)
+            .where(issueCoupon.couponPolicy.eq(couponPolicy), isUnclaimedCouponCount(true))
+            .exists();
     }
 }

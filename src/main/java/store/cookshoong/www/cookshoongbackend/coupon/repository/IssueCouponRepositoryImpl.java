@@ -176,6 +176,7 @@ public class IssueCouponRepositoryImpl implements IssueCouponRepositoryCustom {
         long updatedCount = queryFactory.update(issueCoupon)
             .set(issueCoupon.account, account)
             .set(issueCoupon.expirationDate, expirationDate)
+            .set(issueCoupon.receiptDate, LocalDate.now())
             .where(issueCoupon.code.eq(issueCouponId), issueCoupon.account.isNull())
             .execute();
 
@@ -202,7 +203,7 @@ public class IssueCouponRepositoryImpl implements IssueCouponRepositoryCustom {
 
             .leftJoin(couponLog.couponLogType, couponLogType)
 
-            .where(issueCoupon.receiptDate.between(ago, today))
+            .where(issueCoupon.account.id.eq(accountId), issueCoupon.receiptDate.between(ago, today))
             .fetchFirst() != null;
     }
 }
