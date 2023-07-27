@@ -10,10 +10,14 @@ import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.file.service.FileStoreService;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.MenuStatus;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.menugroup.MenuGroup;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.menugroup.MenuHasMenuGroup;
+import store.cookshoong.www.cookshoongbackend.menu_order.exception.menu.MenuGroupNotFoundException;
 import store.cookshoong.www.cookshoongbackend.menu_order.exception.menu.MenuNotFoundException;
 import store.cookshoong.www.cookshoongbackend.menu_order.exception.menu.MenuStatusNotFoundException;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.request.CreateMenuRequestDto;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectMenuResponseDto;
+import store.cookshoong.www.cookshoongbackend.menu_order.repository.menu.MenuGroupRepository;
 import store.cookshoong.www.cookshoongbackend.menu_order.repository.menu.MenuRepository;
 import store.cookshoong.www.cookshoongbackend.menu_order.repository.menu.MenuStatusRepository;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
@@ -33,6 +37,7 @@ public class MenuService {
     private final MenuRepository menuRepository;
     private final MenuStatusRepository menuStatusRepository;
     private final StoreRepository storeRepository;
+    private final MenuGroupRepository menuGroupRepository;
     private final FileStoreService fileStoreService;
 
     /**
@@ -57,6 +62,7 @@ public class MenuService {
                 createMenuRequestDto.getCookingTime(),
                 createMenuRequestDto.getEarningRate());
         menuRepository.save(menu);
+        updateMenuGroup(createMenuRequestDto.getMenuGroups(), menu.getId());
     }
 
     /**
@@ -88,5 +94,18 @@ public class MenuService {
      */
     public void deleteMenu(Long storeId, Long menuId) {
         menuRepository.deleteMenu(storeId, menuId);
+    }
+
+    private void updateMenuGroup(List<Long> menuGroups, Long menuId) {
+        if (menuGroups.size() < 4) {
+            for (Long menuGroupId : menuGroups) {
+                MenuGroup menuGroup = menuGroupRepository.findById(menuGroupId)
+                    .orElseThrow(MenuGroupNotFoundException::new);
+                Menu menu = menuRepository.findById(menuId)
+                        .orElseThrow(MenuNotFoundException::new);
+                menu.getMenuHasMenuGroups()
+                    .add(new MenuHasMenuGroup(new MenuHasMenuGroup.Pk(menuId, menuGroupId), menu, menuGroup, 0));
+            }
+        }
     }
 }

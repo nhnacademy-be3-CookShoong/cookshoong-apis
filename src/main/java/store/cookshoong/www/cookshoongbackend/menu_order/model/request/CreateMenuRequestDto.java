@@ -1,6 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.menu_order.model.request;
 
 import java.math.BigDecimal;
+import java.util.List;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -26,4 +27,6 @@ public class CreateMenuRequestDto {
     private Integer cookingTime;
     @Digits(integer = 3, fraction = 1)
     private BigDecimal earningRate;
+
+    private List<Long> menuGroups;
 }

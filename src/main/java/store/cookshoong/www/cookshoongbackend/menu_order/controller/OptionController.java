@@ -33,20 +33,17 @@ public class OptionController {
     /**
      * 옵션 등록 컨트롤러.
      *
-     * @param optionGroupId          옵션 그룹 아이디
      * @param createOptionRequestDto 옵션 등록 Dto
      * @param bindingResult          validation
      * @return 201 response
      */
-    @PostMapping("/stores/{storeId}/option-group/{optionGroupId}/option")
-    public ResponseEntity<Void> postOption(@PathVariable("optionGroupId") Long optionGroupId,
-                                         @RequestBody @Valid CreateOptionRequestDto createOptionRequestDto,
+    @PostMapping("/stores/{storeId}/option")
+    public ResponseEntity<Void> postOption( @RequestBody @Valid CreateOptionRequestDto createOptionRequestDto,
                                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new OptionValidationException(bindingResult);
         }
-
-        optionService.createOption(optionGroupId, createOptionRequestDto);
+        optionService.createOption(createOptionRequestDto);
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .build();
