@@ -17,7 +17,6 @@ import store.cookshoong.www.cookshoongbackend.common.service.SKMService;
 @Configuration
 public class ObjectStorageConfig {
     @Bean
-    @Profile("!default")
     public ObjectStorageProperties objectStorageProperties(@Value("${cookshoong.skm.keyid.object-storage}") String storageKeyId,
                                                    SKMService skmService) throws JsonProcessingException {
         return skmService.fetchSecrets(storageKeyId, ObjectStorageProperties.class);

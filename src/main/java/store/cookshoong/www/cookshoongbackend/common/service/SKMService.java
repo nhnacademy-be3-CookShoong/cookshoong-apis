@@ -18,7 +18,6 @@ import store.cookshoong.www.cookshoongbackend.common.property.SecureKeyManagerUr
  * @author koesnam (추만석)
  * @since 2023.07.11
  */
-@Profile("!default")
 @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 @Service
 @RequiredArgsConstructor
