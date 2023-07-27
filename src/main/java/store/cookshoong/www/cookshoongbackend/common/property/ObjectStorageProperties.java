@@ -13,7 +13,8 @@ import lombok.Setter;
  *      "username" : "...",
  *      "password" : "...",
  *      "containerName" : "...",
- *      "storageUrl" : "..."
+ *      "storageUrl" : "...",
+ *      "authUrl": "..."
  * }
  * @author seungyeon (유승연)
  * @since 2023.07.26
