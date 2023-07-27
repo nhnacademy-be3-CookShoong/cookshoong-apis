@@ -38,7 +38,7 @@ public class CartRedisDto {
     /**
      * 메뉴와 옵션을 조합해서 hashKey 를 생성하는 메서드.
      *
-     * @return      메뉴 + 오셥s -> hashKey 반환
+     * @return      메뉴 + 옵션s -> hashKey 반환
      */
     public String generateUniqueHashKey() {
         String optionIdsString = options.stream()
