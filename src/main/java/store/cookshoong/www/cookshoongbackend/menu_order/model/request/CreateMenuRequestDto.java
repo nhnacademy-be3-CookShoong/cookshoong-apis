@@ -29,4 +29,6 @@ public class CreateMenuRequestDto {
     private BigDecimal earningRate;
 
     private List<Long> menuGroups;
+
+    private List<Long> optionGroups;
 }

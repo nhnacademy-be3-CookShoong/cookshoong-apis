@@ -12,14 +12,18 @@ import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.MenuStatus;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menugroup.MenuGroup;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menugroup.MenuHasMenuGroup;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.optiongroup.MenuHasOptionGroup;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.optiongroup.OptionGroup;
 import store.cookshoong.www.cookshoongbackend.menu_order.exception.menu.MenuGroupNotFoundException;
 import store.cookshoong.www.cookshoongbackend.menu_order.exception.menu.MenuNotFoundException;
 import store.cookshoong.www.cookshoongbackend.menu_order.exception.menu.MenuStatusNotFoundException;
+import store.cookshoong.www.cookshoongbackend.menu_order.exception.option.OptionGroupNotFoundException;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.request.CreateMenuRequestDto;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectMenuResponseDto;
 import store.cookshoong.www.cookshoongbackend.menu_order.repository.menu.MenuGroupRepository;
 import store.cookshoong.www.cookshoongbackend.menu_order.repository.menu.MenuRepository;
 import store.cookshoong.www.cookshoongbackend.menu_order.repository.menu.MenuStatusRepository;
+import store.cookshoong.www.cookshoongbackend.menu_order.repository.option.OptionGroupRepository;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreRepository;
@@ -38,6 +42,7 @@ public class MenuService {
     private final MenuStatusRepository menuStatusRepository;
     private final StoreRepository storeRepository;
     private final MenuGroupRepository menuGroupRepository;
+    private final OptionGroupRepository optionGroupRepository;
     private final FileStoreService fileStoreService;
 
     /**
@@ -63,6 +68,7 @@ public class MenuService {
                 createMenuRequestDto.getEarningRate());
         menuRepository.save(menu);
         updateMenuGroup(createMenuRequestDto.getMenuGroups(), menu.getId());
+        updateOptionGroup(createMenuRequestDto.getOptionGroups(), menu.getId());
     }
 
     /**
@@ -107,5 +113,16 @@ public class MenuService {
                     .add(new MenuHasMenuGroup(new MenuHasMenuGroup.Pk(menuId, menuGroupId), menu, menuGroup, 0));
             }
         }
+    }
+
+    private void updateOptionGroup(List<Long> optionGroups, Long menuId) {
+            for (Long optionGroupId : optionGroups) {
+                OptionGroup optionGroup = optionGroupRepository.findById(optionGroupId)
+                    .orElseThrow(OptionGroupNotFoundException::new);
+                Menu menu = menuRepository.findById(menuId)
+                    .orElseThrow(MenuNotFoundException::new);
+                menu.getMenuHasOptionGroups()
+                    .add(new MenuHasOptionGroup(new MenuHasOptionGroup.Pk(menuId, optionGroupId), menu, optionGroup, 0));
+            }
     }
 }

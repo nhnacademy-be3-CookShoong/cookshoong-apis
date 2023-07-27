@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menugroup.MenuHasMenuGroup;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.optiongroup.MenuHasOptionGroup;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 
 /**
@@ -69,6 +70,9 @@ public class Menu {
 
     @OneToMany(mappedBy = "menu", cascade = CascadeType.PERSIST)
     private final Set<MenuHasMenuGroup> menuHasMenuGroups = new HashSet<>();
+
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.PERSIST)
+    private final Set<MenuHasOptionGroup> menuHasOptionGroups = new HashSet<>();
 
     /**
      * 메뉴 엔티티 생성자.
