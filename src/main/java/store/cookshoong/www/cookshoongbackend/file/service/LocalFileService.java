@@ -6,6 +6,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
@@ -16,7 +17,7 @@ import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
  * @author seungyeon (유승연)
  * @since 2023.07.18
  */
-@Component
+@Service
 @RequiredArgsConstructor
 public class LocalFileService implements FileService {
     private final ImageRepository imageRepository;

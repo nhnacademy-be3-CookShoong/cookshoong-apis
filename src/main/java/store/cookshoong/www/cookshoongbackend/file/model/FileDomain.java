@@ -29,15 +29,6 @@ public enum FileDomain {
     private final String variable;
 
     /**
-     * 폴더명 코드.
-     *
-     * @return the code
-     */
-    public String getCode() {
-        return name();
-    }
-
-    /**
      * 폴더명.
      *
      * @return the variable
