@@ -2,6 +2,7 @@ package store.cookshoong.www.cookshoongbackend.file.service;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +33,7 @@ public class LocalFileService implements FileService {
      * @return the full path
      */
     public String getFullPath(String domain, String filename) {
-        return rootPath + fileDir + domain+ "/" + filename;
+        return rootPath + fileDir + domain + "/" + filename;
     }
 
     /**
@@ -48,7 +49,7 @@ public class LocalFileService implements FileService {
             return null;
         }
         String originFilename = multipartFile.getOriginalFilename();
-        String storeFilename = UUID.randomUUID() + "." + extractExt(originFilename);
+        String storeFilename = UUID.randomUUID() + "." + extractExt(Objects.requireNonNull(originFilename));
 
         multipartFile.transferTo(Paths.get(getFullPath(domain, storeFilename)));
         return imageRepository.save(new Image(originFilename, storeFilename, isPublic));
