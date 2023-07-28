@@ -19,6 +19,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartMenuDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartOptionDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartRedisDto;
+import store.cookshoong.www.cookshoongbackend.config.IntegrationTestBase;
 
 /**
  * Redis 기능 테스트.
@@ -29,7 +30,7 @@ import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartRedisDto;
 @Slf4j
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class CartRedisRepositoryTest {
+class CartRedisRepositoryTest extends IntegrationTestBase {
 
     @Autowired
     private CartRedisRepository cartRedisRepository;

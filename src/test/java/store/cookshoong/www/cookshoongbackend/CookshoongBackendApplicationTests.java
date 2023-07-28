@@ -1,13 +1,13 @@
 package store.cookshoong.www.cookshoongbackend;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import store.cookshoong.www.cookshoongbackend.config.IntegrationTestBase;
 
-@SpringBootTest
-class CookshoongBackendApplicationTests {
+class CookshoongBackendApplicationTests extends IntegrationTestBase {
 
     @Test
     void contextLoads() {
+
     }
 
 }
