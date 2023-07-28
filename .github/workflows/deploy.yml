@@ -12,11 +12,13 @@ on:
   push:
     branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main" , "develop"]
+    types:
+      - closed
 
 jobs:
-
   build:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     env:
       SECURE_KEY_MANAGER_PASSWORD: ${{ secrets.SECURE_KEY_MANAGER_PASSWORD }}

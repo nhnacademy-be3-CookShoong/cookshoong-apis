@@ -40,8 +40,8 @@ public class OptionGroupController {
      */
     @PostMapping("/stores/{storeId}/option-group")
     public ResponseEntity<Void> postOptionGroup(@PathVariable("storeId") Long storeId,
-                                         @RequestBody @Valid CreateOptionGroupRequestDto createOptionGroupRequestDto,
-                                         BindingResult bindingResult) {
+                                                @RequestBody @Valid CreateOptionGroupRequestDto createOptionGroupRequestDto,
+                                                BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new OptionGroupValidationException(bindingResult);
         }
@@ -87,7 +87,7 @@ public class OptionGroupController {
      */
     @DeleteMapping("/stores/{storeId}/option-group/{optionGroupId}")
     public ResponseEntity<Void> deleteOptionGroup(@PathVariable("storeId") Long storeId,
-                                           @PathVariable("optionGroupId") Long optionGroupId) {
+                                                  @PathVariable("optionGroupId") Long optionGroupId) {
         optionGroupService.deleteOptionGroup(storeId, optionGroupId);
         return ResponseEntity
             .status(HttpStatus.OK)

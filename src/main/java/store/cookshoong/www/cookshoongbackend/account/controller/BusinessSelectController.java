@@ -65,7 +65,7 @@ public class BusinessSelectController {
     }
 
     @GetMapping("/store-status")
-    public ResponseEntity<List<SelectAllStatusResponseDto>> getStoreStatusForUser(){
+    public ResponseEntity<List<SelectAllStatusResponseDto>> getStoreStatusForUser() {
         return ResponseEntity
             .ok(storeStatusService.selectAllStatusForUser());
     }

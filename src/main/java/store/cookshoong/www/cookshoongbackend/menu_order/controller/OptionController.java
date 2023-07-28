@@ -38,8 +38,8 @@ public class OptionController {
      * @return 201 response
      */
     @PostMapping("/stores/{storeId}/option")
-    public ResponseEntity<Void> postOption( @RequestBody @Valid CreateOptionRequestDto createOptionRequestDto,
-                                         BindingResult bindingResult) {
+    public ResponseEntity<Void> postOption(@RequestBody @Valid CreateOptionRequestDto createOptionRequestDto,
+                                           BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new OptionValidationException(bindingResult);
         }
@@ -84,7 +84,7 @@ public class OptionController {
      */
     @DeleteMapping("/stores/{storeId}/option/{optionId}")
     public ResponseEntity<Void> deleteOption(@PathVariable("storeId") Long storeId,
-                                           @PathVariable("optionId") Long optionId) {
+                                             @PathVariable("optionId") Long optionId) {
         optionService.deleteOption(storeId, optionId);
         return ResponseEntity
             .status(HttpStatus.OK)
