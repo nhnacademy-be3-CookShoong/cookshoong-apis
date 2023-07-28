@@ -4,7 +4,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 /**
  * The type Cookshoong backend application.
@@ -12,7 +11,6 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 @SpringBootApplication
 @EnableDiscoveryClient
 @ConfigurationPropertiesScan
-@EnableElasticsearchRepositories(basePackages = "store.cookshoong.www.cookshoongbackend.search.repository")
 public class CookshoongBackendApplication {
 
     /**
@@ -23,5 +21,4 @@ public class CookshoongBackendApplication {
     public static void main(String[] args) {
         SpringApplication.run(CookshoongBackendApplication.class, args);
     }
-
 }
