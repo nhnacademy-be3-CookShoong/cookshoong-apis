@@ -58,11 +58,21 @@ public class MenuGroupService {
     /**
      * 메뉴 그룹 조회 서비스.
      *
-     * @param MenuGroupId 메뉴 그룹 아이디
+     * @param menuGroupId 메뉴 그룹 아이디
      * @return 매장의 메뉴 그룹
      */
-    public SelectMenuGroupResponseDto selectMenuGroup(Long MenuGroupId) {
-        return menuGroupRepository.lookupMenuGroup(MenuGroupId)
+    public SelectMenuGroupResponseDto selectMenuGroup(Long menuGroupId) {
+        return menuGroupRepository.lookupMenuGroup(menuGroupId)
             .orElseThrow(MenuGroupNotFoundException::new);
+    }
+
+    /**
+     * 메뉴 그룹 삭제 서비스.
+     *
+     * @param storeId     매장 아이디
+     * @param menuGroupId 메뉴 그룹 아이디
+     */
+    public void deleteMenuGroup(Long storeId, Long menuGroupId) {
+        menuGroupRepository.deleteById(menuGroupId);
     }
 }

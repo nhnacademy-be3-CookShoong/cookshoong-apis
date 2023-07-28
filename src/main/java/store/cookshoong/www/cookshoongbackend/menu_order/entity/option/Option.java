@@ -62,4 +62,13 @@ public class Option {
         this.optionSequence = optionSequence;
         this.isDeleted = isDeleted;
     }
+
+    /**
+     * 옵션의 삭제여부 변경.
+     *
+     * @param isDeleted 옵션 삭제 여부
+     */
+    public void modifyOptionIsDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
 }

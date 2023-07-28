@@ -42,6 +42,9 @@ public class OrderDetail {
     @Column(name = "count")
     private Long count;
 
+    @Column(name = "now_name")
+    private String nowName;
+
     @Column(name = "now_cost", nullable = false)
     private Integer nowCost;
 

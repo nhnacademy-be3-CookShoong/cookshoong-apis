@@ -32,8 +32,10 @@ public class StoreDocumentController {
     }
 
     @GetMapping("/store/search")
-    public ResponseEntity<Page<StoreDocumentResponseDto>> searchByKeyword(@RequestParam("keyword") String keywordText, Pageable pageable) {
-        Page<StoreDocumentResponseDto> storeResponses = storeDocumentService.searchByKeywordText(keywordText, pageable);
+    public ResponseEntity<Page<StoreDocumentResponseDto>> searchByKeyword(
+        @RequestParam("keyword") String keywordText, Pageable pageable) {
+        Page<StoreDocumentResponseDto> storeResponses
+            = storeDocumentService.searchByKeywordText(keywordText, pageable);
         return ResponseEntity.ok(storeResponses);
     }
 }
