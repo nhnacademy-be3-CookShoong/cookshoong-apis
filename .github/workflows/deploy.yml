@@ -31,7 +31,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Build with Maven
-        run: mvn -B package --file pom.xml -Dcookshoong.skm.password=${{ secrets.SECURE_KEY_MANAGER_PASSWORD }} -Dcookshoong.skm.appkey=${{ secrets.SECURE_KEY_MANAGER_APP_KEY }}
+        run: mvn -B package --file pom.xml
       - name: Run Sonarqube
         run: mvn sonar:sonar -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_LOGIN }}
 
