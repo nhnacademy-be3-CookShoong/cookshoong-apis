@@ -60,7 +60,7 @@ public class OptionGroupRepositoryImpl implements OptionGroupRepositoryCustom {
                 optionGroup.isDeleted))
             .from(optionGroup)
             .innerJoin(optionGroup.store, store)
-            .where(store.id.eq(storeId))
+            .where(store.id.eq(storeId), optionGroup.isDeleted.isFalse())
             .fetch();
     }
 }

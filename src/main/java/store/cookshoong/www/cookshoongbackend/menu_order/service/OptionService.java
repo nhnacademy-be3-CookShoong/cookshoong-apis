@@ -29,11 +29,10 @@ public class OptionService {
     /**
      * 옵션 등록 서비스.
      *
-     * @param optionGroupId          옵션 그룹 아이디
      * @param createOptionRequestDto 옵션 등록 Dto
      */
-    public void createOption(Long optionGroupId, CreateOptionRequestDto createOptionRequestDto) {
-        OptionGroup optionGroup = optionGroupRepository.findById(optionGroupId)
+    public void createOption(CreateOptionRequestDto createOptionRequestDto) {
+        OptionGroup optionGroup = optionGroupRepository.findById(createOptionRequestDto.getOptionGroup())
             .orElseThrow(OptionGroupNotFoundException::new);
         Option option =
             new Option(
@@ -65,5 +64,17 @@ public class OptionService {
     public SelectOptionResponseDto selectOption(Long optionId) {
         return optionRepository.lookupOption(optionId)
             .orElseThrow(OptionNotFoundException::new);
+    }
+
+    /**
+     * 옵션 삭제 서비스.
+     *
+     * @param storeId  매장 아이디
+     * @param optionId 옵션 아이디
+     */
+    public void deleteOption(Long storeId, Long optionId) {
+        Option option = optionRepository.findById(optionId)
+            .orElseThrow(OptionNotFoundException::new);
+        option.modifyOptionIsDeleted(true);
     }
 }

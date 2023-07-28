@@ -1,5 +1,8 @@
 package store.cookshoong.www.cookshoongbackend.menu_order.entity.menugroup;
 
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -8,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -42,6 +46,9 @@ public class MenuGroup {
 
     @Column(name = "menu_group_sequence", nullable = false)
     private Integer menuGroupSequence;
+
+    @OneToMany(mappedBy = "menuGroup", cascade = CascadeType.PERSIST)
+    private final Set<MenuHasMenuGroup> menuHasMenuGroups = new HashSet<>();
 
     /**
      * 메뉴 그룹 엔티티 생성자.

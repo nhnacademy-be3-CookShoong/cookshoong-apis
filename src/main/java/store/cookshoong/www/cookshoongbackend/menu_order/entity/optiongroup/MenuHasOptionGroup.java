@@ -27,6 +27,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
 @Entity
 @Table(name = "menu_has_option_groups")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class MenuHasOptionGroup {
     @EmbeddedId
     private Pk pk;
@@ -51,7 +52,7 @@ public class MenuHasOptionGroup {
     @AllArgsConstructor
     public static class Pk implements Serializable {
         private Long menuId;
-        private Integer optionGroupId;
+        private Long optionGroupId;
     }
 
 }

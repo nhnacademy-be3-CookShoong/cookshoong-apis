@@ -1,6 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.menu_order.entity.orderdetail;
 
 import java.io.Serializable;
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -39,6 +40,12 @@ public class OrderDetailMenuOption {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "order_detail_id", nullable = false)
     private OrderDetail orderDetail;
+
+    @Column(name = "now_name")
+    private String nowName;
+
+    @Column(name = "now_price")
+    private String nowPrice;
 
     /**
      * 매장_카테고리 엔티티 복합키.

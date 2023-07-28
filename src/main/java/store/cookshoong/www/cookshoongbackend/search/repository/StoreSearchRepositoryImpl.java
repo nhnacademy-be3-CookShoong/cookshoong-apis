@@ -28,7 +28,7 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepositoryCustom {
 
     @Override
     public Page<StoreDocument> searchByKeywordText(String keywordText, Pageable pageable) {
-        Criteria criteria = Criteria.where("keywordText").matches(keywordText);
+        Criteria criteria = Criteria.where("keywordtext").matches(keywordText);
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         SearchHits<StoreDocument> searchHits = elasticsearchOperations.search(query, StoreDocument.class);
 
