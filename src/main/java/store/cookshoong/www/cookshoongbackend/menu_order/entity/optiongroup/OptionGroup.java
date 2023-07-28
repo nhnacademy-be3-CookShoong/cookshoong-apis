@@ -62,4 +62,13 @@ public class OptionGroup {
         this.maxSelectCount = maxSelectCount;
         this.isDeleted = isDeleted;
     }
+
+    /**
+     * 옵션 그룹의 삭제여부 변경.
+     *
+     * @param isDeleted 옵션 그룹 삭제 여부
+     */
+    public void modifyOptionGroupIsDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
 }

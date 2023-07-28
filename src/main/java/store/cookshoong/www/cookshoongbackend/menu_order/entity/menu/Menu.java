@@ -96,4 +96,13 @@ public class Menu {
         this.cookingTime = cookingTime;
         this.earningRate = earningRate;
     }
+
+    /**
+     * 메뉴의 상태코드 변경.
+     *
+     * @param menuStatusCode 메뉴 상태 코드(OPEN, CLOSE, OUTED)
+     */
+    public void modifyMenuStatus(MenuStatus menuStatusCode) {
+        this.menuStatusCode = menuStatusCode;
+    }
 }

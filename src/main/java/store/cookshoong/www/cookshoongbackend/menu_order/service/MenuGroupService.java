@@ -73,6 +73,6 @@ public class MenuGroupService {
      * @param menuGroupId 메뉴 그룹 아이디
      */
     public void deleteMenuGroup(Long storeId, Long menuGroupId) {
-        menuGroupRepository.deleteMenuGroup(storeId, menuGroupId);
+        menuGroupRepository.deleteById(menuGroupId);
     }
 }

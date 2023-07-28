@@ -29,12 +29,4 @@ public interface MenuRepositoryCustom {
      * @return 매장의 메뉴 리스트
      */
     List<SelectMenuResponseDto> lookupMenus(Long storeId);
-
-    /**
-     * 매장 메뉴 삭제.
-     *
-     * @param storeId     매장 아이디
-     * @param menuId 메뉴 아이디
-     */
-    void deleteMenu(Long storeId, Long menuId);
 }

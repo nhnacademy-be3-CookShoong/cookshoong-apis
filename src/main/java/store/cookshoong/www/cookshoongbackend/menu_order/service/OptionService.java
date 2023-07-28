@@ -73,6 +73,8 @@ public class OptionService {
      * @param optionId 옵션 아이디
      */
     public void deleteOption(Long storeId, Long optionId) {
-        optionRepository.deleteOption(storeId, optionId);
+        Option option = optionRepository.findById(optionId)
+            .orElseThrow(OptionNotFoundException::new);
+        option.modifyOptionIsDeleted(true);
     }
 }

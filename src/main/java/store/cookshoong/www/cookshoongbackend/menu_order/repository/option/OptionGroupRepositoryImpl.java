@@ -63,21 +63,4 @@ public class OptionGroupRepositoryImpl implements OptionGroupRepositoryCustom {
             .where(store.id.eq(storeId), optionGroup.isDeleted.isFalse())
             .fetch();
     }
-
-    /**
-     * 매장 옵션 그룹 삭제.
-     *
-     * @param storeId       매장 아이디
-     * @param optionGroupId 옵션 그룹 아이디
-     */
-    @Override
-    public void deleteOptionGroup(Long storeId, Long optionGroupId) {
-        QOptionGroup optionGroup = QOptionGroup.optionGroup;
-
-        jpaQueryFactory
-            .update(optionGroup)
-            .set(optionGroup.isDeleted, true)
-            .where(optionGroup.id.eq(optionGroupId))
-            .execute();
-    }
 }

@@ -111,9 +111,20 @@ public class MenuService {
      * @param menuId  메뉴 아이디
      */
     public void deleteMenu(Long storeId, Long menuId) {
-        menuRepository.deleteMenu(storeId, menuId);
+        Menu menu = menuRepository.findById(menuId)
+            .orElseThrow(MenuNotFoundException::new);
+        MenuStatus menuStatus = menuStatusRepository.findById("OUTED")
+                .orElseThrow(MenuStatusNotFoundException::new);
+        menu.modifyMenuStatus(menuStatus);
     }
 
+
+    /**
+     * 메뉴 - 메뉴 그룹 관계 업데이트 서비스.
+     *
+     * @param menuGroups 메뉴 그룹 리스트
+     * @param menuId     메뉴 아이디
+     */
     private void updateMenuGroup(List<Long> menuGroups, Long menuId) {
         if (menuGroups.size() < 4) {
             for (Long menuGroupId : menuGroups) {
@@ -127,6 +138,13 @@ public class MenuService {
         }
     }
 
+
+    /**
+     * 메뉴 - 옵션 그룹 관계 업데이트 서비스.
+     *
+     * @param optionGroups 옵션 그룹 리스트
+     * @param menuId       메뉴 아이디
+     */
     private void updateOptionGroup(List<Long> optionGroups, Long menuId) {
         for (Long optionGroupId : optionGroups) {
             OptionGroup optionGroup = optionGroupRepository.findById(optionGroupId)

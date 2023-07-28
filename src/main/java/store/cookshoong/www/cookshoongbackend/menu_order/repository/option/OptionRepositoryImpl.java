@@ -68,21 +68,4 @@ public class OptionRepositoryImpl implements OptionRepositoryCustom {
             .where(store.id.eq(storeId), option.isDeleted.isFalse())
             .fetch();
     }
-
-    /**
-     * 매장 옵션 삭제.
-     *
-     * @param storeId  매장 아이디
-     * @param optionId 옵션 아이디
-     */
-    @Override
-    public void deleteOption(Long storeId, Long optionId) {
-        QOption option = QOption.option;
-
-        jpaQueryFactory
-            .update(option)
-            .set(option.isDeleted, true)
-            .where(option.id.eq(optionId))
-            .execute();
-    }
 }

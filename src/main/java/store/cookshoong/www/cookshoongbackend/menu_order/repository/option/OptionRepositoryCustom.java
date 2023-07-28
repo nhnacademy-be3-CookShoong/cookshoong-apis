@@ -29,12 +29,4 @@ public interface OptionRepositoryCustom {
      * @return 매장의 옵션 리스트
      */
     List<SelectOptionResponseDto> lookupOptions(Long storeId);
-
-    /**
-     * 매장 옵션 삭제.
-     *
-     * @param storeId  매장 아이디
-     * @param optionId 옵션 아이디
-     */
-    void deleteOption(Long storeId, Long optionId);
 }

@@ -61,20 +61,4 @@ public class MenuGroupRepositoryImpl implements MenuGroupRepositoryCustom {
             .where(store.id.eq(storeId))
             .fetch();
     }
-
-    /**
-     * 매장 메뉴 그룹 삭제.
-     *
-     * @param storeId     매장 아이디
-     * @param menuGroupId 메뉴 그룹 아이디
-     */
-    @Override
-    public void deleteMenuGroup(Long storeId, Long menuGroupId) {
-        QMenuGroup menuGroup = QMenuGroup.menuGroup;
-
-        jpaQueryFactory
-            .delete(menuGroup)
-            .where(menuGroup.id.eq(menuGroupId))
-            .execute();
-    }
 }

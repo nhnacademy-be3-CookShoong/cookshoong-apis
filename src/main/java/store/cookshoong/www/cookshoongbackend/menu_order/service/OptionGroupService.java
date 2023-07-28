@@ -74,6 +74,8 @@ public class OptionGroupService {
      * @param optionGroupId 옵션 그룹 아이디
      */
     public void deleteOptionGroup(Long storeId, Long optionGroupId) {
-        optionGroupRepository.deleteOptionGroup(storeId, optionGroupId);
+        OptionGroup optionGroup = optionGroupRepository.findById(optionGroupId)
+            .orElseThrow(OptionGroupNotFoundException::new);
+        optionGroup.modifyOptionGroupIsDeleted(true);
     }
 }

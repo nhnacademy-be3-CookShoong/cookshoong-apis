@@ -79,27 +79,4 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
             .where(store.id.eq(storeId), menu.menuStatusCode.ne(outedStatus))
             .fetch();
     }
-
-    /**
-     * 매장 메뉴 삭제.
-     *
-     * @param storeId 매장 아이디
-     * @param menuId  메뉴 아이디
-     */
-    @Override
-    public void deleteMenu(Long storeId, Long menuId) {
-        QMenu menu = QMenu.menu;
-        QMenuStatus menuStatus = QMenuStatus.menuStatus;
-
-        MenuStatus outedStatus = jpaQueryFactory
-            .selectFrom(menuStatus)
-            .where(menuStatus.menuStatusCode.eq("OUTED"))
-            .fetchOne();
-
-        jpaQueryFactory
-            .update(menu)
-            .set(menu.menuStatusCode, outedStatus)
-            .where(menu.id.eq(menuId))
-            .execute();
-    }
 }
