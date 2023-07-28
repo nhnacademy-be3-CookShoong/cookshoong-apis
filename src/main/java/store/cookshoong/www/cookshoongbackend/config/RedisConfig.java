@@ -25,9 +25,9 @@ public class RedisConfig {
 
     @Bean
     @Profile("!default")
-    public RedisProperties redisProperties(@Value("${cookshoong.skm.keyid.redis}") String redisKeyid,
+    public RedisProperties redisProperties(@Value("${cookshoong.skm.keyid.redis}") String redisKeyId,
                                            SKMService skmService) throws JsonProcessingException {
-        return skmService.fetchSecrets(redisKeyid, RedisProperties.class);
+        return skmService.fetchSecrets(redisKeyId, RedisProperties.class);
     }
 
     /**
@@ -40,7 +40,18 @@ public class RedisConfig {
     @Bean
     @Profile("!default")
     public RedisConnectionFactory redisConnectionFactory(RedisProperties redisProperties,
-                                                         @Value("${spring.redis.database}") Integer database) {
+                                                        @Value("${spring.redis.database}") Integer database) {
+        return createRedisConnectionFactory(redisProperties, database);
+    }
+
+    @Bean
+    @Profile("!default")
+    public RedisConnectionFactory couponRedisConnectionFactory(RedisProperties redisProperties,
+                                                         @Value("${coupon.redis.database}") Integer database) {
+        return createRedisConnectionFactory(redisProperties, database);
+    }
+
+    private RedisConnectionFactory createRedisConnectionFactory(RedisProperties redisProperties, Integer database) {
 
         RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
         configuration.setHostName(redisProperties.getHost());
@@ -58,9 +69,18 @@ public class RedisConfig {
      * @return                              redisTemplate 를 반환
      */
     @Bean
-    public RedisTemplate<?, ?> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        return createRedisTemplate(redisConnectionFactory);
+    }
 
-        RedisTemplate<byte[], byte[]> redisTemplate = new RedisTemplate<>();
+    @Bean
+    public RedisTemplate<String, Object> couponRedisTemplate(RedisConnectionFactory couponRedisConnectionFactory) {
+        return createRedisTemplate(couponRedisConnectionFactory);
+    }
+
+    private RedisTemplate<String, Object> createRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
+
+        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory);
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());

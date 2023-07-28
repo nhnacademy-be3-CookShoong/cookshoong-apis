@@ -140,8 +140,9 @@ class AddressServiceTest {
         when(accountRepository.findById(testAccount.getId())).thenReturn(Optional.of(testAccount));
         when(accountAddressRepository.findByAccount(testAccount)).thenReturn(accountAddresses);
 
+        Long testAccountId = testAccount.getId();
         assertThrows(MaxAddressLimitException.class,
-            () -> addressService.createAccountAddress(testAccount.getId(), requestDto));
+            () -> addressService.createAccountAddress(testAccountId, requestDto));
 
         verify(accountRepository, times(1)).findById(testAccount.getId());
         verify(accountAddressRepository, times(1)).findByAccount(testAccount);
@@ -178,8 +179,11 @@ class AddressServiceTest {
 
         when(accountAddressRepository.findById(pk)).thenReturn(Optional.empty());
 
+        Long testAccountId = testAccount.getId();
+        Long testAddressId = testAddress.getId();
+
         assertThrows(AccountAddressNotFoundException.class,
-            () -> addressService.updateAccountDetailAddress(testAccount.getId(), testAddress.getId(), requestDto));
+            () -> addressService.updateAccountDetailAddress(testAccountId, testAddressId, requestDto));
 
         verify(accountAddressRepository, times(1)).findById(pk);
     }
@@ -205,8 +209,10 @@ class AddressServiceTest {
 
         when(accountAddressRepository.findById(pk)).thenReturn(Optional.empty());
 
+        Long testAccountId = testAccount.getId();
+        Long testAddressId = testAddress.getId();
         assertThrows(AccountAddressNotFoundException.class,
-            () -> addressService.updateSelectAccountAddressRenewalAt(testAccount.getId(), testAddress.getId()));
+            () -> addressService.updateSelectAccountAddressRenewalAt(testAccountId, testAddressId));
 
         verify(accountAddressRepository, times(1)).findById(pk);
     }
@@ -237,8 +243,10 @@ class AddressServiceTest {
 
         when(accountRepository.findById(testAccount.getId())).thenReturn(Optional.empty());
 
+        Long testAccountId = testAccount.getId();
+
         assertThrows(UserNotFoundException.class,
-            () -> addressService.selectAccountAddressList(testAccount.getId()));
+            () -> addressService.selectAccountAddressList(testAccountId));
 
         verify(accountRepository, times(1)).findById(testAccount.getId());
     }
@@ -274,8 +282,10 @@ class AddressServiceTest {
 
         when(accountRepository.findById(testAccount.getId())).thenReturn(Optional.empty());
 
+        Long testAccountId = testAccount.getId();
+
         assertThrows(UserNotFoundException.class,
-            () -> addressService.selectAccountAddressRenewalAt(testAccount.getId()));
+            () -> addressService.selectAccountAddressRenewalAt(testAccountId));
 
         verify(accountRepository, times(1)).findById(testAccount.getId());
     }
@@ -311,8 +321,10 @@ class AddressServiceTest {
 
         when(addressRepository.findById(testAddress.getId())).thenReturn(Optional.empty());
 
+
+        Long testAddressId = testAddress.getId();
         assertThrows(AccountAddressNotFoundException.class,
-            () -> addressService.selectAccountChoiceAddress(testAddress.getId()));
+            () -> addressService.selectAccountChoiceAddress(testAddressId));
 
         verify(addressRepository, times(1)).findById(testAddress.getId());
     }
@@ -339,8 +351,10 @@ class AddressServiceTest {
 
         when(accountAddressRepository.findById(pk)).thenReturn(Optional.empty());
 
+        Long testAccountId = testAccount.getId();
+        Long testAddressId = testAddress.getId();
         assertThrows(AccountAddressNotFoundException.class,
-            () -> addressService.deleteAccountAddress(testAccount.getId(), testAddress.getId()));
+            () -> addressService.deleteAccountAddress(testAccountId, testAddressId));
 
 
         verify(accountAddressRepository, times(1)).findById(pk);
