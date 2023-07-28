@@ -7,8 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QMerchant;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectAllMerchantsForUserResponseDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllMerchantsForUserResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectAllMerchantsResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllMerchantsResponseDto;
 
 /**
  * 가맹점 Custom Repository.
@@ -25,16 +25,16 @@ public class MerchantRepositoryImpl implements MerchantRepositoryCustom {
      * {@inheritDoc}
      */
     @Override
-    public Page<SelectAllMerchantsForUserResponseDto> lookupMerchantPage(Pageable pageable) {
-        List<SelectAllMerchantsForUserResponseDto> responseDtos = lookupMerchants(pageable);
+    public Page<SelectAllMerchantsResponseDto> lookupMerchantPage(Pageable pageable) {
+        List<SelectAllMerchantsResponseDto> responseDtos = lookupMerchants(pageable);
         long total = lookupTotal();
         return new PageImpl<>(responseDtos, pageable, total);
     }
 
-    private List<SelectAllMerchantsForUserResponseDto> lookupMerchants(Pageable pageable) {
+    private List<SelectAllMerchantsResponseDto> lookupMerchants(Pageable pageable) {
         QMerchant merchant = QMerchant.merchant;
         return jpaQueryFactory
-            .select(new QSelectAllMerchantsForUserResponseDto(merchant.id, merchant.name))
+            .select(new QSelectAllMerchantsResponseDto(merchant.id, merchant.name))
             .from(merchant)
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())

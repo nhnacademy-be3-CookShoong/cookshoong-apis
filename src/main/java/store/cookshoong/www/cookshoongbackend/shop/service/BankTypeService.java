@@ -25,8 +25,9 @@ public class BankTypeService {
     private final BankTypeRepository bankTypeRepository;
 
     /**
-     * 은행 리스트 페이지로 구현.
+     * 관리자 : 은행 리스트 페이지로 구현.
      *
+     * @param pageable the pageable
      * @return the page
      */
     @Transactional(readOnly = true)
@@ -35,7 +36,7 @@ public class BankTypeService {
     }
 
     /**
-     * 은행명 추가.
+     * 관리자 : 은행 추가.
      *
      * @param requestDto 은행 이름 request dto
      */
@@ -49,6 +50,11 @@ public class BankTypeService {
         bankTypeRepository.save(new BankType(requestDto.getBankCode(), requestDto.getBankName()));
     }
 
+    /**
+     * 사업자 : 은행 리스트 조회 서비스 코드 작성.
+     *
+     * @return the list
+     */
     @Transactional(readOnly = true)
     public List<SelectAllBanksResponseDto> selectBanksForUser() {
         return bankTypeRepository.findAllByOrderByDescriptionAsc();

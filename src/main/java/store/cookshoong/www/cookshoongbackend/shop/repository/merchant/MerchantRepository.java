@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllMerchantsForUserResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllMerchantsResponseDto;
 
 /**
  * 가맹점 레포지토리.
@@ -29,5 +29,5 @@ public interface MerchantRepository extends JpaRepository<Merchant, Long>, Merch
      */
     boolean existsMerchantByName(String name);
 
-    List<SelectAllMerchantsForUserResponseDto> findAllByOrderByNameAsc();
+    List<SelectAllMerchantsResponseDto> findAllByOrderByNameAsc();
 }
