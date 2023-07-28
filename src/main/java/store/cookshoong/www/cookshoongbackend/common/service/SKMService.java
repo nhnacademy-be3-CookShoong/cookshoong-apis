@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import store.cookshoong.www.cookshoongbackend.common.model.response.SecureKeyManagerResponseDto;

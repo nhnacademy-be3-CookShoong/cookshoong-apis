@@ -1,6 +1,5 @@
 package store.cookshoong.www.cookshoongbackend.coupon.repository;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypePercent;
