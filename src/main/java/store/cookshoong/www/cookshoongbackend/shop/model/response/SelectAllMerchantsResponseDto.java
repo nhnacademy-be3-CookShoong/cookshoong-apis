@@ -10,7 +10,7 @@ import lombok.Getter;
  * @since 2023.07.12
  */
 @Getter
-public class SelectAllMerchantsForUserResponseDto {
+public class SelectAllMerchantsResponseDto {
     private final Long id;
     private final String name;
 
@@ -21,7 +21,7 @@ public class SelectAllMerchantsForUserResponseDto {
      * @param name the name
      */
     @QueryProjection
-    public SelectAllMerchantsForUserResponseDto(Long id, String name) {
+    public SelectAllMerchantsResponseDto(Long id, String name) {
         this.id = id;
         this.name = name;
     }

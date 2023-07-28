@@ -11,7 +11,7 @@ import store.cookshoong.www.cookshoongbackend.shop.exception.merchant.Duplicated
 import store.cookshoong.www.cookshoongbackend.shop.exception.merchant.MerchantNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateMerchantRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateMerchantRequestDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllMerchantsForUserResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllMerchantsResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.repository.merchant.MerchantRepository;
 
 /**
@@ -40,7 +40,7 @@ public class MerchantService {
      * @return 가맹점 리스트
      */
     @Transactional(readOnly = true)
-    public Page<SelectAllMerchantsForUserResponseDto> selectAllMerchants(Pageable pageable) {
+    public Page<SelectAllMerchantsResponseDto> selectAllMerchants(Pageable pageable) {
         return merchantRepository.lookupMerchantPage(pageable);
     }
 
@@ -81,7 +81,7 @@ public class MerchantService {
      *
      * @return the list
      */
-    public List<SelectAllMerchantsForUserResponseDto> selectAllMerchantsForUser() {
+    public List<SelectAllMerchantsResponseDto> selectAllMerchantsForUser() {
         return merchantRepository.findAllByOrderByNameAsc();
     }
 
