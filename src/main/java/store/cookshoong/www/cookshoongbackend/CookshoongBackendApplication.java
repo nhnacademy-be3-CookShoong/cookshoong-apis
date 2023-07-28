@@ -21,5 +21,4 @@ public class CookshoongBackendApplication {
     public static void main(String[] args) {
         SpringApplication.run(CookshoongBackendApplication.class, args);
     }
-
 }
