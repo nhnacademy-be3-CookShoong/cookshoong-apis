@@ -36,8 +36,8 @@ public class RefundTypeController {
     /**
      * 환불 타입을 만드는 생성 메서드.
      *
-     * @param requestDto    타입에 대한 name Dto
-     * @return              상태코드 201(CREATED)와 함께 응답을 반환
+     * @param requestDto 타입에 대한 name Dto
+     * @return 상태코드 201(CREATED)와 함께 응답을 반환
      */
     @PostMapping("/refunds")
     public ResponseEntity<CreateTypeRequestDto> postCreateRefundType(
@@ -56,9 +56,9 @@ public class RefundTypeController {
     /**
      * 환불 타입에 name 을 변경하는 메서드.
      *
-     * @param refundTypeId  환불 타입 아이디
-     * @param requestDto    환불 타입 name 에 Dto
-     * @return              상태코드 200(Ok)와 함께 응답을 반환
+     * @param refundTypeId 환불 타입 아이디
+     * @param requestDto   환불 타입 name 에 Dto
+     * @return 상태코드 200(Ok)와 함께 응답을 반환
      */
     @PutMapping("/refunds/{refundTypeId}")
     public ResponseEntity<ModifyTypeRequestDto> putModifyRefundType(@PathVariable("refundTypeId") String refundTypeId,
@@ -76,8 +76,8 @@ public class RefundTypeController {
     /**
      * 해당 아이디에 해당하는 환불 타입을 조회하는 메서드.
      *
-     * @param refundTypeId  환불 타입 아이디
-     * @return              상태코드 200(Ok)와 함께 응답을 반환
+     * @param refundTypeId 환불 타입 아이디
+     * @return 상태코드 200(Ok)와 함께 응답을 반환
      */
     @GetMapping("/refunds/{refundTypeId}")
     public ResponseEntity<TypeResponseDto> getRefundType(@PathVariable("refundTypeId") String refundTypeId) {
@@ -90,7 +90,7 @@ public class RefundTypeController {
     /**
      * 모든 환불 타입을 조회하는 메서드.
      *
-     * @return              상태코드 200(Ok)와 함께 응답을 반환
+     * @return 상태코드 200(Ok)와 함께 응답을 반환
      */
     @GetMapping("/refunds")
     public ResponseEntity<List<TypeResponseDto>> getRefundTypeAll() {
@@ -103,8 +103,8 @@ public class RefundTypeController {
     /**
      * 해당 아이디에 환불 타입을 삭제하는 메서드.
      *
-     * @param refundTypeId  환불 타입 아이디
-     * @return              상태코드 204(No_CONTENT)와 함께 응답을 반환
+     * @param refundTypeId 환불 타입 아이디
+     * @return 상태코드 204(No_CONTENT)와 함께 응답을 반환
      */
     @DeleteMapping("/refunds/{refundTypeId}")
     public ResponseEntity<Void> deleteRefundType(@PathVariable("refundTypeId") String refundTypeId) {

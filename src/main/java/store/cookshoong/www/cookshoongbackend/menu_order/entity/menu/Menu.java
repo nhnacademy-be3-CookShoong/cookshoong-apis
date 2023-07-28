@@ -59,7 +59,7 @@ public class Menu {
     private String description;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "menu_image_id",nullable = false)
+    @JoinColumn(name = "menu_image_id", nullable = false)
     private Image image;
 
     @Column(name = "cooking_time", nullable = false)

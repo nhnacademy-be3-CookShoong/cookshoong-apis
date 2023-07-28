@@ -90,7 +90,7 @@ public class MenuController {
      */
     @DeleteMapping("/stores/{storeId}/menu/{menuId}")
     public ResponseEntity<Void> deleteMenu(@PathVariable("storeId") Long storeId,
-                                         @PathVariable("menuId") Long menuId) {
+                                           @PathVariable("menuId") Long menuId) {
         menuService.deleteMenu(storeId, menuId);
         return ResponseEntity
             .status(HttpStatus.OK)

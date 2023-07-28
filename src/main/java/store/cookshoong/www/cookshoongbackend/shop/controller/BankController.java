@@ -47,7 +47,6 @@ public class BankController {
      */
     @PostMapping
     public ResponseEntity<Void> postBank(@RequestBody @Valid CreateBankRequestDto requestDto) {
-        // TODO 7.추후 Created관련 상태 변경
         bankTypeService.createBank(requestDto);
         return ResponseEntity
             .status(HttpStatus.CREATED)

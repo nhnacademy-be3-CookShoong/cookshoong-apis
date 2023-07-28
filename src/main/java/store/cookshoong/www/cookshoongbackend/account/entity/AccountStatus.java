@@ -35,6 +35,6 @@ public class AccountStatus {
      * 회원 상태코드들을 상수로 관리하기 위한 Enum.
      */
     public enum Code {
-        ACTIVE, DORMANCY, WITHDRAWAL;
+        ACTIVE, DORMANCY, WITHDRAWAL
     }
 }

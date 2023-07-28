@@ -1,10 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.file.model.response;
 
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 /**
  * POST    https://api-identity-infrastructure.nhncloudservice.com/v2.0/tokens 에 대한 응답. <br>

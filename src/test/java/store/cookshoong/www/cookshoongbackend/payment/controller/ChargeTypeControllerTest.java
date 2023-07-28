@@ -78,7 +78,7 @@ class ChargeTypeControllerTest {
 
     @Test
     @DisplayName("POST 결제 타입 등록 실패: null 값이 들어갈 때 오류 테스트")
-    void postCreateChargeTypeNotBlank_1() throws Exception {
+    void postCreateChargeTypeNotBlank_isNull() throws Exception {
         CreateTypeRequestDto requestDto = ReflectionUtils.newInstance(CreateTypeRequestDto.class);
         ReflectionTestUtils.setField(requestDto, "name", null);
 
@@ -92,7 +92,7 @@ class ChargeTypeControllerTest {
 
     @Test
     @DisplayName("POST 결제 타입 등록 실패: 빈 값이 들어갈 때 오류 테스트")
-    void postCreateChargeTypeNotBlank_2() throws Exception {
+    void postCreateChargeTypeNotBlank_isEmpty() throws Exception {
         CreateTypeRequestDto requestDto = ReflectionUtils.newInstance(CreateTypeRequestDto.class);
         ReflectionTestUtils.setField(requestDto, "name", "");
 
