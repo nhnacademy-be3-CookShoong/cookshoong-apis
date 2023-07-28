@@ -63,7 +63,7 @@ public class RequestExceptionHandler {
      * @return 예외메세지
      */
     @ExceptionHandler({DuplicatedUserException.class})
-    public  ResponseEntity<ErrorMessage> handleConflictStatus(Exception e, HttpServletRequest request) {
+    public ResponseEntity<ErrorMessage> handleConflictStatus(Exception e, HttpServletRequest request) {
         log.error(CLIENT_IP_LOG, IpResolver.getClientIp(request));
         return ResponseEntity.status(HttpStatus.CONFLICT)
             .body(new ErrorMessage(e));

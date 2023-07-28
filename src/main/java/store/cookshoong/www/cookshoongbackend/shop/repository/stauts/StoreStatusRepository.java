@@ -13,4 +13,5 @@ import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStatu
  */
 public interface StoreStatusRepository extends JpaRepository<StoreStatus, String> {
     List<SelectAllStatusResponseDto> findAllBy();
+    boolean existsByDescription(String description);
 }

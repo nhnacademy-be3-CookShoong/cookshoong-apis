@@ -2,7 +2,8 @@ package store.cookshoong.www.cookshoongbackend.coupon.util;
 
 import java.util.Map;
 import java.util.function.Function;
-import org.springframework.stereotype.Component;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponType;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypePercent;
@@ -16,7 +17,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeResponse
  * @author eora21
  * @since 2023.07.06
  */
-@Component
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CouponTypeConverter {
     private static final Map<Class<? extends CouponType>, Function<CouponType, CouponTypeResponse>> COUPON_TYPE_MAPPER =
         Map.of(
@@ -32,7 +33,7 @@ public class CouponTypeConverter {
         return CouponTypePercentVo.newInstance((CouponTypePercent) couponTypePercent);
     }
 
-    public CouponTypeResponse convert(CouponType couponType) {
+    public static CouponTypeResponse convert(CouponType couponType) {
         return COUPON_TYPE_MAPPER.get(couponType.getClass())
             .apply(couponType);
     }

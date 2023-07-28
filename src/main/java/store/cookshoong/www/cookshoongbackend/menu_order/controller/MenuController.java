@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -78,5 +79,21 @@ public class MenuController {
         @PathVariable("menuId") Long menuId) {
         SelectMenuResponseDto menu = menuService.selectMenu(menuId);
         return ResponseEntity.ok(menu);
+    }
+
+    /**
+     * 메뉴 삭제 컨트롤러.
+     *
+     * @param storeId 매장 아이디
+     * @param menuId  메뉴 아이디
+     * @return 200 response
+     */
+    @DeleteMapping("/stores/{storeId}/menu/{menuId}")
+    public ResponseEntity<Void> deleteMenu(@PathVariable("storeId") Long storeId,
+                                           @PathVariable("menuId") Long menuId) {
+        menuService.deleteMenu(storeId, menuId);
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .build();
     }
 }

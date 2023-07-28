@@ -24,14 +24,12 @@ public class StoreDocument {
     private Long id;
     private String name;
     private String description;
-    private String keywordText;
 
     public static StoreDocument from(StoreDocumentRequestDto storeDocumentRequestDto) {
         return StoreDocument.builder()
             .id(storeDocumentRequestDto.getId())
             .name(storeDocumentRequestDto.getName())
             .description(storeDocumentRequestDto.getDescription())
-            .keywordText(storeDocumentRequestDto.getKeywordText())
             .build();
     }
 }

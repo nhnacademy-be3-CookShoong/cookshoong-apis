@@ -1,8 +1,10 @@
 package store.cookshoong.www.cookshoongbackend.coupon.repository;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import store.cookshoong.www.cookshoongbackend.coupon.model.temp.SelectPolicyResponseTempDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicyResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableStoreCouponPolicyResponseDto;
 
 /**
  * QueryDSL 사용을 위한 interface.
@@ -18,7 +20,7 @@ public interface CouponPolicyRepositoryCustom {
      * @param pageable the pageable
      * @return the page
      */
-    Page<SelectPolicyResponseTempDto> lookupStorePolicy(Long storeId, Pageable pageable);
+    Page<SelectPolicyResponseDto> lookupStorePolicy(Long storeId, Pageable pageable);
 
     /**
      * 특정 가맹점의 쿠폰 정책을 확인하기 위한 메서드.
@@ -27,7 +29,7 @@ public interface CouponPolicyRepositoryCustom {
      * @param pageable   the pageable
      * @return the page
      */
-    Page<SelectPolicyResponseTempDto> lookupMerchantPolicy(Long merchantId, Pageable pageable);
+    Page<SelectPolicyResponseDto> lookupMerchantPolicy(Long merchantId, Pageable pageable);
 
     /**
      * 모든 사용처의 쿠폰 정책을 확인하기 위한 메서드.
@@ -35,7 +37,7 @@ public interface CouponPolicyRepositoryCustom {
      * @param pageable the pageable
      * @return the page
      */
-    Page<SelectPolicyResponseTempDto> lookupAllPolicy(Pageable pageable);
+    Page<SelectPolicyResponseDto> lookupAllPolicy(Pageable pageable);
 
     /**
      * 사용자가 받지 않은 쿠폰 개수 확인 메서드.
@@ -44,4 +46,12 @@ public interface CouponPolicyRepositoryCustom {
      * @return the long
      */
     Long lookupUnclaimedCouponCount(Long couponPolicyId);
+
+    /**
+     * 매장에서 발급 가능한 쿠폰 정책 목록을 제공하는 메서드.
+     *
+     * @param storeId the store id
+     * @return the list
+     */
+    List<SelectProvableStoreCouponPolicyResponseDto> lookupProvableStoreCouponPolicies(Long storeId);
 }

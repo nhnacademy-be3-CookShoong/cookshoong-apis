@@ -5,13 +5,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponPolicyRequestValidationException;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.IssueCouponRequestValidationException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateIssueCouponRequestDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.request.UpdateProvideCouponRequest;
 import store.cookshoong.www.cookshoongbackend.coupon.service.IssueCouponService;
 
 /**
@@ -30,11 +31,12 @@ public class IssueCouponController {
      * 쿠폰 발행 엔드포인트.
      *
      * @param createIssueCouponRequestDto 쿠폰 정책 id와 발행 개수를 담은 dto
+     * @param bindingResult               the binding result
      * @return Http Status Created
      */
     @PostMapping
     public ResponseEntity<Void> postIssueCoupon(@RequestBody @Valid
-                                                    CreateIssueCouponRequestDto createIssueCouponRequestDto,
+                                                CreateIssueCouponRequestDto createIssueCouponRequestDto,
                                                 BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -42,6 +44,29 @@ public class IssueCouponController {
         }
 
         issueCouponService.createIssueCoupon(createIssueCouponRequestDto);
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .build();
+    }
+
+    /**
+     * 사용자에게 쿠폰을 발급하는 메서드.
+     *
+     * @param accountId                  the account id
+     * @param updateProvideCouponRequest the offer coupon request
+     * @param bindingResult              the binding result
+     * @return the response entity
+     */
+    @PostMapping("/account/{accountId}")
+    public ResponseEntity<Void> postProvideCouponToAccount(@PathVariable Long accountId,
+                                                           @RequestBody @Valid
+                                                           UpdateProvideCouponRequest updateProvideCouponRequest,
+                                                           BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new IssueCouponRequestValidationException(bindingResult);
+        }
+
+        issueCouponService.provideCouponToAccount(accountId, updateProvideCouponRequest);
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .build();

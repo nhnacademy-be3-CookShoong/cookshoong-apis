@@ -36,8 +36,8 @@ public class ChargeTypeController {
     /**
      * 환불 타입을 만드는 생성 메서드.
      *
-     * @param requestDto    타입에 대한 name Dto
-     * @return              상태코드 201(CREATED)와 함께 응답을 반환
+     * @param requestDto 타입에 대한 name Dto
+     * @return 상태코드 201(CREATED)와 함께 응답을 반환
      */
     @PostMapping("/charges")
     public ResponseEntity<CreateTypeRequestDto> postCreateChargeType(
@@ -56,9 +56,9 @@ public class ChargeTypeController {
     /**
      * 환불 타입에 name 을 변경하는 메서드.
      *
-     * @param chargeTypeId  결제 타입 아이디
-     * @param requestDto    결제 타입 name 에 Dto
-     * @return              상태코드 200(Ok)와 함께 응답을 반환
+     * @param chargeTypeId 결제 타입 아이디
+     * @param requestDto   결제 타입 name 에 Dto
+     * @return 상태코드 200(Ok)와 함께 응답을 반환
      */
     @PutMapping("/charges/{chargeTypeId}")
     public ResponseEntity<ModifyTypeRequestDto> putModifyChargeType(@PathVariable("chargeTypeId") String chargeTypeId,
@@ -76,8 +76,8 @@ public class ChargeTypeController {
     /**
      * 해당 아이디에 해당하는 결제 타입을 조회하는 메서드.
      *
-     * @param chargeTypeId  결제 타입 아이디
-     * @return              상태코드 200(Ok)와 함께 응답을 반환
+     * @param chargeTypeId 결제 타입 아이디
+     * @return 상태코드 200(Ok)와 함께 응답을 반환
      */
     @GetMapping("/charges/{chargeTypeId}")
     public ResponseEntity<TypeResponseDto> getChargeType(@PathVariable("chargeTypeId") String chargeTypeId) {
@@ -90,7 +90,7 @@ public class ChargeTypeController {
     /**
      * 모든 결제 타입을 조회하는 메서드.
      *
-     * @return              상태코드 200(Ok)와 함께 응답을 반환
+     * @return 상태코드 200(Ok)와 함께 응답을 반환
      */
     @GetMapping("/charges")
     public ResponseEntity<List<TypeResponseDto>> getChargeTypeAll() {
@@ -103,8 +103,8 @@ public class ChargeTypeController {
     /**
      * 해당 아이디에 결제 타입을 삭제하는 메서드.
      *
-     * @param chargeTypeId  결제 타입 아이디
-     * @return              상태코드 204(No_CONTENT)와 함께 응답을 반환
+     * @param chargeTypeId 결제 타입 아이디
+     * @return 상태코드 204(No_CONTENT)와 함께 응답을 반환
      */
     @DeleteMapping("/charges/{chargeTypeId}")
     public ResponseEntity<Void> deleteChargeType(@PathVariable("chargeTypeId") String chargeTypeId) {

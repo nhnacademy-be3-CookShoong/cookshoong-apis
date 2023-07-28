@@ -1,17 +1,19 @@
 package store.cookshoong.www.cookshoongbackend.shop.model.response;
 
-import com.querydsl.core.annotations.QueryProjection;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * 사업자입장에서 매장 조회를 위한 Dto.
+ * 사업자 : 기존 SelectStoreResponseVo 에서는 image 저장된 이름을 가져온다.
+ * front에 보내줄 때는 경로가 포함된 이름이 필요하다.
  *
  * @author seungyeon
- * @since 2023.07.06
+ * @since 2023.07.23
  */
 @Getter
+@RequiredArgsConstructor
 public class SelectStoreResponseDto {
     private final String businessLicenseNumber;
     private final String representativeName;
@@ -26,43 +28,28 @@ public class SelectStoreResponseDto {
     private final String description;
     private final String bankCode;
     private final String bankAccountNumber;
-    private final String savedName;
+    private final String pathName;
 
     /**
-     * 사업자 회원 : 사업자 회원이 본인 매장 정보 조회.
+     * 사업자 : 해당 매장 정보에대한 response dto.
      *
-     * @param businessLicenseNumber 사압자등록번호
-     * @param representativeName    대표자 이름
-     * @param openingDate           개업일자
-     * @param storeName             상호명
-     * @param phoneNumber           가게번호
-     * @param mainPlace             메인주소
-     * @param detailPlace           상세주소
-     * @param latitude              위도
-     * @param longitude             경도
-     * @param defaultEarningRate    기본 적립률
-     * @param description           매장 설명
-     * @param bankCode              정산 은행 이름
-     * @param bankAccountNumber     정산받을 계좌번호
+     * @param vo       데이터베이스에서 해당 매장 관련 정보를 가져옴
+     * @param pathName 매장 사진 경로 + 저장된 이름 + 형식
      */
-    @QueryProjection
-    public SelectStoreResponseDto(String businessLicenseNumber, String representativeName,
-                                  LocalDate openingDate, String storeName, String phoneNumber, String mainPlace,
-                                  String detailPlace, BigDecimal latitude, BigDecimal longitude, BigDecimal defaultEarningRate, String description, String bankCode,
-                                  String bankAccountNumber, String savedName) {
-        this.businessLicenseNumber = businessLicenseNumber;
-        this.representativeName = representativeName;
-        this.openingDate = openingDate;
-        this.storeName = storeName;
-        this.phoneNumber = phoneNumber;
-        this.mainPlace = mainPlace;
-        this.detailPlace = detailPlace;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.defaultEarningRate = defaultEarningRate;
-        this.description = description;
-        this.bankCode = bankCode;
-        this.bankAccountNumber = bankAccountNumber;
-        this.savedName = savedName;
+    public SelectStoreResponseDto(SelectStoreResponseTemp vo, String pathName) {
+        this.businessLicenseNumber = vo.getBusinessLicenseNumber();
+        this.representativeName = vo.getRepresentativeName();
+        this.openingDate = vo.getOpeningDate();
+        this.storeName = vo.getStoreName();
+        this.phoneNumber = vo.getPhoneNumber();
+        this.mainPlace = vo.getMainPlace();
+        this.detailPlace = vo.getDetailPlace();
+        this.latitude = vo.getLatitude();
+        this.longitude = vo.getLongitude();
+        this.defaultEarningRate = vo.getDefaultEarningRate();
+        this.description = vo.getDescription();
+        this.bankCode = vo.getBankCode();
+        this.bankAccountNumber = vo.getBankAccountNumber();
+        this.pathName = pathName;
     }
 }

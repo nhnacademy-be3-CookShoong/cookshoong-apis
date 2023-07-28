@@ -11,9 +11,7 @@ import lombok.Getter;
 @Getter
 public class StoreDocumentResponseDto {
     private Long id;
-
     private String name;
-
     private String description;
 
     public StoreDocumentResponseDto(Long id, String name, String description) {

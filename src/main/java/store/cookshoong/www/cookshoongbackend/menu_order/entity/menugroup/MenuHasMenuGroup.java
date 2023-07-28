@@ -27,6 +27,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
 @Entity
 @Table(name = "menu_has_menu_groups")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class MenuHasMenuGroup {
     @EmbeddedId
     private Pk pk;

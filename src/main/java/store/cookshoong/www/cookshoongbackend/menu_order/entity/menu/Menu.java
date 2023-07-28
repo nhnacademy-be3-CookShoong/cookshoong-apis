@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menugroup.MenuHasMenuGroup;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.optiongroup.MenuHasOptionGroup;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 
 /**
@@ -58,7 +59,7 @@ public class Menu {
     private String description;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "menu_image_id",nullable = false)
+    @JoinColumn(name = "menu_image_id", nullable = false)
     private Image image;
 
     @Column(name = "cooking_time", nullable = false)
@@ -69,6 +70,9 @@ public class Menu {
 
     @OneToMany(mappedBy = "menu", cascade = CascadeType.PERSIST)
     private final Set<MenuHasMenuGroup> menuHasMenuGroups = new HashSet<>();
+
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.PERSIST)
+    private final Set<MenuHasOptionGroup> menuHasOptionGroups = new HashSet<>();
 
     /**
      * 메뉴 엔티티 생성자.
@@ -91,5 +95,14 @@ public class Menu {
         this.image = image;
         this.cookingTime = cookingTime;
         this.earningRate = earningRate;
+    }
+
+    /**
+     * 메뉴의 상태코드 변경.
+     *
+     * @param menuStatusCode 메뉴 상태 코드(OPEN, CLOSE, OUTED)
+     */
+    public void modifyMenuStatus(MenuStatus menuStatusCode) {
+        this.menuStatusCode = menuStatusCode;
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllBanksResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllCategoriesResponseDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllMerchantsForUserResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllMerchantsResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.service.BankTypeService;
 import store.cookshoong.www.cookshoongbackend.shop.service.MerchantService;
@@ -48,7 +48,7 @@ public class BusinessSelectController {
      * @return 가맹점 리스트
      */
     @GetMapping("/merchants")
-    public ResponseEntity<List<SelectAllMerchantsForUserResponseDto>> getMerchantsForUser() {
+    public ResponseEntity<List<SelectAllMerchantsResponseDto>> getMerchantsForUser() {
         return ResponseEntity
             .ok(merchantService.selectAllMerchantsForUser());
     }
@@ -65,7 +65,7 @@ public class BusinessSelectController {
     }
 
     @GetMapping("/store-status")
-    public ResponseEntity<List<SelectAllStatusResponseDto>> getStoreStatusForUser(){
+    public ResponseEntity<List<SelectAllStatusResponseDto>> getStoreStatusForUser() {
         return ResponseEntity
             .ok(storeStatusService.selectAllStatusForUser());
     }

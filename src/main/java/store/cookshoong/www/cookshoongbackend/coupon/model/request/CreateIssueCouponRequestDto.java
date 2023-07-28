@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 쿠폰 발급 요청 시 사용되는 dto.
+ * 쿠폰 발행 요청 시 사용되는 dto.
  *
  * @author eora21(김주호)
  * @since 2023.07.17
@@ -16,9 +16,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CreateIssueCouponRequestDto {
     @NotNull
-    @Min(1)
-    private Long issueQuantity;
+    private Long couponPolicyId;
 
     @NotNull
-    private Long couponPolicyId;
+    @Min(1)
+    private Long issueQuantity;
 }

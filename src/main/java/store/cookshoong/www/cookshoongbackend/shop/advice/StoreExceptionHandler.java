@@ -54,7 +54,8 @@ public class StoreExceptionHandler {
      * @return 400
      */
     @ExceptionHandler(value = {StoreValidException.class, MerchantValidException.class,
-        StoreCategoryValidException.class, BusinessHourValidationException.class, HolidayValidationException.class})
+        StoreCategoryValidException.class, BusinessHourValidationException.class,
+        HolidayValidationException.class})
     public ResponseEntity<Map<String, String>> validFailure(ValidationFailureException e) {
         return ResponseEntity
             .badRequest()

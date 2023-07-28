@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,20 +33,17 @@ public class OptionController {
     /**
      * 옵션 등록 컨트롤러.
      *
-     * @param optionGroupId          옵션 그룹 아이디
      * @param createOptionRequestDto 옵션 등록 Dto
      * @param bindingResult          validation
      * @return 201 response
      */
-    @PostMapping("/stores/{storeId}/option-group/{optionGroupId}/option")
-    public ResponseEntity<Void> postOption(@PathVariable("optionGroupId") Long optionGroupId,
-                                         @RequestBody @Valid CreateOptionRequestDto createOptionRequestDto,
-                                         BindingResult bindingResult) {
+    @PostMapping("/stores/{storeId}/option")
+    public ResponseEntity<Void> postOption(@RequestBody @Valid CreateOptionRequestDto createOptionRequestDto,
+                                           BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new OptionValidationException(bindingResult);
         }
-
-        optionService.createOption(optionGroupId, createOptionRequestDto);
+        optionService.createOption(createOptionRequestDto);
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .build();
@@ -75,5 +73,21 @@ public class OptionController {
         @PathVariable("optionId") Long optionId) {
         SelectOptionResponseDto option = optionService.selectOption(optionId);
         return ResponseEntity.ok(option);
+    }
+
+    /**
+     * 옵션 삭제 컨트롤러.
+     *
+     * @param storeId  매장 아이디
+     * @param optionId 옵션 아이디
+     * @return 200 response
+     */
+    @DeleteMapping("/stores/{storeId}/option/{optionId}")
+    public ResponseEntity<Void> deleteOption(@PathVariable("storeId") Long storeId,
+                                             @PathVariable("optionId") Long optionId) {
+        optionService.deleteOption(storeId, optionId);
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .build();
     }
 }

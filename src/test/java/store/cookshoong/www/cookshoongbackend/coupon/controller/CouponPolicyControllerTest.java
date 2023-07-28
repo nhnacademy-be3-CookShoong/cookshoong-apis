@@ -9,14 +9,13 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.math.BigDecimal;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,8 +43,6 @@ import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponUsageNotFou
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateCashCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreatePercentCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicyResponseDto;
-import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeCashVo;
-import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypePercentVo;
 import store.cookshoong.www.cookshoongbackend.coupon.service.CouponPolicyService;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
 import store.cookshoong.www.cookshoongbackend.util.TestEntityAspect;
@@ -81,11 +78,11 @@ class CouponPolicyControllerTest {
         CouponTypeCash couponTypeCash = te.getCouponTypeCash_1000_10000();
         CouponTypePercent couponTypePercent = te.getCouponTypePercent_3_1000_10000();
         SelectPolicyResponseDto cashPolicy = new SelectPolicyResponseDto(atomicLong.getAndIncrement(),
-            CouponTypeCashVo.newInstance(couponTypeCash), "금액 쿠폰", "현금처럼 쓰입니다.",
-            0, 1L, 10L);
+            couponTypeCash, "금액 쿠폰", "현금처럼 쓰입니다.",
+            1, 1L, 10L);
         SelectPolicyResponseDto percentPolicy = new SelectPolicyResponseDto(atomicLong.getAndIncrement(),
-            CouponTypePercentVo.newInstance(couponTypePercent), "퍼센트 쿠폰", "퍼센트만큼 차감합니다.",
-            0, 1L, 10L);
+            couponTypePercent, "퍼센트 쿠폰", "퍼센트만큼 차감합니다.",
+            1, 1L, 10L);
 
         policies = List.of(cashPolicy, percentPolicy);
 
@@ -118,6 +115,21 @@ class CouponPolicyControllerTest {
         mockMvc.perform(request)
             .andDo(print())
             .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content[0].name").value("금액 쿠폰"))
+            .andExpect(jsonPath("$.content[0].description").value("현금처럼 쓰입니다."))
+            .andExpect(jsonPath("$.content[0].usagePeriod").value(1))
+            .andExpect(jsonPath("$.content[0].unclaimedCouponCount").value(1))
+            .andExpect(jsonPath("$.content[0].issueCouponCount").value(10))
+            .andExpect(jsonPath("$.content[0].couponTypeResponse.discountAmount").value(1_000))
+            .andExpect(jsonPath("$.content[0].couponTypeResponse.minimumOrderPrice").value(10_000))
+            .andExpect(jsonPath("$.content[1].name").value("퍼센트 쿠폰"))
+            .andExpect(jsonPath("$.content[1].description").value("퍼센트만큼 차감합니다."))
+            .andExpect(jsonPath("$.content[1].usagePeriod").value(1))
+            .andExpect(jsonPath("$.content[1].unclaimedCouponCount").value(1))
+            .andExpect(jsonPath("$.content[1].issueCouponCount").value(10))
+            .andExpect(jsonPath("$.content[1].couponTypeResponse.rate").value(3))
+            .andExpect(jsonPath("$.content[1].couponTypeResponse.maximumDiscountAmount").value(1_000))
+            .andExpect(jsonPath("$.content[1].couponTypeResponse.minimumOrderPrice").value(10_000))
             .andDo(MockMvcRestDocumentationWrapper.document("getStorePolicy",
                 ResourceSnippetParameters.builder()
                     .pathParameters(parameterWithName("storeId").description("매장 id"))
@@ -170,6 +182,21 @@ class CouponPolicyControllerTest {
         mockMvc.perform(request)
             .andDo(print())
             .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content[0].name").value("금액 쿠폰"))
+            .andExpect(jsonPath("$.content[0].description").value("현금처럼 쓰입니다."))
+            .andExpect(jsonPath("$.content[0].usagePeriod").value(1))
+            .andExpect(jsonPath("$.content[0].unclaimedCouponCount").value(1))
+            .andExpect(jsonPath("$.content[0].issueCouponCount").value(10))
+            .andExpect(jsonPath("$.content[0].couponTypeResponse.discountAmount").value(1_000))
+            .andExpect(jsonPath("$.content[0].couponTypeResponse.minimumOrderPrice").value(10_000))
+            .andExpect(jsonPath("$.content[1].name").value("퍼센트 쿠폰"))
+            .andExpect(jsonPath("$.content[1].description").value("퍼센트만큼 차감합니다."))
+            .andExpect(jsonPath("$.content[1].usagePeriod").value(1))
+            .andExpect(jsonPath("$.content[1].unclaimedCouponCount").value(1))
+            .andExpect(jsonPath("$.content[1].issueCouponCount").value(10))
+            .andExpect(jsonPath("$.content[1].couponTypeResponse.rate").value(3))
+            .andExpect(jsonPath("$.content[1].couponTypeResponse.maximumDiscountAmount").value(1_000))
+            .andExpect(jsonPath("$.content[1].couponTypeResponse.minimumOrderPrice").value(10_000))
             .andDo(MockMvcRestDocumentationWrapper.document("getMerchantPolicy",
                 ResourceSnippetParameters.builder()
                     .pathParameters(parameterWithName("merchantId").description("가맹점 id"))
@@ -210,7 +237,7 @@ class CouponPolicyControllerTest {
     }
 
     @Test
-    @DisplayName("가맹점 쿠폰 정책 조회")
+    @DisplayName("사용처 전체 쿠폰 정책 조회")
     void getUsageAllPolicyTest() throws Exception {
         when(couponPolicyService.selectUsageAllPolicy(any(Pageable.class)))
             .thenAnswer(invocation -> new PageImpl<>(policies, invocation.getArgument(0), policies.size()));
@@ -222,6 +249,21 @@ class CouponPolicyControllerTest {
         mockMvc.perform(request)
             .andDo(print())
             .andExpect(status().isOk())
+            .andExpect(jsonPath("$.content[0].name").value("금액 쿠폰"))
+            .andExpect(jsonPath("$.content[0].description").value("현금처럼 쓰입니다."))
+            .andExpect(jsonPath("$.content[0].usagePeriod").value(1))
+            .andExpect(jsonPath("$.content[0].unclaimedCouponCount").value(1))
+            .andExpect(jsonPath("$.content[0].issueCouponCount").value(10))
+            .andExpect(jsonPath("$.content[0].couponTypeResponse.discountAmount").value(1_000))
+            .andExpect(jsonPath("$.content[0].couponTypeResponse.minimumOrderPrice").value(10_000))
+            .andExpect(jsonPath("$.content[1].name").value("퍼센트 쿠폰"))
+            .andExpect(jsonPath("$.content[1].description").value("퍼센트만큼 차감합니다."))
+            .andExpect(jsonPath("$.content[1].usagePeriod").value(1))
+            .andExpect(jsonPath("$.content[1].unclaimedCouponCount").value(1))
+            .andExpect(jsonPath("$.content[1].issueCouponCount").value(10))
+            .andExpect(jsonPath("$.content[1].couponTypeResponse.rate").value(3))
+            .andExpect(jsonPath("$.content[1].couponTypeResponse.maximumDiscountAmount").value(1_000))
+            .andExpect(jsonPath("$.content[1].couponTypeResponse.minimumOrderPrice").value(10_000))
             .andDo(MockMvcRestDocumentationWrapper.document("getUsageAllPolicy",
                 ResourceSnippetParameters.builder()
                     .responseSchema(Schema.schema("getUsageAllPolicy.Response")),
@@ -414,7 +456,7 @@ class CouponPolicyControllerTest {
     @ParameterizedTest
     @ValueSource(ints = {-10_000, 30_000})
     @DisplayName("매장 퍼센트 쿠폰 정책 생성 실패 - 최소주문금액 범위 초과")
-    void postStorePercentCouponPolicyminimumOrderPriceOutOfRangeFailTest(int minimumOrderPrice) throws Exception {
+    void postStorePercentCouponPolicyMinimumOrderPriceOutOfRangeFailTest(int minimumOrderPrice) throws Exception {
         ReflectionTestUtils.setField(percentRequestDto, "minimumOrderPrice", minimumOrderPrice);
         RequestBuilder request = RestDocumentationRequestBuilders
             .post("/api/coupon/policies/stores/{storeId}/percent", Long.MIN_VALUE)
@@ -432,7 +474,7 @@ class CouponPolicyControllerTest {
     @ParameterizedTest
     @ValueSource(ints = {0, 60_000})
     @DisplayName("매장 퍼센트 쿠폰 정책 생성 실패 - 최대할인금액 범위 초과")
-    void postStorePercentCouponPolicymaximumDiscountAmountOutOfRangeFailTest(int maximumDiscountAmount) throws Exception {
+    void postStorePercentCouponPolicyMaximumDiscountAmountOutOfRangeFailTest(int maximumDiscountAmount) throws Exception {
         ReflectionTestUtils.setField(percentRequestDto, "maximumDiscountAmount", maximumDiscountAmount);
         RequestBuilder request = RestDocumentationRequestBuilders
             .post("/api/coupon/policies/stores/{storeId}/percent", Long.MIN_VALUE)

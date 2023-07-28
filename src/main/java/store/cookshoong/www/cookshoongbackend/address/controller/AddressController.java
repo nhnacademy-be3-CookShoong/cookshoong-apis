@@ -142,7 +142,7 @@ public class AddressController {
      *
      * @param accountId     회원 아이디
      * @param addressId     주소 아이디
-     * @return              상태코드 200(Ok)와 함께 응답을 반환
+     * @return              상태코드 204(NO_CONTENT)와 함께 응답을 반환
      */
     @DeleteMapping("/{accountId}/{addressId}")
     public ResponseEntity<Void> deleteAccountAddress(@PathVariable("accountId") Long accountId,
