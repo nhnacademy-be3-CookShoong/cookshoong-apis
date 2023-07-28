@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,6 +30,8 @@ import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartMenuDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartOptionDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartRedisDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.repository.CartRedisRepository;
+import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
+import store.cookshoong.www.cookshoongbackend.file.service.ObjectStorageService;
 
 /**
  * Redis 장바구니에 대한 서버스 테스트 코드.
@@ -46,13 +49,16 @@ class CartRedisServiceTest {
     @Mock
     private CartRedisRepository cartRedisRepository;
 
+    @Mock
+    private ObjectStorageService objectStorageService;
+
     String redisKey = "cart_account:1";
-    String hashKey = "1:1,2";
+    String hashKey = "112";
     Long accountId = 1L;
     Long storeId = 1L;
     String storeName = "네네치킨";
     Long menuId = 1L;
-    int count = 1;
+    Integer count = 1;
     CartMenuDto cartMenuDto;
     CartOptionDto cartOptionDto;
     CartOptionDto cartOptionDto1;
@@ -60,10 +66,11 @@ class CartRedisServiceTest {
 
     @BeforeEach
     void setup() {
+        String menuImagePath = objectStorageService.getFullPath(FileDomain.MENU_IMAGE.getVariable(), UUID.randomUUID()+".png");
         cartMenuDto = ReflectionUtils.newInstance(CartMenuDto.class);
         ReflectionTestUtils.setField(cartMenuDto, "menuId", menuId);
         ReflectionTestUtils.setField(cartMenuDto, "menuName", "menuName2");
-        ReflectionTestUtils.setField(cartMenuDto, "menuImage", "menuImage");
+        ReflectionTestUtils.setField(cartMenuDto, "menuImage", menuImagePath);
         ReflectionTestUtils.setField(cartMenuDto, "menuPrice", 3);
 
         cartOptionDto = ReflectionUtils.newInstance(CartOptionDto.class);
@@ -95,6 +102,8 @@ class CartRedisServiceTest {
         ReflectionTestUtils.setField(cartRedisDto, "createTimeMillis", System.currentTimeMillis());
         ReflectionTestUtils.setField(cartRedisDto, "hashKey", hashKey);
         ReflectionTestUtils.setField(cartRedisDto, "count", count);
+        ReflectionTestUtils.setField(cartRedisDto, "menuOptName", cartRedisDto.generateMenuOptionName());
+        ReflectionTestUtils.setField(cartRedisDto, "totalMenuPrice", cartRedisDto.generateTotalMenuPrice());
 
         cartRedisService.createCartMenu(redisKey, hashKey, cartRedisDto);
 
@@ -132,7 +141,7 @@ class CartRedisServiceTest {
     @DisplayName("장바구니 메뉴 수정하기")
     void modifyCartMenuRedis() {
 
-        String hashKeyModify = "1:3,4";
+        String hashKeyModify = "134";
 
         CartOptionDto cartOptionDto = ReflectionUtils.newInstance(CartOptionDto.class);
         ReflectionTestUtils.setField(cartOptionDto, "optionId", 3L);
@@ -159,6 +168,8 @@ class CartRedisServiceTest {
         ReflectionTestUtils.setField(cartRedisDto, "createTimeMillis", System.currentTimeMillis());
         ReflectionTestUtils.setField(cartRedisDto, "hashKey", hashKey);
         ReflectionTestUtils.setField(cartRedisDto, "count", count);
+        ReflectionTestUtils.setField(cartRedisDto, "menuOptName", cartRedisDto.generateMenuOptionName());
+        ReflectionTestUtils.setField(cartRedisDto, "totalMenuPrice", cartRedisDto.generateTotalMenuPrice());
 
         when(cartRedisRepository.existKeyInCartRedis(redisKey)).thenReturn(true);
         when(cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)).thenReturn(true);
@@ -212,6 +223,8 @@ class CartRedisServiceTest {
         ReflectionTestUtils.setField(cartRedisDto, "createTimeMillis", System.currentTimeMillis());
         ReflectionTestUtils.setField(cartRedisDto, "hashKey", hashKey);
         ReflectionTestUtils.setField(cartRedisDto, "count", count);
+        ReflectionTestUtils.setField(cartRedisDto, "menuOptName", cartRedisDto.generateMenuOptionName());
+        ReflectionTestUtils.setField(cartRedisDto, "totalMenuPrice", cartRedisDto.generateTotalMenuPrice());
 
         when(cartRedisRepository.existKeyInCartRedis(redisKey)).thenReturn(true);
         when(cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)).thenReturn(true);
@@ -256,6 +269,8 @@ class CartRedisServiceTest {
         ReflectionTestUtils.setField(cartRedisDto, "createTimeMillis", System.currentTimeMillis());
         ReflectionTestUtils.setField(cartRedisDto, "hashKey", hashKey);
         ReflectionTestUtils.setField(cartRedisDto, "count", count);
+        ReflectionTestUtils.setField(cartRedisDto, "menuOptName", cartRedisDto.generateMenuOptionName());
+        ReflectionTestUtils.setField(cartRedisDto, "totalMenuPrice", cartRedisDto.generateTotalMenuPrice());
 
         when(cartRedisRepository.existKeyInCartRedis(redisKey)).thenReturn(true);
         when(cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)).thenReturn(true);
@@ -302,6 +317,8 @@ class CartRedisServiceTest {
         ReflectionTestUtils.setField(cartRedisDto, "createTimeMillis", System.currentTimeMillis());
         ReflectionTestUtils.setField(cartRedisDto, "hashKey", hashKey);
         ReflectionTestUtils.setField(cartRedisDto, "count", count);
+        ReflectionTestUtils.setField(cartRedisDto, "menuOptName", cartRedisDto.generateMenuOptionName());
+        ReflectionTestUtils.setField(cartRedisDto, "totalMenuPrice", cartRedisDto.generateTotalMenuPrice());
 
         List carts = new ArrayList();
         carts.add(cartRedisDto);
@@ -359,6 +376,8 @@ class CartRedisServiceTest {
         ReflectionTestUtils.setField(cartRedisDto, "createTimeMillis", System.currentTimeMillis());
         ReflectionTestUtils.setField(cartRedisDto, "hashKey", hashKey);
         ReflectionTestUtils.setField(cartRedisDto, "count", count);
+        ReflectionTestUtils.setField(cartRedisDto, "menuOptName", cartRedisDto.generateMenuOptionName());
+        ReflectionTestUtils.setField(cartRedisDto, "totalMenuPrice", cartRedisDto.generateTotalMenuPrice());
 
         when(cartRedisRepository.existKeyInCartRedis(redisKey)).thenReturn(true);
         when(cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)).thenReturn(true);
