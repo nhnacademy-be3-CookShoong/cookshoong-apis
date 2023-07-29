@@ -5,6 +5,7 @@ import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.cookshoong.www.cookshoongbackend.coupon.util.IssueMethod;
 
 /**
  * 쿠폰 발행 요청 시 사용되는 dto.
@@ -21,4 +22,7 @@ public class CreateIssueCouponRequestDto {
     @NotNull
     @Min(1)
     private Long issueQuantity;
+
+    @NotNull
+    IssueMethod issueMethod;
 }
