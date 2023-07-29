@@ -18,14 +18,22 @@ import store.cookshoong.www.cookshoongbackend.common.property.RedisProperties;
 @RequiredArgsConstructor
 public class RedissonConfig {
     private static final String REDISSON_HOST_PREFIX = "redis://";
-    private final RedisProperties redisProperties;
 
+    /**
+     * Redisson 설정.
+     *
+     * @param redisProperties the redis properties
+     * @return the redisson client
+     */
     @Bean
-    public RedissonClient redissonClient() {
+    public RedissonClient redissonClient(RedisProperties redisProperties) {
         Config config = new Config();
         String host = redisProperties.getHost();
         Integer port = redisProperties.getPort();
-        config.useSingleServer().setAddress(REDISSON_HOST_PREFIX + host + ":" + port);
+        config.useSingleServer()
+            .setAddress(REDISSON_HOST_PREFIX + host + ":" + port)
+            .setPassword(redisProperties.getPassword());
+
         return Redisson.create(config);
     }
 }
