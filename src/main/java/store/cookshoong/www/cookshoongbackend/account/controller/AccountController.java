@@ -9,17 +9,21 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
+import store.cookshoong.www.cookshoongbackend.account.exception.AccountStatusNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.exception.AuthorityNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.exception.SignUpValidationException;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountAuthResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountStatusResponseDto;
+import store.cookshoong.www.cookshoongbackend.account.model.response.UpdateAccountStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.service.AccountService;
 import store.cookshoong.www.cookshoongbackend.address.service.AddressService;
 
@@ -100,6 +104,26 @@ public class AccountController {
     @GetMapping("/{accountId}/status")
     public ResponseEntity<SelectAccountStatusResponseDto> getAccountStatus(@PathVariable Long accountId) {
         SelectAccountStatusResponseDto response = accountService.selectAccountStatus(accountId);
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(response);
+    }
+
+    /**
+     * 회원상태를 변경한다.
+     *
+     * @param accountId the account id
+     * @param code      the code
+     * @return the response entity
+     */
+    @PutMapping("/{accountId}/status")
+    public ResponseEntity<UpdateAccountStatusResponseDto> putAccountStatus(@PathVariable Long accountId,
+                                                                           @RequestParam String code) {
+        String uppercaseCode = code.toUpperCase();
+        if (!AccountStatus.Code.matches(uppercaseCode)) {
+            throw new AccountStatusNotFoundException(code);
+        }
+
+        UpdateAccountStatusResponseDto response = accountService.updateAccountStatus(accountId, uppercaseCode);
         return ResponseEntity.status(HttpStatus.OK)
             .body(response);
     }

@@ -20,9 +20,12 @@ import com.epages.restdocs.apispec.Schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -36,6 +39,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
+import store.cookshoong.www.cookshoongbackend.account.exception.AccountStatusNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.exception.AuthorityNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.exception.DuplicatedUserException;
 import store.cookshoong.www.cookshoongbackend.account.exception.SignUpValidationException;
@@ -43,6 +47,7 @@ import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundExce
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountAuthResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountStatusResponseDto;
+import store.cookshoong.www.cookshoongbackend.account.model.response.UpdateAccountStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountAuthDto;
 import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountStatusDto;
 import store.cookshoong.www.cookshoongbackend.account.service.AccountService;
@@ -335,5 +340,71 @@ class AccountControllerTest {
                         fieldWithPath("status").description("사용자 상태")
                     ))
             );
+    }
+
+    @ParameterizedTest
+    @DisplayName("회원상태 변경 - 유효한 상태로 변경")
+    @ValueSource(strings = {"dormancy", "DORMANCY"})
+    void putAccountStatus(String code) throws Exception {
+        String expectDescription = "휴면";
+        UpdateAccountStatusResponseDto response = new UpdateAccountStatusResponseDto(expectDescription,
+            LocalDateTime.now());
+        when(accountService.updateAccountStatus(anyLong(), anyString())).thenReturn(response);
+
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .put("/api/accounts/{loginId}/status", 1L)
+            .queryParam("code", code);
+
+        mockMvc.perform(request)
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.status").value(expectDescription))
+            .andDo(MockMvcRestDocumentationWrapper.document("findAccountStatus",
+                ResourceSnippetParameters.builder()
+                    .requestSchema(Schema.schema("SelectAccountStatusResponseDto"))
+                    .pathParameters(
+                        parameterWithName("accountId").description("회원 시퀀스"))
+                    .requestParameters(
+                        parameterWithName("code").description("변경할 상태")
+                    )
+                    .responseFields(
+                        fieldWithPath("status").description("사용자상태"),
+                        fieldWithPath("updatedAt").description("변경일시")
+                    ))
+            );
+    }
+
+    @ParameterizedTest
+    @DisplayName("회원상태 변경 - 유효하지 않는 상태로 변경")
+    @ValueSource(strings = {"domacy", "inactive", "with"})
+    void putAccountStatus_2(String code) throws Exception {
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .put("/api/accounts/{loginId}/status", 1L)
+            .queryParam("code", code);
+
+        mockMvc.perform(request)
+            .andDo(print())
+            .andExpect(status().isNotFound())
+            .andExpect(result -> assertThat(result.getResolvedException())
+                .isInstanceOf(AccountStatusNotFoundException.class)
+                .hasMessageContaining("존재하지 않는 상태")
+                .hasMessageContaining(code));
+    }
+
+    @ParameterizedTest
+    @DisplayName("회원상태 변경 - 상태코드가 아닌 설명으로의 변경")
+    @ValueSource(strings = {"휴면", "탈퇴", "활성"})
+    void putAccountStatus_3(String code) throws Exception {
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .put("/api/accounts/{loginId}/status", 1L)
+            .queryParam("code", code);
+
+        mockMvc.perform(request)
+            .andDo(print())
+            .andExpect(status().isNotFound())
+            .andExpect(result -> assertThat(result.getResolvedException())
+                .isInstanceOf(AccountStatusNotFoundException.class)
+                .hasMessageContaining("존재하지 않는 상태")
+                .hasMessageContaining(code));
     }
 }

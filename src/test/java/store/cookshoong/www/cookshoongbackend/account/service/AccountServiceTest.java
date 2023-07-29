@@ -2,10 +2,12 @@ package store.cookshoong.www.cookshoongbackend.account.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atMostOnce;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,6 +35,7 @@ import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpReques
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountAuthResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountStatusResponseDto;
+import store.cookshoong.www.cookshoongbackend.account.model.response.UpdateAccountStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountAuthDto;
 import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountStatusDto;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
@@ -197,6 +200,44 @@ class AccountServiceTest {
         when(accountRepository.findAccountStatusById(anyLong())).thenReturn(Optional.of(expect));
 
         assertThat(accountService.selectAccountStatus(1L).getStatus()).isEqualTo("ACTIVE");
+    }
+
+
+    @Test
+    @DisplayName("회원상태 변경 - 활성 -> 휴면 상태로 변경")
+    void updateAccountStatus() {
+        AccountStatus status = new AccountStatus("ACTIVE", "활성");
+        Authority authority = new Authority("USER", "일반회원");
+        Rank rank = new Rank("LEVEL_4", "VIP");
+        Account expected = new Account(status, authority, rank, "user1", "1234", "유유저",
+            "이름이유저래", "user@cookshoong.store", LocalDate.of(1997, 6, 4),
+            "01012345678");
+
+        AccountStatus expectedStatus = new AccountStatus("DORMANCY", "휴면");
+
+        when(accountRepository.findAccountById(expected.getId())).thenReturn(Optional.of(expected));
+        when(accountStatusRepository.getReferenceById("DORMANCY")).thenReturn(expectedStatus);
+
+        UpdateAccountStatusResponseDto actual = accountService.updateAccountStatus(expected.getId(),
+            expectedStatus.getStatusCode());
+
+        assertAll(
+            () -> assertThat(actual.getStatus()).isEqualTo(expectedStatus.getDescription()),
+            () -> assertThat(actual.getUpdatedAt()).isBeforeOrEqualTo(LocalDateTime.now())
+        );
+    }
+
+    @Test
+    @DisplayName("회원상태 변경 - 없는 회원의 상태 변경")
+    void updateAccountStatus_2() {
+        when(accountRepository.findAccountById(anyLong())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(
+            () -> accountService.updateAccountStatus(Long.MAX_VALUE, "DORMANCY"))
+            .isInstanceOf(UserNotFoundException.class)
+            .hasMessageContaining("존재하지 않는 회원");
+
+        verify(accountStatusRepository, never()).getReferenceById("DORMANCY");
     }
 }
 
