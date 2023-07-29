@@ -31,4 +31,6 @@ public class CreateMenuRequestDto {
     private List<Long> menuGroups;
 
     private List<Long> optionGroups;
+
+    private Long targetMenuId;
 }

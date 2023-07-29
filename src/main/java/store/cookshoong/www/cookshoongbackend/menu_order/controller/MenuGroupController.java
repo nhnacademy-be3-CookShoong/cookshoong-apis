@@ -33,9 +33,9 @@ public class MenuGroupController {
     /**
      * 메뉴 그룹 등록 컨트롤러.
      *
-     * @param storeId                   매장 아이디
+     * @param storeId             매장 아이디
      * @param createMenuGroupRequestDto 메뉴 등록 Dto
-     * @param bindingResult             validation
+     * @param bindingResult       validation
      * @return 201 response
      */
     @PostMapping("/stores/{storeId}/menu-group")
@@ -46,7 +46,7 @@ public class MenuGroupController {
             throw new MenuGroupValidationException(bindingResult);
         }
 
-        menuGroupService.createMenuGroup(storeId, createMenuGroupRequestDto);
+        menuGroupService.updateMenuGroup(storeId, createMenuGroupRequestDto);
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .build();
