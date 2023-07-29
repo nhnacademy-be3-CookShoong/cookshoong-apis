@@ -16,4 +16,6 @@ import lombok.NoArgsConstructor;
 public class UpdateProvideCouponRequest {
     @NotNull
     private Long couponPolicyId;
+    @NotNull
+    private Long accountId;
 }
