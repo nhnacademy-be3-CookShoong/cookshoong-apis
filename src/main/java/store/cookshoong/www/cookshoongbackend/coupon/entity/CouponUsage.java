@@ -1,6 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.coupon.entity;
 
-import java.util.OptionalInt;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
@@ -11,6 +11,8 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 import lombok.Getter;
+import store.cookshoong.www.cookshoongbackend.coupon.exception.NotAllowedIssueMethodException;
+import store.cookshoong.www.cookshoongbackend.coupon.util.IssueMethod;
 
 /**
  * 쿠폰 사용처 entity.
@@ -30,10 +32,22 @@ public abstract class CouponUsage {
     @Column(name = "coupon_usage_id", nullable = false)
     private Long id;
 
+
     /**
-     * 쿠폰 제한 개수를 정의하는 메서드.
+     * 가능한 issue method 정의.
      *
-     * @return the optional int
+     * @return the set
      */
-    public abstract OptionalInt limitCount();
+    protected abstract Set<IssueMethod> issueMethods();
+
+    /**
+     * issue method 범위 내에서 요청했는지 확인하는 메서드.
+     *
+     * @param issueMethod
+     */
+    public void validIssueMethod(IssueMethod issueMethod) {
+        if (!issueMethods().contains(issueMethod)) {
+            throw new NotAllowedIssueMethodException();
+        }
+    }
 }
