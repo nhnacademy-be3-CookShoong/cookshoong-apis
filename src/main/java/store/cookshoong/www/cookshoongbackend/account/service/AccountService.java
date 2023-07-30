@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.account.service;
 
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,7 @@ import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpReques
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountAuthResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountStatusResponseDto;
+import store.cookshoong.www.cookshoongbackend.account.model.response.UpdateAccountStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountAuthDto;
 import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountStatusDto;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
@@ -78,13 +80,30 @@ public class AccountService {
     /**
      * 해당 회원의 현재 상태를 조회한다.
      *
-     * @param loginId the login id
+     * @param accountId the login id
      * @return the select account status response dto
      */
-    public SelectAccountStatusResponseDto selectAccountStatus(Long loginId) {
-        SelectAccountStatusDto statusDto = accountRepository.findAccountStatusById(loginId)
+    public SelectAccountStatusResponseDto selectAccountStatus(Long accountId) {
+        SelectAccountStatusDto statusDto = accountRepository.findAccountStatusById(accountId)
             .orElseThrow();
 
         return SelectAccountStatusResponseDto.responseDtoFrom(statusDto);
+    }
+
+    /**
+     * 회원 상태를 주어진 값으로 변경한다.
+     *
+     * @param accountId  the account id
+     * @param statusCode the status code
+     * @return the select account status response dto
+     */
+    @Transactional
+    public UpdateAccountStatusResponseDto updateAccountStatus(Long accountId, String statusCode) {
+        Account account = accountRepository.findAccountById(accountId)
+            .orElseThrow(UserNotFoundException::new);
+        AccountStatus accountStatus = accountStatusRepository.getReferenceById(statusCode);
+        account.updateStatus(accountStatus);
+
+        return new UpdateAccountStatusResponseDto(accountStatus.getDescription(), LocalDateTime.now());
     }
 }
