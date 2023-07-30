@@ -43,7 +43,7 @@ public abstract class CouponUsage {
     /**
      * issue method 범위 내에서 요청했는지 확인하는 메서드.
      *
-     * @param issueMethod
+     * @param issueMethod the issue method
      */
     public void validIssueMethod(IssueMethod issueMethod) {
         if (!issueMethods().contains(issueMethod)) {
