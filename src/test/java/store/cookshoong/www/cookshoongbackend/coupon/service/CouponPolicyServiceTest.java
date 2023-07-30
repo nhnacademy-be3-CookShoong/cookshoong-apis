@@ -34,6 +34,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponUsageNotFou
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateCashCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreatePercentCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicyResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableStoreCouponPolicyResponseDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeCashVo;
 import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypePercentVo;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;
@@ -523,5 +524,23 @@ class CouponPolicyServiceTest {
             .thenReturn(Optional.empty());
 
         Assertions.assertDoesNotThrow(() -> couponPolicyService.deletePolicy(Long.MIN_VALUE));
+    }
+
+    @Test
+    @DisplayName("쿠폰 정책 목록 확인 테스트")
+    void getProvableStoreCouponPolicies() throws Exception {
+        List<SelectProvableStoreCouponPolicyResponseDto> selectProvableStoreCouponPolicyResponses =
+            List.of(
+                new SelectProvableStoreCouponPolicyResponseDto(
+                    1L, te.getCouponTypeCash_1000_10000(), 1),
+                new SelectProvableStoreCouponPolicyResponseDto(
+                    2L, te.getCouponTypePercent_3_1000_10000(), 2)
+            );
+
+        when(couponPolicyRepository.lookupProvableStoreCouponPolicies(any(Long.class)))
+            .thenReturn(selectProvableStoreCouponPolicyResponses);
+
+        assertThat(couponPolicyService.getProvableStoreCouponPolicies(Long.MIN_VALUE))
+            .hasSize(2);
     }
 }
