@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.coupon.service;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -185,5 +186,18 @@ class IssueCouponServiceTest {
         issueCouponService.createIssueCoupon(createIssueCouponRequestDto);
 
         verify(issueCouponRepository, times(issueQuantity)).save(any());
+    }
+
+    @Test
+    @DisplayName("전체 이벤트 쿠폰 벌크 발행 - 빈 메서드 체크용")
+    void createIssueCouponAllAccountsTest() throws Exception {
+        CouponPolicy couponPolicy = te.persist(
+            te.getCouponPolicy(te.getCouponTypeCash_1000_10000(), te.getCouponUsageAll()));
+
+        when(couponPolicyRepository.findById(any(Long.class)))
+            .thenReturn(Optional.of(couponPolicy));
+
+        ReflectionTestUtils.setField(createIssueCouponRequestDto, "issueMethod", IssueMethod.BULK);
+        assertDoesNotThrow(() -> issueCouponService.createIssueCoupon(createIssueCouponRequestDto));
     }
 }
