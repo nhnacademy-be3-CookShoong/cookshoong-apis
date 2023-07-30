@@ -35,9 +35,9 @@ public class MenuController {
     /**
      * 메뉴 등록 컨트롤러.
      *
-     * @param storeId              매장 아이디
+     * @param storeId        매장 아이디
      * @param createMenuRequestDto 메뉴 등록 Dto
-     * @param bindingResult        validation
+     * @param bindingResult  validation
      * @return 201 response
      */
     @PostMapping("/stores/{storeId}/menu")
@@ -49,7 +49,7 @@ public class MenuController {
             throw new MenuValidationException(bindingResult);
         }
 
-        menuService.createMenu(storeId, createMenuRequestDto, image);
+        menuService.updateMenu(storeId, createMenuRequestDto, image);
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .build();
@@ -90,7 +90,7 @@ public class MenuController {
      */
     @DeleteMapping("/stores/{storeId}/menu/{menuId}")
     public ResponseEntity<Void> deleteMenu(@PathVariable("storeId") Long storeId,
-                                         @PathVariable("menuId") Long menuId) {
+                                           @PathVariable("menuId") Long menuId) {
         menuService.deleteMenu(storeId, menuId);
         return ResponseEntity
             .status(HttpStatus.OK)

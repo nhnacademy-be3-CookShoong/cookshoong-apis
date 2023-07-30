@@ -61,7 +61,6 @@ public class StoreCategoryController {
         }
 
         storeCategoryService.createStoreCategory(requestDto);
-        // TODO 8. 해당 코드 추후에 url 넣기
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .build();
@@ -77,8 +76,8 @@ public class StoreCategoryController {
      */
     @PatchMapping("/{categoryCode}")
     public ResponseEntity<Void> patchStoreCategory(@RequestBody @Valid UpdateStoreCategoryRequestDto requestDto,
-                                                 BindingResult bindingResult,
-                                                 @PathVariable("categoryCode") String categoryCode) {
+                                                   BindingResult bindingResult,
+                                                   @PathVariable("categoryCode") String categoryCode) {
         if (bindingResult.hasErrors()) {
             throw new StoreCategoryValidException(bindingResult);
         }

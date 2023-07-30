@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import store.cookshoong.www.cookshoongbackend.common.property.ObjectStorageProperties;
 import store.cookshoong.www.cookshoongbackend.common.service.SKMService;
 
@@ -18,7 +17,7 @@ import store.cookshoong.www.cookshoongbackend.common.service.SKMService;
 public class ObjectStorageConfig {
     @Bean
     public ObjectStorageProperties objectStorageProperties(@Value("${cookshoong.skm.keyid.object-storage}") String storageKeyId,
-                                                   SKMService skmService) throws JsonProcessingException {
+                                                           SKMService skmService) throws JsonProcessingException {
         return skmService.fetchSecrets(storageKeyId, ObjectStorageProperties.class);
     }
 }

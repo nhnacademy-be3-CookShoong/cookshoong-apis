@@ -65,7 +65,7 @@ class RefundTypeControllerTest {
 
     @Test
     @DisplayName("POST 환불 타입 등록 실패: null 값이 들어갈 때 오류 테스트")
-    void postCreateRefundTypeNotBlank_1() throws Exception {
+    void postCreateRefundTypeNotBlank_isNull() throws Exception {
         CreateTypeRequestDto requestDto = ReflectionUtils.newInstance(CreateTypeRequestDto.class);
         ReflectionTestUtils.setField(requestDto, "name", null);
 
@@ -79,7 +79,7 @@ class RefundTypeControllerTest {
 
     @Test
     @DisplayName("POST 결제 타입 등록 실패: 빈 값이 들어갈 때 오류 테스트")
-    void postCreateRefundTypeNotBlank_2() throws Exception {
+    void postCreateRefundTypeNotBlank_isEmpty() throws Exception {
         CreateTypeRequestDto requestDto = ReflectionUtils.newInstance(CreateTypeRequestDto.class);
         ReflectionTestUtils.setField(requestDto, "name", "");
 

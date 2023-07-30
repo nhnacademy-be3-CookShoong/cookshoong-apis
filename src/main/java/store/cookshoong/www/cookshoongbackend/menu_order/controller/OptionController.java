@@ -34,16 +34,16 @@ public class OptionController {
      * 옵션 등록 컨트롤러.
      *
      * @param createOptionRequestDto 옵션 등록 Dto
-     * @param bindingResult          validation
+     * @param bindingResult    validation
      * @return 201 response
      */
     @PostMapping("/stores/{storeId}/option")
-    public ResponseEntity<Void> postOption( @RequestBody @Valid CreateOptionRequestDto createOptionRequestDto,
-                                         BindingResult bindingResult) {
+    public ResponseEntity<Void> postOption(@RequestBody @Valid CreateOptionRequestDto createOptionRequestDto,
+                                           BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new OptionValidationException(bindingResult);
         }
-        optionService.createOption(createOptionRequestDto);
+        optionService.updateOption(createOptionRequestDto);
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .build();
@@ -84,7 +84,7 @@ public class OptionController {
      */
     @DeleteMapping("/stores/{storeId}/option/{optionId}")
     public ResponseEntity<Void> deleteOption(@PathVariable("storeId") Long storeId,
-                                           @PathVariable("optionId") Long optionId) {
+                                             @PathVariable("optionId") Long optionId) {
         optionService.deleteOption(storeId, optionId);
         return ResponseEntity
             .status(HttpStatus.OK)

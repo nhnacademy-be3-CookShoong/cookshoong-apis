@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.account.entity;
 
+import java.util.Arrays;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -36,5 +37,10 @@ public class AccountStatus {
      */
     public enum Code {
         ACTIVE, DORMANCY, WITHDRAWAL;
+
+        public static boolean matches(String statusCode) {
+            return Arrays.stream(AccountStatus.Code.values())
+                .anyMatch(a -> a.name().equals(statusCode));
+        }
     }
 }

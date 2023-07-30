@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
-import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 
 /**
  * 회원의 모든 정보를 전달하는 Dto.

@@ -186,7 +186,7 @@ class AccountRepositoryTest {
 
 
     @Test
-    @DisplayName("회원상태만 조회 - accountId를 이용한 회원 상태만 조회")
+    @DisplayName("회원상태 조회 - accountId를 이용한 회원 상태만 조회")
     void lookup_accountStatus() {
         AccountStatus status = new AccountStatus("ACTIVE", "활성");
         Authority authority = new Authority("USER", "일반회원");

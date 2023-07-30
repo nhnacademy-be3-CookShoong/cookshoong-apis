@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import store.cookshoong.www.cookshoongbackend.shop.exception.merchant.MerchantValidException;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateMerchantRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateMerchantRequestDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllMerchantsForUserResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllMerchantsResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.service.MerchantService;
 
 /**
@@ -41,7 +41,7 @@ public class MerchantController {
      * @return the response entity
      */
     @GetMapping
-    public ResponseEntity<Page<SelectAllMerchantsForUserResponseDto>> getMerchants(Pageable pageable) {
+    public ResponseEntity<Page<SelectAllMerchantsResponseDto>> getMerchants(Pageable pageable) {
         return ResponseEntity
             .ok(merchantService.selectAllMerchants(pageable));
     }

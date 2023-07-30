@@ -33,20 +33,20 @@ public class MenuGroupController {
     /**
      * 메뉴 그룹 등록 컨트롤러.
      *
-     * @param storeId                   매장 아이디
+     * @param storeId             매장 아이디
      * @param createMenuGroupRequestDto 메뉴 등록 Dto
-     * @param bindingResult             validation
+     * @param bindingResult       validation
      * @return 201 response
      */
     @PostMapping("/stores/{storeId}/menu-group")
     public ResponseEntity<Void> postMenuGroup(@PathVariable("storeId") Long storeId,
-                                         @RequestBody @Valid CreateMenuGroupRequestDto createMenuGroupRequestDto,
-                                         BindingResult bindingResult) {
+                                              @RequestBody @Valid CreateMenuGroupRequestDto createMenuGroupRequestDto,
+                                              BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new MenuGroupValidationException(bindingResult);
         }
 
-        menuGroupService.createMenuGroup(storeId, createMenuGroupRequestDto);
+        menuGroupService.updateMenuGroup(storeId, createMenuGroupRequestDto);
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .build();
@@ -81,13 +81,13 @@ public class MenuGroupController {
     /**
      * 메뉴 그룹 삭제 컨트롤러.
      *
-     * @param storeId      매장 아이디
-     * @param menuGroupId  메뉴 그룹 아이디
+     * @param storeId     매장 아이디
+     * @param menuGroupId 메뉴 그룹 아이디
      * @return 200 response
      */
     @DeleteMapping("/stores/{storeId}/menu-group/{menuGroupId}")
     public ResponseEntity<Void> deleteMenuGroup(@PathVariable("storeId") Long storeId,
-                                           @PathVariable("menuGroupId") Long menuGroupId) {
+                                                @PathVariable("menuGroupId") Long menuGroupId) {
         menuGroupService.deleteMenuGroup(storeId, menuGroupId);
         return ResponseEntity
             .status(HttpStatus.OK)

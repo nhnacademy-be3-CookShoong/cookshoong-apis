@@ -1,10 +1,8 @@
 package store.cookshoong.www.cookshoongbackend.coupon.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,14 +20,12 @@ import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateCashCou
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreatePercentCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicyResponseDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableStoreCouponPolicyResponseDto;
-import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeResponse;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponTypeCashRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponTypePercentRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponUsageAllRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponUsageMerchantRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponUsageStoreRepository;
-import store.cookshoong.www.cookshoongbackend.coupon.util.CouponTypeConverter;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.shop.repository.merchant.MerchantRepository;
