@@ -8,8 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
-import store.cookshoong.www.cookshoongbackend.coupon.model.request.UpdateProvideCouponRequest;
-import store.cookshoong.www.cookshoongbackend.coupon.service.IssueCouponService;
+import store.cookshoong.www.cookshoongbackend.coupon.model.request.UpdateProvideCouponRequestDto;
+import store.cookshoong.www.cookshoongbackend.coupon.service.ProvideCouponService;
 
 /**
  * rabbitMq 통해 메시지를 수신하는 컴포넌트.
@@ -21,16 +21,16 @@ import store.cookshoong.www.cookshoongbackend.coupon.service.IssueCouponService;
 @Component
 @RequiredArgsConstructor
 public class RabbitMqController {
-    private final IssueCouponService issueCouponService;
+    private final ProvideCouponService provideCouponService;
 
     /**
      * 큐에서 메시지를 수신하여 서비스를 수행.
      *
-     * @param updateProvideCouponRequest the update provide coupon request
+     * @param updateProvideCouponRequestDto the update provide coupon request
      */
     @RabbitListener(queues = QUEUE_NAME, containerFactory = "simpleRabbitListenerContainerFactory")
-    public void receiveMessageFromQueue(UpdateProvideCouponRequest updateProvideCouponRequest) {
-        issueCouponService.provideCouponToAccountByEvent(updateProvideCouponRequest);
+    public void receiveMessageFromQueue(UpdateProvideCouponRequestDto updateProvideCouponRequestDto) {
+        provideCouponService.provideCouponToAccountByEvent(updateProvideCouponRequestDto);
     }
 
     /**
