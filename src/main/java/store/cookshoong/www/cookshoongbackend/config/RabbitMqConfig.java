@@ -52,7 +52,6 @@ public class RabbitMqConfig {
      * @throws JsonProcessingException the json processing exception
      */
     @Bean
-    @Profile("!default")
     public RabbitMqProperties rabbitMqProperties(@Value("${cookshoong.skm.keyid.rabbitmq}") String rabbitMqKeyId,
                                                  SKMService skmService) throws JsonProcessingException {
         return skmService.fetchSecrets(rabbitMqKeyId, RabbitMqProperties.class);
