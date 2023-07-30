@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.IssueCouponRequestValidationException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.UpdateProvideCouponRequest;
-import store.cookshoong.www.cookshoongbackend.coupon.service.IssueCouponService;
+import store.cookshoong.www.cookshoongbackend.coupon.service.ProvideCouponService;
 
 /**
  * 쿠폰 발급 RestController.
@@ -24,7 +24,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.service.IssueCouponService;
 @RequiredArgsConstructor
 @RequestMapping("/api/coupon/provide")
 public class ProvideCouponController {
-    private final IssueCouponService issueCouponService;
+    private final ProvideCouponService provideCouponService;
     private final RabbitTemplate rabbitTemplate;
 
     /**
@@ -42,7 +42,7 @@ public class ProvideCouponController {
             throw new IssueCouponRequestValidationException(bindingResult);
         }
 
-        issueCouponService.provideCouponToAccountByApi(updateProvideCouponRequest);
+        provideCouponService.provideCouponToAccountByApi(updateProvideCouponRequest);
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .build();
