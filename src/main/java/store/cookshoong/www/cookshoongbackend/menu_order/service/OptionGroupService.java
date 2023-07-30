@@ -2,6 +2,7 @@ package store.cookshoong.www.cookshoongbackend.menu_order.service;
 
 
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,20 +31,26 @@ public class OptionGroupService {
     /**
      * 옵션 그룹 등록 서비스.
      *
-     * @param storeId                     매장 아이디
+     * @param storeId               매장 아이디
      * @param createOptionGroupRequestDto 옵션 그룹 등록 Dto
      */
-    public void createOptionGroup(Long storeId, CreateOptionGroupRequestDto createOptionGroupRequestDto) {
+    public void updateOptionGroup(Long storeId, CreateOptionGroupRequestDto createOptionGroupRequestDto) {
         Store store = storeRepository.findById(storeId)
             .orElseThrow(StoreNotFoundException::new);
-        OptionGroup optionGroup =
-            new OptionGroup(
-                store,
-                createOptionGroupRequestDto.getName(),
-                createOptionGroupRequestDto.getMinSelectCount(),
-                createOptionGroupRequestDto.getMaxSelectCount(),
-                false);
-        optionGroupRepository.save(optionGroup);
+        if (Objects.isNull(createOptionGroupRequestDto.getTargetOptionGroupId())) {
+            OptionGroup optionGroup =
+                new OptionGroup(
+                    store,
+                    createOptionGroupRequestDto.getName(),
+                    createOptionGroupRequestDto.getMinSelectCount(),
+                    createOptionGroupRequestDto.getMaxSelectCount(),
+                    false);
+            optionGroupRepository.save(optionGroup);
+        } else {
+            OptionGroup optionGroup = optionGroupRepository.findById(createOptionGroupRequestDto.getTargetOptionGroupId())
+                .orElseThrow(OptionGroupNotFoundException::new);
+            optionGroup.modifyOptionGroup(createOptionGroupRequestDto);
+        }
     }
 
     /**

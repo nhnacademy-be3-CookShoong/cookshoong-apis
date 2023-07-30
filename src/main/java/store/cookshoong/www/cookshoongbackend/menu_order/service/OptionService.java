@@ -1,6 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.menu_order.service;
 
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,18 +32,25 @@ public class OptionService {
      *
      * @param createOptionRequestDto 옵션 등록 Dto
      */
-    public void createOption(CreateOptionRequestDto createOptionRequestDto) {
+    public void updateOption(CreateOptionRequestDto createOptionRequestDto) {
         OptionGroup optionGroup = optionGroupRepository.findById(createOptionRequestDto.getOptionGroup())
             .orElseThrow(OptionGroupNotFoundException::new);
-        Option option =
-            new Option(
-                optionGroup,
-                createOptionRequestDto.getName(),
-                createOptionRequestDto.getPrice(),
-                0,
-                false
+        if (Objects.isNull(createOptionRequestDto.getTargetOptionId())) {
+            Option option =
+                new Option(
+                    optionGroup,
+                    createOptionRequestDto.getName(),
+                    createOptionRequestDto.getPrice(),
+                    0,
+                    false
                 );
-        optionRepository.save(option);
+            optionRepository.save(option);
+        } else {
+            Option option = optionRepository.findById(createOptionRequestDto.getTargetOptionId())
+                .orElseThrow(OptionNotFoundException::new);
+            option.modifyOption(createOptionRequestDto);
+            option.modifyOptionGroup(optionGroup);
+        }
     }
 
     /**

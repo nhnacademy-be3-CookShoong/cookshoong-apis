@@ -33,9 +33,9 @@ public class OptionGroupController {
     /**
      * 옵션 그룹 등록 컨트롤러.
      *
-     * @param storeId                     매장 아이디
+     * @param storeId               매장 아이디
      * @param createOptionGroupRequestDto 옵션 그룹 등록 Dto
-     * @param bindingResult               validation
+     * @param bindingResult         validation
      * @return 201 response
      */
     @PostMapping("/stores/{storeId}/option-group")
@@ -46,7 +46,7 @@ public class OptionGroupController {
             throw new OptionGroupValidationException(bindingResult);
         }
 
-        optionGroupService.createOptionGroup(storeId, createOptionGroupRequestDto);
+        optionGroupService.updateOptionGroup(storeId, createOptionGroupRequestDto);
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .build();

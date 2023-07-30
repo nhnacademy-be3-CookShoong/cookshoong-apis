@@ -2,6 +2,7 @@ package store.cookshoong.www.cookshoongbackend.menu_order.service;
 
 
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,21 +29,27 @@ public class MenuGroupService {
     private final StoreRepository storeRepository;
 
     /**
-     * 메뉴 그룹 등록 서비스.
+     * 메뉴 그룹 등록 및 수정 서비스.
      *
-     * @param storeId                   매장 아이디
+     * @param storeId             매장 아이디
      * @param createMenuGroupRequestDto 메뉴 그룹 등록 Dto
      */
-    public void createMenuGroup(Long storeId, CreateMenuGroupRequestDto createMenuGroupRequestDto) {
+    public void updateMenuGroup(Long storeId, CreateMenuGroupRequestDto createMenuGroupRequestDto) {
         Store store = storeRepository.findById(storeId)
             .orElseThrow(StoreNotFoundException::new);
-        MenuGroup menuGroup =
-            new MenuGroup(
-                store,
-                createMenuGroupRequestDto.getName(),
-                createMenuGroupRequestDto.getDescription(),
-                0);
-        menuGroupRepository.save(menuGroup);
+        if (Objects.isNull(createMenuGroupRequestDto.getTargetMenuGroupId())) {
+            MenuGroup menuGroup =
+                new MenuGroup(
+                    store,
+                    createMenuGroupRequestDto.getName(),
+                    createMenuGroupRequestDto.getDescription(),
+                    0);
+            menuGroupRepository.save(menuGroup);
+        } else {
+            MenuGroup menuGroup = menuGroupRepository.findById(createMenuGroupRequestDto.getTargetMenuGroupId())
+                .orElseThrow(MenuGroupNotFoundException::new);
+            menuGroup.modifyMenuGroup(createMenuGroupRequestDto);
+        }
     }
 
     /**

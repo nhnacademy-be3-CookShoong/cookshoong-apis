@@ -2,6 +2,8 @@ package store.cookshoong.www.cookshoongbackend.menu_order.model.response;
 
 import com.querydsl.core.annotations.QueryProjection;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,6 +25,10 @@ public class SelectMenuResponseDto {
     private String savedName;
     private final Integer cookingTime;
     private final BigDecimal earningRate;
+    @Setter
+    private List<Long> menuGroups;
+    @Setter
+    private List<Long> optionGroups;
 
     /**
      * QueryDSL DTO Projection 을 위한 생성자.
@@ -49,5 +55,7 @@ public class SelectMenuResponseDto {
         this.savedName = savedName;
         this.cookingTime = cookingTime;
         this.earningRate = earningRate;
+        this.menuGroups = new ArrayList<>();
+        this.optionGroups = new ArrayList<>();
     }
 }
