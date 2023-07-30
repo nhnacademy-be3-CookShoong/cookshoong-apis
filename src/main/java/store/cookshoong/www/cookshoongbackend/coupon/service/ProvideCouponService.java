@@ -10,14 +10,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
-import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponPolicy;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.AlreadyHasCouponWithinSamePolicyException;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponExhaustionException;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponPolicyNotFoundException;
-import store.cookshoong.www.cookshoongbackend.coupon.exception.IssueCouponNotFoundException;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.ProvideIssueCouponFailureException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.UpdateProvideCouponRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;
@@ -79,7 +77,7 @@ public class ProvideCouponService {
 
     private static void isIssueCouponsEmpty(List<IssueCoupon> issueCoupons) {
         if (issueCoupons.isEmpty()) {
-            throw new IssueCouponNotFoundException();
+            throw new CouponExhaustionException();
         }
     }
 
@@ -111,8 +109,7 @@ public class ProvideCouponService {
 
         validBeforeProvide(accountId, couponPolicy);
 
-        Account account = accountRepository.findById(accountId)
-            .orElseThrow(UserNotFoundException::new);
+        Account account = accountRepository.getReferenceById(accountId);
 
         provideCouponUsingLock(couponPolicy, account);
     }
