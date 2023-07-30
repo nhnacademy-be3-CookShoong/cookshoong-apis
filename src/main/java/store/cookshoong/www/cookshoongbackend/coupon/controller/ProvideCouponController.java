@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.IssueCouponRequestValidationException;
-import store.cookshoong.www.cookshoongbackend.coupon.model.request.UpdateProvideCouponRequest;
+import store.cookshoong.www.cookshoongbackend.coupon.model.request.UpdateProvideCouponRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.service.ProvideCouponService;
 
 /**
@@ -30,19 +30,19 @@ public class ProvideCouponController {
     /**
      * 사용자에게 쿠폰을 발급하는 메서드.
      *
-     * @param updateProvideCouponRequest the offer coupon request
-     * @param bindingResult              the binding result
+     * @param updateProvideCouponRequestDto the offer coupon request
+     * @param bindingResult                 the binding result
      * @return the response entity
      */
     @PostMapping
     public ResponseEntity<Void> postProvideCouponToAccount(@RequestBody @Valid
-                                                           UpdateProvideCouponRequest updateProvideCouponRequest,
+                                                           UpdateProvideCouponRequestDto updateProvideCouponRequestDto,
                                                            BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new IssueCouponRequestValidationException(bindingResult);
         }
 
-        provideCouponService.provideCouponToAccountByApi(updateProvideCouponRequest);
+        provideCouponService.provideCouponToAccountByApi(updateProvideCouponRequestDto);
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .build();
@@ -51,19 +51,19 @@ public class ProvideCouponController {
     /**
      * 이벤트를 통해 쿠폰을 발급하는 메서드. rabbitMq로 메시지를 전달한다.
      *
-     * @param updateProvideCouponRequest the update provide coupon request
-     * @param bindingResult              the binding result
+     * @param requestDto the update provide coupon request
+     * @param bindingResult                 the binding result
      * @return the response entity
      */
     @PostMapping("/event")
     public ResponseEntity<Void> postProvideCouponToAccountByEvent(@RequestBody @Valid
-                                                                  UpdateProvideCouponRequest updateProvideCouponRequest,
+                                                                  UpdateProvideCouponRequestDto requestDto,
                                                                   BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new IssueCouponRequestValidationException(bindingResult);
         }
 
-        rabbitTemplate.convertAndSend(updateProvideCouponRequest);
+        rabbitTemplate.convertAndSend(requestDto);
         // TODO: 클라이언트에게 메시지를 전달할 수 있는 일회성 경로 준비 -> 어떻게?
 
         return ResponseEntity

@@ -19,7 +19,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponExhaustionE
 import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponPolicyNotFoundException;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.IssueCouponNotFoundException;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.ProvideIssueCouponFailureException;
-import store.cookshoong.www.cookshoongbackend.coupon.model.request.UpdateProvideCouponRequest;
+import store.cookshoong.www.cookshoongbackend.coupon.model.request.UpdateProvideCouponRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.IssueCouponRepository;
 import store.cookshoong.www.cookshoongbackend.rabbitmq.exception.LockInterruptedException;
@@ -45,13 +45,13 @@ public class ProvideCouponService {
     /**
      * 사용자가 쿠폰 발급을 요청했을 때, 해당 쿠폰 정책과 일치하는 쿠폰 중 하나를 발급해준다.
      *
-     * @param updateProvideCouponRequest the offer coupon request
+     * @param updateProvideCouponRequestDto the offer coupon request
      */
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
-    public void provideCouponToAccountByApi(UpdateProvideCouponRequest updateProvideCouponRequest) {
-        Long accountId = updateProvideCouponRequest.getAccountId();
+    public void provideCouponToAccountByApi(UpdateProvideCouponRequestDto updateProvideCouponRequestDto) {
+        Long accountId = updateProvideCouponRequestDto.getAccountId();
 
-        CouponPolicy couponPolicy = couponPolicyRepository.findById(updateProvideCouponRequest.getCouponPolicyId())
+        CouponPolicy couponPolicy = couponPolicyRepository.findById(updateProvideCouponRequestDto.getCouponPolicyId())
             .orElseThrow(CouponPolicyNotFoundException::new);
 
         validBeforeProvide(accountId, couponPolicy);
@@ -101,12 +101,12 @@ public class ProvideCouponService {
     /**
      * 이벤트를 통해 사용자에게 쿠폰을 발급하는 메서드.
      *
-     * @param updateProvideCouponRequest the update provide coupon request
+     * @param updateProvideCouponRequestDto the update provide coupon request
      */
-    public void provideCouponToAccountByEvent(UpdateProvideCouponRequest updateProvideCouponRequest) {
-        Long accountId = updateProvideCouponRequest.getAccountId();
+    public void provideCouponToAccountByEvent(UpdateProvideCouponRequestDto updateProvideCouponRequestDto) {
+        Long accountId = updateProvideCouponRequestDto.getAccountId();
 
-        CouponPolicy couponPolicy = couponPolicyRepository.findById(updateProvideCouponRequest.getCouponPolicyId())
+        CouponPolicy couponPolicy = couponPolicyRepository.findById(updateProvideCouponRequestDto.getCouponPolicyId())
             .orElseThrow(CouponPolicyNotFoundException::new);
 
         validBeforeProvide(accountId, couponPolicy);
