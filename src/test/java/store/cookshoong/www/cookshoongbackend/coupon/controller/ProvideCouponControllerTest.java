@@ -29,8 +29,8 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
+import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponExhaustionException;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponPolicyNotFoundException;
-import store.cookshoong.www.cookshoongbackend.coupon.exception.IssueCouponNotFoundException;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.ProvideIssueCouponFailureException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.UpdateProvideCouponRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.service.ProvideCouponService;
@@ -125,7 +125,7 @@ class ProvideCouponControllerTest {
     @Test
     @DisplayName("쿠폰 발급 실패 - 유효 쿠폰 없음")
     void postOfferCouponToAccountNonIssueCouponsFailTest() throws Exception {
-        doThrow(IssueCouponNotFoundException.class)
+        doThrow(CouponExhaustionException.class)
             .when(provideCouponService)
             .provideCouponToAccountByApi(any(UpdateProvideCouponRequestDto.class));
 
@@ -136,7 +136,7 @@ class ProvideCouponControllerTest {
 
         mockMvc.perform(request)
             .andDo(print())
-            .andExpect(status().isNotFound());
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -154,5 +154,48 @@ class ProvideCouponControllerTest {
         mockMvc.perform(request)
             .andDo(print())
             .andExpect(status().isBadRequest());
+    }
+
+    @ParameterizedTest(name = "{index}: {0}")
+    @CsvSource(value = {"쿠폰 청책 id:couponPolicyId", "사용자 id:accountId"}, delimiter = ':')
+    @DisplayName("쿠폰 이벤트 발급 실패 - 필수 필드 없음")
+    void postProvideCouponToAccountByEventNonFieldFailTest(String displayName, String fieldName) throws Exception {
+        ReflectionTestUtils.setField(updateProvideCouponRequestDto, fieldName, null);
+
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .post("/api/coupon/provide/event")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(updateProvideCouponRequestDto));
+
+        mockMvc.perform(request)
+            .andDo(print())
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("쿠폰 이벤트 발급 성공")
+    void postProvideCouponToAccountByEventSuccessTest() throws Exception {
+        doNothing().when(provideCouponService)
+            .provideCouponToAccountByApi(any(UpdateProvideCouponRequestDto.class));
+
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .post("/api/coupon/provide/event")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(updateProvideCouponRequestDto));
+
+        mockMvc.perform(request)
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andDo(MockMvcRestDocumentationWrapper.document("postProvideCouponToAccountByEvent",
+                ResourceSnippetParameters.builder()
+                    .requestSchema(Schema.schema("postProvideCouponToAccountByEvent.Request")),
+                requestFields(
+                    fieldWithPath("accountId").description("사용자 id"),
+                    fieldWithPath("couponPolicyId").description("쿠폰 정책 id")
+                )
+            ));
+
+        verify(rabbitTemplate, times(1))
+            .convertAndSend(any(UpdateProvideCouponRequestDto.class));
     }
 }
