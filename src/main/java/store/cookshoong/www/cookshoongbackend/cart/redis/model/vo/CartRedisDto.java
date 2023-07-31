@@ -59,7 +59,7 @@ public class CartRedisDto {
             .map(CartOptionDto::getOptionName)
             .collect(Collectors.joining(","));
 
-        return menu.getMenuName() + "\n" + "옵션: " + optionNamesString;
+        return menu.getMenuName() + "<br>옵션: " + optionNamesString;
     }
 
     /**

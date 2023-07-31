@@ -413,6 +413,19 @@ class CartRedisControllerTest {
     }
 
     @Test
+    @DisplayName("Redis 장바구니 redis Key 존재여부 확인")
+    void getExistMenuInCartRedis() throws Exception {
+
+        mockMvc.perform(get("/api/carts/redis/{cartKey}/exist/{menuKey}/menu", redisKey, hashKey))
+            .andExpect(status().isOk())
+            .andDo(document("get-exist-menu-in-cart-redis",
+                ResourceSnippetParameters.builder()
+                    .pathParameters(parameterWithName("cartKey").description("장바구니 Redis Key"))
+                    .pathParameters(parameterWithName("hashKey").description("장바구니 Redis HashKey"))
+                    .requestSchema(schema("GetExistMenuInCartRedis"))));
+    }
+
+    @Test
     @DisplayName("Redis 장바구니에 key 에 해당 메뉴를 삭제")
     void deleteCartMenu() throws Exception {
 
