@@ -97,6 +97,7 @@ public class CartRedisRepository {
     public void deleteCartMenu(String redisKey, String hashKey) {
 
 
+        redisTemplate.opsForHash().delete(redisKey + PHANTOM, hashKey);
         redisTemplate.opsForHash().delete(redisKey, hashKey);
     }
 
@@ -108,6 +109,7 @@ public class CartRedisRepository {
     public void deleteCartAll(String redisKey) {
 
 
+        redisTemplate.delete(redisKey + PHANTOM);
         redisTemplate.delete(redisKey);
     }
 
