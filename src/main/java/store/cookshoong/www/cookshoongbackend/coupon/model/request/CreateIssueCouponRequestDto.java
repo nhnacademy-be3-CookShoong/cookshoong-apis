@@ -24,5 +24,5 @@ public class CreateIssueCouponRequestDto {
     private Long issueQuantity;
 
     @NotNull
-    IssueMethod issueMethod;
+    private IssueMethod issueMethod;
 }
