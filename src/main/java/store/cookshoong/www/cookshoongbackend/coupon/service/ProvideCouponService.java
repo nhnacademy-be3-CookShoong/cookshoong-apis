@@ -91,6 +91,11 @@ public class ProvideCouponService {
         throw new ProvideIssueCouponFailureException();
     }
 
+    private void provideCoupon(CouponPolicy couponPolicy, Account account) {
+        IssueCoupon issueCoupon = getIssueCouponUsingLock(couponPolicy);
+        issueCoupon.provideToAccount(account);
+    }
+
     private void validBeforeProvide(Long accountId, CouponPolicy couponPolicy) {
         validPolicyDeleted(couponPolicy);
         validReceivedBefore(accountId, couponPolicy);
@@ -111,10 +116,10 @@ public class ProvideCouponService {
 
         Account account = accountRepository.getReferenceById(accountId);
 
-        provideCouponUsingLock(couponPolicy, account);
+        provideCoupon(couponPolicy, account);
     }
 
-    private void provideCouponUsingLock(CouponPolicy couponPolicy, Account account) {
+    private IssueCoupon getIssueCouponUsingLock(CouponPolicy couponPolicy) {
         RLock lock = redissonClient.getLock(couponPolicy.getId().toString());
 
         try {
@@ -124,9 +129,8 @@ public class ProvideCouponService {
                 throw new LockOverWaitTimeException();
             }
 
-            IssueCoupon issueCoupon = issueCouponRepository.findByCouponPolicyAndAccountIsNull(couponPolicy)
+            return issueCouponRepository.findByCouponPolicyAndAccountIsNull(couponPolicy)
                 .orElseThrow(CouponExhaustionException::new);
-            issueCoupon.provideToAccount(account);
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
