@@ -41,9 +41,11 @@ public class CartRedisDto {
      * @return      메뉴 + 옵션s -> hashKey 반환
      */
     public String generateUniqueHashKey() {
-        String optionIdsString = options.stream()
+        String optionIdsString = options != null
+            ? options.stream()
             .map(cartOptionDto -> cartOptionDto.getOptionId().toString())
-            .collect(Collectors.joining(""));
+            .collect(Collectors.joining(""))
+            : "";
 
         return menu.getMenuId() + optionIdsString;
     }
@@ -55,11 +57,15 @@ public class CartRedisDto {
      * @return      후라이드치킨 + 양념소스 -> hashKey 반환
      */
     public String generateMenuOptionName() {
-        String optionNamesString = options.stream()
+        String optionNamesString = options != null
+            ? options.stream()
             .map(CartOptionDto::getOptionName)
-            .collect(Collectors.joining(","));
+            .collect(Collectors.joining(","))
+            : "";
 
-        return menu.getMenuName() + "<br>옵션: " + optionNamesString;
+        return optionNamesString.isEmpty()
+            ? menu.getMenuName()
+            : menu.getMenuName() + "<br>옵션: " + optionNamesString;
     }
 
     /**
@@ -69,9 +75,11 @@ public class CartRedisDto {
      */
     public String generateTotalMenuPrice() {
         int menuPrice = menu.getMenuPrice();
-        int optionPrices = options.stream()
+        int optionPrices = options != null
+            ? options.stream()
             .mapToInt(CartOptionDto::getOptionPrice)
-            .sum();
+            .sum()
+            : 0;
 
         return String.valueOf((menuPrice + optionPrices) * count);
     }
