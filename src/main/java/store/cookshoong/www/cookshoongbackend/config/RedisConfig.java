@@ -26,7 +26,6 @@ import store.cookshoong.www.cookshoongbackend.common.service.SKMService;
 public class RedisConfig {
 
     @Bean
-    @Profile("!default")
     public RedisProperties redisProperties(@Value("${cookshoong.skm.keyid.redis}") String redisKeyId,
                                            SKMService skmService) throws JsonProcessingException {
         return skmService.fetchSecrets(redisKeyId, RedisProperties.class);

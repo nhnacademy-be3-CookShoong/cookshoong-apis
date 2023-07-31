@@ -13,7 +13,9 @@ import lombok.NoArgsConstructor;
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UpdateProvideCouponRequest {
+public class UpdateProvideCouponRequestDto {
     @NotNull
     private Long couponPolicyId;
+    @NotNull
+    private Long accountId;
 }

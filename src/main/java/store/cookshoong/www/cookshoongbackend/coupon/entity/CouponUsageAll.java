@@ -1,10 +1,13 @@
 package store.cookshoong.www.cookshoongbackend.coupon.entity;
 
-import java.util.OptionalInt;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import lombok.Getter;
+import store.cookshoong.www.cookshoongbackend.coupon.util.IssueMethod;
 
 /**
  * 쿠폰 사용처 모두 entity.
@@ -22,7 +25,7 @@ public class CouponUsageAll extends CouponUsage {
      * {@inheritDoc}
      */
     @Override
-    public OptionalInt limitCount() {
-        return OptionalInt.empty();
+    protected Set<IssueMethod> issueMethods() {
+        return Collections.unmodifiableSet(EnumSet.of(IssueMethod.BULK, IssueMethod.EVENT));
     }
 }

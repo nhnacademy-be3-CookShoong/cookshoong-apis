@@ -1,6 +1,8 @@
 package store.cookshoong.www.cookshoongbackend.coupon.entity;
 
-import java.util.OptionalInt;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.cookshoong.www.cookshoongbackend.coupon.util.IssueMethod;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 
 /**
@@ -35,7 +38,7 @@ public class CouponUsageMerchant extends CouponUsage {
      * {@inheritDoc}
      */
     @Override
-    public OptionalInt limitCount() {
-        return OptionalInt.empty();
+    protected Set<IssueMethod> issueMethods() {
+        return Collections.unmodifiableSet(EnumSet.of(IssueMethod.BULK, IssueMethod.EVENT));
     }
 }
