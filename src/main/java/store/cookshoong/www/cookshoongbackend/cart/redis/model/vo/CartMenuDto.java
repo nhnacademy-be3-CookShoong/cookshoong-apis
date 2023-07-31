@@ -27,5 +27,5 @@ public class CartMenuDto {
     @NotBlank
     private String menuImage;
     @NotNull
-    private int menuPrice;
+    private Integer menuPrice;
 }

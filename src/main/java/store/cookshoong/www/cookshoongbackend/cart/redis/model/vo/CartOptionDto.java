@@ -1,7 +1,5 @@
 package store.cookshoong.www.cookshoongbackend.cart.redis.model.vo;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,10 +18,7 @@ import lombok.ToString;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CartOptionDto {
 
-    @NotNull
     private Long optionId;
-    @NotBlank
     private String optionName;
-    @NotNull
-    private int optionPrice;
+    private Integer optionPrice;
 }
