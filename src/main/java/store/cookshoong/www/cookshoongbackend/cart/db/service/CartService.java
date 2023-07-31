@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
@@ -32,6 +33,7 @@ import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreReposit
  * @since 2023.07.27
  */
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CartService {
 
