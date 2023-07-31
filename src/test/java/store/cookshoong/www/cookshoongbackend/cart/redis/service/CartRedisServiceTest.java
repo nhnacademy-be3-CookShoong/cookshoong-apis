@@ -632,6 +632,19 @@ class CartRedisServiceTest {
     }
 
     @Test
+    @DisplayName("Redis 장바구니에 redisKey 에 hashKey 존재하는지 확인")
+    void existMenuInCartRedis() {
+
+        when(cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)).thenReturn(true);
+
+        boolean exists = cartRedisService.existMenuInCartRedis(redisKey, hashKey);
+
+        verify(cartRedisRepository).existMenuInCartRedis(redisKey, hashKey);
+
+        assertTrue(exists);
+    }
+
+    @Test
     @DisplayName("DB 장바구니 정보를 Redis 로 저장")
     void createDbCartUploadRedis() {
 
