@@ -7,9 +7,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException;
 import store.cookshoong.www.cookshoongbackend.common.exception.ValidationFailureException;
-import store.cookshoong.www.cookshoongbackend.coupon.exception.AlreadyHasCouponWithinSamePolicyException;
-import store.cookshoong.www.cookshoongbackend.coupon.exception.IssueCouponOverCountException;
-import store.cookshoong.www.cookshoongbackend.coupon.exception.ProvideIssueCouponFailureException;
 
 /**
  * CouponController 예외를 처리하는 Advice.
@@ -32,11 +29,8 @@ public class CouponControllerAdvice {
             .body(e.getMessage());
     }
 
-    @ExceptionHandler({
-        IssueCouponOverCountException.class,
-        ProvideIssueCouponFailureException.class,
-        AlreadyHasCouponWithinSamePolicyException.class})
-    ResponseEntity<String> handleIssueCouponOverCountException(RuntimeException e) {
+    @ExceptionHandler(RuntimeException.class)
+    ResponseEntity<String> handleIssueCouponRuntimeException(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(e.getMessage());
     }
