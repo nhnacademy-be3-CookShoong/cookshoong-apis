@@ -65,12 +65,13 @@ class CartRedisControllerTest {
     Long storeId = 1L;
     String storeName = "네네치킨";
     Long menuId = 1L;
-    Integer count = 1;
+    int count = 1;
     CartMenuDto cartMenuDto;
     CartOptionDto cartOptionDto;
     CartOptionDto cartOptionDto1;
     List<CartOptionDto> cartOptionDtos;
     CartRedisDto cartRedisDto;
+    private static final String NO_MENU = "NO_KEY";
 
     @BeforeEach
     void setUp() {
@@ -139,6 +140,34 @@ class CartRedisControllerTest {
                     fieldWithPath("menuOptName").description("메뉴+옵션명"),
                     fieldWithPath("totalMenuPrice").description("메뉴 총 가")
                 )));
+    }
+
+    @Test
+    @DisplayName("빈 장바구니 등록")
+    void postCreateEmptyCart() throws Exception {
+
+        mockMvc.perform(post("/api/carts/{cartKey}/add-menu/{noKey}/empty", redisKey, NO_MENU)
+                .contentType(APPLICATION_JSON))
+            .andExpect(status().isCreated())
+            .andDo(document("post-create-empty-cart",
+                ResourceSnippetParameters.builder()
+                    .pathParameters(parameterWithName("cartKey").description("장바구니 Redis Key"))
+                    .pathParameters(parameterWithName("noKey").description("빈 장바구니 메뉴 HashKey"))
+                    .requestSchema(schema("PostCreateEmptyCart"))));
+    }
+
+    @Test
+    @DisplayName("빈 장바구니 등록")
+    void postDbUploadRedis() throws Exception {
+
+        mockMvc.perform(post("/api/carts/{cartKey}/db-upload-redis/{accountId}", redisKey, accountId)
+                .contentType(APPLICATION_JSON))
+            .andExpect(status().isCreated())
+            .andDo(document("post-db-upload-redis",
+                ResourceSnippetParameters.builder()
+                    .pathParameters(parameterWithName("cartKey").description("장바구니 Redis Key"))
+                    .pathParameters(parameterWithName("accountId").description("회운 아이디"))
+                    .requestSchema(schema("PostDbUploadRedis"))));
     }
 
     @Test
@@ -369,6 +398,18 @@ class CartRedisControllerTest {
                 responseFields(
                     fieldWithPath("count").description("장바구니에 담긴 메뉴 수")
                 )));
+    }
+
+    @Test
+    @DisplayName("Redis 장바구니 redis Key 존재여부 확인")
+    void getExistKeyInCartRedis() throws Exception {
+
+        mockMvc.perform(get("/api/carts/redis/{cartKey}/exist", redisKey))
+            .andExpect(status().isOk())
+            .andDo(document("get-exist-key-in-cart-redis",
+                ResourceSnippetParameters.builder()
+                    .pathParameters(parameterWithName("cartKey").description("장바구니 Redis Key"))
+                    .requestSchema(schema("GetExistKeyInCartRedis"))));
     }
 
     @Test
