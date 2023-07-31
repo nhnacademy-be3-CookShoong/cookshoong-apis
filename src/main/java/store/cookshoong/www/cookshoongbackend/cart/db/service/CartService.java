@@ -27,7 +27,7 @@ import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreNotFound
 import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreRepository;
 
 /**
- * {설명을 작성해주세요}.
+ * Cart 에 대한 Service.
  *
  * @author jeongjewan
  * @since 2023.07.27
@@ -89,7 +89,6 @@ public class CartService {
                 Option option =
                     optionRepository.findById(optionDto.getOptionId()).orElseThrow(OptionNotFoundException::new);
 
-                assert option != null;
                 CartDetailMenuOption.Pk pk = new CartDetailMenuOption.Pk(cartDetail.getId(), option.getId());
                 CartDetailMenuOption cartDetailMenuOption = new CartDetailMenuOption(pk, cartDetail, option);
                 cartDetailMenuOptionRepository.save(cartDetailMenuOption);

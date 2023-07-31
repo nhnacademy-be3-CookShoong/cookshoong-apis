@@ -11,7 +11,7 @@ import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartRedisDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.service.CartRedisService;
 
 /**
- * {설명을 작성해주세요}.
+ * Phantom Key 를 잡기위한 Listener.
  *
  * @author jeongjewan
  * @since 2023.07.27
