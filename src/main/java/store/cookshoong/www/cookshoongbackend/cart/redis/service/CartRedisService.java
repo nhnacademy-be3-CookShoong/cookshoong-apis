@@ -103,6 +103,7 @@ public class CartRedisService {
             throw new NotFoundCartRedisKey();
         } else if (cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)) {
             cartRedisRepository.deleteCartMenu(redisKey, hashKey);
+            cart.incrementCount();
         }
 
         cart.setHashKey(cart.generateUniqueHashKey());
