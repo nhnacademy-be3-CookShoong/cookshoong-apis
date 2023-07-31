@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartMenuDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartOptionDto;
@@ -28,7 +27,6 @@ import store.cookshoong.www.cookshoongbackend.config.IntegrationTestBase;
  * @since 2023.07.20
  */
 @Slf4j
-@SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CartRedisRepositoryTest extends IntegrationTestBase {
 
@@ -43,7 +41,8 @@ class CartRedisRepositoryTest extends IntegrationTestBase {
     Long storeId = 2L;
     String storeName = "네네치킨";
     Long menuId = 1L;
-    Integer count = 1;
+    int count = 1;
+    private static final String NO_MENU = "NO_KEY";
 
     @Test
     @DisplayName("Redis 서버에서 장바구니에 들어갈 메뉴 정보 담기")
@@ -102,15 +101,19 @@ class CartRedisRepositoryTest extends IntegrationTestBase {
        cartList = cartList.stream().sorted(sortCarts).collect(Collectors.toList());
 
        log.info("CART: {}", om.writerWithDefaultPrettyPrinter().writeValueAsString(cartList));
-
     }
 
     @Test
     @DisplayName("Redis 서버에서 들어가 있는 장바구니 특정 메뉴 가져오기")
     void getCartMenuRedis() throws Exception {
-        Long menuId = 1L;
 
-        Object carts = cartRedisRepository.findByCartMenu(redisKey, String.valueOf(menuId));
+        Object carts = cartRedisRepository.findByCartMenu(redisKey, "NOMENU");
+
+        CartRedisDto cartRedisDto = (CartRedisDto) carts;
+
+        if (cartRedisRepository.existMenuInCartRedis(redisKey, "NOMENU")) {
+            log.info("존재합니다.");
+        }
 
         log.info("CART ITEM: {}", om.writerWithDefaultPrettyPrinter().writeValueAsString(carts));
     }
@@ -168,8 +171,6 @@ class CartRedisRepositoryTest extends IntegrationTestBase {
         ReflectionTestUtils.setField(cartRedisDto, "totalMenuPrice", cartRedisDto.generateTotalMenuPrice());
 
         CartRedisDto deleteCartMenu = (CartRedisDto) cartRedisRepository.findByCartMenu(redisKey, "112");
-
-        cartRedisRepository.deleteCartMenu(redisKey, deleteCartMenu.getHashKey());
 
         cartRedisRepository.cartMenuRedisModify(redisKey, cartRedisDto.getHashKey(), cartRedisDto);
     }

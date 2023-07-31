@@ -1,6 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +10,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import store.cookshoong.www.cookshoongbackend.common.property.RedisProperties;
@@ -62,7 +64,7 @@ public class RedisConfig {
     }
 
     /**
-     * RedisTemplate 에 대해 모든 타입을 사용할 수 있도록 설정.
+     * RedisTemplate 에 대해 모든 타입을 사용할 수 있도록 설정 - Cart Redis 용.
      *
      * @param redisConnectionFactory        the redisConnectionFactory
      * @return                              redisTemplate 를 반환
@@ -87,5 +89,20 @@ public class RedisConfig {
         redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
 
         return redisTemplate;
+    }
+
+    /**
+     * RedisMessageListenerContainer 를 사용하기 위한 Bean 주입.
+     *
+     * @param connectionFactory     Redis 와의 연결을 설정하고, 관리
+     * @return                      RedisMessageListenerContainer 생성된 객체를 반환
+     */
+    @Bean
+    public RedisMessageListenerContainer redisMessageListenerContainer(
+        @Qualifier("redisConnectionFactory") RedisConnectionFactory connectionFactory) {
+
+        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+        container.setConnectionFactory(connectionFactory);
+        return container;
     }
 }

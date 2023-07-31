@@ -8,7 +8,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.Setter;
 
 /**
  * 장바구니에 저장될 Dto.
@@ -17,7 +17,7 @@ import lombok.ToString;
  * @since 2023.07.20
  */
 @Getter
-@ToString
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class CartRedisDto {
@@ -31,7 +31,7 @@ public class CartRedisDto {
     private List<CartOptionDto> options;
     private Long createTimeMillis;
     private String hashKey;
-    private Integer count;
+    private int count;
     private String menuOptName;
     private String totalMenuPrice;
 

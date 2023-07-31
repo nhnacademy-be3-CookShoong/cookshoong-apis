@@ -57,6 +57,37 @@ public class CartRedisController {
     }
 
     /**
+     * 빈 장바구니를 생성하는 메서드.
+     *
+     * @param cartKey       redis key
+     * @param noKey       redis hashKey
+     * @return              상태코드 201(CREATED)와 함께 응답을 반환
+     */
+    @PostMapping("/{cartKey}/add-menu/{noKey}/empty")
+    public ResponseEntity<Void> postCreateEmptyCart(@PathVariable String cartKey,
+                                                    @PathVariable String noKey) {
+
+        cartRedisService.createCartEmpty(cartKey, noKey);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    /**
+     * DB 장바구니 정보를 Redis 로 저장하는 메서드.
+     *
+     * @param accountId     회원 아이디
+     * @return              상태코드 201(CREATED)와 함께 응답을 반환
+     */
+    @PostMapping("/{cartKey}/db-upload-redis/{accountId}")
+    public ResponseEntity<Void> postDbUploadRedis(@PathVariable String cartKey,
+                                                  @PathVariable Long accountId) {
+
+        cartRedisService.createDbCartUploadRedis(cartKey, accountId);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    /**
      * Redis 장바구니에서 메뉴를 수정할 메서드.
      *
      * @param cartKey       redis key
@@ -183,5 +214,19 @@ public class CartRedisController {
         cartRedisService.removeCartMenuAll(cartKey);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    /**
+     * Redis 장바구니 redis Key 존재여부를 환인하는 메서드.
+     *
+     * @param cartKey       redis Key
+     * @return              redis Key 존재여부를 반환
+     */
+    @GetMapping("/redis/{cartKey}/exist")
+    public ResponseEntity<Boolean> getExistKeyInCartRedis(@PathVariable String cartKey) {
+
+        Boolean isCartKey = cartRedisService.existKeyInCartRedis(cartKey);
+
+        return ResponseEntity.ok(isCartKey);
     }
 }

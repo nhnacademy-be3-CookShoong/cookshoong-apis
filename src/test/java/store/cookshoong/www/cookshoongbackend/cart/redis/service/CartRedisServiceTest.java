@@ -3,7 +3,9 @@ package store.cookshoong.www.cookshoongbackend.cart.redis.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -23,6 +25,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import store.cookshoong.www.cookshoongbackend.cart.db.model.response.CartMenuResponseDto;
+import store.cookshoong.www.cookshoongbackend.cart.db.model.response.CartOptionResponseDto;
+import store.cookshoong.www.cookshoongbackend.cart.db.model.response.CartResponseDto;
+import store.cookshoong.www.cookshoongbackend.cart.db.repository.CartRepository;
 import store.cookshoong.www.cookshoongbackend.cart.redis.exception.InvalidStoreException;
 import store.cookshoong.www.cookshoongbackend.cart.redis.exception.NotFoundCartRedisKey;
 import store.cookshoong.www.cookshoongbackend.cart.redis.exception.NotFoundMenuRedisHashKey;
@@ -34,7 +40,7 @@ import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
 import store.cookshoong.www.cookshoongbackend.file.service.ObjectStorageService;
 
 /**
- * Redis 장바구니에 대한 서버스 테스트 코드.
+ * Redis 장바구니에 대한 서비스 테스트 코드.
  *
  * @author jeongjewan
  * @since 2023.07.23
@@ -48,6 +54,8 @@ class CartRedisServiceTest {
 
     @Mock
     private CartRedisRepository cartRedisRepository;
+    @Mock
+    private CartRepository cartRepository;
 
     @Mock
     private ObjectStorageService objectStorageService;
@@ -63,6 +71,7 @@ class CartRedisServiceTest {
     CartOptionDto cartOptionDto;
     CartOptionDto cartOptionDto1;
     List<CartOptionDto> cartOptionDtos;
+    private static final String NO_MENU = "NO_KEY";
 
     @BeforeEach
     void setup() {
@@ -76,12 +85,12 @@ class CartRedisServiceTest {
         cartOptionDto = ReflectionUtils.newInstance(CartOptionDto.class);
         ReflectionTestUtils.setField(cartOptionDto, "optionId", 1L);
         ReflectionTestUtils.setField(cartOptionDto, "optionName", "optionName2");
-        ReflectionTestUtils.setField(cartOptionDto, "optionPrice", 2);
+        ReflectionTestUtils.setField(cartOptionDto, "optionPrice", 2000);
 
         cartOptionDto1 = ReflectionUtils.newInstance(CartOptionDto.class);
         ReflectionTestUtils.setField(cartOptionDto1, "optionId", 2L);
         ReflectionTestUtils.setField(cartOptionDto1, "optionName", "optionName3");
-        ReflectionTestUtils.setField(cartOptionDto1, "optionPrice", 1);
+        ReflectionTestUtils.setField(cartOptionDto1, "optionPrice", 1000);
 
         cartOptionDtos = new ArrayList<>();
         cartOptionDtos.add(cartOptionDto);
@@ -111,6 +120,71 @@ class CartRedisServiceTest {
     }
 
     @Test
+    @DisplayName("장바구니에 추가하기 - 메뉴 장바구니에 담을 시 빈 장바구니가 존재하면 삭제")
+    void createCartMenu_no_menu() {
+
+        CartRedisDto cartRedisDto =
+            ReflectionUtils.newInstance(CartRedisDto.class);
+
+        ReflectionTestUtils.setField(cartRedisDto, "accountId", accountId);
+        ReflectionTestUtils.setField(cartRedisDto, "storeId", storeId);
+        ReflectionTestUtils.setField(cartRedisDto, "storeName", storeName);
+        ReflectionTestUtils.setField(cartRedisDto, "menu", cartMenuDto);
+        ReflectionTestUtils.setField(cartRedisDto, "options", cartOptionDtos);
+        ReflectionTestUtils.setField(cartRedisDto, "createTimeMillis", System.currentTimeMillis());
+        ReflectionTestUtils.setField(cartRedisDto, "hashKey", hashKey);
+        ReflectionTestUtils.setField(cartRedisDto, "count", count);
+        ReflectionTestUtils.setField(cartRedisDto, "menuOptName", cartRedisDto.generateMenuOptionName());
+        ReflectionTestUtils.setField(cartRedisDto, "totalMenuPrice", cartRedisDto.generateTotalMenuPrice());
+
+        when(cartRedisRepository.existMenuInCartRedis(redisKey, NO_MENU)).thenReturn(true);
+
+        cartRedisService.createCartMenu(redisKey, hashKey, cartRedisDto);
+
+        verify(cartRedisRepository).deleteCartMenu(redisKey, NO_MENU);
+    }
+
+    @Test
+    @DisplayName("장바구니에 추가하기 - Redis 장바구니에 redisKey 와 hashKey 가 존재할 때")
+    void createCartMenu_redisKeyAndHashKey_Exist() {
+
+        CartRedisDto cartRedisDto =
+            ReflectionUtils.newInstance(CartRedisDto.class);
+
+        ReflectionTestUtils.setField(cartRedisDto, "accountId", accountId);
+        ReflectionTestUtils.setField(cartRedisDto, "storeId", storeId);
+        ReflectionTestUtils.setField(cartRedisDto, "storeName", storeName);
+        ReflectionTestUtils.setField(cartRedisDto, "menu", cartMenuDto);
+        ReflectionTestUtils.setField(cartRedisDto, "options", cartOptionDtos);
+        ReflectionTestUtils.setField(cartRedisDto, "createTimeMillis", System.currentTimeMillis());
+        ReflectionTestUtils.setField(cartRedisDto, "hashKey", hashKey);
+        ReflectionTestUtils.setField(cartRedisDto, "count", count);
+        ReflectionTestUtils.setField(cartRedisDto, "menuOptName", cartRedisDto.generateMenuOptionName());
+        ReflectionTestUtils.setField(cartRedisDto, "totalMenuPrice", cartRedisDto.generateTotalMenuPrice());
+
+        cartRedisDto.incrementCount();
+
+        when(cartRedisRepository.existMenuInCartRedis(redisKey, NO_MENU)).thenReturn(false);
+        when(cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)).thenReturn(true);
+        when(cartRedisRepository.findByCartMenu(redisKey, hashKey)).thenReturn(cartRedisDto);
+
+        cartRedisService.createCartMenu(redisKey, hashKey, cartRedisDto);
+
+        verify(cartRedisRepository).findByCartMenu(redisKey, hashKey);
+        verify(cartRedisRepository).cartRedisSave(eq(redisKey), eq(hashKey), any(CartRedisDto.class));
+    }
+
+    @Test
+    @DisplayName("빈 장바구니 생성하기")
+    void createCartEmpty() {
+
+        cartRedisService.createCartEmpty(redisKey, NO_MENU);
+
+        verify(cartRedisRepository).cartRedisSave(redisKey, NO_MENU, null);
+
+    }
+
+    @Test
     @DisplayName("장바구니에 추가하기 실패 - 다른 매장에 대해서 추가하는 경우")
     void createCartMenu_InvalidStoreException() {
 
@@ -125,6 +199,7 @@ class CartRedisServiceTest {
         ReflectionTestUtils.setField(cartRedisDto2, "storeId", 2L);
 
         // Mock behavior
+        when(cartRedisRepository.existMenuInCartRedis(redisKey, NO_MENU)).thenReturn(false);
         when(cartRedisRepository.findByCartAll(redisKey)).thenReturn(List.of(cartRedisDto));
 
         // Verify exception
@@ -133,7 +208,7 @@ class CartRedisServiceTest {
 
         // Verify repository method calls
         verify(cartRedisRepository, times(1)).findByCartAll(redisKey);
-        verify(cartRedisRepository, never()).existMenuInCartRedis(any(), any());
+        verify(cartRedisRepository, times(1)).existMenuInCartRedis(redisKey, NO_MENU);
         verify(cartRedisRepository, never()).cartRedisSave(any(), any(), any());
     }
 
@@ -301,10 +376,48 @@ class CartRedisServiceTest {
         verify(cartRedisRepository, never()).cartMenuRedisModify(any(), any(), any());
     }
 
+    @Test
+    @DisplayName("Redis 장바구니에 들어있는 모든 메뉴 가져오기 - Redis 장바구니에 빈 장바구니가 존재할 때 빈 장바구니 조회")
+    void selectCartMenuAll_List() {
+
+        when(cartRedisRepository.existMenuInCartRedis(redisKey, NO_MENU)).thenReturn(true);
+        when(cartRedisRepository.findByCartMenu(redisKey, NO_MENU)).thenReturn(null);
+
+        cartRedisService
+            .selectCartMenuAll(redisKey);
+
+        verify(cartRedisRepository).existMenuInCartRedis(redisKey, NO_MENU);
+        verify(cartRedisRepository).findByCartMenu(redisKey, NO_MENU);
+    }
 
     @Test
-    @DisplayName("Redis 장바구니에 들어있는 모든 메뉴 가져오기")
-    void selectCartMenuAll_List() {
+    @DisplayName("Redis 장바구니에 들어있는 모든 메뉴 가져오기 - Redis에 데이터가 존재하지 않는 경우")
+    void selectCartMenuAll_List_Redis_isEmpty() {
+        String menuImagePath = objectStorageService.getFullPath(FileDomain.MENU_IMAGE.getVariable(), UUID.randomUUID()+".png");
+        CartMenuResponseDto cartMenuResponseDto =
+            new CartMenuResponseDto(menuId, "menuName2", menuImagePath, 3, System.currentTimeMillis(), 3);
+
+        CartOptionResponseDto cartOptionResponseDto =
+            new CartOptionResponseDto(1L, "optionName2", 2000);
+
+        CartOptionResponseDto cartOptionResponseDto2 =
+            new CartOptionResponseDto(2L, "optionName3", 1000);
+
+        List<CartOptionResponseDto> cartOptionResponseDtoList = new ArrayList<>();
+        cartOptionResponseDtoList.add(cartOptionResponseDto);
+        cartOptionResponseDtoList.add(cartOptionResponseDto2);
+
+        CartResponseDto cartResponseDto =
+            ReflectionUtils.newInstance(CartResponseDto.class);
+
+        ReflectionTestUtils.setField(cartResponseDto, "accountId", accountId);
+        ReflectionTestUtils.setField(cartResponseDto, "storeId", storeId);
+        ReflectionTestUtils.setField(cartResponseDto, "name", storeName);
+        ReflectionTestUtils.setField(cartResponseDto, "cartMenuResponseDto", cartMenuResponseDto);
+        ReflectionTestUtils.setField(cartResponseDto, "cartOptionResponseDto", cartOptionResponseDtoList);
+
+        List carDBtList = new ArrayList();
+        carDBtList.add(cartResponseDto);
 
         CartRedisDto cartRedisDto =
             ReflectionUtils.newInstance(CartRedisDto.class);
@@ -320,16 +433,21 @@ class CartRedisServiceTest {
         ReflectionTestUtils.setField(cartRedisDto, "menuOptName", cartRedisDto.generateMenuOptionName());
         ReflectionTestUtils.setField(cartRedisDto, "totalMenuPrice", cartRedisDto.generateTotalMenuPrice());
 
-        List carts = new ArrayList();
-        carts.add(cartRedisDto);
+        List cartRedisList = new ArrayList();
+        cartRedisList.add(cartRedisDto);
 
-        when(cartRedisRepository.existKeyInCartRedis(redisKey)).thenReturn(true);
-        when(cartRedisRepository.findByCartAll(redisKey)).thenReturn(carts);
+        when(cartRedisRepository.existMenuInCartRedis(String.valueOf(accountId), NO_MENU)).thenReturn(false);
+        when(cartRedisRepository.existKeyInCartRedis(String.valueOf(accountId))).thenReturn(false);
+        when(cartRepository.lookupCartDbList(accountId)).thenReturn(carDBtList);
+        when(cartRedisRepository.findByCartAll(String.valueOf(accountId))).thenReturn(cartRedisList);
 
-        List<CartRedisDto> actual = cartRedisService.selectCartMenuAll(redisKey);
+        List<CartRedisDto> actual = cartRedisService.selectCartMenuAll(String.valueOf(accountId));
 
-        verify(cartRedisRepository, times(1)).existKeyInCartRedis(redisKey);
-        verify(cartRedisRepository, times(1)).findByCartAll(redisKey);
+        verify(cartRedisRepository, times(1)).existMenuInCartRedis(String.valueOf(accountId), NO_MENU);
+        verify(cartRedisRepository, times(1)).existKeyInCartRedis(String.valueOf(accountId));
+        verify(cartRedisRepository, never()).findByCartMenu(String.valueOf(accountId), NO_MENU);
+        verify(cartRepository, times(1)).lookupCartDbList(accountId);
+        verify(cartRedisRepository, times(1)).findByCartAll(String.valueOf(accountId));
 
         assertNotNull(actual);
         assertEquals(actual.get(0).getStoreId(), storeId);
@@ -344,21 +462,6 @@ class CartRedisServiceTest {
         assertEquals(actual.get(0).getOptions().get(1).getOptionId(), cartOptionDto1.getOptionId());
         assertEquals(actual.get(0).getOptions().get(1).getOptionPrice(), cartOptionDto1.getOptionPrice());
         assertEquals(actual.get(0).getOptions().get(1).getOptionName(), cartOptionDto1.getOptionName());
-    }
-
-    @Test
-    @DisplayName("Redis 장바구니에 들어있는 모든 메뉴 가져오기 실패 - 장바구니 key 가 존재하지 않을 때")
-    void selectCartMenuAll_NotFoundCartRedisKey() {
-
-        // Mock behavior
-        when(cartRedisRepository.existKeyInCartRedis(redisKey)).thenReturn(false);
-
-        // Verify exception
-        assertThrows(NotFoundCartRedisKey.class,
-            () -> cartRedisService.selectCartMenuAll(redisKey));
-
-        // Verify repository method calls
-        verify(cartRedisRepository, times(1)).existKeyInCartRedis(redisKey);
     }
 
     @Test
@@ -474,6 +577,21 @@ class CartRedisServiceTest {
     }
 
     @Test
+    @DisplayName("Redis 장바구니에서 해당 메뉴를 삭제 - 장바구니에 메뉴가 하나 남아 있을 때 삭제되면 빈 장바구니 생성")
+    void removeCartMenu_no_menu() {
+
+        when(cartRedisRepository.existKeyInCartRedis(redisKey)).thenReturn(true);
+        when(cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)).thenReturn(true);
+        when(cartRedisRepository.cartRedisSize(redisKey)).thenReturn(1L);
+
+        cartRedisService.removeCartMenu(redisKey, hashKey);
+
+        verify(cartRedisRepository).existKeyInCartRedis(redisKey);
+        verify(cartRedisRepository).existMenuInCartRedis(redisKey, hashKey);
+        verify(cartRedisRepository).deleteCartMenu(redisKey, hashKey);
+    }
+
+    @Test
     @DisplayName("Redis 장바구니에서 해당 메뉴를 삭제 실패 - 장바구니 key 가 존재하지 않을 때")
     void removeCartMenu_NotFoundCartRedisKey() {
 
@@ -485,8 +603,6 @@ class CartRedisServiceTest {
         verify(cartRedisRepository, times(1)).existKeyInCartRedis(redisKey);
         verify(cartRedisRepository, never()).existMenuInCartRedis(any(), any());
     }
-
-
 
     @Test
     @DisplayName("Redis 장바구니에서 해당 메뉴를 삭제 실패 - 장바구니 key 에 해당 메뉴가 존재하지 않을 때")
@@ -502,8 +618,34 @@ class CartRedisServiceTest {
         verify(cartRedisRepository, times(1)).existMenuInCartRedis(redisKey, hashKey);
     }
 
-    @DisplayName("Redis 장바구니에서 모든 메뉴를 삭제")
     @Test
+    @DisplayName("Redis 장바구니에 redisKey 가 존재하는지 확인")
+    void existKeyInCartRedis() {
+
+        when(cartRedisRepository.existKeyInCartRedis(redisKey)).thenReturn(true);
+
+        boolean exists = cartRedisService.existKeyInCartRedis(redisKey);
+
+        verify(cartRedisRepository).existKeyInCartRedis(redisKey);
+
+        assertTrue(exists);
+    }
+
+    @Test
+    @DisplayName("DB 장바구니 정보를 Redis 로 저장")
+    void createDbCartUploadRedis() {
+
+        List<CartResponseDto> cartResponseDtos = new ArrayList<>();
+
+        when(cartRepository.lookupCartDbList(accountId)).thenReturn(cartResponseDtos);
+
+        cartRedisService.createDbCartUploadRedis(redisKey, accountId);
+
+        verify(cartRepository).lookupCartDbList(accountId);
+    }
+
+    @Test
+    @DisplayName("Redis 장바구니에서 모든 메뉴를 삭제")
     void removeCartMenuAll() {
 
         String redisKey = "key";
