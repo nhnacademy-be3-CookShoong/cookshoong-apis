@@ -103,6 +103,7 @@ public class CartRedisService {
             throw new NotFoundCartRedisKey();
         } else if (cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)) {
             cartRedisRepository.deleteCartMenu(redisKey, hashKey);
+            cart.incrementCount();
         }
 
         cart.setHashKey(cart.generateUniqueHashKey());
@@ -277,9 +278,21 @@ public class CartRedisService {
      * @param redisKey      redis Key
      * @return              redis Key 존재여부를 반환
      */
-    public boolean existKeyInCartRedis(String redisKey) {
+    public boolean hasKeyInCartRedis(String redisKey) {
 
         return cartRedisRepository.existKeyInCartRedis(redisKey);
+    }
+
+    /**
+     * Redis 장바구니에 redisKey 에 hashKey 존재하는지 확인하는 메서드.
+     *
+     * @param redisKey      redis Key
+     * @param menuKey       redis hashKey
+     * @return              redis Key 존재여부를 반환
+     */
+    public boolean hasMenuInCartRedis(String redisKey, String menuKey) {
+
+        return cartRedisRepository.existMenuInCartRedis(redisKey, menuKey);
     }
 
     /**

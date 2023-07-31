@@ -624,9 +624,22 @@ class CartRedisServiceTest {
 
         when(cartRedisRepository.existKeyInCartRedis(redisKey)).thenReturn(true);
 
-        boolean exists = cartRedisService.existKeyInCartRedis(redisKey);
+        boolean exists = cartRedisService.hasKeyInCartRedis(redisKey);
 
         verify(cartRedisRepository).existKeyInCartRedis(redisKey);
+
+        assertTrue(exists);
+    }
+
+    @Test
+    @DisplayName("Redis 장바구니에 redisKey 에 hashKey 존재하는지 확인")
+    void existMenuInCartRedis() {
+
+        when(cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)).thenReturn(true);
+
+        boolean exists = cartRedisService.hasMenuInCartRedis(redisKey, hashKey);
+
+        verify(cartRedisRepository).existMenuInCartRedis(redisKey, hashKey);
 
         assertTrue(exists);
     }

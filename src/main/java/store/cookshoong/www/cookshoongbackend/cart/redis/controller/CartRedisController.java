@@ -225,8 +225,24 @@ public class CartRedisController {
     @GetMapping("/redis/{cartKey}/exist")
     public ResponseEntity<Boolean> getExistKeyInCartRedis(@PathVariable String cartKey) {
 
-        Boolean isCartKey = cartRedisService.existKeyInCartRedis(cartKey);
+        Boolean isCartKey = cartRedisService.hasKeyInCartRedis(cartKey);
 
         return ResponseEntity.ok(isCartKey);
     }
+
+    /**
+     * Redis 장바구니 redis Key 에 hashKey 존재여부를 환인하는 메서드.
+     *
+     * @param cartKey       redis Key
+     * @return              redis Key 존재여부를 반환
+     */
+    @GetMapping("/redis/{cartKey}/exist/{menuKey}/menu")
+    public ResponseEntity<Boolean> getExistMenuInCartRedis(@PathVariable String cartKey,
+                                                           @PathVariable String menuKey) {
+
+        Boolean isCartKey = cartRedisService.hasMenuInCartRedis(cartKey, menuKey);
+
+        return ResponseEntity.ok(isCartKey);
+    }
+
 }
