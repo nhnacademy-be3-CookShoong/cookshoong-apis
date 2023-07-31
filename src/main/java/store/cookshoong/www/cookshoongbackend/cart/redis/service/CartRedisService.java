@@ -283,6 +283,18 @@ public class CartRedisService {
     }
 
     /**
+     * Redis 장바구니에 redisKey 에 hashKey 존재하는지 확인하는 메서드.
+     *
+     * @param redisKey      redis Key
+     * @param menuKey       redis hashKey
+     * @return              redis Key 존재여부를 반환
+     */
+    public boolean existMenuInCartRedis(String redisKey, String menuKey) {
+
+        return cartRedisRepository.existMenuInCartRedis(redisKey, menuKey);
+    }
+
+    /**
      *  Db 장바구니 정보를 Redis 로 저장하는 메서드.
      *
      * @param accountId     회원 아이디
