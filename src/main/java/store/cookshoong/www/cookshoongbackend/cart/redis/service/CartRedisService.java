@@ -183,7 +183,7 @@ public class CartRedisService {
             return carts;
         } else if (!cartRedisRepository.existKeyInCartRedis(redisKey)) {
             // DB 장바구니 데이터를 가지고 와서 Redis 장바구니에 저장.
-            createRedisSave(redisKey, cartRepository.lookupCartDbList(Long.valueOf(userId)));
+            createAllCartFromDbToRedis(redisKey, cartRepository.lookupCartDbList(Long.valueOf(userId)));
         }
 
         List<Object> cartRedis = cartRedisRepository.findByCartAll(redisKey);
@@ -289,7 +289,7 @@ public class CartRedisService {
      */
     public void createDbCartUploadRedis(String redisKey, Long accountId) {
 
-        createRedisSave(redisKey, cartRepository.lookupCartDbList(accountId));
+        createAllCartFromDbToRedis(redisKey, cartRepository.lookupCartDbList(accountId));
     }
 
     /**
@@ -297,7 +297,7 @@ public class CartRedisService {
      *
      * @param cartResponseDtos      DB 장바구니 정보
      */
-    private void createRedisSave(String redisKey, List<CartResponseDto> cartResponseDtos) {
+    private void createAllCartFromDbToRedis(String redisKey, List<CartResponseDto> cartResponseDtos) {
         for (CartResponseDto cartResponseDto : cartResponseDtos) {
 
             CartMenuResponseDto cartMenuResponseDto = cartResponseDto.getCartMenuResponseDto();
