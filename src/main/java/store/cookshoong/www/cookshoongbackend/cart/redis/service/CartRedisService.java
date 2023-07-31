@@ -278,7 +278,7 @@ public class CartRedisService {
      * @param redisKey      redis Key
      * @return              redis Key 존재여부를 반환
      */
-    public boolean existKeyInCartRedis(String redisKey) {
+    public boolean hasKeyInCartRedis(String redisKey) {
 
         return cartRedisRepository.existKeyInCartRedis(redisKey);
     }
@@ -290,7 +290,7 @@ public class CartRedisService {
      * @param menuKey       redis hashKey
      * @return              redis Key 존재여부를 반환
      */
-    public boolean existMenuInCartRedis(String redisKey, String menuKey) {
+    public boolean hasMenuInCartRedis(String redisKey, String menuKey) {
 
         return cartRedisRepository.existMenuInCartRedis(redisKey, menuKey);
     }

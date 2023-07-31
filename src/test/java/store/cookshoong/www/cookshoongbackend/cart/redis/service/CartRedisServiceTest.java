@@ -624,7 +624,7 @@ class CartRedisServiceTest {
 
         when(cartRedisRepository.existKeyInCartRedis(redisKey)).thenReturn(true);
 
-        boolean exists = cartRedisService.existKeyInCartRedis(redisKey);
+        boolean exists = cartRedisService.hasKeyInCartRedis(redisKey);
 
         verify(cartRedisRepository).existKeyInCartRedis(redisKey);
 
@@ -637,7 +637,7 @@ class CartRedisServiceTest {
 
         when(cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)).thenReturn(true);
 
-        boolean exists = cartRedisService.existMenuInCartRedis(redisKey, hashKey);
+        boolean exists = cartRedisService.hasMenuInCartRedis(redisKey, hashKey);
 
         verify(cartRedisRepository).existMenuInCartRedis(redisKey, hashKey);
 

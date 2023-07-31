@@ -225,7 +225,7 @@ public class CartRedisController {
     @GetMapping("/redis/{cartKey}/exist")
     public ResponseEntity<Boolean> getExistKeyInCartRedis(@PathVariable String cartKey) {
 
-        Boolean isCartKey = cartRedisService.existKeyInCartRedis(cartKey);
+        Boolean isCartKey = cartRedisService.hasKeyInCartRedis(cartKey);
 
         return ResponseEntity.ok(isCartKey);
     }
@@ -240,7 +240,7 @@ public class CartRedisController {
     public ResponseEntity<Boolean> getExistMenuInCartRedis(@PathVariable String cartKey,
                                                            @PathVariable String menuKey) {
 
-        Boolean isCartKey = cartRedisService.existMenuInCartRedis(cartKey, menuKey);
+        Boolean isCartKey = cartRedisService.hasMenuInCartRedis(cartKey, menuKey);
 
         return ResponseEntity.ok(isCartKey);
     }
