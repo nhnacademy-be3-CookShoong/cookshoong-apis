@@ -1,11 +1,12 @@
 package store.cookshoong.www.cookshoongbackend.coupon.repository;
 
-import java.time.LocalDate;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectOwnCouponResponseDto;
 
 /**
@@ -31,12 +32,10 @@ public interface IssueCouponRepositoryCustom {
     /**
      * 쿠폰을 발급해주는 메서드.
      *
-     * @param issueCouponId  the issue coupon id
-     * @param expirationDate the expiration date
-     * @param account        the account
-     * @return the boolean
+     * @param issueCoupon the issue coupon
+     * @param account     the account
      */
-    boolean provideCouponToAccount(UUID issueCouponId, LocalDate expirationDate, Account account);
+    void provideCouponToAccount(IssueCoupon issueCoupon, Account account);
 
 
     /**
@@ -48,4 +47,11 @@ public interface IssueCouponRepositoryCustom {
      * @return the boolean
      */
     boolean isReceivedBefore(Long couponPolicyId, Long accountId, Integer usagePeriod);
+
+    /**
+     * 발급되지 않은 쿠폰들의 UUID를 모두 가져오는 메서드.
+     *
+     * @return the set
+     */
+    Set<UUID> lookupUnclaimedCouponCodes();
 }

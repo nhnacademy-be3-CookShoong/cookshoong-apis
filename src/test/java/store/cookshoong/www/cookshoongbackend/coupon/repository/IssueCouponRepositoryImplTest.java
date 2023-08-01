@@ -32,6 +32,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageAll;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
+import store.cookshoong.www.cookshoongbackend.coupon.exception.ProvideIssueCouponFailureException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectOwnCouponResponseDto;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.Order;
@@ -227,7 +228,7 @@ class IssueCouponRepositoryImplTest {
         IssueCoupon issueCoupon = te.getIssueCoupon(couponPolicy);
 
         assertDoesNotThrow(
-            () -> issueCouponRepository.provideCouponToAccount(issueCoupon.getCode(), LocalDate.now(), customer));
+            () -> issueCouponRepository.provideCouponToAccount(issueCoupon, customer));
 
         em.flush();
         em.clear();
@@ -239,7 +240,7 @@ class IssueCouponRepositoryImplTest {
         IssueCoupon updateIssueCoupon = optionalIssueCoupon.get();
 
         assertThat(updateIssueCoupon.getAccount().getId()).isEqualTo(customer.getId());
-        assertThat(updateIssueCoupon.getExpirationDate()).isEqualTo(LocalDate.now());
+        assertThat(updateIssueCoupon.getExpirationDate()).isEqualTo(LocalDate.now().plusDays(couponPolicy.getUsagePeriod()));
     }
 
     @Test
@@ -249,8 +250,8 @@ class IssueCouponRepositoryImplTest {
         IssueCoupon issueCoupon = te.getIssueCoupon(couponPolicy);
         issueCoupon.provideToAccount(customer);
 
-        assertThat(issueCouponRepository.provideCouponToAccount(issueCoupon.getCode(), LocalDate.now(), customer))
-            .isFalse();
+        assertThrowsExactly(ProvideIssueCouponFailureException.class,
+                () -> issueCouponRepository.provideCouponToAccount(issueCoupon, customer));
     }
 
     @ParameterizedTest
