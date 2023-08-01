@@ -17,6 +17,8 @@ import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartMenuDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartOptionDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartRedisDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.repository.CartRedisRepository;
+import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
+import store.cookshoong.www.cookshoongbackend.file.service.ObjectStorageService;
 
 /**
  * Redis 를 이용한 장바구니 서비스.
@@ -32,6 +34,7 @@ public class CartRedisService {
     private final CartRepository cartRepository;
     private static final String NO_MENU = "NO_KEY";
     private static final String CART = "cartKey=";
+    private final ObjectStorageService objectStorageService;
 
     /**
      * 장바구니에 담는 메뉴를 Redis 에 저장하는 메서드. <br>
@@ -316,7 +319,7 @@ public class CartRedisService {
             CartMenuResponseDto cartMenuResponseDto = cartResponseDto.getCartMenuResponseDto();
             CartMenuDto cartMenuRedisDto =
                 new CartMenuDto(cartMenuResponseDto.getMenuId(), cartMenuResponseDto.getName(),
-                    cartMenuResponseDto.getSavedName(), cartMenuResponseDto.getPrice());
+                    objectStorageService.getFullPath(FileDomain.MENU_IMAGE.getVariable(), cartMenuResponseDto.getSavedName()), cartMenuResponseDto.getPrice());
 
 
             List<CartOptionResponseDto> cartOptionResponseDtos = cartResponseDto.getCartOptionResponseDto();
