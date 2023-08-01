@@ -1,0 +1,48 @@
+<configuration>
+    <appender name="FileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.file.path}/server.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.file.path}/server-%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- LogNCrashHttpAppender 선언 -->
+    <appender name="logNCrashHttp" class="com.toast.java.logncrash.logback.LogNCrashHttpAppender">
+        <appKey value="앱키"/>
+        <logSource value="운영"/>
+        <version value="1.0.0"/>
+        <logType value="감사 로그"/>
+        <debug value="true"/>
+        <category value="로그 서비스"/>
+        <errorCodeType value="action"/>
+    </appender>
+
+    <!-- LogNCrashHttpAppender를 포함한 AsyncAppender 선언 -->
+    <appender name="LNCS-APPENDER" class="ch.qos.logback.classic.AsyncAppender">
+        <!-- Logback의 AsyncAppender 옵션 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <includeCallerData value="false"/>
+        <queueSize value="2048"/>
+        <neverBlock value="true"/>
+        <maxFlushTime value="60000"/>
+        <appender-ref ref="logNCrashHttp"/>
+    </appender>
+
+    <logger name="user-logger" additivity="false">
+        <appender-ref ref="LNCS-APPENDER"/>
+    </logger>
+
+
+    <logger name="user-logger" additivity="false" level="INFO">
+        <appender-ref ref="FileAppender"/>
+    </logger>
+
+    <root level="debug">
+        <appender-ref ref="FileAppender"/>
+    </root>
+</configuration>
