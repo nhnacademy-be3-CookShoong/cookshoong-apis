@@ -18,13 +18,17 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
+import store.cookshoong.www.cookshoongbackend.coupon.exception.ProvideIssueCouponFailureException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.QSelectOwnCouponResponseDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectOwnCouponResponseDto;
 
@@ -172,15 +176,19 @@ public class IssueCouponRepositoryImpl implements IssueCouponRepositoryCustom {
      * {@inheritDoc}
      */
     @Override
-    public boolean provideCouponToAccount(UUID issueCouponId, LocalDate expirationDate, Account account) {
+    public void provideCouponToAccount(IssueCoupon issueCouponEntity, Account account) {
+        LocalDate expirationDate = LocalDate.now().plusDays(issueCouponEntity.getCouponPolicy().getUsagePeriod());
+
         long updatedCount = queryFactory.update(issueCoupon)
             .set(issueCoupon.account, account)
             .set(issueCoupon.expirationDate, expirationDate)
             .set(issueCoupon.receiptDate, LocalDate.now())
-            .where(issueCoupon.code.eq(issueCouponId), issueCoupon.account.isNull())
+            .where(issueCoupon.eq(issueCouponEntity), issueCoupon.account.isNull())
             .execute();
 
-        return updatedCount != 0;
+        if (updatedCount == 0) {
+            throw new ProvideIssueCouponFailureException();
+        }
     }
 
     /**
@@ -205,5 +213,17 @@ public class IssueCouponRepositoryImpl implements IssueCouponRepositoryCustom {
 
             .where(issueCoupon.account.id.eq(accountId), issueCoupon.receiptDate.between(ago, today))
             .fetchFirst() != null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<UUID> lookupUnclaimedCouponCodes() {
+        return new HashSet<>(queryFactory
+            .select(issueCoupon.code)
+            .from(issueCoupon)
+            .where(issueCoupon.account.isNull())
+            .fetch());
     }
 }
