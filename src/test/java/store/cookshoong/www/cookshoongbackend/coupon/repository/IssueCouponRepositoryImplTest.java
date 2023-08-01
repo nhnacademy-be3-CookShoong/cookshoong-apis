@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,7 +32,6 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageAll;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
-import store.cookshoong.www.cookshoongbackend.coupon.exception.IssueCouponNotFoundException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectOwnCouponResponseDto;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.Order;
@@ -232,8 +232,11 @@ class IssueCouponRepositoryImplTest {
         em.flush();
         em.clear();
 
-        IssueCoupon updateIssueCoupon = issueCouponRepository.findById(issueCoupon.getCode())
-            .orElseThrow(IssueCouponNotFoundException::new);
+        Optional<IssueCoupon> optionalIssueCoupon = issueCouponRepository.findById(issueCoupon.getCode());
+
+        assertThat(optionalIssueCoupon).isNotEmpty();
+
+        IssueCoupon updateIssueCoupon = optionalIssueCoupon.get();
 
         assertThat(updateIssueCoupon.getAccount().getId()).isEqualTo(customer.getId());
         assertThat(updateIssueCoupon.getExpirationDate()).isEqualTo(LocalDate.now());

@@ -29,6 +29,8 @@ public interface AccountRepository extends JpaRepository<Account, Long>, Account
      */
     Optional<SelectAccountStatusDto> findAccountStatusById(Long accountId);
 
+    Optional<Account> findAccountById(Long accountId);
+
     /**
      * 로그인 아이디의 중복을 확인하기 위한 메서드.
      *

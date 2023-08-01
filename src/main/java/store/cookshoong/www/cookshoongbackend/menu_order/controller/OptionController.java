@@ -34,7 +34,7 @@ public class OptionController {
      * 옵션 등록 컨트롤러.
      *
      * @param createOptionRequestDto 옵션 등록 Dto
-     * @param bindingResult          validation
+     * @param bindingResult    validation
      * @return 201 response
      */
     @PostMapping("/stores/{storeId}/option")
@@ -43,7 +43,7 @@ public class OptionController {
         if (bindingResult.hasErrors()) {
             throw new OptionValidationException(bindingResult);
         }
-        optionService.createOption(createOptionRequestDto);
+        optionService.updateOption(createOptionRequestDto);
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .build();

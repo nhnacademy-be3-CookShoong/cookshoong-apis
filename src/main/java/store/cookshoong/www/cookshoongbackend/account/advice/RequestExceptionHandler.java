@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import store.cookshoong.www.cookshoongbackend.account.exception.AccountStatusNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.exception.AuthorityNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.exception.DuplicatedUserException;
 import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
@@ -47,11 +48,11 @@ public class RequestExceptionHandler {
      * @param e 조회실패 예외
      * @return 조회실패 필드와 메세지
      */
-    @ExceptionHandler({AuthorityNotFoundException.class, UserNotFoundException.class})
-    public ResponseEntity<ErrorMessage> handleValidationFailure(NotFoundException e,
+    @ExceptionHandler({AuthorityNotFoundException.class, UserNotFoundException.class,
+        AccountStatusNotFoundException.class})
+    public ResponseEntity<ErrorMessage> handleNotFound(NotFoundException e,
                                                                 HttpServletRequest request) {
         log.error(CLIENT_IP_LOG, IpResolver.getClientIp(request));
-        System.out.println(e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(new ErrorMessage(e));
     }

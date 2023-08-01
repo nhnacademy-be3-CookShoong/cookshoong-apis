@@ -16,6 +16,7 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.cookshoong.www.cookshoongbackend.menu_order.model.request.CreateMenuGroupRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 
 /**
@@ -63,5 +64,15 @@ public class MenuGroup {
         this.name = name;
         this.description = description;
         this.menuGroupSequence = menuGroupSequence;
+    }
+
+    /**
+     * 메뉴 그룹 내용 변경.
+     *
+     * @param createMenuGroupRequestDto 매뉴 그룹 내용 변경 Dto
+     */
+    public void modifyMenuGroup(CreateMenuGroupRequestDto createMenuGroupRequestDto) {
+        this.name = createMenuGroupRequestDto.getName();
+        this.description = createMenuGroupRequestDto.getDescription();
     }
 }

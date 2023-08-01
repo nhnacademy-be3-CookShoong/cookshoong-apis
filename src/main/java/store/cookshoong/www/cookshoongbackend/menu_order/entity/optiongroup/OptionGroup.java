@@ -12,6 +12,7 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.cookshoong.www.cookshoongbackend.menu_order.model.request.CreateOptionGroupRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 
 /**
@@ -70,5 +71,16 @@ public class OptionGroup {
      */
     public void modifyOptionGroupIsDeleted(boolean isDeleted) {
         this.isDeleted = isDeleted;
+    }
+
+    /**
+     * 옵션 그룹 내용 변경.
+     *
+     * @param createOptionGroupRequestDto 옵션 그룹 내용 변경 Dto
+     */
+    public void modifyOptionGroup(CreateOptionGroupRequestDto createOptionGroupRequestDto) {
+        this.name = createOptionGroupRequestDto.getName();
+        this.minSelectCount = createOptionGroupRequestDto.getMinSelectCount();
+        this.maxSelectCount = createOptionGroupRequestDto.getMaxSelectCount();
     }
 }
