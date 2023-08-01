@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -24,6 +25,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.data.redis.core.BoundSetOperations;
 import org.springframework.test.util.ReflectionTestUtils;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
@@ -35,6 +37,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponPolicyNotFo
 import store.cookshoong.www.cookshoongbackend.coupon.exception.ProvideIssueCouponFailureException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.UpdateProvideCouponRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;
+import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponRedisRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.IssueCouponRepository;
 import store.cookshoong.www.cookshoongbackend.rabbitmq.exception.LockInterruptedException;
 import store.cookshoong.www.cookshoongbackend.rabbitmq.exception.LockOverWaitTimeException;
@@ -57,6 +60,8 @@ class ProvideCouponServiceTest {
     AccountRepository accountRepository;
     @Mock
     RedissonClient redissonClient;
+    @Mock
+    CouponRedisRepository couponRedisRepository;
 
     UpdateProvideCouponRequestDto updateProvideCouponRequestDto;
 
@@ -130,6 +135,10 @@ class ProvideCouponServiceTest {
         when(issueCouponRepository.findTop10ByCouponPolicyAndAccountIsNull(any(CouponPolicy.class)))
             .thenReturn(List.of(issueCoupon));
 
+        doThrow(ProvideIssueCouponFailureException.class).
+                when(issueCouponRepository).provideCouponToAccount(any(IssueCoupon.class), any(Account.class));
+
+
         assertThrowsExactly(ProvideIssueCouponFailureException.class,
             () -> provideCouponService.provideCouponToAccountByApi(updateProvideCouponRequestDto));
     }
@@ -173,9 +182,6 @@ class ProvideCouponServiceTest {
         when(accountRepository.getReferenceById(anyLong()))
             .thenReturn(customer);
 
-        when(issueCouponRepository.provideCouponToAccount(any(UUID.class), any(LocalDate.class), any(Account.class)))
-            .thenReturn(true);
-
         assertDoesNotThrow(() -> provideCouponService.provideCouponToAccountByApi(updateProvideCouponRequestDto));
     }
 
@@ -216,13 +222,13 @@ class ProvideCouponServiceTest {
         IssueCoupon issueCoupon = new IssueCoupon(couponPolicy);
         ReflectionTestUtils.setField(issueCoupon, "code", UUID.randomUUID());
 
-        RLock lock = mock(RLock.class);
+        BoundSetOperations<String, Object> mockSet = mock(BoundSetOperations.class);
 
-        when(lock.tryLock(anyLong(), anyLong(), any(TimeUnit.class)))
-            .thenReturn(true);
+        when(couponRedisRepository.getRedisSet(anyString()))
+                .thenReturn(mockSet);
 
-        when(redissonClient.getLock(anyString()))
-            .thenReturn(lock);
+        when(mockSet.pop())
+                .thenReturn(null);
 
         assertThrowsExactly(CouponExhaustionException.class,
             () -> provideCouponService.provideCouponToAccountByEvent(updateProvideCouponRequestDto));
@@ -256,8 +262,16 @@ class ProvideCouponServiceTest {
         when(couponPolicyRepository.findById(anyLong()))
             .thenReturn(Optional.of(couponPolicy));
 
-        IssueCoupon issueCoupon = new IssueCoupon(couponPolicy);
-        ReflectionTestUtils.setField(issueCoupon, "code", UUID.randomUUID());
+        BoundSetOperations<String, Object> mockSet = mock(BoundSetOperations.class);
+
+        when(couponRedisRepository.getRedisSet(anyString()))
+                .thenReturn(mockSet);
+
+        when(mockSet.pop())
+                .thenReturn(null);
+
+        when(couponPolicyRepository.lookupUnclaimedCouponCount(anyLong()))
+                .thenReturn(1L);
 
         RLock lock = mock(RLock.class);
 
@@ -275,24 +289,33 @@ class ProvideCouponServiceTest {
     @DisplayName("쿠폰 이벤트 발급 실패 - 인터럽트 발생")
     void provideCouponToAccountByEventInterruptFailTest() throws Exception {
         CouponPolicy couponPolicy = te.persist(
-            te.getCouponPolicy(te.getCouponTypeCash_1000_10000(), te.getCouponUsageStore(tpe.getOpenStore())));
+                te.getCouponPolicy(te.getCouponTypeCash_1000_10000(), te.getCouponUsageStore(tpe.getOpenStore())));
 
         when(couponPolicyRepository.findById(anyLong()))
-            .thenReturn(Optional.of(couponPolicy));
+                .thenReturn(Optional.of(couponPolicy));
 
-        IssueCoupon issueCoupon = new IssueCoupon(couponPolicy);
-        ReflectionTestUtils.setField(issueCoupon, "code", UUID.randomUUID());
+        BoundSetOperations<String, Object> mockSet = mock(BoundSetOperations.class);
+
+        when(couponRedisRepository.getRedisSet(anyString()))
+                .thenReturn(mockSet);
+
+        when(mockSet.pop())
+                .thenReturn(null);
+
+        when(couponPolicyRepository.lookupUnclaimedCouponCount(anyLong()))
+                .thenReturn(1L);
 
         RLock lock = mock(RLock.class);
 
-        when(lock.tryLock(anyLong(), anyLong(), any(TimeUnit.class)))
-            .thenThrow(InterruptedException.class);
-
         when(redissonClient.getLock(anyString()))
-            .thenReturn(lock);
+                .thenReturn(lock);
+
+        when(lock.tryLock(anyLong(), anyLong(), any(TimeUnit.class)))
+                .thenThrow(LockInterruptedException.class);
+
 
         assertThrowsExactly(LockInterruptedException.class,
-            () -> provideCouponService.provideCouponToAccountByEvent(updateProvideCouponRequestDto));
+                () -> provideCouponService.provideCouponToAccountByEvent(updateProvideCouponRequestDto));
     }
 
 
@@ -305,22 +328,23 @@ class ProvideCouponServiceTest {
         when(couponPolicyRepository.findById(anyLong()))
             .thenReturn(Optional.of(couponPolicy));
 
-        IssueCoupon issueCoupon = new IssueCoupon(couponPolicy);
-        ReflectionTestUtils.setField(issueCoupon, "code", UUID.randomUUID());
+        BoundSetOperations<String, Object> mockSet = mock(BoundSetOperations.class);
+
+        when(couponRedisRepository.getRedisSet(anyString()))
+            .thenReturn(mockSet);
+
+        UUID randomUUID = UUID.randomUUID();
+        when(mockSet.pop())
+            .thenReturn(randomUUID.toString());
 
         Account customer = tpe.getLevelOneActiveCustomer();
         when(accountRepository.getReferenceById(anyLong()))
             .thenReturn(customer);
 
-        RLock lock = mock(RLock.class);
+        IssueCoupon issueCoupon = new IssueCoupon(couponPolicy);
+        ReflectionTestUtils.setField(issueCoupon, "code", randomUUID);
 
-        when(lock.tryLock(anyLong(), anyLong(), any(TimeUnit.class)))
-            .thenReturn(true);
-
-        when(redissonClient.getLock(anyString()))
-            .thenReturn(lock);
-
-        when(issueCouponRepository.findByCouponPolicyAndAccountIsNull(any(CouponPolicy.class)))
+        when(issueCouponRepository.findById(any(UUID.class)))
             .thenReturn(Optional.of(issueCoupon));
 
         assertDoesNotThrow(() -> provideCouponService.provideCouponToAccountByEvent(updateProvideCouponRequestDto));
