@@ -1,11 +1,15 @@
 package store.cookshoong.www.cookshoongbackend.coupon.service;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.data.redis.core.BoundSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,9 +20,11 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.AlreadyHasCouponWithinSamePolicyException;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponExhaustionException;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponPolicyNotFoundException;
+import store.cookshoong.www.cookshoongbackend.coupon.exception.IssueCouponNotFoundException;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.ProvideIssueCouponFailureException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.UpdateProvideCouponRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;
+import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponRedisRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.IssueCouponRepository;
 import store.cookshoong.www.cookshoongbackend.rabbitmq.exception.LockInterruptedException;
 import store.cookshoong.www.cookshoongbackend.rabbitmq.exception.LockOverWaitTimeException;
@@ -30,8 +36,11 @@ import store.cookshoong.www.cookshoongbackend.rabbitmq.exception.LockOverWaitTim
  * @since 2023.07.30
  */
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ProvideCouponService {
+    private static final String EXPLAIN = "couponPolicyId -";
+    private static final String NOT_MATCH_LOCK = "- IsNotMatch";
     private static final int WAIT_TIME = 60;
     private static final int LEASE_TIME = 5;
 
@@ -39,6 +48,7 @@ public class ProvideCouponService {
     private final CouponPolicyRepository couponPolicyRepository;
     private final AccountRepository accountRepository;
     private final RedissonClient redissonClient;
+    private final CouponRedisRepository couponRedisRepository;
 
     /**
      * 사용자가 쿠폰 발급을 요청했을 때, 해당 쿠폰 정책과 일치하는 쿠폰 중 하나를 발급해준다.
@@ -50,17 +60,16 @@ public class ProvideCouponService {
         Long accountId = updateProvideCouponRequestDto.getAccountId();
 
         CouponPolicy couponPolicy = couponPolicyRepository.findById(updateProvideCouponRequestDto.getCouponPolicyId())
-            .orElseThrow(CouponPolicyNotFoundException::new);
+                .orElseThrow(CouponPolicyNotFoundException::new);
 
         validBeforeProvide(accountId, couponPolicy);
 
         List<IssueCoupon> issueCoupons = issueCouponRepository.findTop10ByCouponPolicyAndAccountIsNull(couponPolicy);
         isIssueCouponsEmpty(issueCoupons);
 
-        LocalDate expirationDate = LocalDate.now().plusDays(couponPolicy.getUsagePeriod());
         Account account = accountRepository.getReferenceById(accountId);
 
-        provideCoupon(issueCoupons, expirationDate, account);
+        provideCoupon(issueCoupons, account);
     }
 
     private static void validPolicyDeleted(CouponPolicy couponPolicy) {
@@ -81,19 +90,17 @@ public class ProvideCouponService {
         }
     }
 
-    private void provideCoupon(List<IssueCoupon> issueCoupons, LocalDate expirationDate, Account account) {
+    private void provideCoupon(List<IssueCoupon> issueCoupons, Account account) {
         for (IssueCoupon issueCoupon : issueCoupons) {
-            if (issueCouponRepository.provideCouponToAccount(issueCoupon.getCode(), expirationDate, account)) {
+            try {
+                issueCouponRepository.provideCouponToAccount(issueCoupon, account);
                 return;
+            } catch (ProvideIssueCouponFailureException ignore) {
+                // ignore
             }
         }
 
         throw new ProvideIssueCouponFailureException();
-    }
-
-    private void provideCoupon(CouponPolicy couponPolicy, Account account) {
-        IssueCoupon issueCoupon = getIssueCouponUsingLock(couponPolicy);
-        issueCoupon.provideToAccount(account);
     }
 
     private void validBeforeProvide(Long accountId, CouponPolicy couponPolicy) {
@@ -107,37 +114,76 @@ public class ProvideCouponService {
      * @param updateProvideCouponRequestDto the update provide coupon request
      */
     public void provideCouponToAccountByEvent(UpdateProvideCouponRequestDto updateProvideCouponRequestDto) {
+        Long couponPolicyId = updateProvideCouponRequestDto.getCouponPolicyId();
+        String key = couponPolicyId.toString();
+
+        CouponPolicy couponPolicy = couponPolicyRepository.findById(couponPolicyId)
+                .orElseThrow(CouponPolicyNotFoundException::new);
+
         Long accountId = updateProvideCouponRequestDto.getAccountId();
-
-        CouponPolicy couponPolicy = couponPolicyRepository.findById(updateProvideCouponRequestDto.getCouponPolicyId())
-            .orElseThrow(CouponPolicyNotFoundException::new);
-
         validBeforeProvide(accountId, couponPolicy);
 
-        Account account = accountRepository.getReferenceById(accountId);
+        BoundSetOperations<String, Object> couponIds = couponRedisRepository.getRedisSet(key);
+        String couponId = (String) couponIds.pop();
 
-        provideCoupon(couponPolicy, account);
+        if (Objects.isNull(couponId)) {
+            Long unclaimedCouponCount = couponPolicyRepository.lookupUnclaimedCouponCount(couponPolicyId);
+            validUnclaimedCoupon(unclaimedCouponCount, key);
+            couponId = updateCouponId(couponIds);
+        }
+
+        IssueCoupon issueCoupon = issueCouponRepository.findById(UUID.fromString(couponId))
+                .orElseThrow(IssueCouponNotFoundException::new);
+
+        if (Objects.nonNull(issueCoupon.getAccount())) {
+            throw new ProvideIssueCouponFailureException();
+        }
+
+        Account account = accountRepository.getReferenceById(accountId);
+        issueCouponRepository.provideCouponToAccount(issueCoupon, account);
     }
 
-    private IssueCoupon getIssueCouponUsingLock(CouponPolicy couponPolicy) {
-        RLock lock = redissonClient.getLock(couponPolicy.getId().toString());
+    private static String updateCouponId(BoundSetOperations<String, Object> couponIds) {
+        String couponId = (String) couponIds.pop();
+
+        if (Objects.isNull(couponId)) {
+            throw new CouponExhaustionException();
+        }
+
+        return couponId;
+    }
+
+    private void validUnclaimedCoupon(Long unclaimedCouponCount, String key) {
+        if (unclaimedCouponCount == 0) {
+            throw new CouponExhaustionException();
+        }
+
+        lock(key, this::updateRedisCouponState);
+    }
+
+    private void lock(String key, Consumer<String> consumer) {
+        RLock lock = redissonClient.getLock(EXPLAIN + key + NOT_MATCH_LOCK);
 
         try {
-            boolean isLocked = lock.tryLock(WAIT_TIME, LEASE_TIME, TimeUnit.SECONDS);
-
-            if (!isLocked) {
+            boolean lockSuccess = lock.tryLock(WAIT_TIME, LEASE_TIME, TimeUnit.SECONDS);
+            if (!lockSuccess) {
                 throw new LockOverWaitTimeException();
             }
 
-            return issueCouponRepository.findByCouponPolicyAndAccountIsNull(couponPolicy)
-                .orElseThrow(CouponExhaustionException::new);
+            consumer.accept(key);
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new LockInterruptedException();
-
         } finally {
             lock.unlock();
+        }
+    }
+
+    private void updateRedisCouponState(String key) {
+        if (!couponRedisRepository.hasKey(key)) {
+            Set<UUID> couponCodes = issueCouponRepository.lookupUnclaimedCouponCodes();
+            couponRedisRepository.bulkInsertCouponCode(couponCodes, key);
         }
     }
 }
