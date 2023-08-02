@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -94,12 +93,11 @@ public class StoreService {
      * 사업자 회원 : 매장을 pagination 으로 작성.
      *
      * @param accountId 회원아이디
-     * @param pageable  페이지 정보
      * @return the page
      */
     @Transactional(readOnly = true)
-    public Page<SelectAllStoresResponseDto> selectAllStores(Long accountId, Pageable pageable) {
-        return storeRepository.lookupStoresPage(accountId, pageable);
+    public List<SelectAllStoresResponseDto> selectAllStores(Long accountId) {
+        return storeRepository.lookupStores(accountId);
     }
 
     /**
