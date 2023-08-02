@@ -1,10 +1,9 @@
 package store.cookshoong.www.cookshoongbackend.account.controller;
 
 import java.io.IOException;
+import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -43,14 +42,12 @@ public class BusinessAccountController {
      * 사업자 회원 : 매장 리스트 조회, 페이지로 구현.
      *
      * @param accountId 회원 아이디
-     * @param pageable  페이지 정보
      * @return 200, 매장 리스트(페이지 별)
      */
     @GetMapping("/stores")
-    public ResponseEntity<Page<SelectAllStoresResponseDto>> getStores(@PathVariable("accountId") Long accountId,
-                                                                      Pageable pageable) {
+    public ResponseEntity<List<SelectAllStoresResponseDto>> getStores(@PathVariable("accountId") Long accountId) {
         return ResponseEntity
-            .ok(storeService.selectAllStores(accountId, pageable));
+            .ok(storeService.selectAllStores(accountId));
     }
 
     /**

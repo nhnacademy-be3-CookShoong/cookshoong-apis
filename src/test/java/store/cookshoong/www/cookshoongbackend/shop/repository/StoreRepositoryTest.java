@@ -22,7 +22,6 @@ import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
-import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
 import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
@@ -162,7 +161,7 @@ class StoreRepositoryTest {
             storeRepository.save(store);
         }
         Pageable pageable = PageRequest.of(2, 2);
-        Page<SelectAllStoresResponseDto> actuals = storeRepository.lookupStoresPage(account.getId(), pageable);
+        Page<SelectAllStoresResponseDto> actuals = storeRepository.lookupStoresPage(account.getId());
 
         assertThat(actuals.get().count()).isEqualTo(2);
         assertThat(actuals.get().findFirst().get().getStoreName()).isEqualTo("5호점");
