@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.account.entity.QAccount;
-import store.cookshoong.www.cookshoongbackend.cart.db.entity.Cart;
 import store.cookshoong.www.cookshoongbackend.cart.db.entity.QCart;
 import store.cookshoong.www.cookshoongbackend.cart.db.entity.QCartDetail;
 import store.cookshoong.www.cookshoongbackend.cart.db.entity.QCartDetailMenuOption;

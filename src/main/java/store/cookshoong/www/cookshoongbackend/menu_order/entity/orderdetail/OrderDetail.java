@@ -13,7 +13,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
-import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.Order;
+import store.cookshoong.www.cookshoongbackend.order.entity.Order;
 
 /**
  * 주문 상세 엔티티.

@@ -13,7 +13,7 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.Order;
+import store.cookshoong.www.cookshoongbackend.order.entity.Order;
 
 /**
  * 쿠폰 내역 entity.
