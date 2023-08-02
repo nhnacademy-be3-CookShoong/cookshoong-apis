@@ -2,7 +2,10 @@ package store.cookshoong.www.cookshoongbackend.coupon.service;
 
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,6 +16,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponPolicyNotFo
 import store.cookshoong.www.cookshoongbackend.coupon.exception.IssueCouponOverCountException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateIssueCouponRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;
+import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponRedisRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.IssueCouponRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.util.IssueMethod;
 
@@ -32,6 +36,7 @@ public class IssueCouponService {
 
     private final IssueCouponRepository issueCouponRepository;
     private final CouponPolicyRepository couponPolicyRepository;
+    private final CouponRedisRepository couponRedisRepository;
 
     private Map<IssueMethod, BiConsumer<CouponPolicy, Long>> createIssueConsumer() {
         Map<IssueMethod, BiConsumer<CouponPolicy, Long>> enumMap = new EnumMap<>(IssueMethod.class);
@@ -66,9 +71,16 @@ public class IssueCouponService {
     }
 
     private void createIssueCouponFirstComeFirstServe(CouponPolicy couponPolicy, Long issueQuantity) {
-        Stream.generate(() -> new IssueCoupon(couponPolicy))
+        Set<IssueCoupon> issueCoupons = Stream.generate(() -> new IssueCoupon(couponPolicy))
             .limit(issueQuantity)
-            .forEach(issueCouponRepository::save);
+            .collect(Collectors.toSet());
+        issueCouponRepository.saveAllAndFlush(issueCoupons);
+
+        Set<UUID> couponCodes = issueCoupons.stream()
+            .map(IssueCoupon::getCode)
+            .collect(Collectors.toSet());
+
+        couponRedisRepository.bulkInsertCouponCode(couponCodes, String.valueOf(couponPolicy.getId()));
     }
 
     private void createIssueCouponInLimitCount(CouponPolicy couponPolicy, Long issueQuantity) {
