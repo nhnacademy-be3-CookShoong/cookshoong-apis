@@ -5,6 +5,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -160,11 +161,11 @@ class StoreRepositoryTest {
             store.modifyAddress(address);
             storeRepository.save(store);
         }
-        Pageable pageable = PageRequest.of(2, 2);
-        Page<SelectAllStoresResponseDto> actuals = storeRepository.lookupStoresPage(account.getId());
 
-        assertThat(actuals.get().count()).isEqualTo(2);
-        assertThat(actuals.get().findFirst().get().getStoreName()).isEqualTo("5호점");
+        List<SelectAllStoresResponseDto> actuals = storeRepository.lookupStores(account.getId());
+
+        assertThat(actuals.size()).isEqualTo(9);
+        assertThat(actuals.get(1).getStoreName()).isEqualTo("2호점");
     }
 
     @Test
