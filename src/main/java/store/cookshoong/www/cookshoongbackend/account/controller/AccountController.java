@@ -127,4 +127,12 @@ public class AccountController {
         return ResponseEntity.status(HttpStatus.OK)
             .body(response);
     }
+
+    @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
+    @GetMapping("oauth")
+    public ResponseEntity<SelectAccountInfoResponseDto> getAccountInfoForOAuth(@RequestParam String provider,
+                                                                               @RequestParam String accountCode) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(accountService.selectAccountInfoForOAuth(provider, accountCode.toLowerCase()));
+    }
 }
