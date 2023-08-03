@@ -27,7 +27,7 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order {
     @Id
-    @Column(name = "order_code", nullable = false, length = 36)
+    @Column(name = "order_code", columnDefinition = "BINARY(16)", nullable = false)
     private UUID orderCode;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
