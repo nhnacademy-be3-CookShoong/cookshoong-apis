@@ -9,6 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
+import store.cookshoong.www.cookshoongbackend.order.entity.Order;
+import store.cookshoong.www.cookshoongbackend.order.entity.OrderDetail;
 
 /**
  * 장바구니에 저장될 Dto.
@@ -137,5 +140,9 @@ public class CartRedisDto {
         if (count > 1) {
             count--;
         }
+    }
+
+    public OrderDetail toEntity(Order order, Menu menu) {
+        return new OrderDetail(order, menu, getCount(), getMenu().getMenuName(), getMenu().getMenuPrice());
     }
 }
