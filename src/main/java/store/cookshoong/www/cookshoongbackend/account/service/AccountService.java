@@ -60,6 +60,12 @@ public class AccountService {
             .getId();
     }
 
+    /**
+     * 회원이 가지는 모든 정보를 조회한다.
+     *
+     * @param accountId the account id
+     * @return the select account response dto
+     */
     public SelectAccountResponseDto selectAccount(Long accountId) {
         return accountRepository.lookupAccount(accountId)
             .orElseThrow(UserNotFoundException::new);
