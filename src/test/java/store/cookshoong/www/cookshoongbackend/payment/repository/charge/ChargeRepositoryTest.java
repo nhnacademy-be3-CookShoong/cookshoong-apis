@@ -68,7 +68,6 @@ class ChargeRepositoryTest {
     Menu menu;
     Order order;
     Charge charge;
-//    String paymentKey = "2WkABYDxNyJQbgMGZzorzYWwKBG9kVl5E1em4dKva7XL9njP";
     String paymentKey = "toss";
     Charge actual;
     UUID uuid = UUID.randomUUID();
