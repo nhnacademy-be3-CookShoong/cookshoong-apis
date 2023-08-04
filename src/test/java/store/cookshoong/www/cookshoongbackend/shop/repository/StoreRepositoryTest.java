@@ -98,7 +98,7 @@ class StoreRepositoryTest {
         assertThat(actual.getId()).isEqualTo(storeId);
         assertThat(actual.getOpeningDate()).isEqualTo(expect.getOpeningDate());
         assertThat(actual.getName()).isEqualTo(expect.getName());
-        assertThat(actual.getStoreStatusCode()).isEqualTo(expect.getStoreStatusCode());
+        assertThat(actual.getStoreStatus()).isEqualTo(expect.getStoreStatus());
         assertThat(actual.getDescription()).isEqualTo(expect.getDescription());
         assertThat(actual.getPhoneNumber()).isEqualTo(expect.getPhoneNumber());
         assertThat(actual.getRepresentativeName()).isEqualTo(expect.getRepresentativeName());
@@ -131,27 +131,24 @@ class StoreRepositoryTest {
     }
 
     @Test
-    @DisplayName("매장 조회 (페이지) - 성공")
+    @DisplayName("매장 조회 리스트 - 성공")
     void select_stores_page() {
-        PageRequest pageable = PageRequest.of(0, 3);
         Account expectAccount = em.find(Account.class, account.getId());
-        Page<SelectAllStoresResponseDto> selectAllStores =
-            storeRepository.lookupStoresPage(expectAccount.getId(), pageable);
+        List<Store> expect = List.of(
+            em.find(Store.class, store.getId()-2),
+            em.find(Store.class, store.getId()-1),
+            em.find(Store.class, store.getId())
+        );
+        List<SelectAllStoresResponseDto> selectAllStores =
+            storeRepository.lookupStores(expectAccount.getId());
 
-        assertThat(selectAllStores.getTotalElements()).isEqualTo(stores.size());
-        Iterator<SelectAllStoresResponseDto> responseDtoIterator = selectAllStores.iterator();
-        Iterator<Store> storeIterator = stores.iterator();
-
-        while (responseDtoIterator.hasNext()) {
-            SelectAllStoresResponseDto responseDto = responseDtoIterator.next();
-            Store expect = storeIterator.next();
-
-            assertThat(responseDto.getStoreId()).isEqualTo(expect.getId());
-            assertThat(responseDto.getStoreName()).isEqualTo(expect.getName());
-            assertThat(responseDto.getStoreMainAddress()).isEqualTo(expect.getAddress().getMainPlace());
-            assertThat(responseDto.getStoreDetailAddress()).isEqualTo(expect.getAddress().getDetailPlace());
-            assertThat(responseDto.getStoreStatus()).isEqualTo(expect.getStoreStatusCode().getDescription());
-
+        assertThat(selectAllStores.size()).isEqualTo(3);
+        for(int i= 0 ; i<3; i++){
+            assertThat(selectAllStores.get(i).getStoreId()).isEqualTo(expect.get(i).getId());
+            assertThat(selectAllStores.get(i).getStoreName()).isEqualTo(expect.get(i).getName());
+            assertThat(selectAllStores.get(i).getStoreStatus()).isEqualTo(expect.get(i).getStoreStatus().getDescription());
+            assertThat(selectAllStores.get(i).getStoreMainAddress()).isEqualTo(expect.get(i).getAddress().getMainPlace());
+            assertThat(selectAllStores.get(i).getStoreDetailAddress()).isEqualTo(expect.get(i).getAddress().getDetailPlace());
         }
     }
 
@@ -214,7 +211,7 @@ class StoreRepositoryTest {
             new StoresHasCategory.Pk(expectSecond.getId(), storeCategory.getCategoryCode()), expectSecond, storeCategory));
 
         StoreStatus storeStatus1 = ReflectionUtils.newInstance(StoreStatus.class);
-        ReflectionTestUtils.setField(storeStatus1, "storeStatusCode", "OUTED");
+        ReflectionTestUtils.setField(storeStatus1, "code", "OUTED");
         ReflectionTestUtils.setField(storeStatus1, "description", "폐업");
         em.persist(storeStatus1);
         expectSecond.modifyStoreStatus(storeStatus1);
