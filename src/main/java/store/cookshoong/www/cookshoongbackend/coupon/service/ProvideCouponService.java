@@ -1,5 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.coupon.service;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -15,17 +17,23 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponLog;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponPolicy;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.AlreadyHasCouponWithinSamePolicyException;
+import store.cookshoong.www.cookshoongbackend.coupon.exception.AlreadyUsedCouponException;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponExhaustionException;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponPolicyNotFoundException;
+import store.cookshoong.www.cookshoongbackend.coupon.exception.ExpiredCouponException;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.IssueCouponNotFoundException;
+import store.cookshoong.www.cookshoongbackend.coupon.exception.NonIssuedCouponProperlyException;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.ProvideIssueCouponFailureException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.UpdateProvideCouponRequestDto;
+import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponLogRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponRedisRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.IssueCouponRepository;
+import store.cookshoong.www.cookshoongbackend.menu_order.exception.menu.BelowMinimumOrderPriceException;
 import store.cookshoong.www.cookshoongbackend.rabbitmq.exception.LockInterruptedException;
 import store.cookshoong.www.cookshoongbackend.rabbitmq.exception.LockOverWaitTimeException;
 
@@ -43,12 +51,15 @@ public class ProvideCouponService {
     private static final String NOT_MATCH_LOCK = "- IsNotMatch";
     private static final int WAIT_TIME = 60;
     private static final int LEASE_TIME = 5;
+    private static final String STATUS_USE = "USE";
+    private static final int SPARE_MINUTE = 30;
 
     private final IssueCouponRepository issueCouponRepository;
     private final CouponPolicyRepository couponPolicyRepository;
     private final AccountRepository accountRepository;
     private final RedissonClient redissonClient;
     private final CouponRedisRepository couponRedisRepository;
+    private final CouponLogRepository couponLogRepository;
 
     /**
      * 사용자가 쿠폰 발급을 요청했을 때, 해당 쿠폰 정책과 일치하는 쿠폰 중 하나를 발급해준다.
@@ -184,6 +195,58 @@ public class ProvideCouponService {
         if (!couponRedisRepository.hasKey(key)) {
             Set<UUID> couponCodes = issueCouponRepository.lookupUnclaimedCouponCodes();
             couponRedisRepository.bulkInsertCouponCode(couponCodes, key);
+        }
+    }
+
+    /**
+     * 발급 쿠폰 검증 메서드.
+     *
+     * @param issueCoupon the issue coupon
+     * @param accountId   the account id
+     */
+    public void validProvideCoupon(IssueCoupon issueCoupon, Long accountId) {
+        couponLogRepository.findTopByIssueCouponOrderByIdDesc(issueCoupon)
+            .ifPresent(this::validRecentCouponLog);
+
+        Account account = issueCoupon.getAccount();
+
+        if (Objects.isNull(account) || !account.getId().equals(accountId)) {
+            throw new NonIssuedCouponProperlyException();
+        }
+    }
+
+    private void validRecentCouponLog(CouponLog couponLog) {
+        if (couponLog.getCouponLogType().getCode().equals(STATUS_USE)) {
+            throw new AlreadyUsedCouponException();
+        }
+    }
+
+    /**
+     * 주문 최소 금액 검증 메서드.
+     *
+     * @param issueCoupon the issue coupon
+     * @param totalPrice  the total price
+     */
+    public void validMinimumOrderPrice(IssueCoupon issueCoupon, int totalPrice) {
+        Integer minimumOrderPrice = issueCoupon.getCouponPolicy()
+            .getCouponType()
+            .getMinimumOrderPrice();
+
+        if (totalPrice < minimumOrderPrice) {
+            throw new BelowMinimumOrderPriceException();
+        }
+    }
+
+    /**
+     * 만료 시간 검증 메서드.
+     * 30분의 추가 시간을 제공.
+     *
+     * @param issueCoupon the issue coupon
+     */
+    public void validExpirationDateTime(IssueCoupon issueCoupon) {
+        LocalDateTime expirationDateTime = issueCoupon.getExpirationDate().atTime(LocalTime.MAX);
+        if (LocalDateTime.now().isAfter(expirationDateTime.plusMinutes(SPARE_MINUTE))) {
+            throw new ExpiredCouponException();
         }
     }
 }
