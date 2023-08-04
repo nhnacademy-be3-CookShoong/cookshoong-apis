@@ -33,7 +33,6 @@ import store.cookshoong.www.cookshoongbackend.shop.service.StoreService;
 public class OrderController {
     private final OrderService orderService;
     private final CartRedisService cartRedisService;
-    private final IssueCouponService issueCouponService;
     private final ProvideCouponService provideCouponService;
     private final AddressService addressService;
     private final StoreService storeService;
@@ -72,13 +71,12 @@ public class OrderController {
     }
 
     private void validIssueCouponInOrder(CreateOrderRequestDto createOrderRequestDto, List<CartRedisDto> cartItems) {
-        IssueCoupon issueCoupon =
-            issueCouponService.selectIssueCouponByCode(createOrderRequestDto.getIssueCouponCode());
-        provideCouponService.validProvideCoupon(issueCoupon, createOrderRequestDto.getAccountId());
+        UUID issueCouponCode = createOrderRequestDto.getIssueCouponCode();
+        provideCouponService.validProvideCoupon(issueCouponCode, createOrderRequestDto.getAccountId());
 
         int totalPrice = cartRedisService.getTotalPrice(cartItems);
-        provideCouponService.validMinimumOrderPrice(issueCoupon, totalPrice);
+        provideCouponService.validMinimumOrderPrice(issueCouponCode, totalPrice);
 
-        provideCouponService.validExpirationDateTime(issueCoupon);
+        provideCouponService.validExpirationDateTime(issueCouponCode);
     }
 }
