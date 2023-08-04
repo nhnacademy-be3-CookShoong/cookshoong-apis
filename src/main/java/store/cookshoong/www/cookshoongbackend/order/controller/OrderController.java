@@ -1,6 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.order.controller;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -72,6 +73,11 @@ public class OrderController {
 
     private void validIssueCouponInOrder(CreateOrderRequestDto createOrderRequestDto, List<CartRedisDto> cartItems) {
         UUID issueCouponCode = createOrderRequestDto.getIssueCouponCode();
+
+        if (Objects.isNull(issueCouponCode)) {
+            return;
+        }
+
         provideCouponService.validProvideCoupon(issueCouponCode, createOrderRequestDto.getAccountId());
 
         int totalPrice = cartRedisService.getTotalPrice(cartItems);
