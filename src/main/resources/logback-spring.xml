@@ -11,7 +11,7 @@
 
     <!-- LogNCrashHttpAppender 선언 -->
     <appender name="logNCrashHttp" class="com.toast.java.logncrash.logback.LogNCrashHttpAppender">
-        <appKey value="앱키"/>
+        <appKey value="${LOG_N_CRASH_APP_KEY}"/>
         <logSource value="운영"/>
         <version value="1.0.0"/>
         <logType value="감사 로그"/>
