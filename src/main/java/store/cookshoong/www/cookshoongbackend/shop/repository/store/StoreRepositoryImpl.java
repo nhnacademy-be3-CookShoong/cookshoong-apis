@@ -50,7 +50,7 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
                 store.id, store.name,
                 address.mainPlace, address.detailPlace, storeStatus.description))
             .from(store)
-            .innerJoin(store.storeStatusCode, storeStatus)
+            .innerJoin(store.storeStatus, storeStatus)
             .innerJoin(store.address, address)
             .where(store.account.id.eq(accountId))
             .orderBy(store.id.asc())
@@ -71,7 +71,7 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
         return jpaQueryFactory
             .select(store.count())
             .from(store)
-            .innerJoin(store.storeStatusCode, storeStatus)
+            .innerJoin(store.storeStatus, storeStatus)
             .innerJoin(store.address, address)
             .where(store.account.id.eq(accountId))
             .fetchOne();
@@ -147,12 +147,12 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
                 store.id, store.name, storeStatus.description, address.mainPlace,
                 address.detailPlace, address.latitude, address.longitude, storeCategory.categoryCode, store.storeImage.savedName))
             .from(store)
-            .innerJoin(store.storeStatusCode, storeStatus)
+            .innerJoin(store.storeStatus, storeStatus)
             .innerJoin(store.address, address)
             .innerJoin(store.storesHasCategories, storesHasCategory)
             .innerJoin(storesHasCategory.categoryCode, storeCategory)
             .innerJoin(store.storeImage, image)
-            .where(storeStatus.storeStatusCode.ne("OUTED"))
+            .where(storeStatus.code.ne("OUTED"))
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
@@ -167,10 +167,10 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
         return jpaQueryFactory
             .select(store.count())
             .from(store)
-            .innerJoin(store.storeStatusCode, storeStatus)
+            .innerJoin(store.storeStatus, storeStatus)
             .innerJoin(store.address, address)
             .innerJoin(store.storeImage, image)
-            .where(storeStatus.storeStatusCode.ne("OUTED"))
+            .where(storeStatus.code.ne("OUTED"))
             .fetchOne();
     }
 }

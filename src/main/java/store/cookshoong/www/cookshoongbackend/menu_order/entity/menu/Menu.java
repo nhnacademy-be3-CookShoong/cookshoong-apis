@@ -43,7 +43,7 @@ public class Menu {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "menu_status_code", nullable = false)
-    private MenuStatus menuStatusCode;
+    private MenuStatus menuStatus;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "store_id", nullable = false)
@@ -78,17 +78,17 @@ public class Menu {
     /**
      * 메뉴 엔티티 생성자.
      *
-     * @param menuStatusCode 가맹점
-     * @param store          회원
-     * @param name           은행타입
-     * @param price          가게 상태
-     * @param description    사업자등록증
-     * @param image          사업자등록번호
-     * @param cookingTime    대표자 이름
-     * @param earningRate    개업일자
+     * @param menuStatus  가맹점
+     * @param store       회원
+     * @param name        은행타입
+     * @param price       가게 상태
+     * @param description 사업자등록증
+     * @param image       사업자등록번호
+     * @param cookingTime 대표자 이름
+     * @param earningRate 개업일자
      */
-    public Menu(MenuStatus menuStatusCode, Store store, String name, Integer price, String description, Image image, Integer cookingTime, BigDecimal earningRate) {
-        this.menuStatusCode = menuStatusCode;
+    public Menu(MenuStatus menuStatus, Store store, String name, Integer price, String description, Image image, Integer cookingTime, BigDecimal earningRate) {
+        this.menuStatus = menuStatus;
         this.store = store;
         this.name = name;
         this.price = price;
@@ -101,10 +101,10 @@ public class Menu {
     /**
      * 메뉴의 상태코드 변경.
      *
-     * @param menuStatusCode 메뉴 상태 코드(OPEN, CLOSE, OUTED)
+     * @param menuStatus 메뉴 상태 코드(OPEN, CLOSE, OUTED)
      */
-    public void modifyMenuStatus(MenuStatus menuStatusCode) {
-        this.menuStatusCode = menuStatusCode;
+    public void modifyMenuStatus(MenuStatus menuStatus) {
+        this.menuStatus = menuStatus;
     }
 
     /**

@@ -158,9 +158,9 @@ public class TestEntity {
         return bankType;
     }
 
-    private StoreStatus createTestStoreStatus(String storeStatusCode, String description) {
+    private StoreStatus createTestStoreStatus(String code, String description) {
         StoreStatus storeStatus = createUsingDeclared(StoreStatus.class);
-        ReflectionTestUtils.setField(storeStatus, "storeStatusCode", storeStatusCode);
+        ReflectionTestUtils.setField(storeStatus, "code", code);
         ReflectionTestUtils.setField(storeStatus, "description", description);
         return storeStatus;
     }

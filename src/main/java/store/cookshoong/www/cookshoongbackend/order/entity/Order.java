@@ -10,7 +10,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
@@ -26,7 +25,6 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 @Entity
 @Table(name = "orders")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class Order {
     @Id
     @Column(name = "order_code", columnDefinition = "BINARY(16)", nullable = false)
@@ -50,4 +48,21 @@ public class Order {
     @Column(name = "memo", length = 100)
     private String memo;
 
+    /**
+     * 주문 생성자.
+     *
+     * @param code        the code
+     * @param orderStatus the order status
+     * @param account     the account
+     * @param store       the store
+     * @param memo        the memo
+     */
+    public Order(UUID code, OrderStatus orderStatus, Account account, Store store, String memo) {
+        this.code = code;
+        this.orderStatus = orderStatus;
+        this.account = account;
+        this.store = store;
+        this.orderedAt = LocalDateTime.now();
+        this.memo = memo;
+    }
 }

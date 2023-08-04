@@ -201,7 +201,7 @@ public class StoreService {
             .orElseThrow(UserNotFoundException::new);
         BankType bankType = bankTypeRepository.findByDescription(requestDto.getBankName())
             .orElseThrow(BankTypeNotFoundException::new);
-        StoreStatus storeStatus = store.getStoreStatusCode();
+        StoreStatus storeStatus = store.getStoreStatus();
 
         Image storeMainImage = objectStorageService.storeFile(storeImage, FileDomain.STORE_IMAGE.getVariable(), true);
         store.modifyStoreInfo(
@@ -272,7 +272,7 @@ public class StoreService {
 
         List<SelectAllStoresNotOutedResponseDto> nearbyStores = allStore
             .stream()
-            .filter(store -> isWithDistance(addressLatLng, store))
+            .filter(store -> isInStandardDistance(addressLatLng, store))
             .collect(Collectors.toList());
         nearbyStores.forEach(selectAllStoresNotOutedResponseDto ->
             selectAllStoresNotOutedResponseDto.setSavedName(
@@ -280,13 +280,33 @@ public class StoreService {
         return new PageImpl<>(nearbyStores, pageable, nearbyStores.size());
     }
 
-    private boolean isWithDistance(AddressResponseDto address, SelectAllStoresNotOutedResponseDto store) {
+    /**
+     * Is in standard distance boolean.
+     *
+     * @param accountAddress the account address
+     * @param storeId        the store id
+     * @return the boolean
+     */
+    public boolean isInStandardDistance(AddressResponseDto accountAddress, Long storeId) {
+        Store store = storeRepository.findById(storeId)
+            .orElseThrow(StoreNotFoundException::new);
 
-        BigDecimal storeDistance = calculateDistance(
+        Address storeAddress = store.getAddress();
+
+        return isInStandardDistance(
+            accountAddress.getLatitude(), accountAddress.getLongitude(),
+            storeAddress.getLatitude(), storeAddress.getLongitude());
+    }
+
+    private boolean isInStandardDistance(AddressResponseDto address, SelectAllStoresNotOutedResponseDto store) {
+        return isInStandardDistance(
             address.getLatitude(), address.getLongitude(),
             store.getLatitude(), store.getLongitude()
         );
+    }
 
+    private boolean isInStandardDistance(BigDecimal x1, BigDecimal y1, BigDecimal x2, BigDecimal y2) {
+        BigDecimal storeDistance = calculateDistance(x1, y1, x2, y2);
         return storeDistance.compareTo(DISTANCE) <= 0;
     }
 
