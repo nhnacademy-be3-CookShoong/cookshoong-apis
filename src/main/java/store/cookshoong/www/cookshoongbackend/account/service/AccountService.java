@@ -12,6 +12,7 @@ import store.cookshoong.www.cookshoongbackend.account.exception.DuplicatedUserEx
 import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountAuthResponseDto;
+import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountInfoResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.UpdateAccountStatusResponseDto;
@@ -59,6 +60,12 @@ public class AccountService {
             .getId();
     }
 
+    /**
+     * 회원이 가지는 모든 정보를 조회한다.
+     *
+     * @param accountId the account id
+     * @return the select account response dto
+     */
     public SelectAccountResponseDto selectAccount(Long accountId) {
         return accountRepository.lookupAccount(accountId)
             .orElseThrow(UserNotFoundException::new);
@@ -105,5 +112,17 @@ public class AccountService {
         account.updateStatus(accountStatus);
 
         return new UpdateAccountStatusResponseDto(accountStatus.getDescription(), LocalDateTime.now());
+    }
+
+    /**
+     * OAuth 로그인후 필요한 회원 정보를 조회한다.
+     *
+     * @param provider    the provider
+     * @param accountCode the account code
+     * @return the select account info response dto
+     */
+    public SelectAccountInfoResponseDto selectAccountInfoForOAuth(String provider, String accountCode) {
+        return accountRepository.lookupAccountInfoForOAuth(provider, accountCode)
+            .orElseThrow(UserNotFoundException::new);
     }
 }

@@ -61,7 +61,7 @@ class ChargeTypeControllerTest {
 
         String requestBody = objectMapper.writeValueAsString(requestDto);
 
-        mockMvc.perform(post("/api/payments/charges")
+        mockMvc.perform(post("/api/payments/charges/charge-type")
                 .contentType(APPLICATION_JSON)
                 .content(requestBody))
             .andExpect(status().isCreated())
@@ -84,7 +84,7 @@ class ChargeTypeControllerTest {
 
         String requestBody = objectMapper.writeValueAsString(requestDto);
 
-        mockMvc.perform(post("/api/payments/charges")
+        mockMvc.perform(post("/api/payments/charges/charge-type")
                 .contentType(APPLICATION_JSON)
                 .content(requestBody))
             .andExpect(status().isBadRequest());
@@ -98,7 +98,7 @@ class ChargeTypeControllerTest {
 
         String requestBody = objectMapper.writeValueAsString(requestDto);
 
-        mockMvc.perform(post("/api/payments/charges")
+        mockMvc.perform(post("/api/payments/charges/charge-type")
                 .contentType(APPLICATION_JSON)
                 .content(requestBody))
             .andExpect(status().isBadRequest());
@@ -112,7 +112,7 @@ class ChargeTypeControllerTest {
 
         String requestBody = objectMapper.writeValueAsString(requestDto);
 
-        mockMvc.perform(post("/api/payments/charges")
+        mockMvc.perform(post("/api/payments/charges/charge-type")
                 .contentType(APPLICATION_JSON)
                 .content(requestBody))
             .andExpect(status().isBadRequest());
@@ -128,7 +128,7 @@ class ChargeTypeControllerTest {
 
         Long chargeTypeId = 1L;
 
-        mockMvc.perform(put("/api/payments/charges/{chargeTypeId}", chargeTypeId)
+        mockMvc.perform(put("/api/payments/charges/charge-type/{chargeTypeId}", chargeTypeId)
                 .contentType(APPLICATION_JSON)
                 .content(requestBody))
             .andExpect(status().isOk())
@@ -145,7 +145,7 @@ class ChargeTypeControllerTest {
 
         Long chargeTypeId = 1L;
 
-        mockMvc.perform(put("/api/payments/charges/{chargeTypeId}", chargeTypeId)
+        mockMvc.perform(put("/api/payments/charges/charge-type/{chargeTypeId}", chargeTypeId)
                 .contentType(APPLICATION_JSON)
                 .content(requestBody))
             .andExpect(status().isBadRequest());
@@ -161,7 +161,7 @@ class ChargeTypeControllerTest {
 
         Long chargeTypeId = 1L;
 
-        mockMvc.perform(put("/api/payments/charges/{chargeTypeId}", chargeTypeId)
+        mockMvc.perform(put("/api/payments/charges/charge-type/{chargeTypeId}", chargeTypeId)
                 .contentType(APPLICATION_JSON)
                 .content(requestBody))
             .andExpect(status().isBadRequest());
@@ -177,7 +177,7 @@ class ChargeTypeControllerTest {
 
         Long chargeTypeId = 1L;
 
-        mockMvc.perform(put("/api/payments/charges/{chargeTypeId}", chargeTypeId)
+        mockMvc.perform(put("/api/payments/charges/charge-type/{chargeTypeId}", chargeTypeId)
                 .contentType(APPLICATION_JSON)
                 .content(requestBody))
             .andExpect(status().isBadRequest());
@@ -191,7 +191,7 @@ class ChargeTypeControllerTest {
 
         when(chargeTypeService.selectChargeType(chargeTypeId)).thenReturn(responseDto);
 
-        mockMvc.perform(get("/api/payments/charges/{chargeTypeId}", chargeTypeId))
+        mockMvc.perform(get("/api/payments/charges/charge-type/{chargeTypeId}", chargeTypeId))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.name").value(responseDto.getName()));
 
@@ -206,7 +206,7 @@ class ChargeTypeControllerTest {
 
         when(chargeTypeService.selectChargeTypeAll()).thenReturn(responseDtoList);
 
-        mockMvc.perform(get("/api/payments/charges"))
+        mockMvc.perform(get("/api/payments/charges/charge-type"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].name").value(responseDto.getName()));
 
@@ -218,7 +218,7 @@ class ChargeTypeControllerTest {
     void deleteChargeType() throws Exception {
         String chargeTypeId = "TOSS";
 
-        mockMvc.perform(delete("/api/payments/charges/{chargeTypeId}", chargeTypeId))
+        mockMvc.perform(delete("/api/payments/charges/charge-type/{chargeTypeId}", chargeTypeId))
             .andExpect(status().isNoContent());
 
         verify(chargeTypeService, times(1)).removeChargeType(chargeTypeId);
