@@ -1,10 +1,12 @@
 package store.cookshoong.www.cookshoongbackend.account.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.calls;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -27,6 +29,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.platform.commons.util.ReflectionUtils;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -35,6 +39,7 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
@@ -44,6 +49,7 @@ import store.cookshoong.www.cookshoongbackend.account.exception.AuthorityNotFoun
 import store.cookshoong.www.cookshoongbackend.account.exception.DuplicatedUserException;
 import store.cookshoong.www.cookshoongbackend.account.exception.SignUpValidationException;
 import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
+import store.cookshoong.www.cookshoongbackend.account.model.request.OAuth2SignUpRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountAuthResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountStatusResponseDto;
@@ -110,7 +116,7 @@ class AccountControllerTest {
             .andExpect(status().isCreated())
             .andDo(MockMvcRestDocumentationWrapper.document("registerAccount",
                 ResourceSnippetParameters.builder()
-                    .requestSchema(Schema.schema("account.Post"))
+                    .requestSchema(Schema.schema("registerAccount.Request"))
                     .requestFields(
                         fieldWithPath("loginId").description("로그인 때 사용되는 id"),
                         fieldWithPath("password").description("비밀번호"),
@@ -406,5 +412,252 @@ class AccountControllerTest {
                 .isInstanceOf(AccountStatusNotFoundException.class)
                 .hasMessageContaining("존재하지 않는 상태")
                 .hasMessageContaining(code));
+    }
+
+    @Test
+    @DisplayName("OAuth2를 이용한 회원가입 - 정상 등록")
+    void postOAuth2Account() throws Exception {
+        String expectProvider = "payco";
+        String expectAccountCode = "f32klsdjf923-fdsf32fs-dsf3q2ad-fsfwe";
+        OAuth2SignUpRequestDto expectDto = new OAuth2SignUpRequestDto(signUpRequestDto, expectAccountCode,
+            expectProvider);
+
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .post("/api/accounts/oauth2")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(expectDto));
+
+        mockMvc.perform(request)
+            .andExpect(status().isCreated())
+            .andDo(MockMvcRestDocumentationWrapper.document("postOAuth2Account",
+                ResourceSnippetParameters.builder()
+                    .requestSchema(Schema.schema("postOAuth2Account.Request"))
+                    .requestFields(
+                        fieldWithPath("provider").description("OAuth 공급자명"),
+                        fieldWithPath("accountCode").description("OAuth 공급자로부터 부여된 회원식별자"),
+                        fieldWithPath("signUpRequestDto.loginId").description("로그인 때 사용되는 id"),
+                        fieldWithPath("signUpRequestDto.password").description("비밀번호"),
+                        fieldWithPath("signUpRequestDto.name").description("이름"),
+                        fieldWithPath("signUpRequestDto.nickname").description("별명"),
+                        fieldWithPath("signUpRequestDto.email").description("이메일"),
+                        fieldWithPath("signUpRequestDto.birthday").description("생일"),
+                        fieldWithPath("signUpRequestDto.phoneNumber").description("핸드폰 번호"),
+                        fieldWithPath("signUpRequestDto.createAccountAddressRequestDto.alias").description("별칭"),
+                        fieldWithPath("signUpRequestDto.createAccountAddressRequestDto.mainPlace").description("메인 주소"),
+                        fieldWithPath("signUpRequestDto.createAccountAddressRequestDto.detailPlace").description("상세 주소"),
+                        fieldWithPath("signUpRequestDto.createAccountAddressRequestDto.latitude").description("위도"),
+                        fieldWithPath("signUpRequestDto.createAccountAddressRequestDto.longitude").description("경도")
+                    )));
+
+    }
+
+    @Test
+    @DisplayName("OAuth2를 이용한 회원가입 - OAuth 공급자명 누락")
+    void postOAuth2Account_2() throws Exception {
+        String expectAccountCode = "f32klsdjf923-fdsf32fs-dsf3q2ad-fsfwe";
+        OAuth2SignUpRequestDto expectDto = new OAuth2SignUpRequestDto(signUpRequestDto, expectAccountCode,
+            null);
+
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .post("/api/accounts/oauth2")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(expectDto));
+
+        mockMvc.perform(request)
+            .andExpect(status().isBadRequest())
+            .andExpect(result -> assertThat(result.getResolvedException())
+                .isInstanceOf(SignUpValidationException.class))
+            .andExpect(jsonPath("$.provider").value("must not be blank"));
+    }
+
+    @Test
+    @DisplayName("OAuth2를 이용한 회원가입 - OAuth 공급자로부터 부여된 회원식별자 누락")
+    void postOAuth2Account_3() throws Exception {
+        String expectProvider = "payco";
+        OAuth2SignUpRequestDto expectDto = new OAuth2SignUpRequestDto(signUpRequestDto, null,
+            expectProvider);
+
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .post("/api/accounts/oauth2")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(expectDto));
+
+        mockMvc.perform(request)
+            .andExpect(status().isBadRequest())
+            .andExpect(result -> assertThat(result.getResolvedException())
+                .isInstanceOf(SignUpValidationException.class))
+            .andExpect(jsonPath("$.accountCode").value("must not be blank"));
+    }
+
+    @Test
+    @DisplayName("OAuth2를 이용한 회원가입 - 회원정보 객체 누락")
+    void postOAuth2Account_4() throws Exception {
+        String expectProvider = "payco";
+        String expectAccountCode = "f32klsdjf923-fdsf32fs-dsf3q2ad-fsfwe";
+        OAuth2SignUpRequestDto expectDto = new OAuth2SignUpRequestDto(null, expectAccountCode,
+            expectProvider);
+
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .post("/api/accounts/oauth2")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(expectDto));
+
+        mockMvc.perform(request)
+            .andExpect(status().isBadRequest())
+            .andExpect(result -> assertThat(result.getResolvedException())
+                .isInstanceOf(SignUpValidationException.class))
+            .andExpect(jsonPath("$.signUpRequestDto").value("must not be null"));
+    }
+
+    @Test
+    @DisplayName("OAuth2를 이용한 회원가입 - 회원정보 중 필드 누락")
+    void postOAuth2Account_5() throws Exception {
+        String expectProvider = "payco";
+        String expectAccountCode = "f32klsdjf923-fdsf32fs-dsf3q2ad-fsfwe";
+        ReflectionTestUtils.setField(signUpRequestDto, "loginId", null);
+        OAuth2SignUpRequestDto expectDto = new OAuth2SignUpRequestDto(signUpRequestDto, expectAccountCode,
+            expectProvider);
+
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .post("/api/accounts/oauth2")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(expectDto));
+
+
+        MvcResult actual = mockMvc.perform(request)
+            .andExpect(status().isBadRequest())
+            .andExpect(result -> assertThat(result.getResolvedException())
+                .isInstanceOf(SignUpValidationException.class))
+            .andReturn();
+
+        String actualMessage = actual.getResponse().getContentAsString();
+        assertAll(
+            () -> assertThat(actualMessage).contains("loginId"),
+            () -> assertThat(actualMessage).contains("must not be blank")
+        );
+    }
+
+    @Test
+    @DisplayName("OAuth2를 이용한 회원가입 - 회원정보 중 주소 객체 누락")
+    void postOAuth2Account_6() throws Exception {
+        String expectProvider = "payco";
+        String expectAccountCode = "f32klsdjf923-fdsf32fs-dsf3q2ad-fsfwe";
+        ReflectionTestUtils.setField(signUpRequestDto, "createAccountAddressRequestDto", null);
+        OAuth2SignUpRequestDto expectDto = new OAuth2SignUpRequestDto(signUpRequestDto, expectAccountCode,
+            expectProvider);
+
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .post("/api/accounts/oauth2")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(expectDto));
+
+
+        MvcResult actual = mockMvc.perform(request)
+            .andExpect(status().isBadRequest())
+            .andExpect(result -> assertThat(result.getResolvedException())
+                .isInstanceOf(SignUpValidationException.class))
+            .andReturn();
+
+        String actualMessage = actual.getResponse().getContentAsString();
+        assertAll(
+            () -> assertThat(actualMessage).contains("createAccountAddressRequestDto"),
+            () -> assertThat(actualMessage).contains("must not be null")
+        );
+    }
+
+    @Test
+    @DisplayName("OAuth2를 이용한 회원가입 - 회원정보 중 주소객체의 필드 누락")
+    void postOAuth2Account_7() throws Exception {
+        String expectProvider = "payco";
+        String expectAccountCode = "f32klsdjf923-fdsf32fs-dsf3q2ad-fsfwe";
+
+        ReflectionTestUtils.setField(createAccountAddressRequestDto, "alias", null);
+        ReflectionTestUtils.setField(signUpRequestDto, "createAccountAddressRequestDto", createAccountAddressRequestDto);
+
+        OAuth2SignUpRequestDto expectDto = new OAuth2SignUpRequestDto(signUpRequestDto, expectAccountCode,
+            expectProvider);
+
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .post("/api/accounts/oauth2")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(expectDto));
+
+
+        MvcResult actual = mockMvc.perform(request)
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(result -> assertThat(result.getResolvedException())
+                .isInstanceOf(SignUpValidationException.class))
+            .andReturn();
+
+        String actualMessage = actual.getResponse().getContentAsString();
+        assertAll(
+            () -> assertThat(actualMessage).contains("signUpRequestDto.createAccountAddressRequestDto.alias"),
+            () -> assertThat(actualMessage).contains("must not be blank")
+        );
+    }
+
+    @Test
+    @DisplayName("OAuth2를 이용한 회원가입 - 서비스 코드 호출순서 확인 - 회원이 생성된 후 주소가 생성되어야 한다.")
+    void postOAuth2Account_8() throws Exception {
+        String expectProvider = "payco";
+        String expectAccountCode = "f32klsdjf923-fdsf32fs-dsf3q2ad-fsfwe";
+        OAuth2SignUpRequestDto expectDto = new OAuth2SignUpRequestDto(signUpRequestDto, expectAccountCode,
+            expectProvider);
+
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .post("/api/accounts/oauth2")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(expectDto));
+
+        mockMvc.perform(request)
+            .andExpect(status().isCreated());
+
+        InOrder inOrder = Mockito.inOrder(accountService, addressService);
+        inOrder.verify(accountService).createAccount(any(), any());
+        inOrder.verify(addressService).createAccountAddress(any(), any());
+    }
+
+    @Test
+    @DisplayName("OAuth2를 이용한 회원가입 - 서비스 코드 호출순서 확인 - 회원이 생성된 후 OAuth 회원이 생성되어야 한다.")
+    void postOAuth2Account_9() throws Exception {
+        String expectProvider = "payco";
+        String expectAccountCode = "f32klsdjf923-fdsf32fs-dsf3q2ad-fsfwe";
+        OAuth2SignUpRequestDto expectDto = new OAuth2SignUpRequestDto(signUpRequestDto, expectAccountCode,
+            expectProvider);
+
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .post("/api/accounts/oauth2")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(expectDto));
+
+        mockMvc.perform(request)
+            .andExpect(status().isCreated());
+
+        InOrder inOrder = Mockito.inOrder(accountService, addressService);
+        inOrder.verify(accountService).createAccount(any(), any());
+        inOrder.verify(accountService).createOAuth2Account(any(), any(), any());
+    }
+
+    @Test
+    @DisplayName("OAuth2를 이용한 회원가입 - 서비스 코드 호출횟수 확인 - 각 서비스 객체의 메서드는 한번씩만 호출되어야 한다.")
+    void postOAuth2Account_10() throws Exception {
+        String expectProvider = "payco";
+        String expectAccountCode = "f32klsdjf923-fdsf32fs-dsf3q2ad-fsfwe";
+        OAuth2SignUpRequestDto expectDto = new OAuth2SignUpRequestDto(signUpRequestDto, expectAccountCode,
+            expectProvider);
+
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .post("/api/accounts/oauth2")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(expectDto));
+
+        mockMvc.perform(request)
+            .andExpect(status().isCreated());
+
+        InOrder inOrder = Mockito.inOrder(accountService, addressService);
+        inOrder.verify(accountService, calls(1)).createAccount(any(), any());
+        inOrder.verify(addressService, calls(1)).createAccountAddress(any(), any());
+        inOrder.verify(accountService, calls(1)).createOAuth2Account(any(), any(), any());
     }
 }
