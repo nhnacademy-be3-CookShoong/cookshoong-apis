@@ -35,7 +35,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.ProvideIssueCouponFailureException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectOwnCouponResponseDto;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
-import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.Order;
+import store.cookshoong.www.cookshoongbackend.order.entity.Order;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
