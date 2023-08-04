@@ -23,6 +23,8 @@ import lombok.NoArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
+import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateStoreRequestDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreRequestDto;
 
 /**
  * 매장 엔티티.
@@ -103,33 +105,26 @@ public class Store {
      * @param account               회원
      * @param bankTypeCode          은행타입
      * @param storeStatus           가게 상태
-     * @param businessLicenseNumber 사업자등록번호
-     * @param representativeName    대표자 이름
-     * @param openingDate           개업일자
-     * @param name                  상호명
-     * @param phoneNumber           가게 번호
-     * @param defaultEarningRate    매장 별 기본 적립률
-     * @param description           매장 설명
-     * @param bankAccountNumber     은행 계좌 번호
+     * @param businessLicense       the business license
+     * @param createStoreRequestDto the create store request dto
+     * @param storeImage            the store image
      */
     public Store(Merchant merchant, Account account, BankType bankTypeCode, StoreStatus storeStatus,
-                 Image businessLicense, String businessLicenseNumber, String representativeName,
-                 LocalDate openingDate, String name, String phoneNumber, BigDecimal defaultEarningRate,
-                 String description, Image storeImage, String bankAccountNumber) {
+                 Image businessLicense, CreateStoreRequestDto createStoreRequestDto, Image storeImage) {
         this.merchant = merchant;
         this.account = account;
         this.bankTypeCode = bankTypeCode;
         this.storeStatus = storeStatus;
         this.businessLicense = businessLicense;
-        this.businessLicenseNumber = businessLicenseNumber;
-        this.representativeName = representativeName;
-        this.openingDate = openingDate;
-        this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.defaultEarningRate = defaultEarningRate;
-        this.description = description;
+        this.businessLicenseNumber = createStoreRequestDto.getBusinessLicenseNumber();
+        this.representativeName = createStoreRequestDto.getRepresentativeName();
+        this.openingDate = createStoreRequestDto.getOpeningDate();
+        this.name = createStoreRequestDto.getStoreName();
+        this.phoneNumber = createStoreRequestDto.getPhoneNumber();
+        this.defaultEarningRate = createStoreRequestDto.getEarningRate();
+        this.description = createStoreRequestDto.getDescription();
         this.storeImage = storeImage;
-        this.bankAccountNumber = bankAccountNumber;
+        this.bankAccountNumber = createStoreRequestDto.getBankAccount();
     }
 
     /**
@@ -144,35 +139,26 @@ public class Store {
     /**
      * 매장 정보 수정.
      *
-     * @param account               the account
-     * @param bankTypeCode          the bank type code
-     * @param storeStatus           the store status
-     * @param businessLicenseNumber the business license number
-     * @param representativeName    the representative name
-     * @param openingDate           the opening date
-     * @param name                  the name
-     * @param phoneNumber           the phone number
-     * @param defaultEarningRate    the default earning rate
-     * @param description           the description
-     * @param storeImage            the store image
-     * @param bankAccountNumber     the bank account number
+     * @param account      the account
+     * @param bankTypeCode the bank type code
+     * @param storeStatus  the store status
+     * @param storeImage   the store image
+     * @param requestDto   the request dto
      */
     public void modifyStoreInfo(Account account, BankType bankTypeCode, StoreStatus storeStatus,
-                                String businessLicenseNumber, String representativeName,
-                                LocalDate openingDate, String name, String phoneNumber, BigDecimal defaultEarningRate,
-                                String description, Image storeImage, String bankAccountNumber) {
+                                Image storeImage, UpdateStoreRequestDto requestDto) {
         this.account = account;
         this.bankTypeCode = bankTypeCode;
         this.storeStatus = storeStatus;
-        this.businessLicenseNumber = businessLicenseNumber;
-        this.representativeName = representativeName;
-        this.openingDate = openingDate;
-        this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.defaultEarningRate = defaultEarningRate;
-        this.description = description;
+        this.businessLicenseNumber = requestDto.getBusinessLicenseNumber();
+        this.representativeName = requestDto.getRepresentativeName();
+        this.openingDate = requestDto.getOpeningDate();
+        this.name = requestDto.getStoreName();
+        this.phoneNumber = requestDto.getPhoneNumber();
+        this.defaultEarningRate = requestDto.getEarningRate();
+        this.description = requestDto.getDescription();
         this.storeImage = storeImage;
-        this.bankAccountNumber = bankAccountNumber;
+        this.bankAccountNumber = requestDto.getBankAccount();
     }
 
     /**

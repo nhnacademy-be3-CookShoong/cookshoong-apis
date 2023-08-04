@@ -1,8 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.shop.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -17,14 +16,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.address.model.response.AddressResponseDto;
 import store.cookshoong.www.cookshoongbackend.address.repository.accountaddress.AccountAddressRepository;
 import store.cookshoong.www.cookshoongbackend.common.property.ObjectStorageProperties;
-import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
 import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
 import store.cookshoong.www.cookshoongbackend.file.service.ObjectStorageAuth;
 import store.cookshoong.www.cookshoongbackend.file.service.ObjectStorageService;
@@ -44,7 +41,7 @@ class StoreServiceNotOutedTest {
     @Spy
     @InjectMocks
     private ObjectStorageService objectStorageService =
-        new ObjectStorageService(mock(ObjectStorageAuth.class),mock(ObjectStorageProperties.class), mock(ImageRepository.class));
+        new ObjectStorageService(mock(ObjectStorageAuth.class), mock(ObjectStorageProperties.class), mock(ImageRepository.class));
 
     @InjectMocks
     private StoreService storeService;
@@ -60,7 +57,7 @@ class StoreServiceNotOutedTest {
 
         List<SelectAllStoresNotOutedResponseDto> stores = new ArrayList<>();
         stores.add(new SelectAllStoresNotOutedResponseDto(1L, "미술대", "영업중", "주소 1", "상세주소 1",
-            new BigDecimal("35.14385822588584"), new BigDecimal("126.93046054250793"), storeCategoryCode, UUID.randomUUID()+".jpg"));
+            new BigDecimal("35.14385822588584"), new BigDecimal("126.93046054250793"), storeCategoryCode, UUID.randomUUID() + ".jpg"));
 
         Page<SelectAllStoresNotOutedResponseDto> storePage = new PageImpl<>(stores, pageable, stores.size());
         when(storeRepository.lookupStoreLatLanPage(pageable)).thenReturn(storePage);

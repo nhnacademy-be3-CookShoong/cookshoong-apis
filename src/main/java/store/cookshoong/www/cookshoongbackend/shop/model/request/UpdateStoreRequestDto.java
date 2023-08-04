@@ -28,7 +28,7 @@ public class UpdateStoreRequestDto {
     private String phoneNumber;
     private String description;
     private BigDecimal earningRate;
-    private String bankName;
+    private String bankCode;
     private String bankAccount;
     private String savedName;
 }

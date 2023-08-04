@@ -4,6 +4,8 @@ import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -36,6 +38,7 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.shop.entity.StoreCategory;
 import store.cookshoong.www.cookshoongbackend.shop.entity.StoreStatus;
+import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateStoreRequestDto;
 
 /**
  * 테스트 환경에서 원하는 entity 미리 만들어두는 클래스.
@@ -83,6 +86,9 @@ public class TestEntity {
     public StoreStatus getStoreStatusOpen() {
         return createTestStoreStatus("OPEN", "영업중");
     }
+    public StoreStatus getStoreStatusClose() {
+        return createTestStoreStatus("CLOSE", "휴식중");
+    }
 
     public Merchant getMerchant() {
         return new Merchant("네네치킨");
@@ -90,15 +96,15 @@ public class TestEntity {
 
     public Store getStore(Merchant merchant, Account account, BankType bankType,
                           StoreStatus storeStatus, Image businessImage, Image storeImage) {
+        CreateStoreRequestDto createStoreRequestDto = createStoreRequestDto(merchant, bankType);
         return new Store(merchant, account, bankType,
-            storeStatus,businessImage, "123456", "김주호",
-            LocalDate.of(2020, 2, 20), "주호타코", "01012345678", BigDecimal.ONE,
-            null, storeImage, "123456");
+            storeStatus, businessImage, createStoreRequestDto, storeImage);
     }
 
-    public Image getImage(String name, boolean isPublic){
-        return createImage(name,isPublic);
+    public Image getImage(String name, boolean isPublic) {
+        return createImage(name, isPublic);
     }
+
     public StoreCategory getStoreCategory() {
         return new StoreCategory("CHK", "치킨");
     }
@@ -152,6 +158,32 @@ public class TestEntity {
         return createTestOrder(account, store, orderStatus);
     }
 
+    public CreateStoreRequestDto getCreateStoreRequestDto(Merchant merchant, BankType bankType){
+        return createStoreRequestDto(merchant, bankType);
+    }
+    private CreateStoreRequestDto createStoreRequestDto(Merchant merchant, BankType bankType) {
+        CreateStoreRequestDto createStoreRequestDto = createUsingDeclared(CreateStoreRequestDto.class);
+        ReflectionTestUtils.setField(createStoreRequestDto, "merchantId", 1L);
+        if(Objects.nonNull(merchant)){
+            ReflectionTestUtils.setField(createStoreRequestDto, "merchantId", merchant.getId());
+        }
+        ReflectionTestUtils.setField(createStoreRequestDto, "businessLicenseNumber", "123456");
+        ReflectionTestUtils.setField(createStoreRequestDto, "representativeName", "김주호");
+        ReflectionTestUtils.setField(createStoreRequestDto, "openingDate", LocalDate.of(2020, 2, 20));
+        ReflectionTestUtils.setField(createStoreRequestDto, "storeName", "주호타코");
+        ReflectionTestUtils.setField(createStoreRequestDto, "mainPlace", "봉선2동 102길");
+        ReflectionTestUtils.setField(createStoreRequestDto, "detailPlace", "20-18");
+        ReflectionTestUtils.setField(createStoreRequestDto, "latitude", BigDecimal.ONE);
+        ReflectionTestUtils.setField(createStoreRequestDto, "longitude", BigDecimal.ONE);
+        ReflectionTestUtils.setField(createStoreRequestDto, "phoneNumber", "01012341234");
+        ReflectionTestUtils.setField(createStoreRequestDto, "description", "타코집에 많이 와주세요");
+        ReflectionTestUtils.setField(createStoreRequestDto, "earningRate", BigDecimal.ONE);
+        ReflectionTestUtils.setField(createStoreRequestDto, "storeCategories", List.of("NIG"));
+        ReflectionTestUtils.setField(createStoreRequestDto, "bankCode", bankType.getBankTypeCode());
+        ReflectionTestUtils.setField(createStoreRequestDto, "bankAccount", "123456");
+        return createStoreRequestDto;
+    }
+
     private BankType createTestBankType(String bankTypeCode, String description) {
         BankType bankType = createUsingDeclared(BankType.class);
         ReflectionTestUtils.setField(bankType, "bankTypeCode", bankTypeCode);
@@ -191,10 +223,10 @@ public class TestEntity {
         return orderStatus;
     }
 
-    public Image createImage(String name, boolean isPublic){
+    public Image createImage(String name, boolean isPublic) {
         Image image = createUsingDeclared(Image.class);
-        ReflectionTestUtils.setField(image,"originName", name);
-        ReflectionTestUtils.setField(image, "savedName", UUID.randomUUID()+".jpg");
+        ReflectionTestUtils.setField(image, "originName", name);
+        ReflectionTestUtils.setField(image, "savedName", UUID.randomUUID() + ".jpg");
         ReflectionTestUtils.setField(image, "isPublic", isPublic);
         return image;
     }

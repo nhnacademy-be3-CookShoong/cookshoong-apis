@@ -85,9 +85,7 @@ class ChargeRepositoryTest {
         BankType bankType = tm.getBankTypeKb();
         businessImage = tm.getImage("사업자등록증.png", false);
         storeImage = tm.getImage("매장사진.png", true);
-        store = new Store(merchant, account, bankType, storeStatus, businessImage,
-            "1234567891", "나기업", LocalDate.parse("1999-02-03"), "나기업의 김치찌개",
-            "01088889991", new BigDecimal("1.1"), "우리 매장음식이 가장 맛있어요.", storeImage, "11022223333");
+        store = tm.getStore(merchant, account, bankType, storeStatus, businessImage, storeImage);
 
         em.persist(accountStatus);
         em.persist(authority);

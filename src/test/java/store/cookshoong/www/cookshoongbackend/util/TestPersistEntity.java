@@ -49,6 +49,14 @@ public class TestPersistEntity {
         return testEntity.getStore(null, account, bankTypeKb, storeStatusOpen, businessImage, storeImage);
     }
 
+    public Store getOpenStoreByOneAccount(Account account) {
+        BankType bankTypeKb = testEntity.getBankTypeKb();
+        StoreStatus storeStatusOpen = testEntity.getStoreStatusOpen();
+        Image businessImage = testEntity.getImage("사업자등록증.jpg",false);
+        Image storeImage = testEntity.getImage("매장사진.png",true);
+        return testEntity.getStore(null, account, bankTypeKb, storeStatusOpen, businessImage, storeImage);
+    }
+
     public Store getOpenMerchantStore() {
         Merchant merchant = testEntity.getMerchant();
         Account account = getLevelOneActiveCustomer();
