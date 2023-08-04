@@ -86,6 +86,9 @@ public class TestEntity {
     public StoreStatus getStoreStatusOpen() {
         return createTestStoreStatus("OPEN", "영업중");
     }
+    public StoreStatus getStoreStatusClose() {
+        return createTestStoreStatus("CLOSE", "휴식중");
+    }
 
     public Merchant getMerchant() {
         return new Merchant("네네치킨");
@@ -155,9 +158,12 @@ public class TestEntity {
         return createTestOrder(account, store, orderStatus);
     }
 
+    public CreateStoreRequestDto getCreateStoreRequestDto(Merchant merchant, BankType bankType){
+        return createStoreRequestDto(merchant, bankType);
+    }
     private CreateStoreRequestDto createStoreRequestDto(Merchant merchant, BankType bankType) {
         CreateStoreRequestDto createStoreRequestDto = createUsingDeclared(CreateStoreRequestDto.class);
-        ReflectionTestUtils.setField(createStoreRequestDto, "merchantId", null);
+        ReflectionTestUtils.setField(createStoreRequestDto, "merchantId", 1L);
         if(Objects.nonNull(merchant)){
             ReflectionTestUtils.setField(createStoreRequestDto, "merchantId", merchant.getId());
         }
