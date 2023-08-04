@@ -201,10 +201,13 @@ public class ProvideCouponService {
     /**
      * 발급 쿠폰 검증 메서드.
      *
-     * @param issueCoupon the issue coupon
-     * @param accountId   the account id
+     * @param issueCouponCode the issue coupon
+     * @param accountId       the account id
      */
-    public void validProvideCoupon(IssueCoupon issueCoupon, Long accountId) {
+    public void validProvideCoupon(UUID issueCouponCode, Long accountId) {
+        IssueCoupon issueCoupon = issueCouponRepository.findById(issueCouponCode)
+            .orElseThrow(IssueCouponNotFoundException::new);
+
         couponLogRepository.findTopByIssueCouponOrderByIdDesc(issueCoupon)
             .ifPresent(this::validRecentCouponLog);
 
@@ -224,10 +227,13 @@ public class ProvideCouponService {
     /**
      * 주문 최소 금액 검증 메서드.
      *
-     * @param issueCoupon the issue coupon
-     * @param totalPrice  the total price
+     * @param issueCouponCode the issue coupon code
+     * @param totalPrice      the total price
      */
-    public void validMinimumOrderPrice(IssueCoupon issueCoupon, int totalPrice) {
+    public void validMinimumOrderPrice(UUID issueCouponCode, int totalPrice) {
+        IssueCoupon issueCoupon = issueCouponRepository.findById(issueCouponCode)
+            .orElseThrow(IssueCouponNotFoundException::new);
+
         Integer minimumOrderPrice = issueCoupon.getCouponPolicy()
             .getCouponType()
             .getMinimumOrderPrice();
@@ -241,9 +247,12 @@ public class ProvideCouponService {
      * 만료 시간 검증 메서드.
      * 30분의 추가 시간을 제공.
      *
-     * @param issueCoupon the issue coupon
+     * @param issueCouponCode the issue coupon code
      */
-    public void validExpirationDateTime(IssueCoupon issueCoupon) {
+    public void validExpirationDateTime(UUID issueCouponCode) {
+        IssueCoupon issueCoupon = issueCouponRepository.findById(issueCouponCode)
+            .orElseThrow(IssueCouponNotFoundException::new);
+
         LocalDateTime expirationDateTime = issueCoupon.getExpirationDate().atTime(LocalTime.MAX);
         if (LocalDateTime.now().isAfter(expirationDateTime.plusMinutes(SPARE_MINUTE))) {
             throw new ExpiredCouponException();
