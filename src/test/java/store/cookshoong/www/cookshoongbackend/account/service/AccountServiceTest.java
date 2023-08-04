@@ -3,6 +3,7 @@ package store.cookshoong.www.cookshoongbackend.account.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -28,19 +29,21 @@ import org.springframework.test.util.ReflectionTestUtils;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
+import store.cookshoong.www.cookshoongbackend.account.entity.OauthType;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.account.exception.DuplicatedUserException;
 import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountAuthResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
-import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.UpdateAccountStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountAuthDto;
 import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountStatusDto;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountStatusRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.AuthorityRepository;
+import store.cookshoong.www.cookshoongbackend.account.repository.OauthAccountRepository;
+import store.cookshoong.www.cookshoongbackend.account.repository.OauthTypeRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.RankRepository;
 
 /**
@@ -59,13 +62,19 @@ class AccountServiceTest {
     AccountStatusRepository accountStatusRepository;
     @Mock
     AuthorityRepository authorityRepository;
+    @Mock
+    OauthTypeRepository oauthTypeRepository;
+    @Mock
+    OauthAccountRepository oauthAccountRepository;
     @InjectMocks
     AccountService accountService;
 
-    static SignUpRequestDto testSignUpRequestDto;
-    static Authority testAuthority;
-    static AccountStatus testAccountStatus;
-    static Rank testRank;
+    SignUpRequestDto testSignUpRequestDto;
+    Authority testAuthority;
+    AccountStatus testAccountStatus;
+    Rank testRank;
+    Account testAccount;
+    OauthType testOauthType;
 
 
     @BeforeEach
@@ -82,6 +91,13 @@ class AccountServiceTest {
         testAuthority = new Authority("CUSTOMER", "일반 회원");
         testAccountStatus = new AccountStatus("ACTIVE", "활성");
         testRank = new Rank("LEVEL_1", "프랜드");
+
+        testAccount = new Account(testAccountStatus, testAuthority, testRank, testSignUpRequestDto);
+        ReflectionTestUtils.setField(testAccount, "id", 1L);
+
+        testOauthType = ReflectionUtils.newInstance(OauthType.class);
+        ReflectionTestUtils.setField(testOauthType, "id", 1);
+        ReflectionTestUtils.setField(testOauthType, "provider", "payco");
     }
 
     @Test
@@ -238,6 +254,51 @@ class AccountServiceTest {
             .hasMessageContaining("존재하지 않는 회원");
 
         verify(accountStatusRepository, never()).getReferenceById("DORMANCY");
+    }
+
+    @Test
+    @DisplayName("OAuth2 회원 저장 - 정상 저장")
+    void createOAuth2Account() {
+        Long inputAccountId = testAccount.getId();
+        String inputAccountCode = "temp-account-code";
+        String inputProvider = "payco";
+
+        when(accountRepository.getReferenceById(inputAccountId)).thenReturn(testAccount);
+        when(oauthTypeRepository.getReferenceByProvider(inputProvider)).thenReturn(testOauthType);
+
+        assertDoesNotThrow(
+            () -> accountService.createOAuth2Account(inputAccountId, inputAccountCode, inputProvider)
+        );
+    }
+
+
+    @Test
+    @DisplayName("OAuth2 회원 저장 - 회원 저장이 먼저 되지 않았을 경우")
+    void createOAuth2Account_2() {
+        Long inputAccountId = testAccount.getId();
+        String inputAccountCode = "temp-account-code";
+        String inputProvider = "payco";
+
+        when(accountRepository.getReferenceById(inputAccountId)).thenThrow(NullPointerException.class);
+
+        assertThatThrownBy(
+            () -> accountService.createOAuth2Account(inputAccountId, inputAccountCode, inputProvider)
+        ).isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    @DisplayName("OAuth2 회원 저장 - DB에 OAuth2 공급자가 저장되있지 않은 경우")
+    void createOAuth2Account_3() {
+        Long inputAccountId = testAccount.getId();
+        String inputAccountCode = "temp-account-code";
+        String inputProvider = "payco";
+
+        when(accountRepository.getReferenceById(inputAccountId)).thenReturn(testAccount);
+        when(oauthTypeRepository.getReferenceByProvider(inputProvider)).thenThrow(NullPointerException.class);
+
+        assertThatThrownBy(
+            () -> accountService.createOAuth2Account(inputAccountId, inputAccountCode, inputProvider)
+        ).isInstanceOf(NullPointerException.class);
     }
 }
 

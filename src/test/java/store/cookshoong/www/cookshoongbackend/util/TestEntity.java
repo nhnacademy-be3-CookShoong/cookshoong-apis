@@ -15,6 +15,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
+import store.cookshoong.www.cookshoongbackend.account.entity.OauthAccount;
+import store.cookshoong.www.cookshoongbackend.account.entity.OauthType;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponLog;
@@ -67,6 +69,20 @@ public class TestEntity {
 
     public Rank getRankLevelOne() {
         return new Rank("LEVEL_1", "프렌드");
+    }
+
+    public OauthType getOauthTypePayco() {
+        return getOauthType("payco");
+    }
+
+    public OauthType getOauthType(String provider) {
+        OauthType oauthType = createUsingDeclared(OauthType.class);
+        ReflectionTestUtils.setField(oauthType, "provider", provider);
+        return oauthType;
+    }
+
+    public OauthAccount getOauthAccount(Account account, OauthType oauthType, String accountCode) {
+        return new OauthAccount(account, oauthType, accountCode);
     }
 
     public Account getAccount(AccountStatus accountStatus, Authority authority, Rank rank) {
