@@ -29,9 +29,9 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
-import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.Order;
-import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.OrderStatus;
+import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus;
 import store.cookshoong.www.cookshoongbackend.payment.entity.ChargeType;
+import store.cookshoong.www.cookshoongbackend.order.entity.Order;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Holiday;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
@@ -146,8 +146,8 @@ public class TestEntity {
         return new Holiday(store, LocalDate.of(2020, 2, 20), LocalDate.of(2020, 2, 22));
     }
 
-    public OrderStatus getOrderStatus(String orderStatusCode, String description) {
-        return createTestOrderStatus(orderStatusCode, description);
+    public OrderStatus getOrderStatus(String statusCode, String description) {
+        return createTestOrderStatus(statusCode, description);
     }
 
     public Order getOrder(Account account, Store store, OrderStatus orderStatus) {
@@ -200,18 +200,18 @@ public class TestEntity {
 
     private Order createTestOrder(Account account, Store store, OrderStatus orderStatus) {
         Order order = createUsingDeclared(Order.class);
-        ReflectionTestUtils.setField(order, "orderCode", UUID.randomUUID());
+        ReflectionTestUtils.setField(order, "code", UUID.randomUUID());
         ReflectionTestUtils.setField(order, "orderedAt", LocalDateTime.now());
         ReflectionTestUtils.setField(order, "memo", "memo");
-        ReflectionTestUtils.setField(order, "orderStatusCode", orderStatus);
+        ReflectionTestUtils.setField(order, "orderStatus", orderStatus);
         ReflectionTestUtils.setField(order, "store", store);
         ReflectionTestUtils.setField(order, "account", account);
         return order;
     }
 
-    private OrderStatus createTestOrderStatus(String orderStatusCode, String description) {
+    private OrderStatus createTestOrderStatus(String statusCode, String description){
         OrderStatus orderStatus = createUsingDeclared(OrderStatus.class);
-        ReflectionTestUtils.setField(orderStatus, "orderStatusCode", orderStatusCode);
+        ReflectionTestUtils.setField(orderStatus, "code", statusCode);
         ReflectionTestUtils.setField(orderStatus, "description", description);
         return orderStatus;
     }

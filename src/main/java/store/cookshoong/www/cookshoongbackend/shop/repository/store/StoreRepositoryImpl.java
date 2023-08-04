@@ -34,23 +34,13 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Page<SelectAllStoresResponseDto> lookupStoresPage(Long accountId, Pageable pageable) {
-        List<SelectAllStoresResponseDto> responseDtos = lookupStores(accountId, pageable);
-        long total = lookupTotal(accountId);
-        return new PageImpl<>(responseDtos, pageable, total);
-    }
-
-    /**
      * 사업자 회원의 가게 리스트.
      *
      * @param accountId 회원 인덱스 번호
-     * @param pageable  페이지 정보
      * @return 각 페이지에 해당하는 매장 리스트
      */
-    private List<SelectAllStoresResponseDto> lookupStores(Long accountId, Pageable pageable) {
+    @Override
+    public List<SelectAllStoresResponseDto> lookupStores(Long accountId) {
         QStore store = QStore.store;
         QStoreStatus storeStatus = QStoreStatus.storeStatus;
         QAddress address = QAddress.address;
@@ -63,9 +53,7 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
             .innerJoin(store.storeStatusCode, storeStatus)
             .innerJoin(store.address, address)
             .where(store.account.id.eq(accountId))
-            .orderBy(store.id.desc())
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize())
+            .orderBy(store.id.asc())
             .fetch();
     }
 

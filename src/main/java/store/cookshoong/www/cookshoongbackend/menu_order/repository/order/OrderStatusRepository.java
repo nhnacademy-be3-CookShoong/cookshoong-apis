@@ -1,7 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.menu_order.repository.order;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.OrderStatus;
+import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus;
 
 /**
  * 주문 상태 레포지토리.

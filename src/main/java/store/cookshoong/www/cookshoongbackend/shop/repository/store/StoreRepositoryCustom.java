@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.shop.repository.store;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,10 +23,9 @@ public interface StoreRepositoryCustom {
      * 사업자 회원의 매장 조회시 pagination 구현.
      *
      * @param accountId 회원 아이디
-     * @param pageable  페이지 정보.
      * @return 페이지 별 매장 리스트
      */
-    Page<SelectAllStoresResponseDto> lookupStoresPage(Long accountId, Pageable pageable);
+    List<SelectAllStoresResponseDto> lookupStores(Long accountId);
 
     /**
      * 사업자 회원의 storeId에 해당하는 매장 조회 구현.

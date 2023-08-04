@@ -3,6 +3,7 @@ package store.cookshoong.www.cookshoongbackend.coupon.service;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,6 +36,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.exception.IssueCouponOverCo
 import store.cookshoong.www.cookshoongbackend.coupon.exception.NotAllowedIssueMethodException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateIssueCouponRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;
+import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponRedisRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.IssueCouponRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.util.IssueMethod;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
@@ -52,6 +54,8 @@ class IssueCouponServiceTest {
     TestEntity te;
     @InjectMocks
     TestPersistEntity tpe;
+    @Mock
+    CouponRedisRepository couponRedisRepository;
 
     CreateIssueCouponRequestDto createIssueCouponRequestDto;
 
@@ -155,14 +159,10 @@ class IssueCouponServiceTest {
 
         ReflectionTestUtils.setField(createIssueCouponRequestDto, "issueQuantity", (long) issueQuantity);
 
-        IssueCoupon issueCoupon = te.getIssueCoupon(couponPolicy);
-
-        when(issueCouponRepository.save(any()))
-            .thenReturn(issueCoupon);
-
         issueCouponService.createIssueCoupon(createIssueCouponRequestDto);
 
-        verify(issueCouponRepository, times(issueQuantity)).save(any());
+        verify(issueCouponRepository).saveAllAndFlush(any());
+        verify(couponRedisRepository).bulkInsertCouponCode(any(), anyString());
     }
 
     @ParameterizedTest
@@ -178,14 +178,10 @@ class IssueCouponServiceTest {
 
         ReflectionTestUtils.setField(createIssueCouponRequestDto, "issueQuantity", (long) issueQuantity);
 
-        IssueCoupon issueCoupon = te.getIssueCoupon(couponPolicy);
-
-        when(issueCouponRepository.save(any()))
-            .thenReturn(issueCoupon);
-
         issueCouponService.createIssueCoupon(createIssueCouponRequestDto);
 
-        verify(issueCouponRepository, times(issueQuantity)).save(any());
+        verify(issueCouponRepository).saveAllAndFlush(any());
+        verify(couponRedisRepository).bulkInsertCouponCode(any(), anyString());
     }
 
     @Test
