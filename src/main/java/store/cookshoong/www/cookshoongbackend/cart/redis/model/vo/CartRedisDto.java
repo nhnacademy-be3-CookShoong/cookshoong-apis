@@ -143,6 +143,6 @@ public class CartRedisDto {
     }
 
     public OrderDetail toEntity(Order order, Menu menu) {
-        return new OrderDetail(order, menu, getCount(), getMenu().getMenuName(), getMenu().getMenuPrice());
+        return new OrderDetail(order, menu, getCount(), menu.getName(), menu.getPrice());
     }
 }
