@@ -5,7 +5,6 @@ import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -14,7 +13,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 
@@ -32,11 +30,7 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 public class Order {
     @Id
     @Column(name = "order_code", columnDefinition = "BINARY(16)", nullable = false)
-<<<<<<< HEAD:src/main/java/store/cookshoong/www/cookshoongbackend/menu_order/entity/order/Order.java
-    private UUID orderCode;
-=======
     private UUID code;
->>>>>>> develop:src/main/java/store/cookshoong/www/cookshoongbackend/order/entity/Order.java
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "order_status_code", nullable = false)

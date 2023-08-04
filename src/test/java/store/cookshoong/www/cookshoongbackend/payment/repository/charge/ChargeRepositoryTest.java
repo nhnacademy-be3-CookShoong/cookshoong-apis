@@ -102,11 +102,11 @@ class ChargeRepositoryTest {
         em.persist(store);
 
         orderStatus = ReflectionUtils.newInstance(OrderStatus.class);
-        ReflectionTestUtils.setField(orderStatus, "orderStatusCode", "COMPLETE");
+        ReflectionTestUtils.setField(orderStatus, "code", "COMPLETE");
         ReflectionTestUtils.setField(orderStatus, "description", "주문완료");
         order = ReflectionUtils.newInstance(Order.class);
-        ReflectionTestUtils.setField(order, "orderCode", uuid);
-        ReflectionTestUtils.setField(order, "orderStatusCode", orderStatus);
+        ReflectionTestUtils.setField(order, "code", uuid);
+        ReflectionTestUtils.setField(order, "orderStatus", orderStatus);
         ReflectionTestUtils.setField(order, "account", account);
         ReflectionTestUtils.setField(order, "store", store);
         ReflectionTestUtils.setField(order, "orderedAt", LocalDateTime.now());
@@ -121,9 +121,9 @@ class ChargeRepositoryTest {
 
 
 
-        log.info("order uuid = {}", order.getOrderCode());
+        log.info("order uuid = {}", order.getCode());
         log.info("uuid = {}", uuid);
-        log.info("charge = {}", charge.getOrder().getOrderCode());
+        log.info("charge = {}", charge.getOrder().getCode());
     }
 
     @Test
@@ -146,7 +146,7 @@ class ChargeRepositoryTest {
 
         String expectedPaymentKey = paymentKey; // Set the expected paymentKey here
 
-        String actualPaymentKey = chargeRepository.lookupFindByPaymentKey(order.getOrderCode());
+        String actualPaymentKey = chargeRepository.lookupFindByPaymentKey(order.getCode());
 
         assertEquals(expectedPaymentKey, actualPaymentKey);
     }
