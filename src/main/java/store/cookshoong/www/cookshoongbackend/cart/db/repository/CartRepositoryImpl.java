@@ -81,11 +81,11 @@ public class CartRepositoryImpl implements CartRepositoryCustom {
             .innerJoin(cart.store)
             .innerJoin(cartDetail).on(cart.id.eq(cartDetail.cart.id))
             .innerJoin(menu).on(cartDetail.menu.id.eq(menu.id))
-            .innerJoin(menuStatus).on(menu.menuStatusCode.eq(menuStatus))
+            .innerJoin(menuStatus).on(menu.menuStatus.eq(menuStatus))
             .innerJoin(image).on(menu.image.id.eq(image.id))
             .leftJoin(cartDetailMenuOption).on(cartDetail.id.eq(cartDetailMenuOption.cartDetail.id))
             .leftJoin(cartDetailMenuOption.option, option)
-            .where(account.id.eq(accountId), option.isDeleted.eq(Boolean.FALSE), menuStatus.menuStatusCode.ne("OUTED"))
+            .where(account.id.eq(accountId), option.isDeleted.eq(Boolean.FALSE), menuStatus.code.ne("OUTED"))
             .transform(groupBy(cartDetail.id)
                 .list(constructor(
                     CartResponseDto.class,

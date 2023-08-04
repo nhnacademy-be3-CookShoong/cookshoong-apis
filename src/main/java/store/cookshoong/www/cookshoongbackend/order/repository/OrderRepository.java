@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.menu_order.repository.order;
+package store.cookshoong.www.cookshoongbackend.order.repository;
 
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;

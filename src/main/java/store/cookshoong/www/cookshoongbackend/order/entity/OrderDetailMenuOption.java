@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.menu_order.entity.orderdetail;
+package store.cookshoong.www.cookshoongbackend.order.entity;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -25,7 +25,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.entity.option.Option;
  */
 @Getter
 @Entity
-@Table(name = "order_detail_menu_option")
+@Table(name = "order_detail_menu_options")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderDetailMenuOption {
     @EmbeddedId
@@ -45,7 +45,7 @@ public class OrderDetailMenuOption {
     private String nowName;
 
     @Column(name = "now_price")
-    private String nowPrice;
+    private Integer nowPrice;
 
     /**
      * 매장_카테고리 엔티티 복합키.
@@ -61,5 +61,21 @@ public class OrderDetailMenuOption {
     public static class Pk implements Serializable {
         private Long optionId;
         private Long orderDetailId;
+    }
+
+    /**
+     * Instantiates a new Order detail menu option.
+     *
+     * @param option      the option
+     * @param orderDetail the order detail
+     * @param nowName     the now name
+     * @param nowPrice    the now price
+     */
+    public OrderDetailMenuOption(Option option, OrderDetail orderDetail, String nowName, Integer nowPrice) {
+        this.pk = new Pk(option.getId(), orderDetail.getId());
+        this.option = option;
+        this.orderDetail = orderDetail;
+        this.nowName = nowName;
+        this.nowPrice = nowPrice;
     }
 }

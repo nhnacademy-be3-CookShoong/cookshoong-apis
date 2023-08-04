@@ -6,7 +6,6 @@ import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.file.entity.QImage;
-import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.MenuStatus;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.QMenu;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.QMenuStatus;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menugroup.QMenuHasMenuGroup;
@@ -42,11 +41,11 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
 
         SelectMenuResponseDto selectMenuResponseDto = jpaQueryFactory
             .select(new QSelectMenuResponseDto(
-                menu.id, menuStatus.menuStatusCode, store.id,
+                menu.id, menuStatus.code, store.id,
                 menu.name, menu.price, menu.description,
                 menu.image.savedName, menu.cookingTime, menu.earningRate))
             .from(menu)
-            .innerJoin(menu.menuStatusCode, menuStatus)
+            .innerJoin(menu.menuStatus, menuStatus)
             .innerJoin(menu.store, store)
             .innerJoin(menu.image, image)
             .where(menu.id.eq(menuId))
@@ -85,21 +84,16 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
         QMenuHasMenuGroup menuHasMenuGroup = QMenuHasMenuGroup.menuHasMenuGroup;
         QMenuHasOptionGroup menuHasOptionGroup = QMenuHasOptionGroup.menuHasOptionGroup;
 
-        MenuStatus outedStatus = jpaQueryFactory
-            .selectFrom(menuStatus)
-            .where(menuStatus.menuStatusCode.eq("OUTED"))
-            .fetchOne();
-
         List<SelectMenuResponseDto> selectMenuResponseDtoList = jpaQueryFactory
             .select(new QSelectMenuResponseDto(
-                menu.id, menuStatus.menuStatusCode, store.id,
+                menu.id, menuStatus.code, store.id,
                 menu.name, menu.price, menu.description,
                 menu.image.savedName, menu.cookingTime, menu.earningRate))
             .from(menu)
-            .innerJoin(menu.menuStatusCode, menuStatus)
+            .innerJoin(menu.menuStatus, menuStatus)
             .innerJoin(menu.store, store)
             .innerJoin(menu.image, image)
-            .where(store.id.eq(storeId), menu.menuStatusCode.ne(outedStatus))
+            .where(store.id.eq(storeId), menu.menuStatus.code.ne("OUTED"))
             .fetch();
 
         for (SelectMenuResponseDto selectMenuResponseDto : selectMenuResponseDtoList) {

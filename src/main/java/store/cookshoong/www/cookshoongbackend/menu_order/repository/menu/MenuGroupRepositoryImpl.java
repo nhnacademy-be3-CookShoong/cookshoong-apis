@@ -35,7 +35,7 @@ public class MenuGroupRepositoryImpl implements MenuGroupRepositoryCustom {
             .select(new QSelectMenuGroupResponseDto(
                 menuGroup.id, store.id, menuGroup.name,
                 menuGroup.description, menuGroup.menuGroupSequence))
-            .from(store)
+            .from(menuGroup)
             .innerJoin(menuGroup.store, store)
             .where(menuGroup.id.eq(menuGroupId))
             .fetchOne());

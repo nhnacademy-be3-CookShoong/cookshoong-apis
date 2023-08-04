@@ -108,7 +108,7 @@ class CartRepositoryImplTest {
 
         menuImage = tm.getImage("메뉴사진.png", true);
         menuStatus = ReflectionUtils.newInstance(MenuStatus.class);
-        ReflectionTestUtils.setField(menuStatus, "menuStatusCode", "OPEN");
+        ReflectionTestUtils.setField(menuStatus, "code", "OPEN");
         ReflectionTestUtils.setField(menuStatus, "description", "판매중");
 
         menu = new Menu(menuStatus, store, "후라이드 치킨", 19000, "넘버원 바삭바삭", menuImage, 20, BigDecimal.ONE);

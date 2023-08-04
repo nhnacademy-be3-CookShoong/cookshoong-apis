@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 public class StoreStatus {
     @Id
     @Column(name = "store_status_code", nullable = false, length = 10)
-    private String storeStatusCode;
+    private String code;
 
     @Column(name = "description", length = 30)
     private String description;

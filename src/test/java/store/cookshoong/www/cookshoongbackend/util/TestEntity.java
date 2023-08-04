@@ -29,11 +29,11 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.MenuStatus;
 import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus;
 import store.cookshoong.www.cookshoongbackend.payment.entity.ChargeType;
 import store.cookshoong.www.cookshoongbackend.order.entity.Order;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
-import store.cookshoong.www.cookshoongbackend.shop.entity.Holiday;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.shop.entity.StoreCategory;
@@ -142,9 +142,10 @@ public class TestEntity {
         return new CouponLog(issueCoupon, couponLogType, order, LocalDateTime.now());
     }
 
-    public Holiday getHoliday(Store store) {
-        return new Holiday(store, LocalDate.of(2020, 2, 20), LocalDate.of(2020, 2, 22));
+    public MenuStatus getMenuStatus(String menuStatusCode, String description) {
+        return new MenuStatus(menuStatusCode, description);
     }
+
 
     public OrderStatus getOrderStatus(String statusCode, String description) {
         return createTestOrderStatus(statusCode, description);
@@ -184,9 +185,9 @@ public class TestEntity {
         return bankType;
     }
 
-    private StoreStatus createTestStoreStatus(String storeStatusCode, String description) {
+    private StoreStatus createTestStoreStatus(String code, String description) {
         StoreStatus storeStatus = createUsingDeclared(StoreStatus.class);
-        ReflectionTestUtils.setField(storeStatus, "storeStatusCode", storeStatusCode);
+        ReflectionTestUtils.setField(storeStatus, "code", code);
         ReflectionTestUtils.setField(storeStatus, "description", description);
         return storeStatus;
     }

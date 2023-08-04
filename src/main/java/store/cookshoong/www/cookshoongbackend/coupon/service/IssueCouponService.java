@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponPolicy;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponPolicyNotFoundException;
+import store.cookshoong.www.cookshoongbackend.coupon.exception.IssueCouponNotFoundException;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.IssueCouponOverCountException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateIssueCouponRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;

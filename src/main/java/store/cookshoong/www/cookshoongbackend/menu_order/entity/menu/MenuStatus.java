@@ -21,12 +21,17 @@ import lombok.NoArgsConstructor;
 public class MenuStatus {
     @Id
     @Column(name = "menu_status_code", nullable = false, length = 10)
-    private String menuStatusCode;
+    private String code;
 
     @Column(name = "description", nullable = false, length = 10)
     private String description;
 
     public enum MenuStatusCode {
         OPEN, CLOSE, OUTED
+    }
+
+    public MenuStatus(String code, String description) {
+        this.code = code;
+        this.description = description;
     }
 }
