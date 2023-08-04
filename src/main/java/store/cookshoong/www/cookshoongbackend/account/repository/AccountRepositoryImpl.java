@@ -6,8 +6,12 @@ import lombok.RequiredArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.account.entity.QAccount;
 import store.cookshoong.www.cookshoongbackend.account.entity.QAccountStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.QAuthority;
+import store.cookshoong.www.cookshoongbackend.account.entity.QOauthAccount;
+import store.cookshoong.www.cookshoongbackend.account.entity.QOauthType;
 import store.cookshoong.www.cookshoongbackend.account.entity.QRank;
+import store.cookshoong.www.cookshoongbackend.account.model.response.QSelectAccountInfoResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.QSelectAccountResponseDto;
+import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountInfoResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
 
 /**
@@ -42,4 +46,25 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
             .where(account.id.eq(accountId))
             .fetchFirst());
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<SelectAccountInfoResponseDto> lookupAccountInfoForOAuth(String provider, String accountCode) {
+        QAccount account = QAccount.account;
+        QOauthAccount oauthAccount = QOauthAccount.oauthAccount;
+        QOauthType oauthType = QOauthType.oauthType;
+
+        return Optional.ofNullable(jpaQueryFactory.select(new QSelectAccountInfoResponseDto(
+                    account.id, account.loginId, account.authority.authorityCode, account.status.statusCode)
+                ).from(oauthAccount)
+                .innerJoin(oauthAccount.account, account)
+                    .on(oauthAccount.accountCode.eq(accountCode))
+                .innerJoin(oauthAccount.oauthType, oauthType)
+                    .on(oauthType.provider.eq(provider))
+                .fetchFirst()
+        );
+    }
+
 }

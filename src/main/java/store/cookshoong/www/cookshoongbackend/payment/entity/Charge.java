@@ -11,11 +11,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
-import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.Order;
+import store.cookshoong.www.cookshoongbackend.order.entity.Order;
 
 /**
  * 결제에 해당되는 Entity.

@@ -21,6 +21,7 @@ import store.cookshoong.www.cookshoongbackend.account.exception.AuthorityNotFoun
 import store.cookshoong.www.cookshoongbackend.account.exception.SignUpValidationException;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountAuthResponseDto;
+import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountInfoResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.UpdateAccountStatusResponseDto;
@@ -126,5 +127,13 @@ public class AccountController {
         UpdateAccountStatusResponseDto response = accountService.updateAccountStatus(accountId, uppercaseCode);
         return ResponseEntity.status(HttpStatus.OK)
             .body(response);
+    }
+
+    @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
+    @GetMapping("oauth")
+    public ResponseEntity<SelectAccountInfoResponseDto> getAccountInfoForOAuth(@RequestParam String provider,
+                                                                               @RequestParam String accountCode) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(accountService.selectAccountInfoForOAuth(provider, accountCode.toLowerCase()));
     }
 }

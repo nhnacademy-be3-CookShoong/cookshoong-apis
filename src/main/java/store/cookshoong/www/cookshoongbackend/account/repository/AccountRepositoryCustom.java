@@ -2,6 +2,7 @@ package store.cookshoong.www.cookshoongbackend.account.repository;
 
 import java.util.Optional;
 import org.springframework.data.repository.NoRepositoryBean;
+import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountInfoResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
 
 /**
@@ -20,4 +21,14 @@ public interface AccountRepositoryCustom {
      * @return 회원정보(옵셔널)
      */
     Optional<SelectAccountResponseDto> lookupAccount(Long accountId);
+
+
+    /**
+     * OAuth2 주체와 회원식별자를 통해 OAuth 로 가입한 회원을 조회하는 메서드.
+     *
+     * @param provider    the provider
+     * @param accountCode the account code
+     * @return the optional
+     */
+    Optional<SelectAccountInfoResponseDto> lookupAccountInfoForOAuth(String provider, String accountCode);
 }
