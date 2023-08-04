@@ -10,6 +10,6 @@ import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException
  */
 public class StoreCategoryNotFoundException extends NotFoundException {
     public StoreCategoryNotFoundException() {
-        super("해당 카테고리는 존재하지 않습니다.");
+        super("카테고리");
     }
 }
