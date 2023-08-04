@@ -188,10 +188,10 @@ public class StoreService {
      */
     public void updateStore(Long accountId, Long storeId, UpdateStoreRequestDto requestDto, MultipartFile storeImage) throws IOException {
         Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
-        accessDeniedException(accountId, store);
         Account account = accountRepository.findById(accountId)
             .orElseThrow(UserNotFoundException::new);
-        BankType bankType = bankTypeRepository.findByDescription(requestDto.getBankName())
+        accessDeniedException(accountId, store);
+        BankType bankType = bankTypeRepository.findById(requestDto.getBankCode())
             .orElseThrow(BankTypeNotFoundException::new);
         StoreStatus storeStatus = store.getStoreStatus();
 
