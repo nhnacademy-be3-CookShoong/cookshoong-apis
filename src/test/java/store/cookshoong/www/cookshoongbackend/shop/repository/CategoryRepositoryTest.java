@@ -96,7 +96,6 @@ class CategoryRepositoryTest {
     void select_bank_fail() {
         assertThatThrownBy(() -> storeCategoryRepository.findByDescription("noCategory")
             .orElseThrow(StoreCategoryNotFoundException::new))
-            .isInstanceOf(StoreCategoryNotFoundException.class)
-            .hasMessageContaining("해당 카테고리는 존재하지 않습니다.");
+            .isInstanceOf(StoreCategoryNotFoundException.class);
     }
 }

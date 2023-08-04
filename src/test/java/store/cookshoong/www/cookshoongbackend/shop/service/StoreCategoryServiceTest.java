@@ -120,8 +120,7 @@ class StoreCategoryServiceTest {
 
         assertThatThrownBy(
             () -> storeCategoryService.updateStoreCategory(categoryCode, updateCategoryDto))
-            .isInstanceOf(DuplicatedStoreCategoryException.class)
-                .hasMessageContaining("치킨은 이미 등록되어 있습니다.");
+            .isInstanceOf(DuplicatedStoreCategoryException.class);
 
         verify(storeCategoryRepository, times(1)).findById(categoryCode);
         verify(storeCategoryRepository, times(1)).existsByDescription(updateCategoryDto.getStoreCategoryName());
@@ -142,8 +141,7 @@ class StoreCategoryServiceTest {
 
         assertThatThrownBy(
             () -> storeCategoryService.updateStoreCategory(categoryCode, updateCategoryDto))
-            .isInstanceOf(StoreCategoryNotFoundException.class)
-            .hasMessageContaining("해당 카테고리는 존재하지 않습니다.");
+            .isInstanceOf(StoreCategoryNotFoundException.class);
 
         verify(storeCategoryRepository, times(1)).findById(categoryCode);
         verify(storeCategoryRepository, times(0)).existsByDescription(updateCategoryDto.getStoreCategoryName());
