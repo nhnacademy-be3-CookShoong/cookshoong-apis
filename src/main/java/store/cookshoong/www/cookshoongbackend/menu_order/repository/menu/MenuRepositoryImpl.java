@@ -84,11 +84,6 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
         QMenuHasMenuGroup menuHasMenuGroup = QMenuHasMenuGroup.menuHasMenuGroup;
         QMenuHasOptionGroup menuHasOptionGroup = QMenuHasOptionGroup.menuHasOptionGroup;
 
-        MenuStatus outedStatus = jpaQueryFactory
-            .selectFrom(menuStatus)
-            .where(menuStatus.code.eq("OUTED"))
-            .fetchOne();
-
         List<SelectMenuResponseDto> selectMenuResponseDtoList = jpaQueryFactory
             .select(new QSelectMenuResponseDto(
                 menu.id, menuStatus.code, store.id,
@@ -98,7 +93,7 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
             .innerJoin(menu.menuStatus, menuStatus)
             .innerJoin(menu.store, store)
             .innerJoin(menu.image, image)
-            .where(store.id.eq(storeId), menu.menuStatus.ne(outedStatus))
+            .where(store.id.eq(storeId), menu.menuStatus.code.ne("OUTED"))
             .fetch();
 
         for (SelectMenuResponseDto selectMenuResponseDto : selectMenuResponseDtoList) {

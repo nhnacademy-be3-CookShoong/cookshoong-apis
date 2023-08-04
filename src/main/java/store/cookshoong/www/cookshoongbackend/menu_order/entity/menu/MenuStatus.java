@@ -30,8 +30,8 @@ public class MenuStatus {
         OPEN, CLOSE, OUTED
     }
 
-    public MenuStatus(String menuStatusCode, String description) {
-        this.menuStatusCode = menuStatusCode;
+    public MenuStatus(String code, String description) {
+        this.code = code;
         this.description = description;
     }
 }

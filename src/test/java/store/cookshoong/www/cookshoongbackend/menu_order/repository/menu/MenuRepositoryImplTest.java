@@ -72,7 +72,7 @@ class MenuRepositoryImplTest {
 
         SelectMenuResponseDto actual = menuRepository.lookupMenu(menu.getId()).orElseThrow(MenuNotFoundException::new);
         assertThat(actual.getId()).isEqualTo(menu.getId());
-        assertThat(actual.getMenuStatus()).isEqualTo(menu.getMenuStatusCode().getMenuStatusCode());
+        assertThat(actual.getMenuStatus()).isEqualTo(menu.getMenuStatus().getCode());
         assertThat(actual.getStoreId()).isEqualTo(menu.getStore().getId());
         assertThat(actual.getName()).isEqualTo(menu.getName());
         assertThat(actual.getPrice()).isEqualTo(menu.getPrice());

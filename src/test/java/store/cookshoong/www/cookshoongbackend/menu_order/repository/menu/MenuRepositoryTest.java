@@ -58,7 +58,7 @@ class MenuRepositoryTest {
 
         Menu actual = menuRepository.findById(menuId).orElseThrow();
         assertThat(actual.getId()).isEqualTo(menuId);
-        assertThat(actual.getMenuStatusCode()).isEqualTo(menu.getMenuStatusCode());
+        assertThat(actual.getMenuStatus()).isEqualTo(menu.getMenuStatus());
         assertThat(actual.getStore()).isEqualTo(menu.getStore());
         assertThat(actual.getName()).isEqualTo(menu.getName());
         assertThat(actual.getPrice()).isEqualTo(menu.getPrice());
