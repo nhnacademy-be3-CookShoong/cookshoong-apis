@@ -6,9 +6,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
@@ -35,7 +32,7 @@ public class OauthAccount {
     @EmbeddedId
     private Pk pk;
 
-    @MapsId("id")
+    @MapsId("accountId")
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
@@ -56,7 +53,7 @@ public class OauthAccount {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     @AllArgsConstructor
     public static class Pk implements Serializable {
-        private Long id;
+        private Long accountId;
         private Integer oauthTypeId;
     }
 
