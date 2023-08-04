@@ -33,7 +33,7 @@ public class CartRedisService {
     private final CartRedisRepository cartRedisRepository;
     private final CartRepository cartRepository;
     private static final String NO_MENU = "NO_KEY";
-    private static final String CART = "cartKey=";
+    public static final String CART = "cartKey=";
     private final ObjectStorageService objectStorageService;
 
     /**
@@ -343,5 +343,18 @@ public class CartRedisService {
 
             cartRedisRepository.cartRedisSave(redisKey, cartRedisDto.getHashKey(), cartRedisDto);
         }
+    }
+
+    /**
+     * 장바구니에 담긴 메뉴들의 총 가격을 계산하는 메서드.
+     *
+     * @param cartItems the cart items
+     * @return the total price
+     */
+    public int getTotalPrice(List<CartRedisDto> cartItems) {
+        return cartItems.stream()
+            .mapToInt(cartRedisDto -> Integer.parseInt(cartRedisDto.getTotalMenuPrice()))
+            .reduce(Integer::sum)
+            .orElseThrow(NumberFormatException::new);
     }
 }
