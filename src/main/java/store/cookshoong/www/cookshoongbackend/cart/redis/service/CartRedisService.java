@@ -106,12 +106,15 @@ public class CartRedisService {
             throw new NotFoundCartRedisKey();
         } else if (cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)) {
             cartRedisRepository.deleteCartMenu(redisKey, hashKey);
-            cart.incrementCount();
         }
 
         cart.setHashKey(cart.generateUniqueHashKey());
         cart.setMenuOptName(cart.generateMenuOptionName());
         cart.setTotalMenuPrice(cart.generateTotalMenuPrice());
+
+        if (hashKey.equals(cart.getHashKey())) {
+            cart.incrementCount();
+        }
 
         cartRedisRepository.cartMenuRedisModify(redisKey, cart.getHashKey(), cart);
     }
@@ -185,7 +188,9 @@ public class CartRedisService {
             carts.add(cartRedisDto);
 
             return carts;
-        } else if (!cartRedisRepository.existKeyInCartRedis(redisKey)) {
+        }
+
+        if (!cartRedisRepository.existKeyInCartRedis(redisKey)) {
             // DB 장바구니 데이터를 가지고 와서 Redis 장바구니에 저장.
             createAllCartFromDbToRedis(redisKey, cartRepository.lookupCartDbList(Long.valueOf(userId)));
         }
