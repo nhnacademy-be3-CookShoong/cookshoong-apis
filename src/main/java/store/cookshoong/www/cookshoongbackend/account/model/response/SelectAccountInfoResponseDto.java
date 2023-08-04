@@ -21,7 +21,7 @@ public class SelectAccountInfoResponseDto {
     private String status;
 
     /**
-     * Instantiates a new Select account info response dto.
+     * 회원 정보 응답 객체의 모든 인자를 받는 생성자.
      *
      * @param accountId the account id
      * @param loginId   the login id
