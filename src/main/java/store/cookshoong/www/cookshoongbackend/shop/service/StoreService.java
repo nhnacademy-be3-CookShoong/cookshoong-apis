@@ -42,7 +42,6 @@ import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStore
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseTemp;
 import store.cookshoong.www.cookshoongbackend.shop.repository.bank.BankTypeRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.category.StoreCategoryRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.merchant.MerchantRepository;
@@ -112,11 +111,11 @@ public class StoreService {
         Store store = storeRepository.findById(storeId)
             .orElseThrow(StoreNotFoundException::new);
         accessDeniedException(accountId, store);
-        SelectStoreResponseTemp responseVo = storeRepository.lookupStore(accountId, storeId)
+        SelectStoreResponseDto responseDto = storeRepository.lookupStore(accountId, storeId)
             .orElseThrow(StoreNotFoundException::new);
-        String pathName = objectStorageService
-            .getFullPath(FileDomain.STORE_IMAGE.getVariable(), responseVo.getSavedName());
-        return new SelectStoreResponseDto(responseVo, pathName);
+        responseDto.setPathName(objectStorageService
+            .getFullPath(FileDomain.STORE_IMAGE.getVariable(), responseDto.getPathName()));
+        return responseDto;
     }
 
     /**
@@ -165,15 +164,8 @@ public class StoreService {
             bankType,
             storeStatus,
             businessLicenseImage,
-            registerRequestDto.getBusinessLicenseNumber(),
-            registerRequestDto.getRepresentativeName(),
-            registerRequestDto.getOpeningDate(),
-            registerRequestDto.getStoreName(),
-            registerRequestDto.getPhoneNumber(),
-            registerRequestDto.getEarningRate(),
-            registerRequestDto.getDescription(),
-            storeMainImage,
-            registerRequestDto.getBankAccount());
+            registerRequestDto,
+            storeMainImage);
 
         List<String> categories = registerRequestDto.getStoreCategories();
         addStoreCategory(categories, store);
@@ -196,10 +188,10 @@ public class StoreService {
      */
     public void updateStore(Long accountId, Long storeId, UpdateStoreRequestDto requestDto, MultipartFile storeImage) throws IOException {
         Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
-        accessDeniedException(accountId, store);
         Account account = accountRepository.findById(accountId)
             .orElseThrow(UserNotFoundException::new);
-        BankType bankType = bankTypeRepository.findByDescription(requestDto.getBankName())
+        accessDeniedException(accountId, store);
+        BankType bankType = bankTypeRepository.findById(requestDto.getBankCode())
             .orElseThrow(BankTypeNotFoundException::new);
         StoreStatus storeStatus = store.getStoreStatus();
 
@@ -208,15 +200,8 @@ public class StoreService {
             account,
             bankType,
             storeStatus,
-            requestDto.getBusinessLicenseNumber(),
-            requestDto.getRepresentativeName(),
-            requestDto.getOpeningDate(),
-            requestDto.getStoreName(),
-            requestDto.getPhoneNumber(),
-            requestDto.getEarningRate(),
-            requestDto.getDescription(),
             storeMainImage,
-            requestDto.getBankAccount()
+            requestDto
         );
 
         Address address = new Address(requestDto.getMainPlace(), requestDto.getDetailPlace(),

@@ -98,8 +98,7 @@ class BankTypeRepositoryTest {
     void select_bank_fail() {
         assertThatThrownBy(() -> bankTypeRepository.findByDescription("nobanks")
             .orElseThrow(BankTypeNotFoundException::new))
-            .isInstanceOf(BankTypeNotFoundException.class)
-            .hasMessageContaining("해당 은행은 서비스 제공되지 않습니다.");
+            .isInstanceOf(BankTypeNotFoundException.class);
     }
 
 }

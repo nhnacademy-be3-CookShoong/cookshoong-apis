@@ -17,11 +17,11 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.QStoresHasCategory;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectStoreForUserResponseDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectStoreResponseTemp;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectStoreResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreForUserResponseDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseTemp;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseDto;
 
 /**
  * 매장 커스텀 레포지토리 구현.
@@ -81,14 +81,14 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
      * {@inheritDoc}
      */
     @Override
-    public Optional<SelectStoreResponseTemp> lookupStore(Long accountId, Long storeId) {
+    public Optional<SelectStoreResponseDto> lookupStore(Long accountId, Long storeId) {
         QStore store = QStore.store;
         QAddress address = QAddress.address;
         QBankType bankType = QBankType.bankType;
         QImage image = QImage.image;
 
         return Optional.ofNullable(jpaQueryFactory
-            .select(new QSelectStoreResponseTemp(
+            .select(new QSelectStoreResponseDto(
                 store.businessLicenseNumber,
                 store.representativeName,
                 store.openingDate,

@@ -10,6 +10,6 @@ import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException
  */
 public class StoreNotFoundException extends NotFoundException {
     public StoreNotFoundException() {
-        super("매장이 존재하지 않습니다.");
+        super("매장");
     }
 }

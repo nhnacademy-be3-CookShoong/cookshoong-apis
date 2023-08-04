@@ -8,7 +8,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,6 @@ import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.Answer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -50,7 +48,7 @@ class BankTypeServiceTest {
     @DisplayName("은행 조회 - 페이지별로 정보 가져오기")
     void selectBanks() {
         // Given
-        Pageable pageable = PageRequest.of(0,3);
+        Pageable pageable = PageRequest.of(0, 3);
         List<SelectAllBanksResponseDto> selectAllBanksResponseDtos = List.of(
             new SelectAllBanksResponseDto("KB", "국민은행"),
             new SelectAllBanksResponseDto("SHIN", "신한은행"),
@@ -68,7 +66,6 @@ class BankTypeServiceTest {
         Page<SelectAllBanksResponseDto> resultPages = bankTypeService.selectBanks(pageable);
 
         // Then
-
         assertThat(resultPages.getContent().get(0).getBankTypeCode()).isEqualTo(expectedPage.getContent().get(0).getBankTypeCode());
         assertThat(resultPages.getContent().get(1).getBankTypeCode()).isEqualTo(expectedPage.getContent().get(1).getBankTypeCode());
         assertThat(resultPages.getContent().get(2).getBankTypeCode()).isEqualTo(expectedPage.getContent().get(2).getBankTypeCode());
@@ -133,6 +130,7 @@ class BankTypeServiceTest {
     }
 
     @Test
+    @DisplayName("은행정보 리스트 조회 - 성공")
     void selectBanksForUser() {
         // Given
         List<SelectAllBanksResponseDto> selectAllBanksResponseDtos = List.of(

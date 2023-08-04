@@ -8,7 +8,7 @@ import org.springframework.data.repository.NoRepositoryBean;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreForUserResponseDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseTemp;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseDto;
 
 /**
  * 매장 Custom 레포지토리 인터페이스.
@@ -34,7 +34,7 @@ public interface StoreRepositoryCustom {
      * @param storeId   매장 아이디
      * @return 매장에 대한 정보
      */
-    Optional<SelectStoreResponseTemp> lookupStore(Long accountId, Long storeId);
+    Optional<SelectStoreResponseDto> lookupStore(Long accountId, Long storeId);
 
     /**
      * 일반 회원이 선택한 매장의 정보 조회.
@@ -47,7 +47,7 @@ public interface StoreRepositoryCustom {
     /**
      * 회원 위치에서 3km 이내에 있는 매장들을 조회하기 전, 모든 매장을 가져오는 메서드.
      *
-     * @return  모든 매장 정보 페이지로 반환.
+     * @return 모든 매장 정보 페이지로 반환.
      */
     Page<SelectAllStoresNotOutedResponseDto> lookupStoreLatLanPage(Pageable pageable);
 }
