@@ -105,15 +105,4 @@ public class IssueCouponService {
             throw new IssueCouponOverCountException(LIMIT_COUNT);
         }
     }
-
-    /**
-     * 쿠폰 코드로 발행된 쿠폰을 찾는 메서드.
-     *
-     * @param issueCouponCode the issue coupon code
-     * @return the issue coupon
-     */
-    public IssueCoupon selectIssueCouponByCode(UUID issueCouponCode) {
-        return issueCouponRepository.findById(issueCouponCode)
-            .orElseThrow(IssueCouponNotFoundException::new);
-    }
 }
