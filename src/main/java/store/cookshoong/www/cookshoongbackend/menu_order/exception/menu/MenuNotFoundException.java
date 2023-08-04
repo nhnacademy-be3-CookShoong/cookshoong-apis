@@ -9,7 +9,7 @@ import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException
  * @since 2023.07.13
  */
 public class MenuNotFoundException extends NotFoundException {
-    private static final String ERRORMESSAGE = "해당 이름의 메뉴가 없습니다.";
+    private static final String ERRORMESSAGE = "메뉴";
     public MenuNotFoundException() {
         super(ERRORMESSAGE);
     }

@@ -29,4 +29,9 @@ public class MenuStatus {
     public enum MenuStatusCode {
         OPEN, CLOSE, OUTED
     }
+
+    public MenuStatus(String code, String description) {
+        this.code = code;
+        this.description = description;
+    }
 }
