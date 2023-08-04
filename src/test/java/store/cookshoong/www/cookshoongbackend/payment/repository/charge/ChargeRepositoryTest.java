@@ -117,12 +117,6 @@ class ChargeRepositoryTest {
         em.persist(chargeType);
 
         charge = new Charge(chargeType, order, LocalDateTime.now(), 54000, paymentKey);
-
-
-
-        log.info("order uuid = {}", order.getCode());
-        log.info("uuid = {}", uuid);
-        log.info("charge = {}", charge.getOrder().getCode());
     }
 
     @Test
