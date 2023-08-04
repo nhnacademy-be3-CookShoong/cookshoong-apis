@@ -22,12 +22,6 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
 import store.cookshoong.www.cookshoongbackend.util.TestPersistEntity;
 
-/**
- * {설명을 작성해주세요}
- *
- * @author papel
- * @since 2023.08.03
- */
 @DataJpaTest
 @Import({TestPersistEntity.class, QueryDslConfig.class})
 class MenuRepositoryImplTest {
