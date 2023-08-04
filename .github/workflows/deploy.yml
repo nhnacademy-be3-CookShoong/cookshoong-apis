@@ -23,6 +23,7 @@ jobs:
     env:
       SECURE_KEY_MANAGER_PASSWORD: ${{ secrets.SECURE_KEY_MANAGER_PASSWORD }}
       SECURE_KEY_MANAGER_APP_KEY: ${{ secrets.SECURE_KEY_MANAGER_APP_KEY }}
+      LOG_N_CRASH_APP_KEY: ${{ secrets.LOG_N_CRASH_APP_KEY }}
 
     steps:
       - uses: actions/checkout@v3
@@ -53,7 +54,7 @@ jobs:
 
       # 이미지 생성
       - name: Build Docker Image
-        run: docker build -t jeongjewan/cookshoong-back --build-arg SECURE_KEY_MANAGER_PASSWORD=${{ secrets.SECURE_KEY_MANAGER_PASSWORD }} --build-arg SECURE_KEY_MANAGER_APP_KEY=${{ secrets.SECURE_KEY_MANAGER_APP_KEY }} .
+        run: docker build -t jeongjewan/cookshoong-back --build-arg SECURE_KEY_MANAGER_PASSWORD=${{ secrets.SECURE_KEY_MANAGER_PASSWORD }} --build-arg SECURE_KEY_MANAGER_APP_KEY=${{ secrets.SECURE_KEY_MANAGER_APP_KEY }} --build-arg LOG_N_CRASH_APP_KEY=${{ secrets.LOG_N_CRASH_APP_KEY }} .
 
       # 도커 허브 푸시
       - name: Docker Image Push
