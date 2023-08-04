@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.menu_order.entity.order;
+package store.cookshoong.www.cookshoongbackend.order.entity;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -27,12 +27,12 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order {
     @Id
-    @Column(name = "order_code", nullable = false, length = 36)
-    private UUID orderCode;
+    @Column(name = "order_code", columnDefinition = "BINARY(16)", nullable = false)
+    private UUID code;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "order_status_code", nullable = false)
-    private OrderStatus orderStatusCode;
+    private OrderStatus orderStatus;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "account_id", nullable = false)
@@ -48,4 +48,21 @@ public class Order {
     @Column(name = "memo", length = 100)
     private String memo;
 
+    /**
+     * 주문 생성자.
+     *
+     * @param code        the code
+     * @param orderStatus the order status
+     * @param account     the account
+     * @param store       the store
+     * @param memo        the memo
+     */
+    public Order(UUID code, OrderStatus orderStatus, Account account, Store store, String memo) {
+        this.code = code;
+        this.orderStatus = orderStatus;
+        this.account = account;
+        this.store = store;
+        this.orderedAt = LocalDateTime.now();
+        this.memo = memo;
+    }
 }

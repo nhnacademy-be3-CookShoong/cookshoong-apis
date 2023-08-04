@@ -55,7 +55,7 @@ class RefundTypeControllerTest {
 
         String requestBody = objectMapper.writeValueAsString(requestDto);
 
-        mockMvc.perform(post("/api/payments/refunds")
+        mockMvc.perform(post("/api/payments/refunds/refund-type")
                 .contentType(APPLICATION_JSON)
                 .content(requestBody))
             .andExpect(status().isCreated())
@@ -71,7 +71,7 @@ class RefundTypeControllerTest {
 
         String requestBody = objectMapper.writeValueAsString(requestDto);
 
-        mockMvc.perform(post("/api/payments/refunds")
+        mockMvc.perform(post("/api/payments/refunds/refund-type")
                 .contentType(APPLICATION_JSON)
                 .content(requestBody))
             .andExpect(status().isBadRequest());
@@ -85,7 +85,7 @@ class RefundTypeControllerTest {
 
         String requestBody = objectMapper.writeValueAsString(requestDto);
 
-        mockMvc.perform(post("/api/payments/refunds")
+        mockMvc.perform(post("/api/payments/refunds/refund-type")
                 .contentType(APPLICATION_JSON)
                 .content(requestBody))
             .andExpect(status().isBadRequest());
@@ -99,7 +99,7 @@ class RefundTypeControllerTest {
 
         String requestBody = objectMapper.writeValueAsString(requestDto);
 
-        mockMvc.perform(post("/api/payments/refunds")
+        mockMvc.perform(post("/api/payments/refunds/refund-type")
                 .contentType(APPLICATION_JSON)
                 .content(requestBody))
             .andExpect(status().isBadRequest());
@@ -115,7 +115,7 @@ class RefundTypeControllerTest {
 
         Long refundTypeId = 1L;
 
-        mockMvc.perform(put("/api/payments/refunds/{refundTypeId}", refundTypeId)
+        mockMvc.perform(put("/api/payments/refunds/refund-type/{refundTypeId}", refundTypeId)
                 .contentType(APPLICATION_JSON)
                 .content(requestBody))
             .andExpect(status().isOk())
@@ -132,7 +132,7 @@ class RefundTypeControllerTest {
 
         Long refundTypeId = 1L;
 
-        mockMvc.perform(put("/api/payments/refunds/{refundTypeId}", refundTypeId)
+        mockMvc.perform(put("/api/payments/refunds/refund-type/{refundTypeId}", refundTypeId)
                 .contentType(APPLICATION_JSON)
                 .content(requestBody))
             .andExpect(status().isBadRequest());
@@ -148,7 +148,7 @@ class RefundTypeControllerTest {
 
         Long refundTypeId = 1L;
 
-        mockMvc.perform(put("/api/payments/refunds/{refundTypeId}", refundTypeId)
+        mockMvc.perform(put("/api/payments/refunds/refund-type/{refundTypeId}", refundTypeId)
                 .contentType(APPLICATION_JSON)
                 .content(requestBody))
             .andExpect(status().isBadRequest());
@@ -164,7 +164,7 @@ class RefundTypeControllerTest {
 
         Long refundTypeId = 1L;
 
-        mockMvc.perform(put("/api/payments/refunds/{refundTypeId}", refundTypeId)
+        mockMvc.perform(put("/api/payments/refunds/refund-type/{refundTypeId}", refundTypeId)
                 .contentType(APPLICATION_JSON)
                 .content(requestBody))
             .andExpect(status().isBadRequest());
@@ -178,7 +178,7 @@ class RefundTypeControllerTest {
 
         when(refundTypeService.selectRefundType(refundTypeId)).thenReturn(responseDto);
 
-        mockMvc.perform(get("/api/payments/refunds/{refundTypeId}", refundTypeId))
+        mockMvc.perform(get("/api/payments/refunds/refund-type/{refundTypeId}", refundTypeId))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.name").value(responseDto.getName()));
 
@@ -193,7 +193,7 @@ class RefundTypeControllerTest {
 
         when(refundTypeService.selectRefundTypeAll()).thenReturn(responseDtoList);
 
-        mockMvc.perform(get("/api/payments/refunds"))
+        mockMvc.perform(get("/api/payments/refunds/refund-type"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].name").value(responseDto.getName()));
 
@@ -205,7 +205,7 @@ class RefundTypeControllerTest {
     void deleteRefundType() throws Exception {
         String refundTypeId = "INPERSON";
 
-        mockMvc.perform(delete("/api/payments/refunds/{refundTypeId}", refundTypeId))
+        mockMvc.perform(delete("/api/payments/refunds/refund-type/{refundTypeId}", refundTypeId))
             .andExpect(status().isNoContent());
 
         verify(refundTypeService, times(1)).removeRefundType(refundTypeId);

@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 public class MenuStatus {
     @Id
     @Column(name = "menu_status_code", nullable = false, length = 10)
-    private String menuStatusCode;
+    private String code;
 
     @Column(name = "description", nullable = false, length = 10)
     private String description;

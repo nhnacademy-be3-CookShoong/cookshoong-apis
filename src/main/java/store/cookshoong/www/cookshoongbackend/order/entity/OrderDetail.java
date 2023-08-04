@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.menu_order.entity.orderdetail;
+package store.cookshoong.www.cookshoongbackend.order.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,7 +13,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
-import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.Order;
 
 /**
  * 주문 상세 엔티티.
@@ -33,14 +32,14 @@ public class OrderDetail {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "order_code", nullable = false)
-    private Order orderCode;
+    private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "menu_id", nullable = false)
     private Menu menu;
 
     @Column(name = "count")
-    private Long count;
+    private Integer count;
 
     @Column(name = "now_name")
     private String nowName;
@@ -48,4 +47,20 @@ public class OrderDetail {
     @Column(name = "now_cost", nullable = false)
     private Integer nowCost;
 
+    /**
+     * Instantiates a new Order detail.
+     *
+     * @param order   the order
+     * @param menu    the menu
+     * @param count   the count
+     * @param nowName the now name
+     * @param nowCost the now cost
+     */
+    public OrderDetail(Order order, Menu menu, Integer count, String nowName, Integer nowCost) {
+        this.order = order;
+        this.menu = menu;
+        this.count = count;
+        this.nowName = nowName;
+        this.nowCost = nowCost;
+    }
 }

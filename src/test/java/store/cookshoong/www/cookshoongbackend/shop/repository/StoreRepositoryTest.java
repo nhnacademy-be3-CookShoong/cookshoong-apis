@@ -112,7 +112,7 @@ class StoreRepositoryTest {
         assertThat(actual.getId()).isEqualTo(storeId);
         assertThat(actual.getOpeningDate()).isEqualTo(store.getOpeningDate());
         assertThat(actual.getName()).isEqualTo(store.getName());
-        assertThat(actual.getStoreStatusCode()).isEqualTo(store.getStoreStatusCode());
+        assertThat(actual.getStoreStatus()).isEqualTo(store.getStoreStatus());
         assertThat(actual.getDescription()).isEqualTo(store.getDescription());
         assertThat(actual.getPhoneNumber()).isEqualTo(store.getPhoneNumber());
         assertThat(actual.getRepresentativeName()).isEqualTo(store.getRepresentativeName());
@@ -250,7 +250,7 @@ class StoreRepositoryTest {
         storeRepository.save(store2);
 
         StoreStatus storeStatus1 = ReflectionUtils.newInstance(StoreStatus.class);
-        ReflectionTestUtils.setField(storeStatus1, "storeStatusCode", "OUTED");
+        ReflectionTestUtils.setField(storeStatus1, "code", "OUTED");
         ReflectionTestUtils.setField(storeStatus1, "description", "VKD");
         em.persist(storeStatus1);
 

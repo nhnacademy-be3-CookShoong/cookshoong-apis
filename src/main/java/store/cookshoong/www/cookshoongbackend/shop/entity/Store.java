@@ -59,7 +59,7 @@ public class Store {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "store_status_code", nullable = false)
-    private StoreStatus storeStatusCode;
+    private StoreStatus storeStatus;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "business_license_image_id", nullable = false)
@@ -119,7 +119,7 @@ public class Store {
         this.merchant = merchant;
         this.account = account;
         this.bankTypeCode = bankTypeCode;
-        this.storeStatusCode = storeStatus;
+        this.storeStatus = storeStatus;
         this.businessLicense = businessLicense;
         this.businessLicenseNumber = businessLicenseNumber;
         this.representativeName = representativeName;
@@ -144,7 +144,6 @@ public class Store {
     /**
      * 매장 정보 수정.
      *
-     * @param merchant              the merchant
      * @param account               the account
      * @param bankTypeCode          the bank type code
      * @param storeStatus           the store status
@@ -164,7 +163,7 @@ public class Store {
                                 String description, Image storeImage, String bankAccountNumber) {
         this.account = account;
         this.bankTypeCode = bankTypeCode;
-        this.storeStatusCode = storeStatus;
+        this.storeStatus = storeStatus;
         this.businessLicenseNumber = businessLicenseNumber;
         this.representativeName = representativeName;
         this.openingDate = openingDate;
@@ -189,9 +188,9 @@ public class Store {
     /**
      * 매장의 상태코드 변경.
      *
-     * @param storeStatusCode 매장 상태 코드(OPEN, CLOSE, OUTED)
+     * @param storeStatus 매장 상태 코드(OPEN, CLOSE, OUTED)
      */
-    public void modifyStoreStatus(StoreStatus storeStatusCode) {
-        this.storeStatusCode = storeStatusCode;
+    public void modifyStoreStatus(StoreStatus storeStatus) {
+        this.storeStatus = storeStatus;
     }
 }

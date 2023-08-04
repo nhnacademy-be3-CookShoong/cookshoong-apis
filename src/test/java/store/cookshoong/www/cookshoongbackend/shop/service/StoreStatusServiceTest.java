@@ -8,14 +8,10 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
-import store.cookshoong.www.cookshoongbackend.shop.entity.StoreStatus;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStatusResponseDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.repository.stauts.StoreStatusRepository;
 
 /**
@@ -49,13 +45,13 @@ class StoreStatusServiceTest {
 
         assertEquals(3, result.size());
 
-        assertEquals("OPEN", result.get(0).getStoreStatusCode());
+        assertEquals("OPEN", result.get(0).getCode());
         assertEquals("영업중", result.get(0).getDescription());
 
-        assertEquals("CLOSE", result.get(1).getStoreStatusCode());
+        assertEquals("CLOSE", result.get(1).getCode());
         assertEquals("휴식중", result.get(1).getDescription());
 
-        assertEquals("OUTED", result.get(2).getStoreStatusCode());
+        assertEquals("OUTED", result.get(2).getCode());
         assertEquals("폐업", result.get(2).getDescription());
 
     }

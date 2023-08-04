@@ -33,7 +33,7 @@ public class CartRedisService {
     private final CartRedisRepository cartRedisRepository;
     private final CartRepository cartRepository;
     private static final String NO_MENU = "NO_KEY";
-    private static final String CART = "cartKey=";
+    public static final String CART = "cartKey=";
     private final ObjectStorageService objectStorageService;
 
     /**
@@ -106,12 +106,15 @@ public class CartRedisService {
             throw new NotFoundCartRedisKey();
         } else if (cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)) {
             cartRedisRepository.deleteCartMenu(redisKey, hashKey);
-            cart.incrementCount();
         }
 
         cart.setHashKey(cart.generateUniqueHashKey());
         cart.setMenuOptName(cart.generateMenuOptionName());
         cart.setTotalMenuPrice(cart.generateTotalMenuPrice());
+
+        if (hashKey.equals(cart.getHashKey())) {
+            cart.incrementCount();
+        }
 
         cartRedisRepository.cartMenuRedisModify(redisKey, cart.getHashKey(), cart);
     }
@@ -185,7 +188,9 @@ public class CartRedisService {
             carts.add(cartRedisDto);
 
             return carts;
-        } else if (!cartRedisRepository.existKeyInCartRedis(redisKey)) {
+        }
+
+        if (!cartRedisRepository.existKeyInCartRedis(redisKey)) {
             // DB 장바구니 데이터를 가지고 와서 Redis 장바구니에 저장.
             createAllCartFromDbToRedis(redisKey, cartRepository.lookupCartDbList(Long.valueOf(userId)));
         }
@@ -343,5 +348,18 @@ public class CartRedisService {
 
             cartRedisRepository.cartRedisSave(redisKey, cartRedisDto.getHashKey(), cartRedisDto);
         }
+    }
+
+    /**
+     * 장바구니에 담긴 메뉴들의 총 가격을 계산하는 메서드.
+     *
+     * @param cartItems the cart items
+     * @return the total price
+     */
+    public int getTotalPrice(List<CartRedisDto> cartItems) {
+        return cartItems.stream()
+            .mapToInt(cartRedisDto -> Integer.parseInt(cartRedisDto.getTotalMenuPrice()))
+            .reduce(Integer::sum)
+            .orElseThrow(NumberFormatException::new);
     }
 }
