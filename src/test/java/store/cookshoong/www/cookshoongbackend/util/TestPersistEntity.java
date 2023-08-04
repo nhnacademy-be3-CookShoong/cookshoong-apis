@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Import;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
+import store.cookshoong.www.cookshoongbackend.account.entity.OauthAccount;
+import store.cookshoong.www.cookshoongbackend.account.entity.OauthType;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponPolicy;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
@@ -44,8 +46,8 @@ public class TestPersistEntity {
         Account account = getLevelOneActiveCustomer();
         BankType bankTypeKb = testEntity.getBankTypeKb();
         StoreStatus storeStatusOpen = testEntity.getStoreStatusOpen();
-        Image businessImage = testEntity.getImage("사업자등록증.jpg",false);
-        Image storeImage = testEntity.getImage("매장사진.png",true);
+        Image businessImage = testEntity.getImage("사업자등록증.jpg", false);
+        Image storeImage = testEntity.getImage("매장사진.png", true);
         return testEntity.getStore(null, account, bankTypeKb, storeStatusOpen, businessImage, storeImage);
     }
 
@@ -54,8 +56,8 @@ public class TestPersistEntity {
         Account account = getLevelOneActiveCustomer();
         BankType bankTypeKb = testEntity.getBankTypeKb();
         StoreStatus storeStatusOpen = testEntity.getStoreStatusOpen();
-        Image businessImage = testEntity.getImage("사업자등록증.png",false);
-        Image storeImage = testEntity.getImage("매장시진.jpg",true);
+        Image businessImage = testEntity.getImage("사업자등록증.png", false);
+        Image storeImage = testEntity.getImage("매장시진.jpg", true);
         return testEntity.getStore(merchant, account, bankTypeKb, storeStatusOpen, businessImage, storeImage);
     }
 
@@ -66,10 +68,25 @@ public class TestPersistEntity {
         CouponPolicy couponPolicy = testEntity.getCouponPolicy(couponTypeCash, couponUsageStore);
         return testEntity.getIssueCoupon(couponPolicy);
     }
-    public Order createTestOrder(){
+
+    public Order createTestOrder() {
         Store store = getOpenStore();
         Account account = getLevelOneActiveCustomer();
         OrderStatus orderStatus = testEntity.getOrderStatus("CANCELED", "주문취소");
         return testEntity.getOrder(account, store, orderStatus);
+    }
+
+    public OauthAccount getPaycoAccount(String accountCode) {
+        Account account = getLevelOneActiveCustomer();
+        OauthType oauthType = testEntity.getOauthTypePayco();
+        return testEntity.getOauthAccount(account, oauthType, accountCode);
+    }
+
+    public OauthType getOauthType(String provider) {
+        return testEntity.getOauthType(provider);
+    }
+
+    public OauthType getPaycoType() {
+        return testEntity.getOauthTypePayco();
     }
 }

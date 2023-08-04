@@ -7,9 +7,12 @@ import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
+import store.cookshoong.www.cookshoongbackend.account.entity.OauthAccount;
+import store.cookshoong.www.cookshoongbackend.account.entity.OauthType;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.account.exception.DuplicatedUserException;
 import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
+import store.cookshoong.www.cookshoongbackend.account.model.request.OAuth2SignUpRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountAuthResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountInfoResponseDto;
@@ -21,6 +24,8 @@ import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountStat
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountStatusRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.AuthorityRepository;
+import store.cookshoong.www.cookshoongbackend.account.repository.OauthAccountRepository;
+import store.cookshoong.www.cookshoongbackend.account.repository.OauthTypeRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.RankRepository;
 
 /**
@@ -37,6 +42,8 @@ public class AccountService {
     private final RankRepository rankRepository;
     private final AccountStatusRepository accountStatusRepository;
     private final AuthorityRepository authorityRepository;
+    private final OauthAccountRepository oauthAccountRepository;
+    private final OauthTypeRepository oauthTypeRepository;
 
     /**
      * 올바른 데이터가 들어왔는지 확인하고 회원을 DB에 저장 시킨다.
@@ -124,5 +131,19 @@ public class AccountService {
     public SelectAccountInfoResponseDto selectAccountInfoForOAuth(String provider, String accountCode) {
         return accountRepository.lookupAccountInfoForOAuth(provider, accountCode)
             .orElseThrow(UserNotFoundException::new);
+    }
+
+    /**
+     * 일반 회원과 연동된 OAuth 유저를 생성한다.
+     *
+     * @param accountId   the account id
+     * @param accountCode the account code
+     * @param provider    the provider
+     */
+    @Transactional
+    public void createOAuth2Account(Long accountId, String accountCode, String provider) {
+        Account account = accountRepository.getReferenceById(accountId);
+        OauthType oauthType = oauthTypeRepository.getReferenceByProvider(provider);
+        oauthAccountRepository.save(new OauthAccount(account, oauthType, accountCode));
     }
 }

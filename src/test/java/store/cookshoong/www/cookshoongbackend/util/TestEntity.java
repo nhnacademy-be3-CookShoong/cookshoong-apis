@@ -13,6 +13,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
+import store.cookshoong.www.cookshoongbackend.account.entity.OauthAccount;
+import store.cookshoong.www.cookshoongbackend.account.entity.OauthType;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponLog;
@@ -66,6 +68,20 @@ public class TestEntity {
         return new Rank("LEVEL_1", "프렌드");
     }
 
+    public OauthType getOauthTypePayco() {
+        return getOauthType("payco");
+    }
+
+    public OauthType getOauthType(String provider) {
+        OauthType oauthType = createUsingDeclared(OauthType.class);
+        ReflectionTestUtils.setField(oauthType, "provider", provider);
+        return oauthType;
+    }
+
+    public OauthAccount getOauthAccount(Account account, OauthType oauthType, String accountCode) {
+        return new OauthAccount(account, oauthType, accountCode);
+    }
+
     public Account getAccount(AccountStatus accountStatus, Authority authority, Rank rank) {
         return new Account(accountStatus, authority, rank, "eora21", "pwd", "김주호",
             "말비묵", "test@test.com", LocalDate.of(1996, 4, 1),
@@ -91,14 +107,15 @@ public class TestEntity {
     public Store getStore(Merchant merchant, Account account, BankType bankType,
                           StoreStatus storeStatus, Image businessImage, Image storeImage) {
         return new Store(merchant, account, bankType,
-            storeStatus,businessImage, "123456", "김주호",
+            storeStatus, businessImage, "123456", "김주호",
             LocalDate.of(2020, 2, 20), "주호타코", "01012345678", BigDecimal.ONE,
             null, storeImage, "123456");
     }
 
-    public Image getImage(String name, boolean isPublic){
-        return createImage(name,isPublic);
+    public Image getImage(String name, boolean isPublic) {
+        return createImage(name, isPublic);
     }
+
     public StoreCategory getStoreCategory() {
         return new StoreCategory("CHK", "치킨");
     }
@@ -191,10 +208,10 @@ public class TestEntity {
         return orderStatus;
     }
 
-    public Image createImage(String name, boolean isPublic){
+    public Image createImage(String name, boolean isPublic) {
         Image image = createUsingDeclared(Image.class);
-        ReflectionTestUtils.setField(image,"originName", name);
-        ReflectionTestUtils.setField(image, "savedName", UUID.randomUUID()+".jpg");
+        ReflectionTestUtils.setField(image, "originName", name);
+        ReflectionTestUtils.setField(image, "savedName", UUID.randomUUID() + ".jpg");
         ReflectionTestUtils.setField(image, "isPublic", isPublic);
         return image;
     }
