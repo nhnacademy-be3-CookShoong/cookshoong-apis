@@ -26,4 +26,10 @@ public class OrderStatus {
     @Column(name = "description", nullable = false, length = 40)
     private String description;
 
+    /**
+     * 저장된 statusCode.
+     */
+    public enum StatusCode {
+        CREATE, PAY, PAY_FAIL, FOOD_OUT, UNDELEV, ORD_FLOOD, DELIV_FAIL, MPAY_FAIL, MISDELEV, FOOD_ISSUE, COMPLETE
+    }
 }
