@@ -22,7 +22,6 @@ import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
-import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
 import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
@@ -112,7 +111,7 @@ class StoreRepositoryTest {
         assertThat(actual.getId()).isEqualTo(storeId);
         assertThat(actual.getOpeningDate()).isEqualTo(store.getOpeningDate());
         assertThat(actual.getName()).isEqualTo(store.getName());
-        assertThat(actual.getStoreStatusCode()).isEqualTo(store.getStoreStatusCode());
+        assertThat(actual.getStoreStatus()).isEqualTo(store.getStoreStatus());
         assertThat(actual.getDescription()).isEqualTo(store.getDescription());
         assertThat(actual.getPhoneNumber()).isEqualTo(store.getPhoneNumber());
         assertThat(actual.getRepresentativeName()).isEqualTo(store.getRepresentativeName());
@@ -250,7 +249,7 @@ class StoreRepositoryTest {
         storeRepository.save(store2);
 
         StoreStatus storeStatus1 = ReflectionUtils.newInstance(StoreStatus.class);
-        ReflectionTestUtils.setField(storeStatus1, "storeStatusCode", "OUTED");
+        ReflectionTestUtils.setField(storeStatus1, "code", "OUTED");
         ReflectionTestUtils.setField(storeStatus1, "description", "VKD");
         em.persist(storeStatus1);
 
