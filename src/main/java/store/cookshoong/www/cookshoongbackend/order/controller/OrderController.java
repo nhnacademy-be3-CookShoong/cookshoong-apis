@@ -14,11 +14,10 @@ import store.cookshoong.www.cookshoongbackend.address.model.response.AddressResp
 import store.cookshoong.www.cookshoongbackend.address.service.AddressService;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartRedisDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.service.CartRedisService;
-import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
-import store.cookshoong.www.cookshoongbackend.coupon.service.IssueCouponService;
 import store.cookshoong.www.cookshoongbackend.coupon.service.ProvideCouponService;
 import store.cookshoong.www.cookshoongbackend.order.exception.OutOfDistanceException;
 import store.cookshoong.www.cookshoongbackend.order.model.request.CreateOrderRequestDto;
+import store.cookshoong.www.cookshoongbackend.order.model.response.CreateOrderResponseDto;
 import store.cookshoong.www.cookshoongbackend.order.service.OrderService;
 import store.cookshoong.www.cookshoongbackend.shop.service.StoreService;
 
@@ -45,33 +44,35 @@ public class OrderController {
      * @return the response entity
      */
     @PostMapping
-    public ResponseEntity<Void> postOrder(@RequestBody CreateOrderRequestDto createOrderRequestDto) {
+    public ResponseEntity<CreateOrderResponseDto> postOrder(@RequestBody CreateOrderRequestDto createOrderRequestDto) {
         validOrderDistance(createOrderRequestDto);
 
-        List<CartRedisDto> cartItems =
-            cartRedisService.selectCartMenuAll(CartRedisService.CART + createOrderRequestDto.getAccountId());
+        List<CartRedisDto> cartItems = cartRedisService.selectCartMenuAll(
+                CartRedisService.CART + createOrderRequestDto.getAccountId());
 
-        validIssueCouponInOrder(createOrderRequestDto, cartItems);
+        int totalPrice = cartRedisService.getTotalPrice(cartItems);
+
+        validIssueCouponInOrder(createOrderRequestDto, totalPrice);
 
         orderService.createOrder(createOrderRequestDto, cartItems);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-            .build();
+                .body(new CreateOrderResponseDto(totalPrice));
     }
 
     private void validOrderDistance(CreateOrderRequestDto createOrderRequestDto) {
         AddressResponseDto addressResponseDto =
-            addressService.selectAccountAddressRenewalAt(createOrderRequestDto.getAccountId());
+                addressService.selectAccountAddressRenewalAt(createOrderRequestDto.getAccountId());
 
         boolean inStandardDistance =
-            storeService.isInStandardDistance(addressResponseDto, createOrderRequestDto.getStoreId());
+                storeService.isInStandardDistance(addressResponseDto, createOrderRequestDto.getStoreId());
 
         if (!inStandardDistance) {
             throw new OutOfDistanceException();
         }
     }
 
-    private void validIssueCouponInOrder(CreateOrderRequestDto createOrderRequestDto, List<CartRedisDto> cartItems) {
+    private void validIssueCouponInOrder(CreateOrderRequestDto createOrderRequestDto, int totalPrice) {
         UUID issueCouponCode = createOrderRequestDto.getIssueCouponCode();
 
         if (Objects.isNull(issueCouponCode)) {
@@ -79,10 +80,7 @@ public class OrderController {
         }
 
         provideCouponService.validProvideCoupon(issueCouponCode, createOrderRequestDto.getAccountId());
-
-        int totalPrice = cartRedisService.getTotalPrice(cartItems);
         provideCouponService.validMinimumOrderPrice(issueCouponCode, totalPrice);
-
         provideCouponService.validExpirationDateTime(issueCouponCode);
     }
 }
