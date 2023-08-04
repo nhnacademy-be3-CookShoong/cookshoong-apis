@@ -9,7 +9,7 @@ import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException
  * @since 2023.07.13
  */
 public class OptionNotFoundException extends NotFoundException {
-    private static final String ERRORMESSAGE = "해당 이름의 옵션이 없습니다.";
+    private static final String ERRORMESSAGE = "옵션";
     public OptionNotFoundException() {
         super(ERRORMESSAGE);
     }
