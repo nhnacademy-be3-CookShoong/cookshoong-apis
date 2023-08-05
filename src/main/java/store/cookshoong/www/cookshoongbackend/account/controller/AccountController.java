@@ -95,6 +95,14 @@ public class AccountController {
             .build();
     }
 
+    @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
+    @GetMapping("/oauth2")
+    public ResponseEntity<SelectAccountInfoResponseDto> getAccountInfoForOAuth(@RequestParam String provider,
+                                                                               @RequestParam String accountCode) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(accountService.selectAccountInfoForOAuth(provider, accountCode.toLowerCase()));
+    }
+
     /**
      * accountId 기준으로 회원의 모든 정보(password 제외)를 조회한다.
      *
@@ -153,13 +161,5 @@ public class AccountController {
         UpdateAccountStatusResponseDto response = accountService.updateAccountStatus(accountId, uppercaseCode);
         return ResponseEntity.status(HttpStatus.OK)
             .body(response);
-    }
-
-    @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
-    @GetMapping("oauth")
-    public ResponseEntity<SelectAccountInfoResponseDto> getAccountInfoForOAuth(@RequestParam String provider,
-                                                                               @RequestParam String accountCode) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(accountService.selectAccountInfoForOAuth(provider, accountCode.toLowerCase()));
     }
 }
