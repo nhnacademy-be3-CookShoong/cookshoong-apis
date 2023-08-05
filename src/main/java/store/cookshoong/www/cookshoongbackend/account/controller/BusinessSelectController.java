@@ -53,17 +53,6 @@ public class BusinessSelectController {
             .ok(merchantService.selectAllMerchantsForUser());
     }
 
-    /**
-     * 사업자 등록 : 카테고리 리스트 조회.
-     *
-     * @return 매장 키테고리 리스트
-     */
-    @GetMapping("/categories")
-    public ResponseEntity<List<SelectAllCategoriesResponseDto>> getCategoriesForUser() {
-        return ResponseEntity
-            .ok(storeCategoryService.selectAllCategoriesForUser());
-    }
-
     @GetMapping("/store-status")
     public ResponseEntity<List<SelectAllStatusResponseDto>> getStoreStatusForUser() {
         return ResponseEntity

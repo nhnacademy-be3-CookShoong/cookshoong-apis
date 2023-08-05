@@ -141,7 +141,7 @@ public class StoreService {
      * @param storeImage         the store image
      * @throws IOException the io exception
      */
-    public void createStore(Long accountId, CreateStoreRequestDto registerRequestDto,
+    public Long createStore(Long accountId, CreateStoreRequestDto registerRequestDto,
                             MultipartFile businessImage, MultipartFile storeImage) throws IOException {
         if (storeRepository.existsStoreByBusinessLicenseNumber(registerRequestDto.getBusinessLicenseNumber())) {
             throw new DuplicatedBusinessLicenseException(registerRequestDto.getBusinessLicenseNumber());
@@ -174,7 +174,7 @@ public class StoreService {
             registerRequestDto.getLatitude(), registerRequestDto.getLongitude());
         store.modifyAddress(address);
 
-        storeRepository.save(store);
+        return storeRepository.save(store).getId();
     }
 
     /**

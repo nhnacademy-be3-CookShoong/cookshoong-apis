@@ -199,6 +199,8 @@ class StoreServiceTest {
         StoreStatus storeStatus = te.getStoreStatusClose();
         StoreCategory storeCategory = te.getStoreCategory();
         CreateStoreRequestDto createStoreRequestDto = te.getCreateStoreRequestDto(merchant, bankType);
+        Store store = tpe.getOpenStoreByOneAccount(account);
+        ReflectionTestUtils.setField(store, "id", 1L);
         MultipartFile businessImage = new MockMultipartFile(UUID.randomUUID() + ".jpg",
             "business_image.jpg",
             "image/png",
@@ -218,9 +220,10 @@ class StoreServiceTest {
         when(bankTypeRepository.findById(createStoreRequestDto.getBankCode())).thenReturn(Optional.of(bankType));
         when(storeStatusRepository.getReferenceById(StoreStatus.StoreStatusCode.CLOSE.name())).thenReturn(storeStatus);
         when(storeCategoryRepository.findById(createStoreRequestDto.getStoreCategories().get(0))).thenReturn(Optional.of(storeCategory));
+        when(storeRepository.save(any(Store.class))).thenReturn(store);
 
 
-        storeService.createStore(account.getId(), createStoreRequestDto, businessImage, storeImage);
+        Long storeId = storeService.createStore(account.getId(), createStoreRequestDto, businessImage, storeImage);
 
         verify(storeRepository, times(1)).existsStoreByBusinessLicenseNumber(createStoreRequestDto.getBusinessLicenseNumber());
         verify(merchantRepository, times(1)).findById(createStoreRequestDto.getMerchantId());
@@ -231,6 +234,7 @@ class StoreServiceTest {
         verify(storeCategoryRepository, times(1)).findById(anyString());
         verify(storeRepository, times(1)).save(any(Store.class));
 
+        assertThat(storeId).isEqualTo(store.getId());
     }
 
     @Test
