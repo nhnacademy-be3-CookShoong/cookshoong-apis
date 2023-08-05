@@ -100,7 +100,7 @@ public class AccountController {
     public ResponseEntity<SelectAccountInfoResponseDto> getAccountInfoForOAuth(@RequestParam String provider,
                                                                                @RequestParam String accountCode) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(accountService.selectAccountInfoForOAuth(provider, accountCode.toLowerCase()));
+            .body(accountService.selectAccountInfoForOAuth(provider.toLowerCase(), accountCode));
     }
 
     /**
