@@ -1,7 +1,12 @@
 package store.cookshoong.www.cookshoongbackend.account.controller;
 
+import com.ctc.wstx.shaded.msv_core.util.Uri;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -82,15 +87,17 @@ public class BusinessAccountController {
                                           @RequestPart("requestDto") @Valid CreateStoreRequestDto registerRequestDto,
                                           BindingResult bindingResult,
                                           @RequestPart("businessLicense") MultipartFile businessLicense,
-                                          @RequestPart("storeImage") MultipartFile image) throws IOException {
+                                          @RequestPart("storeImage") MultipartFile image) throws IOException, URISyntaxException {
 
         if (bindingResult.hasErrors()) {
             throw new StoreValidException(bindingResult);
         }
-        //TODO 9. status -> create로 바꾸고 안에 url 작성해야함. (추후)
-        storeService.createStore(accountId, registerRequestDto, businessLicense, image);
+
+        Long storeId = storeService.createStore(accountId, registerRequestDto, businessLicense, image);
+        URI uri = new URI("/stores/"+storeId+"/store-info-manager");
+
         return ResponseEntity
-            .status(HttpStatus.CREATED)
+            .created(uri)
             .build();
     }
 
