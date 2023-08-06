@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.payment.controller;
 
+import java.util.UUID;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import store.cookshoong.www.cookshoongbackend.payment.exception.ChargeValidationException;
 import store.cookshoong.www.cookshoongbackend.payment.exception.RefundValidationException;
@@ -58,7 +60,7 @@ public class PaymentController {
      * @return              상태코드 200(Ok)와 함께 응답을 반환 & paymentKey 를 반환
      */
     @GetMapping("/{orderCode}/select-paymentKey")
-    public ResponseEntity<TossPaymentKeyResponseDto> getTossPaymentKey(@PathVariable String orderCode) {
+    public ResponseEntity<TossPaymentKeyResponseDto> getTossPaymentKey(@PathVariable UUID orderCode) {
 
         TossPaymentKeyResponseDto keyResponseDto = paymentService.selectTossPaymentKey(orderCode);
 
@@ -83,5 +85,21 @@ public class PaymentController {
         paymentService.createRefund(createRefundDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    /**
+     * 해당 결제에 대해 환불금액이 결제금액보다 넘어가는지 검증하는 메서드.
+     *
+     * @param chargeCode        결제 코드
+     * @param refundAmount      환불 금액
+     * @return                  상태코드 200(Ok)와 함께 응답을 반환 & 환불금액이 결제 금액을 넘으면 true 반환 그렇지 않으면 false 반환
+     */
+    @GetMapping("/charges/{chargeCode}/refunds/verify")
+    public ResponseEntity<Boolean> getIsRefundAmountExceedsChargedAmount(@PathVariable UUID chargeCode,
+                                                                         @RequestParam Integer refundAmount) {
+
+        Boolean isRefundAmount = paymentService.isRefundAmountExceedsChargedAmount(refundAmount, chargeCode);
+
+        return ResponseEntity.ok(isRefundAmount);
     }
 }
