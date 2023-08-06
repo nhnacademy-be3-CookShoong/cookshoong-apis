@@ -66,7 +66,7 @@ public class Menu {
     @Column(name = "cooking_time", nullable = false)
     private Integer cookingTime;
 
-    @Column(name = "earning_rate", precision = 4, scale = 1)
+    @Column(name = "earning_rate", precision = 2, scale = 1)
     private BigDecimal earningRate;
 
     @OneToMany(mappedBy = "menu", cascade = CascadeType.PERSIST)

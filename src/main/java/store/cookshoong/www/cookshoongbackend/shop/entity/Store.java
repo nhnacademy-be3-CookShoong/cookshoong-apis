@@ -20,6 +20,7 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
@@ -82,7 +83,8 @@ public class Store {
     @Column(name = "phone_number", nullable = false, length = 12)
     private String phoneNumber;
 
-    @Column(name = "default_earning_rate", nullable = false, precision = 4, scale = 1)
+    @Column(name = "default_earning_rate", nullable = false, precision = 2, scale = 1)
+    @ColumnDefault("0")
     private BigDecimal defaultEarningRate;
 
     @Lob
@@ -94,6 +96,9 @@ public class Store {
 
     @Column(name = "bank_account_number", nullable = false, length = 20)
     private String bankAccountNumber;
+    @Column(name = "minimum_order_price", nullable = false)
+    @ColumnDefault("0")
+    private Integer minimumOrderPrice;
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.PERSIST)
     private final Set<StoresHasCategory> storesHasCategories = new HashSet<>();
@@ -122,6 +127,7 @@ public class Store {
         this.name = createStoreRequestDto.getStoreName();
         this.phoneNumber = createStoreRequestDto.getPhoneNumber();
         this.defaultEarningRate = createStoreRequestDto.getEarningRate();
+        this.minimumOrderPrice = createStoreRequestDto.getMinimumOrderPrice();
         this.description = createStoreRequestDto.getDescription();
         this.storeImage = storeImage;
         this.bankAccountNumber = createStoreRequestDto.getBankAccount();

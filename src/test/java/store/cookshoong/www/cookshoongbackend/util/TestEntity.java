@@ -178,6 +178,7 @@ public class TestEntity {
         ReflectionTestUtils.setField(createStoreRequestDto, "phoneNumber", "01012341234");
         ReflectionTestUtils.setField(createStoreRequestDto, "description", "타코집에 많이 와주세요");
         ReflectionTestUtils.setField(createStoreRequestDto, "earningRate", BigDecimal.ONE);
+        ReflectionTestUtils.setField(createStoreRequestDto, "minimumOrderPrice", 0);
         ReflectionTestUtils.setField(createStoreRequestDto, "storeCategories", List.of("NIG"));
         ReflectionTestUtils.setField(createStoreRequestDto, "bankCode", bankType.getBankTypeCode());
         ReflectionTestUtils.setField(createStoreRequestDto, "bankAccount", "123456");
