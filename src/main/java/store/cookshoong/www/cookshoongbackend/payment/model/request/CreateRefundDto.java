@@ -8,23 +8,21 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 결제에 대해 알아야할 정보.
+ * 환불에 대해 알아야할 정보.
  *
  * @author jeongjewan
  * @since 2023.08.03
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CreatePaymentDto {
+public class CreateRefundDto {
 
     @NotNull
-    private UUID orderId;
+    private UUID chargeCode;
     @NotBlank
-    private String paymentType;
-    @NotBlank
-    private String chargedAt;
+    private String refundAt;
     @NotNull
-    private Integer chargedAmount;
+    private Integer refundAmount;
     @NotBlank
-    private String paymentKey;
+    private String refundType;
 }
