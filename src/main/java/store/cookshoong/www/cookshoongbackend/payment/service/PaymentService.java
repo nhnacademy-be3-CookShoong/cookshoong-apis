@@ -49,8 +49,6 @@ public class PaymentService {
      */
     public void createPayment(CreatePaymentDto createPaymentDto) {
 
-        // orderRepository 에서 CreatePaymentDto 결제 성공한 orderId 를 가지고 조회한 후 Payment 저장.
-        log.info("orderCode: {}", createPaymentDto.getOrderId());
         Order order =
             orderRepository.findById(createPaymentDto.getOrderId()).orElseThrow(OrderNotFoundException::new);
         ChargeType chargeType =
@@ -92,9 +90,24 @@ public class PaymentService {
      * @return              paymentKey 반환
      */
     @Transactional(readOnly = true)
-    public TossPaymentKeyResponseDto selectTossPaymentKey(String orderCode) {
+    public TossPaymentKeyResponseDto selectTossPaymentKey(UUID orderCode) {
 
-        return chargeRepository.lookupFindByPaymentKey(UUID.fromString(orderCode));
+        return chargeRepository.lookupFindByPaymentKey(orderCode);
+    }
+
+    /**
+     * 환불 금액이 결제 금액 보다 넘어가는지 검증하는 메서드.
+     *
+     * @param refundAmount      현재 환불되는 금액
+     * @param chargeCode        이전 결제된 금액
+     * @return                  환불 금액이 결제 금액을 넘으면 true, 환불 금액이 결제 금애보다 작으면 false
+     */
+    public boolean isRefundAmountExceedsChargedAmount(Integer refundAmount, UUID chargeCode) {
+
+        Integer chargedAmount = chargeRepository.findChargedAmountByChargeCode(chargeCode);
+        Integer refundedTotalAmount = refundRepository.findRefundTotalAmount(chargeCode);
+
+        return refundAmount + refundedTotalAmount > chargedAmount;
     }
 
     /**
