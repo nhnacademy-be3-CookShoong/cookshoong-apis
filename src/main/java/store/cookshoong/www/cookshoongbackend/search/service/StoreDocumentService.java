@@ -11,6 +11,7 @@ import store.cookshoong.www.cookshoongbackend.search.model.StoreDocument;
 import store.cookshoong.www.cookshoongbackend.search.model.StoreDocumentRequestAllDto;
 import store.cookshoong.www.cookshoongbackend.search.model.StoreDocumentResponseDto;
 import store.cookshoong.www.cookshoongbackend.search.repository.StoreSearchRepository;
+import store.cookshoong.www.cookshoongbackend.shop.repository.category.StoreCategoryRepository;
 
 /**
  * 매장 도큐먼트 서비스.
@@ -23,6 +24,7 @@ import store.cookshoong.www.cookshoongbackend.search.repository.StoreSearchRepos
 @Service
 public class StoreDocumentService {
     private final StoreSearchRepository storeSearchRepository;
+    private final StoreCategoryRepository storesCategoryRepository;
 
     @Transactional
     public void saveAll(StoreDocumentRequestAllDto storeDocumentRequestAllDto) {

@@ -10,9 +10,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
+import store.cookshoong.www.cookshoongbackend.file.service.ObjectStorageService;
 import store.cookshoong.www.cookshoongbackend.search.model.StoreDocumentRequestAllDto;
 import store.cookshoong.www.cookshoongbackend.search.model.StoreDocumentResponseDto;
 import store.cookshoong.www.cookshoongbackend.search.service.StoreDocumentService;
+import store.cookshoong.www.cookshoongbackend.shop.service.StoreCategoryService;
 
 /**
  * 매장 도큐먼트 컨트롤러.
@@ -25,6 +28,8 @@ import store.cookshoong.www.cookshoongbackend.search.service.StoreDocumentServic
 @RestController
 public class StoreDocumentController {
     private final StoreDocumentService storeDocumentService;
+    private final StoreCategoryService storeCategoryService;
+    private final ObjectStorageService objectStorageService;
 
     @PutMapping("/store/keyword")
     public void saveByKeyword(@RequestBody StoreDocumentRequestAllDto storeDocumentRequestAllDto) {
@@ -36,6 +41,18 @@ public class StoreDocumentController {
         @RequestParam("keyword") String keywordText, Pageable pageable) {
         Page<StoreDocumentResponseDto> storeResponses
             = storeDocumentService.searchByKeywordText(keywordText, pageable);
+
+        storeResponses.forEach(
+            storeDocumentResponseDto -> storeDocumentResponseDto.setSaved_name(
+                objectStorageService.getFullPath(FileDomain.STORE_IMAGE.getVariable(), storeDocumentResponseDto.getSaved_name()))
+        );
+
+        storeResponses.forEach(
+            storeDocumentResponseDto -> storeDocumentResponseDto.setCategories(
+                storeCategoryService.selectCategoriesByStoreId(storeDocumentResponseDto.getId())
+            )
+        );
+
         return ResponseEntity.ok(storeResponses);
     }
 }

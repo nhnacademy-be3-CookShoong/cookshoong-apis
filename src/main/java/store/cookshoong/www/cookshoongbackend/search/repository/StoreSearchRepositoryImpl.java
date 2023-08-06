@@ -31,7 +31,6 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepositoryCustom {
         Criteria criteria = Criteria.where("keywordText").matches(keywordText);
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         SearchHits<StoreDocument> searchHits = elasticsearchOperations.search(query, StoreDocument.class);
-
         List<StoreDocument> storeDocuments = searchHits.get().map(SearchHit::getContent).collect(Collectors.toList());
         return new PageImpl<>(storeDocuments, pageable, searchHits.getTotalHits());
     }
