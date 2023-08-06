@@ -3,8 +3,6 @@ package store.cookshoong.www.cookshoongbackend.payment.repository.charge;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -23,12 +21,11 @@ import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
-import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
-import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.MenuStatus;
 import store.cookshoong.www.cookshoongbackend.order.entity.Order;
 import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus;
 import store.cookshoong.www.cookshoongbackend.payment.entity.Charge;
 import store.cookshoong.www.cookshoongbackend.payment.entity.ChargeType;
+import store.cookshoong.www.cookshoongbackend.payment.model.response.TossPaymentKeyResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
@@ -63,9 +60,6 @@ class ChargeRepositoryTest {
     Merchant merchant;
     Image businessImage;
     Image storeImage;
-    Image menuImage;
-    MenuStatus menuStatus;
-    Menu menu;
     Order order;
     Charge charge;
     String paymentKey = "toss";
@@ -137,8 +131,20 @@ class ChargeRepositoryTest {
 
         String expectedPaymentKey = paymentKey; // Set the expected paymentKey here
 
-        String actualPaymentKey = chargeRepository.lookupFindByPaymentKey(order.getCode());
+        TossPaymentKeyResponseDto actualPaymentKey = chargeRepository.lookupFindByPaymentKey(order.getCode());
 
-        assertEquals(expectedPaymentKey, actualPaymentKey);
+        assertEquals(expectedPaymentKey, actualPaymentKey.getPaymentKey());
+    }
+
+    @Test
+    @DisplayName("해당 결제에 대한 결제금액을 가져오기")
+    void findChargedAmountByChargeCode() {
+        actual = chargeRepository.save(charge);
+
+        Integer chargedAmount = chargeRepository.findChargedAmountByChargeCode(actual.getCode());
+
+        log.info("CHARGEDAMOUNT: {}", chargedAmount);
+
+        assertEquals(actual.getChargedAmount(), chargedAmount);
     }
 }
