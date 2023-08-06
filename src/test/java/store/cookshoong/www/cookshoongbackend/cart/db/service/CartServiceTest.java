@@ -126,20 +126,49 @@ class CartServiceTest {
     @Test
     @DisplayName("DB 장바구니에 저장하기 - DB 에 회원 장바구니 존재시 삭제 후 저장")
     void createCartDb_delete() {
+        accountId = "1";
+        cartRedisDtoList = new ArrayList<>();
 
-        Long accountId = 1L;
-        UUID cartId = UUID.randomUUID();
+        CartOptionDto cartOptionDto = ReflectionUtils.newInstance(CartOptionDto.class);
+        ReflectionTestUtils.setField(cartOptionDto, "optionId", 1L);
+        ReflectionTestUtils.setField(cartOptionDto, "optionName", "SSAM");
+        ReflectionTestUtils.setField(cartOptionDto, "optionPrice", 1000);
+        List<CartOptionDto> cartOptionDtoList = new ArrayList<>();
+        cartOptionDtoList.add(cartOptionDto);
 
-        when(cartRepository.hasCartByAccountId(accountId)).thenReturn(true);
-        when(cartRepository.findCartId(accountId)).thenReturn(cartId);
+        CartMenuDto cartMenuDto = ReflectionUtils.newInstance(CartMenuDto.class);
+        ReflectionTestUtils.setField(cartMenuDto, "menuId", 1L);
+        ReflectionTestUtils.setField(cartMenuDto, "menuName", "불난닭?");
+        ReflectionTestUtils.setField(cartMenuDto, "menuImage", "menu_1.jpg");
+        ReflectionTestUtils.setField(cartMenuDto, "menuPrice", 19000);
 
-        List<CartRedisDto> cartRedisList = new ArrayList<>();
+        CartRedisDto cartRedisDto = ReflectionUtils.newInstance(CartRedisDto.class);
+        ReflectionTestUtils.setField(cartRedisDto, "accountId", 1L);
+        ReflectionTestUtils.setField(cartRedisDto, "storeId", 1L);
+        ReflectionTestUtils.setField(cartRedisDto, "storeName", "어반");
+        ReflectionTestUtils.setField(cartRedisDto, "menu", cartMenuDto);
+        ReflectionTestUtils.setField(cartRedisDto, "options", cartOptionDtoList);
+        ReflectionTestUtils.setField(cartRedisDto, "createTimeMillis", 1L);
+        ReflectionTestUtils.setField(cartRedisDto, "count", 1);
 
-        assertDoesNotThrow(() -> cartService.createCartDb(String.valueOf(accountId), cartRedisList));
+        cartRedisDtoList.add(cartRedisDto);
 
-        verify(cartRepository).hasCartByAccountId(accountId);
-        verify(cartRepository).findCartId(accountId);
-        verify(cartRepository).deleteById(cartId);
+        Account account = ReflectionUtils.newInstance(Account.class);
+        when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
+        Store store = ReflectionUtils.newInstance(Store.class);
+        when(storeRepository.findById(1L)).thenReturn(Optional.of(store));
+        Menu menu = ReflectionUtils.newInstance(Menu.class);
+        when(menuRepository.findById(1L)).thenReturn(Optional.of(menu));
+        Option option = ReflectionUtils.newInstance(Option.class);
+        when(optionRepository.findById(1L)).thenReturn(Optional.of(option));
+
+        when(cartRepository.hasCartByAccountId(1L)).thenReturn(true);
+
+        assertDoesNotThrow(() -> cartService.createCartDb(accountId, cartRedisDtoList));
+
+        verify(cartRepository).save(any(Cart.class));
+        verify(cartDetailRepository).save(any(CartDetail.class));
+        verify(cartDetailMenuOptionRepository).save(any(CartDetailMenuOption.class));
     }
 
     @Test
