@@ -112,8 +112,6 @@ class CartServiceTest {
         Option option = ReflectionUtils.newInstance(Option.class);
         when(optionRepository.findById(1L)).thenReturn(Optional.of(option));
 
-        when(cartRepository.hasCartByAccountId(1L)).thenReturn(false);
-
         assertDoesNotThrow(() -> cartService.createCartDb(accountId, cartRedisDtoList));
 
         verify(cartRepository).save(any(Cart.class));
@@ -161,8 +159,6 @@ class CartServiceTest {
         when(menuRepository.findById(1L)).thenReturn(Optional.of(menu));
         Option option = ReflectionUtils.newInstance(Option.class);
         when(optionRepository.findById(1L)).thenReturn(Optional.of(option));
-
-        when(cartRepository.hasCartByAccountId(1L)).thenReturn(true);
 
         assertDoesNotThrow(() -> cartService.createCartDb(accountId, cartRedisDtoList));
 
