@@ -53,7 +53,7 @@ public class CartRedisService {
 
         if (cartRedisRepository.existMenuInCartRedis(redisKey, NO_MENU)) {
             cartRedisRepository.deleteCartMenu(redisKey, NO_MENU);
-        } else if (!cartRedis.isEmpty()) {
+        } else if (cartRedis != null && !cartRedis.isEmpty()) {
             CartRedisDto cartValue = (CartRedisDto) cartRedis.get(0);
             storeId = cartValue.getStoreId();
 
@@ -180,20 +180,24 @@ public class CartRedisService {
      */
     public List<CartRedisDto> selectCartMenuAll(String redisKey) {
 
+
         List<CartRedisDto> carts = new ArrayList<>();
         String userId = redisKey.replaceAll(CART, "");
 
-        if (cartRedisRepository.existMenuInCartRedis(redisKey, NO_MENU)) {
-            CartRedisDto cartRedisDto = (CartRedisDto) cartRedisRepository.findByCartMenu(redisKey, NO_MENU);
-            carts.add(cartRedisDto);
-
-            return carts;
-        }
 
         if (!cartRedisRepository.existKeyInCartRedis(redisKey)) {
-            // DB 장바구니 데이터를 가지고 와서 Redis 장바구니에 저장.
-            createAllCartFromDbToRedis(redisKey, cartRepository.lookupCartDbList(Long.valueOf(userId)));
+            if (cartRepository.hasCartByAccountId(Long.valueOf(userId))) {
+                // DB 장바구니 데이터를 가지고 와서 Redis 장바구니에 저장.
+                createAllCartFromDbToRedis(redisKey, cartRepository.lookupCartDbList(Long.valueOf(userId)));
+            } else {
+                cartRedisRepository.cartRedisSave(redisKey, NO_MENU, null);
+                CartRedisDto cartRedisDto = (CartRedisDto) cartRedisRepository.findByCartMenu(redisKey, NO_MENU);
+                carts.add(cartRedisDto);
+
+                return carts;
+            }
         }
+
 
         List<Object> cartRedis = cartRedisRepository.findByCartAll(redisKey);
 

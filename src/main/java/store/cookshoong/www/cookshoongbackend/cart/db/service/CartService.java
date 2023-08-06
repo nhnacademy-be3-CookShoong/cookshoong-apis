@@ -56,13 +56,10 @@ public class CartService {
 
         String id = accountId.replaceAll(CART, "");
 
-        if (cartRepository.hasCartByAccountId(Long.valueOf(id))) {
+        // DB 에 회원에 대한 장바구니
+        deleteCartDb(Long.valueOf(id));
 
-            // DB 에 회원에 대한 장바구니
-            deleteCartDb(Long.valueOf(id));
-        }
-
-        if (cartRedisList.isEmpty()) {
+        if (cartRedisList == null) {
             return;
         }
 
@@ -105,6 +102,10 @@ public class CartService {
     public void deleteCartDb(Long accountId) {
 
         UUID cartId = cartRepository.findCartId(accountId);
+
+        if (cartId == null) {
+            return;
+        }
 
         cartRepository.deleteById(cartId);
     }
