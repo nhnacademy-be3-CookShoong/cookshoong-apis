@@ -1,6 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.order.model.request;
 
 import java.util.UUID;
+import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,8 +15,11 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CreateOrderRequestDto {
+    @NotNull
     private UUID orderCode;
+    @NotNull
     private Long accountId;
+    @NotNull
     private Long storeId;
     private String memo;
     private UUID issueCouponCode;

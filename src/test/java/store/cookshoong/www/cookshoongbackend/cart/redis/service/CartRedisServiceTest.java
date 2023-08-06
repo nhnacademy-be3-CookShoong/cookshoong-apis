@@ -60,7 +60,7 @@ class CartRedisServiceTest {
     @Mock
     private ObjectStorageService objectStorageService;
 
-    String redisKey = "cart_account:1";
+    String redisKey = "cartKey=1";
     String hashKey = "112";
     Long accountId = 1L;
     Long storeId = 1L;
@@ -380,13 +380,13 @@ class CartRedisServiceTest {
     @DisplayName("Redis 장바구니에 들어있는 모든 메뉴 가져오기 - Redis 장바구니에 빈 장바구니가 존재할 때 빈 장바구니 조회")
     void selectCartMenuAll_List() {
 
-        when(cartRedisRepository.existMenuInCartRedis(redisKey, NO_MENU)).thenReturn(true);
+//        when(cartRedisRepository.existMenuInCartRedis(redisKey, NO_MENU)).thenReturn(true);
         when(cartRedisRepository.findByCartMenu(redisKey, NO_MENU)).thenReturn(null);
 
         cartRedisService
             .selectCartMenuAll(redisKey);
 
-        verify(cartRedisRepository).existMenuInCartRedis(redisKey, NO_MENU);
+//        verify(cartRedisRepository).existMenuInCartRedis(redisKey, NO_MENU);
         verify(cartRedisRepository).findByCartMenu(redisKey, NO_MENU);
     }
 
@@ -436,14 +436,13 @@ class CartRedisServiceTest {
         List cartRedisList = new ArrayList();
         cartRedisList.add(cartRedisDto);
 
-        when(cartRedisRepository.existMenuInCartRedis(String.valueOf(accountId), NO_MENU)).thenReturn(false);
         when(cartRedisRepository.existKeyInCartRedis(String.valueOf(accountId))).thenReturn(false);
+        when(cartRepository.hasCartByAccountId(accountId)).thenReturn(true);
         when(cartRepository.lookupCartDbList(accountId)).thenReturn(carDBtList);
         when(cartRedisRepository.findByCartAll(String.valueOf(accountId))).thenReturn(cartRedisList);
 
         List<CartRedisDto> actual = cartRedisService.selectCartMenuAll(String.valueOf(accountId));
 
-        verify(cartRedisRepository, times(1)).existMenuInCartRedis(String.valueOf(accountId), NO_MENU);
         verify(cartRedisRepository, times(1)).existKeyInCartRedis(String.valueOf(accountId));
         verify(cartRedisRepository, never()).findByCartMenu(String.valueOf(accountId), NO_MENU);
         verify(cartRepository, times(1)).lookupCartDbList(accountId);

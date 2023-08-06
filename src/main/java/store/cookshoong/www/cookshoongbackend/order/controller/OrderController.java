@@ -3,9 +3,11 @@ package store.cookshoong.www.cookshoongbackend.order.controller;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +17,7 @@ import store.cookshoong.www.cookshoongbackend.address.service.AddressService;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartRedisDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.service.CartRedisService;
 import store.cookshoong.www.cookshoongbackend.coupon.service.ProvideCouponService;
+import store.cookshoong.www.cookshoongbackend.order.exception.OrderRequestValidationException;
 import store.cookshoong.www.cookshoongbackend.order.exception.OutOfDistanceException;
 import store.cookshoong.www.cookshoongbackend.order.model.request.CreateOrderRequestDto;
 import store.cookshoong.www.cookshoongbackend.order.model.response.CreateOrderResponseDto;
@@ -44,7 +47,13 @@ public class OrderController {
      * @return the response entity
      */
     @PostMapping
-    public ResponseEntity<CreateOrderResponseDto> postOrder(@RequestBody CreateOrderRequestDto createOrderRequestDto) {
+    public ResponseEntity<CreateOrderResponseDto> postOrder(@RequestBody @Valid
+                                                                CreateOrderRequestDto createOrderRequestDto,
+                                                            BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new OrderRequestValidationException(bindingResult);
+        }
+
         validOrderDistance(createOrderRequestDto);
 
         List<CartRedisDto> cartItems = cartRedisService.selectCartMenuAll(

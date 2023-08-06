@@ -1,6 +1,8 @@
-package store.cookshoong.www.cookshoongbackend.payment.repository.charge;
+package store.cookshoong.www.cookshoongbackend.payment.repository.refund;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertLinesMatch;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.LocalDateTime;
@@ -25,7 +27,8 @@ import store.cookshoong.www.cookshoongbackend.order.entity.Order;
 import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus;
 import store.cookshoong.www.cookshoongbackend.payment.entity.Charge;
 import store.cookshoong.www.cookshoongbackend.payment.entity.ChargeType;
-import store.cookshoong.www.cookshoongbackend.payment.model.response.TossPaymentKeyResponseDto;
+import store.cookshoong.www.cookshoongbackend.payment.entity.Refund;
+import store.cookshoong.www.cookshoongbackend.payment.entity.RefundType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
@@ -33,22 +36,22 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.StoreStatus;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
 
 /**
- * Charge Repository 테스트.
+ * RefundRepository 에 대한 테스트 코드 작성.
  *
  * @author jeongjewan
- * @since 2023.08.03
+ * @since 2023.08.06
  */
 @Slf4j
 @DataJpaTest
 @Import({QueryDslConfig.class,
-    TestEntity.class})
-class ChargeRepositoryTest {
+        TestEntity.class})
+class RefundRepositoryTest {
 
     @Autowired
-    private ChargeRepository chargeRepository;
+    private RefundRepository refundRepository;
 
     @Autowired
-    TestEntityManager em;
+    private TestEntityManager em;
 
     @Autowired
     TestEntity tm;
@@ -63,8 +66,9 @@ class ChargeRepositoryTest {
     Order order;
     Charge charge;
     String paymentKey = "toss";
-    Charge actual;
-    UUID uuid = UUID.randomUUID();
+    UUID orderUuid = UUID.randomUUID();
+    RefundType refundType;
+    Refund refund;
 
     @BeforeEach
     void setup() {
@@ -96,7 +100,7 @@ class ChargeRepositoryTest {
         ReflectionTestUtils.setField(orderStatus, "code", "COMPLETE");
         ReflectionTestUtils.setField(orderStatus, "description", "주문완료");
         order = ReflectionUtils.newInstance(Order.class);
-        ReflectionTestUtils.setField(order, "code", uuid);
+        ReflectionTestUtils.setField(order, "code", orderUuid);
         ReflectionTestUtils.setField(order, "orderStatus", orderStatus);
         ReflectionTestUtils.setField(order, "account", account);
         ReflectionTestUtils.setField(order, "store", store);
@@ -109,42 +113,35 @@ class ChargeRepositoryTest {
         em.persist(chargeType);
 
         charge = new Charge(chargeType, order, LocalDateTime.now(), 54000, paymentKey);
+        em.persist(charge);
+
+        refundType = new RefundType("partial", "부분환불", false);
+        em.persist(refundType);
+        refund = new Refund(refundType, charge, LocalDateTime.now(), 20000);
     }
 
     @Test
-    @DisplayName("결제 승인 후 결제 완료된 정보 저장")
-    void paymentSave() {
-        actual = chargeRepository.save(charge);
+    @DisplayName("결제 취소에 대한 환불 데이터 저장 - 부분환불")
+    void createRefundPartialSave() {
+        Refund actual = refundRepository.save(refund);
 
-        assertNotNull(actual);
-        assertEquals(charge.getChargedAt(), actual.getChargedAt());
-        assertEquals(charge.getChargedAmount(), actual.getChargedAmount());
-        assertEquals(charge.getChargeType(), actual.getChargeType());
-        assertEquals(charge.getOrder(), actual.getOrder());
-        assertEquals(charge.getPaymentKey(), actual.getPaymentKey());
+        assertAll(
+            () -> assertNotNull(actual),
+            () -> assertEquals(refund.getRefundType(), actual.getRefundType()),
+            () -> assertEquals(refund.getRefundAmount(), actual.getRefundAmount()),
+            () -> assertEquals(refund.getRefundedAt(), actual.getRefundedAt())
+        );
     }
 
     @Test
-    @DisplayName("orderId 를 통해 결제에서 PaymentKey 가져오기")
-    void lookupFindByPaymentKey() {
-        actual = chargeRepository.save(charge);
+    @DisplayName("환불 totalAmount 가져오기")
+    void getRefundTotalAmount() {
+        refundRepository.save(refund);
+        Refund refund2 = new Refund(refundType, charge, LocalDateTime.now(), 20000);
+        refundRepository.save(refund2);
 
-        String expectedPaymentKey = paymentKey; // Set the expected paymentKey here
+        Integer refundTotalAmount = refundRepository.findRefundTotalAmount(charge.getCode());
 
-        TossPaymentKeyResponseDto actualPaymentKey = chargeRepository.lookupFindByPaymentKey(order.getCode());
-
-        assertEquals(expectedPaymentKey, actualPaymentKey.getPaymentKey());
-    }
-
-    @Test
-    @DisplayName("해당 결제에 대한 결제금액을 가져오기")
-    void findChargedAmountByChargeCode() {
-        actual = chargeRepository.save(charge);
-
-        Integer chargedAmount = chargeRepository.findChargedAmountByChargeCode(actual.getCode());
-
-        log.info("CHARGEDAMOUNT: {}", chargedAmount);
-
-        assertEquals(actual.getChargedAmount(), chargedAmount);
+        assertEquals(refund.getRefundAmount() + refund2.getRefundAmount(), refundTotalAmount);
     }
 }

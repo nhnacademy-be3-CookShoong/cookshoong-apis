@@ -19,6 +19,7 @@ import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
 import store.cookshoong.www.cookshoongbackend.account.exception.AccountStatusNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.exception.AuthorityNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.exception.SignUpValidationException;
+import store.cookshoong.www.cookshoongbackend.account.model.request.OAuth2SignUpRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountAuthResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountInfoResponseDto;
@@ -67,6 +68,39 @@ public class AccountController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
             .build();
+    }
+
+    /**
+     * OAuth 회원의 가입정보를 전달받아 DB에 저장하게한다. ( 일반 회원으로 가입을 강제한다. )
+     *
+     * @param oAuth2SignUpRequestDto the o auth 2 sign up request dto
+     * @param bindingResult          the binding result
+     * @return 201 response entity
+     */
+    @PostMapping("/oauth2")
+    public ResponseEntity<Void> postOAuth2Account(@RequestBody @Valid OAuth2SignUpRequestDto oAuth2SignUpRequestDto,
+                                                  BindingResult bindingResult
+                                                  ) {
+        if (bindingResult.hasErrors()) {
+            throw new SignUpValidationException(bindingResult);
+        }
+        SignUpRequestDto signUpRequestDto = oAuth2SignUpRequestDto.getSignUpRequestDto();
+        String accountCode = oAuth2SignUpRequestDto.getAccountCode();
+        String provider = oAuth2SignUpRequestDto.getProvider();
+        Long accountId = accountService.createAccount(signUpRequestDto, Authority.Code.CUSTOMER);
+        addressService.createAccountAddress(accountId, signUpRequestDto.getCreateAccountAddressRequestDto());
+        accountService.createOAuth2Account(accountId, accountCode, provider);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .build();
+    }
+
+    @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
+    @GetMapping("/oauth2")
+    public ResponseEntity<SelectAccountInfoResponseDto> getAccountInfoForOAuth(@RequestParam String provider,
+                                                                               @RequestParam String accountCode) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(accountService.selectAccountInfoForOAuth(provider.toLowerCase(), accountCode));
     }
 
     /**
@@ -127,13 +161,5 @@ public class AccountController {
         UpdateAccountStatusResponseDto response = accountService.updateAccountStatus(accountId, uppercaseCode);
         return ResponseEntity.status(HttpStatus.OK)
             .body(response);
-    }
-
-    @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
-    @GetMapping("oauth")
-    public ResponseEntity<SelectAccountInfoResponseDto> getAccountInfoForOAuth(@RequestParam String provider,
-                                                                               @RequestParam String accountCode) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(accountService.selectAccountInfoForOAuth(provider, accountCode.toLowerCase()));
     }
 }

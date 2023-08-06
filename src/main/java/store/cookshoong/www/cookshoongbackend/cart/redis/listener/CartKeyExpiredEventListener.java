@@ -21,6 +21,7 @@ import store.cookshoong.www.cookshoongbackend.cart.redis.service.CartRedisServic
 public class CartKeyExpiredEventListener extends KeyExpirationEventMessageListener {
 
     private static final String PHANTOM = ":phantom";
+    private static final String NO_MENU = "NO_KEY";
     private final CartService cartService;
     private final CartRedisService cartRedisService;
 
@@ -40,19 +41,22 @@ public class CartKeyExpiredEventListener extends KeyExpirationEventMessageListen
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
-
+        List<CartRedisDto> cartRedisList = null;
         String expiredRedisKey = message.toString();
-
-         log.error("EXPIRED KEY: {}", expiredRedisKey);
 
         if (!expiredRedisKey.endsWith(PHANTOM)) {
             return;
         }
 
         String redisKey = expiredRedisKey.replaceAll(PHANTOM, "");
-        log.error("REDIS KEY: {}", redisKey);
 
-        List<CartRedisDto> cartRedisList = cartRedisService.selectCartMenuAll(redisKey);
+        if (cartRedisService.hasMenuInCartRedis(redisKey, NO_MENU)) {
+
+            cartService.createCartDb(redisKey, cartRedisList);
+            return;
+        }
+
+        cartRedisList = cartRedisService.selectCartMenuAll(redisKey);
 
         cartService.createCartDb(redisKey, cartRedisList);
     }

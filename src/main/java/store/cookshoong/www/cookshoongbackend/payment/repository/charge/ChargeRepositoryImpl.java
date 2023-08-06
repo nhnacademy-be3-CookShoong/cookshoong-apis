@@ -4,6 +4,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.UUID;
 import store.cookshoong.www.cookshoongbackend.payment.entity.QCharge;
+import store.cookshoong.www.cookshoongbackend.payment.model.response.TossPaymentKeyResponseDto;
 
 /**
  * 결제에 대한 Repository.
@@ -23,13 +24,24 @@ public class ChargeRepositoryImpl implements ChargeRepositoryCustom {
      * {@inheritDoc}
      */
     @Override
-    public String lookupFindByPaymentKey(UUID orderCode) {
+    public TossPaymentKeyResponseDto lookupFindByPaymentKey(UUID orderCode) {
         QCharge charge = QCharge.charge;
 
         return jpaQueryFactory
-            .select(Projections.constructor(String.class, charge.paymentKey))
+            .select(Projections.constructor(TossPaymentKeyResponseDto.class, charge.paymentKey))
             .from(charge)
             .where(charge.order.code.eq(orderCode))
+            .fetchOne();
+    }
+
+    @Override
+    public Integer findChargedAmountByChargeCode(UUID chargeCode) {
+        QCharge charge = QCharge.charge;
+
+        return jpaQueryFactory
+            .select(charge.chargedAmount)
+            .from(charge)
+            .where(charge.code.eq(chargeCode))
             .fetchOne();
     }
 }
