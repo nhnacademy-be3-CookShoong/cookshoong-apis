@@ -2,6 +2,7 @@ package store.cookshoong.www.cookshoongbackend.payment.repository.charge;
 
 import java.util.UUID;
 import org.springframework.data.repository.NoRepositoryBean;
+import store.cookshoong.www.cookshoongbackend.payment.model.response.TossPaymentKeyResponseDto;
 
 /**
  * 결제에 대한 Repository Custom.
@@ -17,5 +18,7 @@ public interface ChargeRepositoryCustom {
      *
      * @return              PaymentKey 반환
      */
-    String lookupFindByPaymentKey(UUID orderCode);
+    TossPaymentKeyResponseDto lookupFindByPaymentKey(UUID orderCode);
+
+    Integer findChargedAmountByChargeCode(UUID chargeCode);
 }
