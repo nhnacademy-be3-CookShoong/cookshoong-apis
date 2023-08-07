@@ -96,10 +96,12 @@ public class CartRepositoryImpl implements CartRepositoryCustom {
                         CartMenuResponseDto.class,
                         menu.id,
                         menu.name,
-                        image.savedName,
+                        menu.image.savedName,
                         menu.price,
                         cartDetail.createdTimeMillis,
-                        cartDetail.count
+                        cartDetail.count,
+                        menu.image.locationType,
+                        menu.image.domainName
                     ),
                     list(constructor(
                         CartOptionResponseDto.class,

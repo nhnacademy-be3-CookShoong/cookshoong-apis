@@ -19,7 +19,8 @@ import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartOptionDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartRedisDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.repository.CartRedisRepository;
 import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
-import store.cookshoong.www.cookshoongbackend.file.service.ObjectStorageService;
+import store.cookshoong.www.cookshoongbackend.file.service.FileUtilResolver;
+import store.cookshoong.www.cookshoongbackend.file.service.FileUtils;
 
 /**
  * Redis 를 이용한 장바구니 서비스.
@@ -36,7 +37,7 @@ public class CartRedisService {
     private final CartRepository cartRepository;
     private static final String NO_MENU = "NO_KEY";
     public static final String CART = "cartKey=";
-    private final ObjectStorageService objectStorageService;
+    public final FileUtilResolver fileUtilResolver;
 
     /**
      * 장바구니에 담는 메뉴를 Redis 에 저장하는 메서드. <br>
@@ -44,9 +45,9 @@ public class CartRedisService {
      * 하나의 매장에서만 담을 수 있도록 제한 <br>
      * 같은 메뉴가 들어오면 redis 에 저장되어 있는 값을 불러와서 수량과 합계를 변경해서 저장
      *
-     * @param redisKey      redis key
-     * @param hashKey        redis hashKey
-     * @param cart    장바구니에 담기는 메뉴 Dto
+     * @param redisKey redis key
+     * @param hashKey  redis hashKey
+     * @param cart     장바구니에 담기는 메뉴 Dto
      */
     public void createCartMenu(String redisKey, String hashKey, CartRedisDto cart) {
 
@@ -84,8 +85,8 @@ public class CartRedisService {
      * 빈 장바구니를 생성하는 메소드.    <br>
      * DB 장바구니에 접근을 최소화하기 위해 빈 장바구니를 생성.
      *
-     * @param cartKey       redis key
-     * @param noKey         redis hashKey
+     * @param cartKey redis key
+     * @param noKey   redis hashKey
      */
     public void createCartEmpty(String cartKey, String noKey) {
 
@@ -98,9 +99,9 @@ public class CartRedisService {
      * 이때 변경하기전에 대한 메뉴 hashKey 를 가져오기때문에 그 key 를 가지고 삭제를 한후 <br>
      * 변경된 메뉴에 대해서 새로운 hashKey 를 만들고 그 키를 가지고 Redis 장바구니에 담는다.  <br>
      *
-     * @param redisKey      redis key
-     * @param hashKey        redis hashKey
-     * @param cart    장바구니에서 수정되는 Dto
+     * @param redisKey redis key
+     * @param hashKey  redis hashKey
+     * @param cart     장바구니에서 수정되는 Dto
      */
     public void modifyCartMenuRedis(String redisKey, String hashKey, CartRedisDto cart) {
 
@@ -126,8 +127,8 @@ public class CartRedisService {
      * Front 에서 플러스 버튼을 누르면 <br>
      * Gateway 를 타고 Back Api 로 와서 수량을 늘려준다. <br>
      *
-     * @param redisKey      redis key
-     * @param hashKey        redis hashKey
+     * @param redisKey redis key
+     * @param hashKey  redis hashKey
      */
     public void modifyCartMenuIncrementCount(String redisKey, String hashKey) {
 
@@ -151,8 +152,8 @@ public class CartRedisService {
      * Front 에서 플러스 버튼을 누르면 <br>
      * Gateway 를 타고 Back Api 로 와서 수량을 줄여준다. <br>
      *
-     * @param redisKey      redis key
-     * @param hashKey        redis hashKey
+     * @param redisKey redis key
+     * @param hashKey  redis hashKey
      */
     public void modifyCartMenuDecrementCount(String redisKey, String hashKey) {
         CartRedisDto cart = null;
@@ -177,8 +178,8 @@ public class CartRedisService {
      * -> 왜냐하면 NOMENU 상태가 Redis, DB 둘다 장바구니가 존재하지 않을 때 들어가는 key 이기 때문이다. <br>
      * 그렇게 없으면 DB 에 있는 장바구니 정보를 가지고 와서 Redis 장바구니로 저장.
      *
-     * @param redisKey      redis key
-     * @return              해당 key 모든 메뉴들을 반환
+     * @param redisKey redis key
+     * @return 해당 key 모든 메뉴들을 반환
      */
     public List<CartRedisDto> selectCartMenuAll(String redisKey) {
 
@@ -217,9 +218,9 @@ public class CartRedisService {
     /**
      * Redis 장바구니 담겨져 있는 특정 메뉴를 가져오는 메서드.
      *
-     * @param redisKey      redis key
-     * @param hashKey        메뉴 아이디
-     * @return              key 에 해당되는 메뉴 아이디를 통해 메뉴를 반환.
+     * @param redisKey redis key
+     * @param hashKey  메뉴 아이디
+     * @return key 에 해당되는 메뉴 아이디를 통해 메뉴를 반환.
      */
     public CartRedisDto selectCartMenu(String redisKey, String hashKey) {
 
@@ -235,8 +236,8 @@ public class CartRedisService {
     /**
      * Redis 장바구니 담겨져 있는 메뉴들에 개수를 가져오는 메서드.
      *
-     * @param redisKey      redis key
-     * @return              장바구니 개수를 반환
+     * @param redisKey redis key
+     * @return 장바구니 개수를 반환
      */
     public Long selectCartCount(String redisKey) {
 
@@ -250,8 +251,8 @@ public class CartRedisService {
     /**
      * Redis 장바구니에서 해당 메뉴를 삭제하는 메서드.
      *
-     * @param redisKey      redis key
-     * @param hashKey        메뉴 아이디
+     * @param redisKey redis key
+     * @param hashKey  메뉴 아이디
      */
     public void removeCartMenu(String redisKey, String hashKey) {
 
@@ -274,7 +275,7 @@ public class CartRedisService {
      * Redis 장바구니에 모든 메뉴를 삭제.   <br>
      * key 를 삭제하는 것이기 때문에 다시 Cookie 로 생성해줘야 한다. <br>
      *
-     * @param redisKey      redis key
+     * @param redisKey redis key
      */
     public void removeCartMenuAll(String redisKey) {
 
@@ -289,8 +290,8 @@ public class CartRedisService {
     /**
      * Redis 장바구니에 redisKey 가 존재하는지 확인하는 메서드.
      *
-     * @param redisKey      redis Key
-     * @return              redis Key 존재여부를 반환
+     * @param redisKey redis Key
+     * @return redis Key 존재여부를 반환
      */
     public boolean hasKeyInCartRedis(String redisKey) {
 
@@ -300,9 +301,9 @@ public class CartRedisService {
     /**
      * Redis 장바구니에 redisKey 에 hashKey 존재하는지 확인하는 메서드.
      *
-     * @param redisKey      redis Key
-     * @param menuKey       redis hashKey
-     * @return              redis Key 존재여부를 반환
+     * @param redisKey redis Key
+     * @param menuKey  redis hashKey
+     * @return redis Key 존재여부를 반환
      */
     public boolean hasMenuInCartRedis(String redisKey, String menuKey) {
 
@@ -310,9 +311,9 @@ public class CartRedisService {
     }
 
     /**
-     *  Db 장바구니 정보를 Redis 로 저장하는 메서드.
+     * Db 장바구니 정보를 Redis 로 저장하는 메서드.
      *
-     * @param accountId     회원 아이디
+     * @param accountId 회원 아이디
      */
     public void createDbCartUploadRedis(String redisKey, Long accountId) {
 
@@ -322,16 +323,18 @@ public class CartRedisService {
     /**
      * DB 장바구니에서 가져온 정보를 Redis 장바구니에 저장하는 메서드.
      *
-     * @param cartResponseDtos      DB 장바구니 정보
+     * @param cartResponseDtos DB 장바구니 정보
      */
     private void createAllCartFromDbToRedis(String redisKey, List<CartResponseDto> cartResponseDtos) {
 
         for (CartResponseDto cartResponseDto : cartResponseDtos) {
 
-            CartMenuResponseDto cartMenuResponseDto = cartResponseDto.getCartMenuResponseDto();
+            FileUtils fileUtils1 = fileUtilResolver.getFileService(cartResponseDto.getCartMenuResponseDto().getLocationType());
+                CartMenuResponseDto cartMenuResponseDto = cartResponseDto.getCartMenuResponseDto();
             CartMenuDto cartMenuRedisDto =
                 new CartMenuDto(cartMenuResponseDto.getMenuId(), cartMenuResponseDto.getName(),
-                    objectStorageService.getFullPath(FileDomain.MENU_IMAGE.getVariable(), cartMenuResponseDto.getSavedName()), cartMenuResponseDto.getPrice());
+                    fileUtils1.getFullPath(cartResponseDto.getCartMenuResponseDto().getDomainName(),
+                        cartMenuResponseDto.getSavedName()), cartMenuResponseDto.getPrice(), cartMenuResponseDto.getLocationType(), cartMenuResponseDto.getDomainName());
 
             List<CartOptionDto> cartOptionRedisDtos = new ArrayList<>();
             if (!(cartResponseDto.getCartOptionResponseDto().size() == 1
