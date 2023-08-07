@@ -28,7 +28,7 @@ public class StoreDocumentController {
     private final StoreCategoryService storeCategoryService;
     private final ObjectStorageService objectStorageService;
 
-    @GetMapping("/store/list")
+    @GetMapping("/stores/search")
     public ResponseEntity<Page<StoreDocumentResponseDto>> searchByDistance(
         @RequestParam("addressId") Long addressId,
         Pageable pageable) {
@@ -49,7 +49,7 @@ public class StoreDocumentController {
         return ResponseEntity.ok(storeResponses);
     }
 
-    @GetMapping("/store/search")
+    @GetMapping("/stores/search/keyword")
     public ResponseEntity<Page<StoreDocumentResponseDto>> searchByKeyword(
         @RequestParam("keyword") String keywordText,
         @RequestParam("addressId") Long addressId,
