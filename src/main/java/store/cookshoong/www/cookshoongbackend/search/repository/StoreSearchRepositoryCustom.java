@@ -11,5 +11,8 @@ import store.cookshoong.www.cookshoongbackend.search.model.StoreDocument;
  * @since 2023.07.21
  */
 public interface StoreSearchRepositoryCustom {
-    Page<StoreDocument> searchByKeywordText(String keywordText, Pageable pageable);
+
+    Page<StoreDocument> searchByKeywordText(String keywordText, Long addressId, Pageable pageable);
+
+    Page<StoreDocument> searchByDistance(Long addressId, Pageable pageable);
 }

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QStoreCategory;
+import store.cookshoong.www.cookshoongbackend.shop.entity.QStoresHasCategory;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectAllCategoriesResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllCategoriesResponseDto;
 
@@ -48,5 +49,15 @@ public class StoreCategoryRepositoryImpl implements StoreCategoryRepositoryCusto
             .select(storeCategory.count())
             .from(storeCategory)
             .fetchOne();
+    }
+
+    @Override
+    public List<String> findCategoryCodeByStoreId(Long storeId) {
+        QStoresHasCategory storesHasCategory = QStoresHasCategory.storesHasCategory;
+        return jpaQueryFactory
+            .select(storesHasCategory.pk.categoryCode)
+            .from(storesHasCategory)
+            .where(storesHasCategory.pk.storeId.eq(storeId))
+            .fetch();
     }
 }
