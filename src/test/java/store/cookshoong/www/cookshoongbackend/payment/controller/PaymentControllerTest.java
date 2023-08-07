@@ -76,6 +76,8 @@ class PaymentControllerTest {
         ReflectionTestUtils.setField(createPaymentDto, "chargedAmount", 50000);
         ReflectionTestUtils.setField(createPaymentDto, "paymentKey", "paymentKey");
         ReflectionTestUtils.setField(createPaymentDto, "cartKey", CART + 1);
+        ReflectionTestUtils.setField(createPaymentDto, "couponCode", UUID.randomUUID());
+        ReflectionTestUtils.setField(createPaymentDto, "point", 1_000);
 
         mockMvc.perform(post("/api/payments/charges")
             .contentType(APPLICATION_JSON)
@@ -90,7 +92,9 @@ class PaymentControllerTest {
                     fieldWithPath("chargedAt").description("승인날짜"),
                     fieldWithPath("chargedAmount").description("결제금액"),
                     fieldWithPath("paymentKey").description("toss 결제 Key"),
-                    fieldWithPath("cartKey").description("장바구니 key")
+                    fieldWithPath("cartKey").description("장바구니 key"),
+                    fieldWithPath("couponCode").optional().description("사용하는 쿠폰의 코드"),
+                    fieldWithPath("point").optional().description("사용하는 포인트")
                 )));
 
         verify(paymentService, times(1)).createPayment(any(CreatePaymentDto.class));
