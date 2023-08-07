@@ -53,6 +53,15 @@ public class ObjectStorageService implements FileUtils {
             fileName);
     }
 
+    @Override
+    public String getSavedPath(String objectPath, String fileName) {
+        return String.format("%s/%s/%s/%s",
+            objectStorageProperties.getStorageUrl(),
+            objectStorageProperties.getContainerName(),
+            objectPath,
+            fileName);
+    }
+
     private String extractExt(String originalFilename) {
         int pos = originalFilename.lastIndexOf(".");
         return originalFilename.substring(pos + 1);
@@ -96,7 +105,7 @@ public class ObjectStorageService implements FileUtils {
         }
         String savedName = UUID.randomUUID() + "." + extractExt(originFileName); // 저장된 이름
 
-        String url = getFullPath(domainName, savedName);
+        String url = getSavedPath(domainName, savedName);
         InputStream inputStream = new ByteArrayInputStream(multipartFile.getBytes());
 
         uploadObject(inputStream, url, token); // 업로드

@@ -41,9 +41,13 @@ public class LocalFileService implements FileUtils {
      */
     @Override
     public String getFullPath(String domain, String filename) {
-        return rootPath + fileDir + domain + "/" + filename;
+        return "/images/local?imageName="+rootPath + fileDir + domain + "/" + filename;
     }
 
+    @Override
+    public String getSavedPath(String domain, String filename){
+        return rootPath + fileDir + domain + "/" + filename;
+    }
 
     /**
      * 사용자가 이미지 파일 업로드 시 로컬에 저장.
@@ -60,7 +64,7 @@ public class LocalFileService implements FileUtils {
         String originFilename = multipartFile.getOriginalFilename();
         String storeFilename = UUID.randomUUID() + "." + extractExt(Objects.requireNonNull(originFilename));
 
-        multipartFile.transferTo(Paths.get(getFullPath(domain, storeFilename)));
+        multipartFile.transferTo(Paths.get(getSavedPath(domain, storeFilename)));
         return imageRepository.save(new Image(getStorageType(), domain, originFilename, storeFilename, isPublic));
     }
 

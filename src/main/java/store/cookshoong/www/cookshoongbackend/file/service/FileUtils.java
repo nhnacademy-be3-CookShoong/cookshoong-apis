@@ -49,4 +49,5 @@ public interface FileUtils {
      * @return the full path
      */
     String getFullPath(String domain, String filename);
+    String getSavedPath(String domain, String filename);
 }
