@@ -43,7 +43,7 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
             .select(new QSelectMenuResponseDto(
                 menu.id, menuStatus.code, store.id,
                 menu.name, menu.price, menu.description,
-                menu.image.savedName, menu.cookingTime, menu.earningRate))
+                menu.image.savedName, menu.cookingTime, menu.earningRate, menu.image.locationType, menu.image.domainName))
             .from(menu)
             .innerJoin(menu.menuStatus, menuStatus)
             .innerJoin(menu.store, store)
@@ -88,7 +88,7 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
             .select(new QSelectMenuResponseDto(
                 menu.id, menuStatus.code, store.id,
                 menu.name, menu.price, menu.description,
-                menu.image.savedName, menu.cookingTime, menu.earningRate))
+                menu.image.savedName, menu.cookingTime, menu.earningRate, menu.image.locationType, menu.image.domainName))
             .from(menu)
             .innerJoin(menu.menuStatus, menuStatus)
             .innerJoin(menu.store, store)
