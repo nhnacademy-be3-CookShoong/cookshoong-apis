@@ -18,7 +18,6 @@ import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartMenuDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartOptionDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartRedisDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.repository.CartRedisRepository;
-import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
 import store.cookshoong.www.cookshoongbackend.file.service.FileUtilResolver;
 import store.cookshoong.www.cookshoongbackend.file.service.FileUtils;
 
@@ -329,11 +328,11 @@ public class CartRedisService {
 
         for (CartResponseDto cartResponseDto : cartResponseDtos) {
 
-            FileUtils fileUtils1 = fileUtilResolver.getFileService(cartResponseDto.getCartMenuResponseDto().getLocationType());
-                CartMenuResponseDto cartMenuResponseDto = cartResponseDto.getCartMenuResponseDto();
+            FileUtils fileUtils = fileUtilResolver.getFileService(cartResponseDto.getCartMenuResponseDto().getLocationType());
+            CartMenuResponseDto cartMenuResponseDto = cartResponseDto.getCartMenuResponseDto();
             CartMenuDto cartMenuRedisDto =
                 new CartMenuDto(cartMenuResponseDto.getMenuId(), cartMenuResponseDto.getName(),
-                    fileUtils1.getFullPath(cartResponseDto.getCartMenuResponseDto().getDomainName(),
+                    fileUtils.getFullPath(cartResponseDto.getCartMenuResponseDto().getDomainName(),
                         cartMenuResponseDto.getSavedName()), cartMenuResponseDto.getPrice(), cartMenuResponseDto.getLocationType(), cartMenuResponseDto.getDomainName());
 
             List<CartOptionDto> cartOptionRedisDtos = new ArrayList<>();
