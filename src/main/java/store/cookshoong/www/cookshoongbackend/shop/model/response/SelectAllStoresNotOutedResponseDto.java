@@ -4,7 +4,6 @@ import com.querydsl.core.annotations.QueryProjection;
 import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
  * 회원 위치에서 3km 이내에 있는 매장을 보여줄 Dto.

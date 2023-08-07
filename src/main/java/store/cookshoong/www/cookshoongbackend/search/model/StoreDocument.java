@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
 
 /**
  * 엘라스틱 서치 매장 도큐먼트 엔티티.
@@ -24,12 +25,15 @@ public class StoreDocument {
     private Long id;
     private String name;
     private String description;
+    @Field("saved_name")
+    private String savedName;
 
     public static StoreDocument from(StoreDocumentRequestDto storeDocumentRequestDto) {
         return StoreDocument.builder()
             .id(storeDocumentRequestDto.getId())
             .name(storeDocumentRequestDto.getName())
             .description(storeDocumentRequestDto.getDescription())
+            .savedName(storeDocumentRequestDto.getSavedName())
             .build();
     }
 }
