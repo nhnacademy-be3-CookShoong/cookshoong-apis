@@ -53,12 +53,11 @@ public class CouponLog {
      * @param issueCoupon   the issue coupon
      * @param couponLogType the coupon log type
      * @param order         the order
-     * @param recordAt    the record date
      */
-    public CouponLog(IssueCoupon issueCoupon, CouponLogType couponLogType, Order order, LocalDateTime recordAt) {
+    public CouponLog(IssueCoupon issueCoupon, CouponLogType couponLogType, Order order) {
         this.issueCoupon = issueCoupon;
         this.couponLogType = couponLogType;
         this.order = order;
-        this.recordAt = recordAt;
+        this.recordAt = LocalDateTime.now();
     }
 }
