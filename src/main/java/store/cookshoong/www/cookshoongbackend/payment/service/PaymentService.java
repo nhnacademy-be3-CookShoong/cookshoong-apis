@@ -34,7 +34,7 @@ import store.cookshoong.www.cookshoongbackend.payment.repository.charge.ChargeRe
 import store.cookshoong.www.cookshoongbackend.payment.repository.chargetype.ChargeTypeRepository;
 import store.cookshoong.www.cookshoongbackend.payment.repository.refund.RefundRepository;
 import store.cookshoong.www.cookshoongbackend.payment.repository.refundtype.RefundTypeRepository;
-import store.cookshoong.www.cookshoongbackend.util.Locker;
+import store.cookshoong.www.cookshoongbackend.lock.LockProcessor;
 
 /**
  * 결제에 대한 Service.
@@ -56,7 +56,7 @@ public class PaymentService {
     private final IssueCouponRepository issueCouponRepository;
     private final CouponLogRepository couponLogRepository;
     private final CouponLogTypeRepository couponLogTypeRepository;
-    private final Locker locker;
+    private final LockProcessor lockProcessor;
 
     /**
      * 결제 승인 후 결제가 완료되고나서 결제 정보를 DB 에 저장하는 메서드.
@@ -87,7 +87,7 @@ public class PaymentService {
         IssueCoupon issueCoupon = issueCouponRepository.findById(createPaymentDto.getCouponCode())
             .orElseThrow(IssueCouponNotFoundException::new);
 
-        locker.lock(issueCoupon.getCode().toString(), ignore -> {
+        lockProcessor.lock(issueCoupon.getCode().toString(), ignore -> {
             couponLogRepository.findTopByIssueCouponOrderByIdDesc(issueCoupon)
                 .ifPresent(this::validCouponLog);
 

@@ -30,7 +30,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepo
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponRedisRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.IssueCouponRepository;
 import store.cookshoong.www.cookshoongbackend.menu_order.exception.menu.BelowMinimumOrderPriceException;
-import store.cookshoong.www.cookshoongbackend.util.Locker;
+import store.cookshoong.www.cookshoongbackend.lock.LockProcessor;
 
 /**
  * 쿠폰 발급 서비스.
@@ -50,7 +50,7 @@ public class ProvideCouponService {
     private final AccountRepository accountRepository;
     private final CouponRedisRepository couponRedisRepository;
     private final CouponLogRepository couponLogRepository;
-    private final Locker locker;
+    private final LockProcessor lockProcessor;
 
     /**
      * 사용자가 쿠폰 발급을 요청했을 때, 해당 쿠폰 정책과 일치하는 쿠폰 중 하나를 발급해준다.
@@ -160,7 +160,7 @@ public class ProvideCouponService {
             throw new CouponExhaustionException();
         }
 
-        locker.lock(key, this::updateRedisCouponState);
+        lockProcessor.lock(key, this::updateRedisCouponState);
     }
 
     private void updateRedisCouponState(String key) {

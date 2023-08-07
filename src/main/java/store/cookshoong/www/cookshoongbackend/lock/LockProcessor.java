@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.util;
+package store.cookshoong.www.cookshoongbackend.lock;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -10,14 +10,14 @@ import store.cookshoong.www.cookshoongbackend.rabbitmq.exception.LockInterrupted
 import store.cookshoong.www.cookshoongbackend.rabbitmq.exception.LockOverWaitTimeException;
 
 /**
- * 분산락을 담당하는 util.
+ * 분산락을 담당하는 bean.
  *
  * @author eora21 (김주호)
  * @since 2023.08.07
  */
 @Component
 @RequiredArgsConstructor
-public class Locker {
+public class LockProcessor {
     private static final int WAIT_TIME = 60;
     private static final int LEASE_TIME = 5;
 
