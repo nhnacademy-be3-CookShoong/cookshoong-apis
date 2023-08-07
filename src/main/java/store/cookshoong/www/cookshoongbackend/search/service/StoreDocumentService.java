@@ -33,8 +33,13 @@ public class StoreDocumentService {
         storeSearchRepository.saveAll(storeList);
     }
 
-    public Page<StoreDocumentResponseDto> searchByKeywordText(String keyword, Pageable pageable) {
-        Page<StoreDocument> storeDocuments = storeSearchRepository.searchByKeywordText(keyword, pageable);
+    public Page<StoreDocumentResponseDto> searchByKeywordText(String keyword, Long addressId, Pageable pageable) {
+        Page<StoreDocument> storeDocuments = storeSearchRepository.searchByKeywordText(keyword, addressId, pageable);
+        return storeDocuments.map(StoreDocumentResponseDto::from);
+    }
+
+    public Page<StoreDocumentResponseDto> searchByDistance(Long addressId, Pageable pageable) {
+        Page<StoreDocument> storeDocuments = storeSearchRepository.searchByDistance(addressId, pageable);
         return storeDocuments.map(StoreDocumentResponseDto::from);
     }
 }

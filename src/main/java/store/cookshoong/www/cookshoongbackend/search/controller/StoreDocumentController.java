@@ -36,11 +36,34 @@ public class StoreDocumentController {
         storeDocumentService.saveAll(storeDocumentRequestAllDto);
     }
 
+    @GetMapping("/store/list")
+    public ResponseEntity<Page<StoreDocumentResponseDto>> searchByDistance(
+        @RequestParam("addressId") Long addressId,
+        Pageable pageable) {
+        Page<StoreDocumentResponseDto> storeResponses
+            = storeDocumentService.searchByDistance(addressId, pageable);
+
+        storeResponses.forEach(
+            storeDocumentResponseDto -> storeDocumentResponseDto.setSavedName(
+                objectStorageService.getFullPath(FileDomain.STORE_IMAGE.getVariable(), storeDocumentResponseDto.getSavedName()))
+        );
+
+        storeResponses.forEach(
+            storeDocumentResponseDto -> storeDocumentResponseDto.setCategories(
+                storeCategoryService.selectCategoriesByStoreId(storeDocumentResponseDto.getId())
+            )
+        );
+
+        return ResponseEntity.ok(storeResponses);
+    }
+
     @GetMapping("/store/search")
     public ResponseEntity<Page<StoreDocumentResponseDto>> searchByKeyword(
-        @RequestParam("keyword") String keywordText, Pageable pageable) {
+        @RequestParam("keyword") String keywordText,
+        @RequestParam("addressId") Long addressId,
+        Pageable pageable) {
         Page<StoreDocumentResponseDto> storeResponses
-            = storeDocumentService.searchByKeywordText(keywordText, pageable);
+            = storeDocumentService.searchByKeywordText(keywordText, addressId, pageable);
 
         storeResponses.forEach(
             storeDocumentResponseDto -> storeDocumentResponseDto.setSavedName(
