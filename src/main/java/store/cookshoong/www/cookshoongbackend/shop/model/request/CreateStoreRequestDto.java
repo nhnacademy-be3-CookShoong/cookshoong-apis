@@ -3,8 +3,10 @@ package store.cookshoong.www.cookshoongbackend.shop.model.request;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -51,14 +53,19 @@ public class CreateStoreRequestDto {
     private String phoneNumber;
     @NotBlank
     private String description;
-    @NotNull
+
     @DecimalMin(value = "0.0")
-    @DecimalMax("5.0")
+    @DecimalMax("9.9")
+    @NotBlank
     private BigDecimal earningRate;
-    @NotNull
+
     @PositiveOrZero
-    @Pattern(regexp = RegularExpressions.NUMBER_ONLY, message = ValidationFailureMessages.NUMBER_ONLY)
+    @NotBlank
     private Integer minimumOrderPrice;
+
+    @Min(4000)
+    @NotBlank
+    private Integer deliveryCost;
     @NotNull
     private List<String> storeCategories;
     @NotBlank

@@ -14,6 +14,8 @@ public class CartMenuResponseDto {
     private final Long menuId;
     private final String name;
     private final String savedName;
+    private final String locationType;
+    private final String domainName;
     private final Integer price;
     private final Long createTimeMillis;
     private final Integer count;
@@ -30,7 +32,8 @@ public class CartMenuResponseDto {
      */
     @QueryProjection
     public CartMenuResponseDto(Long menuId, String name, String savedName,
-                               Integer price, Long createTimeMillis, Integer count) {
+                               Integer price, Long createTimeMillis, Integer count,
+                               String locationType, String domainName) {
 
         this.menuId = menuId;
         this.name = name;
@@ -38,5 +41,7 @@ public class CartMenuResponseDto {
         this.price = price;
         this.createTimeMillis = createTimeMillis;
         this.count = count;
+        this.locationType = locationType;
+        this.domainName = domainName;
     }
 }
