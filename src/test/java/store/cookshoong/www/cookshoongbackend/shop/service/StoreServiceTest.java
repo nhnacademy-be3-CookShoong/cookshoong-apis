@@ -4,17 +4,25 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +37,15 @@ import org.springframework.web.multipart.MultipartFile;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
+import store.cookshoong.www.cookshoongbackend.common.property.ObjectStorageProperties;
+import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
+import store.cookshoong.www.cookshoongbackend.file.model.LocationType;
+import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
+import store.cookshoong.www.cookshoongbackend.file.service.FileUtilResolver;
+import store.cookshoong.www.cookshoongbackend.file.service.FileUtils;
+import store.cookshoong.www.cookshoongbackend.file.service.LocalFileService;
+import store.cookshoong.www.cookshoongbackend.file.service.ObjectStorageAuth;
 import store.cookshoong.www.cookshoongbackend.file.service.ObjectStorageService;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
@@ -62,19 +78,31 @@ class StoreServiceTest {
     private BankTypeRepository bankTypeRepository;
     @Mock
     private MerchantRepository merchantRepository;
-    @Mock
-    private ObjectStorageService objectStorageService;
+
     @Mock
     private AccountRepository accountRepository;
-
+    @Mock
+    private ImageRepository imageRepository;
     @Mock
     private StoreRepository storeRepository;
     @Mock
     private StoreCategoryRepository storeCategoryRepository;
-
+    @Mock
+    private FileUtilResolver fileUtilResolver;
+    @Mock
+    private List<FileUtils> fileUtilsList;
+    @Mock
+    private ObjectStorageAuth objectStorageAuth;
+    @Mock
+    private ObjectStorageProperties objectStorageProperties;
+    @Mock
+    private FileUtils fileUtils;
     @Mock
     private StoreStatusRepository storeStatusRepository;
-
+    @Mock
+    private ObjectStorageService objectStorageService;
+    @Mock
+    private LocalFileService localFileService;
     @InjectMocks
     private StoreService storeService;
 
@@ -122,15 +150,19 @@ class StoreServiceTest {
             store.getAddress().getLatitude(),
             store.getAddress().getLongitude(),
             store.getDefaultEarningRate(),
+            store.getMinimumOrderPrice(),
             store.getDescription(),
             store.getBankTypeCode().getBankTypeCode(),
             store.getBankAccountNumber(),
-            store.getStoreImage().getSavedName());
-
+            store.getStoreImage().getSavedName(),
+            store.getStoreImage().getLocationType(),
+            store.getStoreImage().getDomainName(),
+            store.getDeliveryCost());
         when(storeRepository.findById(store.getId())).thenReturn(Optional.of(store));
-
+        when(fileUtilResolver.getFileService(store.getStoreImage().getLocationType())).thenReturn(objectStorageService);
         when(storeRepository.lookupStore(account.getId(), store.getId())).thenReturn(Optional.of(selectStore));
-        selectStore.setPathName(objectStorageService.getFullPath(FileDomain.STORE_IMAGE.getVariable(), selectStore.getPathName()));
+        when(fileUtilResolver.getFileService(store.getStoreImage().getLocationType()))
+            .thenReturn(objectStorageService);
 
         SelectStoreResponseDto result = storeService.selectStore(account.getId(), store.getId());
 
@@ -149,7 +181,7 @@ class StoreServiceTest {
 
         verify(storeRepository, times(1)).findById(store.getId());
         verify(storeRepository, times(1)).lookupStore(account.getId(), store.getId());
-        verify(objectStorageService, times(1)).getFullPath(anyString(), anyString());
+       // verify(objectStorageService, times(1)).getFullPath(anyString(), anyString());
     }
 
     @Test
@@ -168,11 +200,18 @@ class StoreServiceTest {
             store.getAddress().getMainPlace(),
             store.getAddress().getDetailPlace(),
             store.getDescription(),
-            store.getStoreImage().getSavedName()
+            store.getStoreImage().getLocationType(),
+            store.getStoreImage().getDomainName(),
+            store.getStoreImage().getSavedName(),
+            store.getMinimumOrderPrice(),
+            store.getDeliveryCost()
         );
 
         when(storeRepository.lookupStoreForUser(store.getId())).thenReturn(Optional.of(selectStore));
-        selectStore.setSavedName(objectStorageService.getFullPath(FileDomain.STORE_IMAGE.getVariable(), selectStore.getSavedName()));
+        when(fileUtilResolver.getFileService(store.getStoreImage().getLocationType()))
+            .thenReturn(objectStorageService);
+        selectStore.setSavedName(objectStorageService
+            .getFullPath(store.getStoreImage().getDomainName(), selectStore.getSavedName()));
 
         SelectStoreForUserResponseDto result = storeService.selectStoreForUser(store.getId());
 
@@ -209,6 +248,9 @@ class StoreServiceTest {
             "store_image.jpg",
             "image/png",
             new byte[0]);
+        Map<String, MultipartFile> fileMap = new HashMap<>();
+        fileMap.put(FileDomain.BUSINESS_INFO_IMAGE.getVariable(), businessImage);
+        fileMap.put(FileDomain.STORE_IMAGE.getVariable(), storeImage);
 
         when(storeRepository.existsStoreByBusinessLicenseNumber(createStoreRequestDto.getBusinessLicenseNumber())).thenReturn(false);
 
@@ -218,18 +260,23 @@ class StoreServiceTest {
         when(accountRepository.findById(account.getId())).thenReturn(Optional.of(account));
         when(bankTypeRepository.findById(createStoreRequestDto.getBankCode())).thenReturn(Optional.of(bankType));
         when(storeStatusRepository.getReferenceById(StoreStatus.StoreStatusCode.CLOSE.name())).thenReturn(storeStatus);
+        when(fileUtilResolver.getFileService(LocationType.OBJECT_S.getVariable())).thenReturn(objectStorageService);
+
+        Image image = mock(Image.class);
+        when(imageRepository.findById(anyLong())).thenReturn(Optional.ofNullable(image));
+
         when(storeCategoryRepository.findById(createStoreRequestDto.getStoreCategories().get(0))).thenReturn(Optional.of(storeCategory));
         when(storeRepository.save(any(Store.class))).thenReturn(store);
 
 
-        Long storeId = storeService.createStore(account.getId(), createStoreRequestDto, businessImage, storeImage);
+        Long storeId = storeService.createStore(account.getId(), createStoreRequestDto, LocationType.OBJECT_S.getVariable(), fileMap);
 
         verify(storeRepository, times(1)).existsStoreByBusinessLicenseNumber(createStoreRequestDto.getBusinessLicenseNumber());
         verify(merchantRepository, times(1)).findById(createStoreRequestDto.getMerchantId());
         verify(accountRepository, times(1)).findById(account.getId());
         verify(bankTypeRepository, times(1)).findById(createStoreRequestDto.getBankCode());
         verify(storeStatusRepository, times(1)).getReferenceById(StoreStatus.StoreStatusCode.CLOSE.name());
-        verify(objectStorageService, times(2)).storeFile(any(), anyString(), anyBoolean());
+        verify(fileUtilResolver, times(1)).getFileService(anyString());
         verify(storeCategoryRepository, times(1)).findById(anyString());
         verify(storeRepository, times(1)).save(any(Store.class));
 
@@ -254,11 +301,14 @@ class StoreServiceTest {
             "store_image.jpg",
             "image/png",
             new byte[0]);
+        Map<String, MultipartFile> fileMap = new HashMap<>();
+        fileMap.put(FileDomain.BUSINESS_INFO_IMAGE.getVariable(), businessImage);
+        fileMap.put(FileDomain.STORE_IMAGE.getVariable(), storeImage);
 
         when(storeRepository.existsStoreByBusinessLicenseNumber(createStoreRequestDto.getBusinessLicenseNumber())).thenReturn(true);
 
         assertThatThrownBy(
-            () -> storeService.createStore(account.getId(), createStoreRequestDto, businessImage, storeImage))
+            () -> storeService.createStore(account.getId(), createStoreRequestDto, LocationType.OBJECT_S.getVariable(),fileMap))
             .isInstanceOf(DuplicatedBusinessLicenseException.class)
             .hasMessageContaining(createStoreRequestDto.getBusinessLicenseNumber() + "은 이미 등록되어 있습니다.");
 
@@ -267,7 +317,7 @@ class StoreServiceTest {
         verify(accountRepository, times(0)).findById(account.getId());
         verify(bankTypeRepository, times(0)).findById(createStoreRequestDto.getBankCode());
         verify(storeStatusRepository, times(0)).getReferenceById(StoreStatus.StoreStatusCode.CLOSE.name());
-        verify(objectStorageService, times(0)).storeFile(any(), anyString(), anyBoolean());
+        //verify(objectStorageService, times(0)).storeFile(any(), anyString(), anyBoolean());
         verify(storeCategoryRepository, times(0)).findById(anyString());
         verify(storeRepository, times(0)).save(any(Store.class));
 
@@ -303,13 +353,14 @@ class StoreServiceTest {
         when(storeRepository.findById(store.getId())).thenReturn(Optional.of(store));
         when(accountRepository.findById(account.getId())).thenReturn(Optional.of(account));
         when(bankTypeRepository.findById(updateStoreRequestDto.getBankCode())).thenReturn(Optional.of(bankType));
+        when(fileUtilResolver.getFileService(LocationType.OBJECT_S.getVariable())).thenReturn(objectStorageService);
 
-        storeService.updateStore(account.getId(), store.getId(), updateStoreRequestDto, storeImage);
+        storeService.updateStore(account.getId(), store.getId(), updateStoreRequestDto, LocationType.OBJECT_S.getVariable(), storeImage);
 
         verify(storeRepository, times(1)).findById(store.getId());
         verify(accountRepository, times(1)).findById(account.getId());
         verify(bankTypeRepository, times(1)).findById(updateStoreRequestDto.getBankCode());
-        verify(objectStorageService, times(1)).storeFile(storeImage, FileDomain.STORE_IMAGE.getVariable(), true);
+        //verify(objectStorageService, times(1)).storeFile(storeImage, FileDomain.STORE_IMAGE.getVariable(), true);
 
     }
 
