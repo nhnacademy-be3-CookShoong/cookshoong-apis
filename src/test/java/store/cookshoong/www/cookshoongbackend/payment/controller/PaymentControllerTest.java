@@ -28,6 +28,8 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
+import store.cookshoong.www.cookshoongbackend.cart.db.service.CartService;
+import store.cookshoong.www.cookshoongbackend.cart.redis.service.CartRedisService;
 import store.cookshoong.www.cookshoongbackend.payment.model.request.CreatePaymentDto;
 import store.cookshoong.www.cookshoongbackend.payment.model.request.CreateRefundDto;
 import store.cookshoong.www.cookshoongbackend.payment.model.response.TossPaymentKeyResponseDto;
@@ -52,7 +54,15 @@ class PaymentControllerTest {
     @MockBean
     private PaymentService paymentService;
 
+    @MockBean
+    private CartRedisService cartRedisService;
+
+    @MockBean
+    private CartService cartService;
+
     UUID uuid = UUID.randomUUID();
+    public static final String CART = "cartKey=";
+
 
     @Test
     @DisplayName("결제 승인 후 결제가 완료되고나서 결제 정보를 DB 에 저장")
@@ -65,6 +75,7 @@ class PaymentControllerTest {
         ReflectionTestUtils.setField(createPaymentDto, "chargedAt", "2023-08-03T14:30:00+00:00");
         ReflectionTestUtils.setField(createPaymentDto, "chargedAmount", 50000);
         ReflectionTestUtils.setField(createPaymentDto, "paymentKey", "paymentKey");
+        ReflectionTestUtils.setField(createPaymentDto, "cartKey", CART + 1);
 
         mockMvc.perform(post("/api/payments/charges")
             .contentType(APPLICATION_JSON)
@@ -78,7 +89,8 @@ class PaymentControllerTest {
                     fieldWithPath("paymentType").description("결제타입"),
                     fieldWithPath("chargedAt").description("승인날짜"),
                     fieldWithPath("chargedAmount").description("결제금액"),
-                    fieldWithPath("paymentKey").description("toss 결제 Key")
+                    fieldWithPath("paymentKey").description("toss 결제 Key"),
+                    fieldWithPath("cartKey").description("장바구니 key")
                 )));
 
         verify(paymentService, times(1)).createPayment(any(CreatePaymentDto.class));

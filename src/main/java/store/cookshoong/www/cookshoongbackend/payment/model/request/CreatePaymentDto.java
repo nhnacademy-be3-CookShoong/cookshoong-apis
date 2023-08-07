@@ -27,4 +27,6 @@ public class CreatePaymentDto {
     private Integer chargedAmount;
     @NotBlank
     private String paymentKey;
+    @NotBlank
+    private String cartKey;
 }
