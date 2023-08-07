@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import store.cookshoong.www.cookshoongbackend.cart.db.model.response.CartMenuResponseDto;
 import store.cookshoong.www.cookshoongbackend.cart.db.model.response.CartOptionResponseDto;
@@ -26,6 +27,7 @@ import store.cookshoong.www.cookshoongbackend.file.service.ObjectStorageService;
  * @author jeongjewan_정제완
  * @since 2023.07.21
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CartRedisService {
@@ -323,6 +325,7 @@ public class CartRedisService {
      * @param cartResponseDtos      DB 장바구니 정보
      */
     private void createAllCartFromDbToRedis(String redisKey, List<CartResponseDto> cartResponseDtos) {
+
         for (CartResponseDto cartResponseDto : cartResponseDtos) {
 
             CartMenuResponseDto cartMenuResponseDto = cartResponseDto.getCartMenuResponseDto();
@@ -330,15 +333,17 @@ public class CartRedisService {
                 new CartMenuDto(cartMenuResponseDto.getMenuId(), cartMenuResponseDto.getName(),
                     objectStorageService.getFullPath(FileDomain.MENU_IMAGE.getVariable(), cartMenuResponseDto.getSavedName()), cartMenuResponseDto.getPrice());
 
-
-            List<CartOptionResponseDto> cartOptionResponseDtos = cartResponseDto.getCartOptionResponseDto();
             List<CartOptionDto> cartOptionRedisDtos = new ArrayList<>();
+            if (!(cartResponseDto.getCartOptionResponseDto().size() == 1
+                && cartResponseDto.getCartOptionResponseDto().get(0).getOptionId() == null)) {
+                List<CartOptionResponseDto> cartOptionResponseDtos = cartResponseDto.getCartOptionResponseDto();
 
-            for (CartOptionResponseDto cartOptionResponseDto : cartOptionResponseDtos) {
-                CartOptionDto cartOptionRedisDto =
-                    new CartOptionDto(cartOptionResponseDto.getOptionId(),
-                        cartOptionResponseDto.getName(), cartOptionResponseDto.getPrice());
-                cartOptionRedisDtos.add(cartOptionRedisDto);
+                for (CartOptionResponseDto cartOptionResponseDto : cartOptionResponseDtos) {
+                    CartOptionDto cartOptionRedisDto =
+                        new CartOptionDto(cartOptionResponseDto.getOptionId(),
+                            cartOptionResponseDto.getName(), cartOptionResponseDto.getPrice());
+                    cartOptionRedisDtos.add(cartOptionRedisDto);
+                }
             }
 
             CartRedisDto cartRedisDto =
