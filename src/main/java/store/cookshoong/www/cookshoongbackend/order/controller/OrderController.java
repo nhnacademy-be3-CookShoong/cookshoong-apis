@@ -61,12 +61,12 @@ public class OrderController {
 
         int totalPrice = cartRedisService.getTotalPrice(cartItems);
 
-        validIssueCouponInOrder(createOrderRequestDto, totalPrice);
+        int discountPrice = getDiscountPrice(createOrderRequestDto, totalPrice);
 
         orderService.createOrder(createOrderRequestDto, cartItems);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new CreateOrderResponseDto(totalPrice));
+                .body(new CreateOrderResponseDto(discountPrice));
     }
 
     private void validOrderDistance(CreateOrderRequestDto createOrderRequestDto) {
@@ -81,13 +81,18 @@ public class OrderController {
         }
     }
 
-    private void validIssueCouponInOrder(CreateOrderRequestDto createOrderRequestDto, int totalPrice) {
+    private int getDiscountPrice(CreateOrderRequestDto createOrderRequestDto, int totalPrice) {
         UUID issueCouponCode = createOrderRequestDto.getIssueCouponCode();
 
         if (Objects.isNull(issueCouponCode)) {
-            return;
+            return totalPrice;
         }
 
+        validCoupon(createOrderRequestDto, totalPrice, issueCouponCode);
+        return provideCouponService.getDiscountPrice(issueCouponCode, totalPrice);
+    }
+
+    private void validCoupon(CreateOrderRequestDto createOrderRequestDto, int totalPrice, UUID issueCouponCode) {
         provideCouponService.validProvideCoupon(issueCouponCode, createOrderRequestDto.getAccountId());
         provideCouponService.validMinimumOrderPrice(issueCouponCode, totalPrice);
         provideCouponService.validExpirationDateTime(issueCouponCode);
