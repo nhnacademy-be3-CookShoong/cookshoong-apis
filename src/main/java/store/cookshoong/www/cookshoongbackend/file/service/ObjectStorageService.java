@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import store.cookshoong.www.cookshoongbackend.common.property.ObjectStorageProperties;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
+import store.cookshoong.www.cookshoongbackend.file.model.LocationType;
 import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
 
 /**
@@ -26,11 +27,15 @@ import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
  */
 @Service
 @RequiredArgsConstructor
-public class ObjectStorageService implements FileService {
+public class ObjectStorageService implements FileUtils {
     private final ObjectStorageAuth objectStorageAuth;
     private final ObjectStorageProperties objectStorageProperties;
     private final ImageRepository imageRepository;
 
+    @Override
+    public String getStorageType() {
+        return LocationType.OBJECT_S.getVariable();
+    }
 
     /**
      * 파일이 저장된 전체 경로로 생성.
@@ -39,6 +44,7 @@ public class ObjectStorageService implements FileService {
      * @param fileName   the file name
      * @return 전체 경로
      */
+    @Override
     public String getFullPath(String objectPath, String fileName) {
         return String.format("%s/%s/%s/%s",
             objectStorageProperties.getStorageUrl(),
@@ -75,6 +81,7 @@ public class ObjectStorageService implements FileService {
         restTemplate.execute(url, HttpMethod.PUT, requestCallback, responseExtractor);
     }
 
+
     @Override
     public Image storeFile(MultipartFile multipartFile, String domainName, boolean isPublic) throws IOException {
         if (multipartFile.isEmpty()) {
@@ -94,7 +101,7 @@ public class ObjectStorageService implements FileService {
 
         uploadObject(inputStream, url, token); // 업로드
 
-        return imageRepository.save(new Image(originFileName, savedName, isPublic));
+        return imageRepository.save(new Image(getStorageType(), domainName, originFileName, savedName, isPublic));
     }
 
 }
