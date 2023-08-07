@@ -16,15 +16,15 @@ public class StoreDocumentResponseDto {
     private String name;
     private String description;
     @Setter
-    private String saved_name;
+    private String savedName;
     @Setter
     private List<String> categories;
 
-    public StoreDocumentResponseDto(Long id, String name, String description, String saved_name) {
+    public StoreDocumentResponseDto(Long id, String name, String description, String savedName) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.saved_name = saved_name;
+        this.savedName = savedName;
     }
 
     public static StoreDocumentResponseDto from(StoreDocument storeDocument) {
@@ -32,6 +32,6 @@ public class StoreDocumentResponseDto {
             storeDocument.getId(),
             storeDocument.getName(),
             storeDocument.getDescription(),
-            storeDocument.getSaved_name());
+            storeDocument.getSavedName());
     }
 }

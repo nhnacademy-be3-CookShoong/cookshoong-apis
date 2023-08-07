@@ -43,8 +43,8 @@ public class StoreDocumentController {
             = storeDocumentService.searchByKeywordText(keywordText, pageable);
 
         storeResponses.forEach(
-            storeDocumentResponseDto -> storeDocumentResponseDto.setSaved_name(
-                objectStorageService.getFullPath(FileDomain.STORE_IMAGE.getVariable(), storeDocumentResponseDto.getSaved_name()))
+            storeDocumentResponseDto -> storeDocumentResponseDto.setSavedName(
+                objectStorageService.getFullPath(FileDomain.STORE_IMAGE.getVariable(), storeDocumentResponseDto.getSavedName()))
         );
 
         storeResponses.forEach(

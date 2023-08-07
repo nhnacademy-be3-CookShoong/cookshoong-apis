@@ -22,5 +22,11 @@ public interface StoreCategoryRepositoryCustom {
      */
     Page<SelectAllCategoriesResponseDto> lookupStoreCategoriesPage(Pageable pageable);
 
+    /**
+     * 매장의 카테로기 리스트를 조회.
+     *
+     * @param storeId 매장 아이디
+     * @return 매장의 카테고리를 리스트로 반환
+     */
     List<String> findCategoryCodeByStoreId(Long storeId);
 }

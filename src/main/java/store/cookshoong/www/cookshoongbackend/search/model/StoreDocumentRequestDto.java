@@ -13,5 +13,5 @@ public class StoreDocumentRequestDto {
     private Long id;
     private String name;
     private String description;
-    private String saved_name;
+    private String savedName;
 }
