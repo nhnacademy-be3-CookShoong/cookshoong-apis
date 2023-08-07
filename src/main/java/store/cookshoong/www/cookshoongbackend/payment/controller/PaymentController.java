@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import store.cookshoong.www.cookshoongbackend.cart.db.service.CartService;
+import store.cookshoong.www.cookshoongbackend.cart.redis.service.CartRedisService;
 import store.cookshoong.www.cookshoongbackend.payment.exception.ChargeValidationException;
 import store.cookshoong.www.cookshoongbackend.payment.exception.RefundValidationException;
 import store.cookshoong.www.cookshoongbackend.payment.model.request.CreatePaymentDto;
@@ -32,9 +34,14 @@ import store.cookshoong.www.cookshoongbackend.payment.service.PaymentService;
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final CartRedisService cartRedisService;
+    private final CartService cartService;
+    public static final String CART = "cartKey=";
+
 
     /**
-     *  결제 승인 후 결제에 성공한 결제정보가 담겨져 오는 Controller.
+     *  결제 승인 후 결제에 성공한 결제정보가 담겨져 오는 Controller. <br>
+     *  결제 완료되면 Redis 장바구니 삭제, DB 장바구니 삭제
      *
      * @param createPaymentDto      성공한 결제 정보
      * @param bindingResult         Validation 에 대한 bindingResult
@@ -49,6 +56,11 @@ public class PaymentController {
         }
 
         paymentService.createPayment(createPaymentDto);
+
+        cartRedisService.removeCartMenuAll(createPaymentDto.getCartKey());
+
+        String id = createPaymentDto.getCartKey().replaceAll(CART, "");
+        cartService.deleteCartDb(Long.valueOf(id));
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
