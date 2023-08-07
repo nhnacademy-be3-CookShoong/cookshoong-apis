@@ -5,14 +5,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
 import store.cookshoong.www.cookshoongbackend.file.service.ObjectStorageService;
-import store.cookshoong.www.cookshoongbackend.search.model.StoreDocumentRequestAllDto;
 import store.cookshoong.www.cookshoongbackend.search.model.StoreDocumentResponseDto;
 import store.cookshoong.www.cookshoongbackend.search.service.StoreDocumentService;
 import store.cookshoong.www.cookshoongbackend.shop.service.StoreCategoryService;
@@ -30,11 +27,6 @@ public class StoreDocumentController {
     private final StoreDocumentService storeDocumentService;
     private final StoreCategoryService storeCategoryService;
     private final ObjectStorageService objectStorageService;
-
-    @PutMapping("/store/keyword")
-    public void saveByKeyword(@RequestBody StoreDocumentRequestAllDto storeDocumentRequestAllDto) {
-        storeDocumentService.saveAll(storeDocumentRequestAllDto);
-    }
 
     @GetMapping("/store/list")
     public ResponseEntity<Page<StoreDocumentResponseDto>> searchByDistance(
