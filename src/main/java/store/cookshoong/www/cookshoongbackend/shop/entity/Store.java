@@ -64,7 +64,7 @@ public class Store {
     @JoinColumn(name = "store_status_code", nullable = false)
     private StoreStatus storeStatus;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "business_license_image_id", nullable = false)
     private Image businessLicense;
 
@@ -84,21 +84,21 @@ public class Store {
     private String phoneNumber;
 
     @Column(name = "default_earning_rate", nullable = false, precision = 2, scale = 1)
-    @ColumnDefault("0")
     private BigDecimal defaultEarningRate;
 
     @Lob
     private String description;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_image_id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "store_image_id")
     private Image storeImage;
 
     @Column(name = "bank_account_number", nullable = false, length = 20)
     private String bankAccountNumber;
     @Column(name = "minimum_order_price", nullable = false)
-    @ColumnDefault("0")
     private Integer minimumOrderPrice;
+    @Column(name = "delivery_cost")
+    private Integer deliveryCost;
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.PERSIST)
     private final Set<StoresHasCategory> storesHasCategories = new HashSet<>();
@@ -131,6 +131,7 @@ public class Store {
         this.description = createStoreRequestDto.getDescription();
         this.storeImage = storeImage;
         this.bankAccountNumber = createStoreRequestDto.getBankAccount();
+        this.deliveryCost = createStoreRequestDto.getDeliveryCost();
     }
 
     /**
@@ -165,6 +166,7 @@ public class Store {
         this.description = requestDto.getDescription();
         this.storeImage = storeImage;
         this.bankAccountNumber = requestDto.getBankAccount();
+        this.deliveryCost = requestDto.getDeliveryCost();
     }
 
     /**
