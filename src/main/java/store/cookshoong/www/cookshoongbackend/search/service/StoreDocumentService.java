@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.search.model.StoreDocument;
 import store.cookshoong.www.cookshoongbackend.search.model.StoreDocumentResponseDto;
 import store.cookshoong.www.cookshoongbackend.search.repository.StoreSearchRepository;
-import store.cookshoong.www.cookshoongbackend.shop.repository.category.StoreCategoryRepository;
 
 /**
  * 매장 도큐먼트 서비스.
@@ -21,7 +20,6 @@ import store.cookshoong.www.cookshoongbackend.shop.repository.category.StoreCate
 @Service
 public class StoreDocumentService {
     private final StoreSearchRepository storeSearchRepository;
-    private final StoreCategoryRepository storesCategoryRepository;
 
     public Page<StoreDocumentResponseDto> searchByKeywordText(String keyword, Long addressId, Pageable pageable) {
         Page<StoreDocument> storeDocuments = storeSearchRepository.searchByKeywordText(keyword, addressId, pageable);
