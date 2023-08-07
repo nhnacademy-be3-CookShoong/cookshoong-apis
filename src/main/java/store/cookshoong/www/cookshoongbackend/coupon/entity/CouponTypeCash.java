@@ -28,4 +28,9 @@ public class CouponTypeCash extends CouponType {
 
     @Column(name = "minimum_order_price")
     private Integer minimumOrderPrice;
+
+    @Override
+    public int getDiscountPrice(int totalPrice) {
+        return Math.max(0, totalPrice - getDiscountAmount());
+    }
 }

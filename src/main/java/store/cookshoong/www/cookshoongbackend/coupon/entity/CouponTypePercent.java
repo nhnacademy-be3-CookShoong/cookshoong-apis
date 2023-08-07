@@ -31,4 +31,11 @@ public class CouponTypePercent extends CouponType {
 
     @Column(name = "minimum_order_price")
     private Integer minimumOrderPrice;
+
+    @Override
+    public int getDiscountPrice(int totalPrice) {
+        int discount = Math.min(totalPrice / 100 * rate, getMaximumDiscountAmount());
+        int discountPrice = totalPrice - discount;
+        return Math.max(0, discountPrice);
+    }
 }
