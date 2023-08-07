@@ -1,6 +1,5 @@
 package store.cookshoong.www.cookshoongbackend.coupon.entity;
 
-import java.util.OptionalInt;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
@@ -31,4 +30,6 @@ public abstract class CouponType {
     private Integer id;
 
     public abstract Integer getMinimumOrderPrice();
+
+    public abstract int getDiscountPrice(int totalPrice);
 }

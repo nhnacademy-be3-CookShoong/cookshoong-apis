@@ -6,11 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.BoundSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -34,8 +30,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepo
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponRedisRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.IssueCouponRepository;
 import store.cookshoong.www.cookshoongbackend.menu_order.exception.menu.BelowMinimumOrderPriceException;
-import store.cookshoong.www.cookshoongbackend.rabbitmq.exception.LockInterruptedException;
-import store.cookshoong.www.cookshoongbackend.rabbitmq.exception.LockOverWaitTimeException;
+import store.cookshoong.www.cookshoongbackend.lock.LockProcessor;
 
 /**
  * 쿠폰 발급 서비스.
@@ -47,19 +42,15 @@ import store.cookshoong.www.cookshoongbackend.rabbitmq.exception.LockOverWaitTim
 @Transactional
 @RequiredArgsConstructor
 public class ProvideCouponService {
-    private static final String EXPLAIN = "couponPolicyId -";
-    private static final String NOT_MATCH_LOCK = "- IsNotMatch";
-    private static final int WAIT_TIME = 60;
-    private static final int LEASE_TIME = 5;
     private static final String STATUS_USE = "USE";
     private static final int SPARE_MINUTE = 30;
 
     private final IssueCouponRepository issueCouponRepository;
     private final CouponPolicyRepository couponPolicyRepository;
     private final AccountRepository accountRepository;
-    private final RedissonClient redissonClient;
     private final CouponRedisRepository couponRedisRepository;
     private final CouponLogRepository couponLogRepository;
+    private final LockProcessor lockProcessor;
 
     /**
      * 사용자가 쿠폰 발급을 요청했을 때, 해당 쿠폰 정책과 일치하는 쿠폰 중 하나를 발급해준다.
@@ -71,7 +62,7 @@ public class ProvideCouponService {
         Long accountId = updateProvideCouponRequestDto.getAccountId();
 
         CouponPolicy couponPolicy = couponPolicyRepository.findById(updateProvideCouponRequestDto.getCouponPolicyId())
-                .orElseThrow(CouponPolicyNotFoundException::new);
+            .orElseThrow(CouponPolicyNotFoundException::new);
 
         validBeforeProvide(accountId, couponPolicy);
 
@@ -129,7 +120,7 @@ public class ProvideCouponService {
         String key = couponPolicyId.toString();
 
         CouponPolicy couponPolicy = couponPolicyRepository.findById(couponPolicyId)
-                .orElseThrow(CouponPolicyNotFoundException::new);
+            .orElseThrow(CouponPolicyNotFoundException::new);
 
         Long accountId = updateProvideCouponRequestDto.getAccountId();
         validBeforeProvide(accountId, couponPolicy);
@@ -144,7 +135,7 @@ public class ProvideCouponService {
         }
 
         IssueCoupon issueCoupon = issueCouponRepository.findById(UUID.fromString(couponId))
-                .orElseThrow(IssueCouponNotFoundException::new);
+            .orElseThrow(IssueCouponNotFoundException::new);
 
         if (Objects.nonNull(issueCoupon.getAccount())) {
             throw new ProvideIssueCouponFailureException();
@@ -169,26 +160,7 @@ public class ProvideCouponService {
             throw new CouponExhaustionException();
         }
 
-        lock(key, this::updateRedisCouponState);
-    }
-
-    private void lock(String key, Consumer<String> consumer) {
-        RLock lock = redissonClient.getLock(EXPLAIN + key + NOT_MATCH_LOCK);
-
-        try {
-            boolean lockSuccess = lock.tryLock(WAIT_TIME, LEASE_TIME, TimeUnit.SECONDS);
-            if (!lockSuccess) {
-                throw new LockOverWaitTimeException();
-            }
-
-            consumer.accept(key);
-
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new LockInterruptedException();
-        } finally {
-            lock.unlock();
-        }
+        lockProcessor.lock(key, this::updateRedisCouponState);
     }
 
     private void updateRedisCouponState(String key) {
@@ -257,5 +229,21 @@ public class ProvideCouponService {
         if (LocalDateTime.now().isAfter(expirationDateTime.plusMinutes(SPARE_MINUTE))) {
             throw new ExpiredCouponException();
         }
+    }
+
+    /**
+     * Gets discount price.
+     *
+     * @param issueCouponCode the issue coupon code
+     * @param totalPrice      the total price
+     * @return the discount price
+     */
+    public int getDiscountPrice(UUID issueCouponCode, int totalPrice) {
+        IssueCoupon issueCoupon = issueCouponRepository.findById(issueCouponCode)
+            .orElseThrow(IssueCouponNotFoundException::new);
+
+        return issueCoupon.getCouponPolicy()
+            .getCouponType()
+            .getDiscountPrice(totalPrice);
     }
 }
