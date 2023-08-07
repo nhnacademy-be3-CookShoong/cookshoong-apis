@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.cart.redis.listener;
 
+import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;
@@ -41,7 +42,9 @@ public class CartKeyExpiredEventListener extends KeyExpirationEventMessageListen
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
+
         List<CartRedisDto> cartRedisList = null;
+
         String expiredRedisKey = message.toString();
 
         if (!expiredRedisKey.endsWith(PHANTOM)) {
@@ -52,12 +55,15 @@ public class CartKeyExpiredEventListener extends KeyExpirationEventMessageListen
 
         if (cartRedisService.hasMenuInCartRedis(redisKey, NO_MENU)) {
 
+            cartRedisList = new ArrayList<>();
             cartService.createCartDb(redisKey, cartRedisList);
             return;
         }
 
         cartRedisList = cartRedisService.selectCartMenuAll(redisKey);
 
-        cartService.createCartDb(redisKey, cartRedisList);
+        if (!cartRedisList.isEmpty()) {
+            cartService.createCartDb(redisKey, cartRedisList);
+        }
     }
 }
