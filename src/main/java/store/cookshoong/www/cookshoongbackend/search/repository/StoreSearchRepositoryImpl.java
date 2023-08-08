@@ -8,6 +8,10 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.GeoDistanceQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.GeoDistanceSortBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -39,22 +43,31 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepositoryCustom {
             .matchQuery("keywordText", keywordText)
             .fuzziness("AUTO");
 
-        Double lat = addressService.selectAccountChoiceAddress(addressId).getLatitude().doubleValue();
-        Double lon = addressService.selectAccountChoiceAddress(addressId).getLongitude().doubleValue();
+        double lat = addressService.selectAccountChoiceAddress(addressId).getLatitude().doubleValue();
+        double lon = addressService.selectAccountChoiceAddress(addressId).getLongitude().doubleValue();
 
         GeoDistanceQueryBuilder geoDistanceQueryBuilder = QueryBuilders
             .geoDistanceQuery("location")
             .point(lat, lon)
             .distance(3, DistanceUnit.KILOMETERS);
 
+        GeoDistanceSortBuilder distanceSortBuilder = SortBuilders.geoDistanceSort("location", lat, lon)
+            .order(SortOrder.ASC)
+            .unit(DistanceUnit.KILOMETERS);
+
         BoolQueryBuilder boolQueryBuilder = QueryBuilders
             .boolQuery()
+            .mustNot(QueryBuilders.termQuery("store_status_code", "OUTED"))
             .must(matchQueryBuilder)
             .filter(geoDistanceQueryBuilder);
+
+        FieldSortBuilder sortBuilder = SortBuilders.fieldSort("store_status_code.keyword")
+            .order(SortOrder.DESC);
 
         NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
             .withQuery(boolQueryBuilder)
             .withMinScore(0.6f)
+            .withSorts(sortBuilder, distanceSortBuilder)
             .build();
 
         SearchHits<StoreDocument> searchHits = elasticsearchOperations.search(searchQuery, StoreDocument.class);
@@ -64,15 +77,30 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepositoryCustom {
 
     @Override
     public Page<StoreDocument> searchByDistance(Long addressId, Pageable pageable) {
-        Double lat = addressService.selectAccountAddressRenewalAt(addressId).getLatitude().doubleValue();
-        Double lon = addressService.selectAccountAddressRenewalAt(addressId).getLongitude().doubleValue();
+        double lat = addressService.selectAccountChoiceAddress(addressId).getLatitude().doubleValue();
+        double lon = addressService.selectAccountChoiceAddress(addressId).getLongitude().doubleValue();
 
         GeoDistanceQueryBuilder geoDistanceQueryBuilder = QueryBuilders
             .geoDistanceQuery("location")
             .point(lat, lon)
             .distance(3, DistanceUnit.KILOMETERS);
 
-        NativeSearchQuery searchQuery = new NativeSearchQuery(geoDistanceQueryBuilder);
+        GeoDistanceSortBuilder distanceSortBuilder = SortBuilders.geoDistanceSort("location", lat, lon)
+            .order(SortOrder.ASC)
+            .unit(DistanceUnit.KILOMETERS);
+
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders
+            .boolQuery()
+            .mustNot(QueryBuilders.termQuery("store_status_code", "OUTED"))
+            .must(geoDistanceQueryBuilder);
+
+        FieldSortBuilder sortBuilder = SortBuilders.fieldSort("store_status_code.keyword")
+            .order(SortOrder.DESC);
+
+        NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
+            .withQuery(boolQueryBuilder)
+            .withSorts(sortBuilder, distanceSortBuilder)
+            .build();
 
         SearchHits<StoreDocument> searchHits = elasticsearchOperations.search(searchQuery, StoreDocument.class);
         List<StoreDocument> storeDocuments = searchHits.get().map(SearchHit::getContent).collect(Collectors.toList());
