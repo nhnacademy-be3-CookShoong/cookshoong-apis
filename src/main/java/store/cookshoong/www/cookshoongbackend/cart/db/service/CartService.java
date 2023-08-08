@@ -62,7 +62,7 @@ public class CartService {
         }
     }
 
-    private void updateRedisCartKey(String accountId, List<CartRedisDto> cartRedisList) {;
+    private void updateRedisCartKey(String accountId, List<CartRedisDto> cartRedisList) {
 
         if (cartRedisList == null || cartRedisList.isEmpty()) {
             return;
