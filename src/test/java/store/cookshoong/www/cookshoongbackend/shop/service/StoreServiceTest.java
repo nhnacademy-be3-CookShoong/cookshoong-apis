@@ -3,7 +3,6 @@ package store.cookshoong.www.cookshoongbackend.shop.service;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -15,14 +14,12 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -54,7 +51,7 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.StoreCategory;
 import store.cookshoong.www.cookshoongbackend.shop.entity.StoreStatus;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.DuplicatedBusinessLicenseException;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateStoreRequestDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreRequestDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreManagerRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseDto;
@@ -331,36 +328,20 @@ class StoreServiceTest {
         store.modifyAddress(address);
         BankType bankType = te.getBankTypeKb();
         ReflectionTestUtils.setField(store, "id", 1L);
-        UpdateStoreRequestDto updateStoreRequestDto = ReflectionUtils.newInstance(UpdateStoreRequestDto.class);
-        ReflectionTestUtils.setField(updateStoreRequestDto, "businessLicenseNumber", store.getBusinessLicenseNumber());
-        ReflectionTestUtils.setField(updateStoreRequestDto, "representativeName", store.getRepresentativeName());
-        ReflectionTestUtils.setField(updateStoreRequestDto, "openingDate", store.getOpeningDate());
-        ReflectionTestUtils.setField(updateStoreRequestDto, "storeName", store.getName());
-        ReflectionTestUtils.setField(updateStoreRequestDto, "mainPlace", address.getMainPlace());
-        ReflectionTestUtils.setField(updateStoreRequestDto, "detailPlace", address.getDetailPlace());
-        ReflectionTestUtils.setField(updateStoreRequestDto, "latitude", address.getLatitude());
-        ReflectionTestUtils.setField(updateStoreRequestDto, "longitude", address.getLongitude());
-        ReflectionTestUtils.setField(updateStoreRequestDto, "phoneNumber", store.getPhoneNumber());
-        ReflectionTestUtils.setField(updateStoreRequestDto, "earningRate", store.getDefaultEarningRate());
-        ReflectionTestUtils.setField(updateStoreRequestDto, "bankCode", bankType.getBankTypeCode());
-        ReflectionTestUtils.setField(updateStoreRequestDto, "bankAccount", store.getBankAccountNumber());
-        ReflectionTestUtils.setField(updateStoreRequestDto, "savedName", store.getStoreImage().getSavedName());
-        MultipartFile storeImage = new MockMultipartFile(UUID.randomUUID() + ".jpg",
-            "store_image.jpg",
-            "image/png",
-            new byte[0]);
+        UpdateStoreManagerRequestDto updateStoreManagerRequestDto = ReflectionUtils.newInstance(UpdateStoreManagerRequestDto.class);
+        ReflectionTestUtils.setField(updateStoreManagerRequestDto, "businessLicenseNumber", store.getBusinessLicenseNumber());
+        ReflectionTestUtils.setField(updateStoreManagerRequestDto, "representativeName", store.getRepresentativeName());
+        ReflectionTestUtils.setField(updateStoreManagerRequestDto, "bankCode", bankType.getBankTypeCode());
+        ReflectionTestUtils.setField(updateStoreManagerRequestDto, "bankAccount", store.getBankAccountNumber());
 
         when(storeRepository.findById(store.getId())).thenReturn(Optional.of(store));
-        when(accountRepository.findById(account.getId())).thenReturn(Optional.of(account));
-        when(bankTypeRepository.findById(updateStoreRequestDto.getBankCode())).thenReturn(Optional.of(bankType));
-        when(fileUtilResolver.getFileService(LocationType.OBJECT_S.getVariable())).thenReturn(objectStorageService);
+        when(bankTypeRepository.findById(updateStoreManagerRequestDto.getBankCode())).thenReturn(Optional.of(bankType));
 
-        storeService.updateStore(account.getId(), store.getId(), updateStoreRequestDto, LocationType.OBJECT_S.getVariable(), storeImage);
+        storeService.updateStore(account.getId(), store.getId(), updateStoreManagerRequestDto);
 
         verify(storeRepository, times(1)).findById(store.getId());
-        verify(accountRepository, times(1)).findById(account.getId());
-        verify(bankTypeRepository, times(1)).findById(updateStoreRequestDto.getBankCode());
-        //verify(objectStorageService, times(1)).storeFile(storeImage, FileDomain.STORE_IMAGE.getVariable(), true);
+        verify(bankTypeRepository, times(1)).findById(updateStoreManagerRequestDto.getBankCode());
+
 
     }
 
