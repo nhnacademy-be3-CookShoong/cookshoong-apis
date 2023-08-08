@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
-import store.cookshoong.www.cookshoongbackend.file.service.ObjectStorageService;
+import store.cookshoong.www.cookshoongbackend.file.service.FileUtilResolver;
+import store.cookshoong.www.cookshoongbackend.file.service.FileUtils;
 import store.cookshoong.www.cookshoongbackend.search.model.StoreDocumentResponseDto;
 import store.cookshoong.www.cookshoongbackend.search.service.StoreDocumentService;
 import store.cookshoong.www.cookshoongbackend.shop.service.StoreCategoryService;
@@ -26,7 +26,8 @@ import store.cookshoong.www.cookshoongbackend.shop.service.StoreCategoryService;
 public class StoreDocumentController {
     private final StoreDocumentService storeDocumentService;
     private final StoreCategoryService storeCategoryService;
-    private final ObjectStorageService objectStorageService;
+    private final FileUtilResolver fileUtilResolver;
+
 
     @GetMapping("/stores/search")
     public ResponseEntity<Page<StoreDocumentResponseDto>> searchByDistance(
@@ -35,10 +36,10 @@ public class StoreDocumentController {
         Page<StoreDocumentResponseDto> storeResponses
             = storeDocumentService.searchByDistance(addressId, pageable);
 
-        storeResponses.forEach(
-            storeDocumentResponseDto -> storeDocumentResponseDto.setSavedName(
-                objectStorageService.getFullPath(FileDomain.STORE_IMAGE.getVariable(), storeDocumentResponseDto.getSavedName()))
-        );
+        for (StoreDocumentResponseDto s : storeResponses) {
+            FileUtils fileUtils = fileUtilResolver.getFileService(s.getLocationType());
+            s.setSavedName(fileUtils.getFullPath(s.getDomainName(), s.getSavedName()));
+        }
 
         storeResponses.forEach(
             storeDocumentResponseDto -> storeDocumentResponseDto.setCategories(
@@ -57,10 +58,10 @@ public class StoreDocumentController {
         Page<StoreDocumentResponseDto> storeResponses
             = storeDocumentService.searchByKeywordText(keywordText, addressId, pageable);
 
-        storeResponses.forEach(
-            storeDocumentResponseDto -> storeDocumentResponseDto.setSavedName(
-                objectStorageService.getFullPath(FileDomain.STORE_IMAGE.getVariable(), storeDocumentResponseDto.getSavedName()))
-        );
+        for (StoreDocumentResponseDto s : storeResponses) {
+            FileUtils fileUtils = fileUtilResolver.getFileService(s.getLocationType());
+            s.setSavedName(fileUtils.getFullPath(s.getDomainName(), s.getSavedName()));
+        }
 
         storeResponses.forEach(
             storeDocumentResponseDto -> storeDocumentResponseDto.setCategories(
