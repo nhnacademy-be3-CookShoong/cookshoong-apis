@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import store.cookshoong.www.cookshoongbackend.cart.db.service.CartService;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartRedisDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.service.CartRedisService;
+import store.cookshoong.www.cookshoongbackend.lock.LockProcessor;
 
 /**
  * Phantom Key 를 잡기위한 Listener.
@@ -25,6 +26,7 @@ public class CartKeyExpiredEventListener extends KeyExpirationEventMessageListen
     private static final String NO_MENU = "NO_KEY";
     private final CartService cartService;
     private final CartRedisService cartRedisService;
+    private final LockProcessor lockProcessor;
 
     /**
      * CartKeyExpiredEventListener 생성자.
@@ -33,17 +35,19 @@ public class CartKeyExpiredEventListener extends KeyExpirationEventMessageListen
      * @param cartService           DB 장바구니에 대한 Service
      */
     public CartKeyExpiredEventListener(RedisMessageListenerContainer listenerContainer,
-                                       CartService cartService, CartRedisService cartRedisService) {
+                                       CartService cartService, CartRedisService cartRedisService,
+                                       LockProcessor lockProcessor) {
 
         super(listenerContainer);
         this.cartService = cartService;
         this.cartRedisService = cartRedisService;
+        this.lockProcessor = lockProcessor;
     }
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
 
-        List<CartRedisDto> cartRedisList = null;
+        List<CartRedisDto> cartRedisList = new ArrayList<>();
 
         String expiredRedisKey = message.toString();
 
@@ -57,15 +61,16 @@ public class CartKeyExpiredEventListener extends KeyExpirationEventMessageListen
 
         if (cartRedisService.hasMenuInCartRedis(redisKey, NO_MENU)) {
 
-            cartRedisList = new ArrayList<>();
-            cartService.createCartDbWithRock(redisKey, cartRedisList);
+            List<CartRedisDto> finalCartRedisList = new ArrayList<>();
+            lockProcessor.lock(redisKey, ignore -> cartService.createCartDb(redisKey, finalCartRedisList));
             return;
         }
 
         cartRedisList = cartRedisService.selectCartMenuAll(redisKey);
 
         if (!cartRedisList.isEmpty()) {
-            cartService.createCartDbWithRock(redisKey, cartRedisList);
+            List<CartRedisDto> finalCartRedisList1 = cartRedisList;
+            lockProcessor.lock(redisKey, ignore -> cartService.createCartDb(redisKey, finalCartRedisList1));
         }
     }
 }
