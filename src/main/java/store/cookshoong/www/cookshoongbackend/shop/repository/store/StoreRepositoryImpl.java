@@ -112,15 +112,17 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
         QStore store = QStore.store;
         QAddress address = QAddress.address;
         QImage image = QImage.image;
+        QStoreStatus storeStatus = QStoreStatus.storeStatus;
 
         return Optional.ofNullable(jpaQueryFactory
             .select(new QSelectStoreForUserResponseDto(
                 store.businessLicenseNumber, store.representativeName, store.openingDate, store.name,
                 store.phoneNumber, address.mainPlace, address.detailPlace, store.description,
-                store.storeImage.locationType, store.storeImage.domainName, store.storeImage.savedName, store.minimumOrderPrice, store.deliveryCost))
+                store.storeImage.locationType, store.storeImage.domainName, store.storeImage.savedName, store.minimumOrderPrice, store.deliveryCost, storeStatus.description))
             .from(store)
             .innerJoin(store.address, address)
             .innerJoin(store.storeImage, image)
+            .innerJoin(store.storeStatus, storeStatus)
             .where(store.id.eq(storeId))
             .fetchOne());
     }

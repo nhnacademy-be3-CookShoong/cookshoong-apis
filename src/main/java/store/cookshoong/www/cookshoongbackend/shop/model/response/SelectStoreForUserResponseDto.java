@@ -31,6 +31,7 @@ public class SelectStoreForUserResponseDto {
     private String savedName;
     @Setter
     private List<SelectProvableStoreCouponPolicyResponseDto> provableCouponPolicies;
+    private final String storeStatus;
 
     /**
      * 일반회원 : 일반회원이 조회할 수 있는 매장의 정보.
@@ -47,7 +48,8 @@ public class SelectStoreForUserResponseDto {
     @QueryProjection
     public SelectStoreForUserResponseDto(String businessLicenseNumber, String representativeName, LocalDate openingDate,
                                          String storeName, String phoneNumber, String mainPlace, String detailPlace, String description,
-                                         String locationType, String domainName, String savedName, Integer minimumOrderPrice, Integer deliveryCost) {
+                                         String locationType, String domainName, String savedName, Integer minimumOrderPrice,
+                                         Integer deliveryCost, String storeStatus) {
         this.businessLicenseNumber = businessLicenseNumber;
         this.representativeName = representativeName;
         this.openingDate = openingDate;
@@ -61,5 +63,6 @@ public class SelectStoreForUserResponseDto {
         this.savedName = savedName;
         this.minimumOrderPrice = minimumOrderPrice;
         this.deliveryCost = deliveryCost;
+        this.storeStatus = storeStatus;
     }
 }

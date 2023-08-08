@@ -68,7 +68,7 @@ public class CartRedisDto {
 
         return optionNamesString.isEmpty()
             ? menu.getMenuName()
-            : menu.getMenuName() + "<br>옵션: " + optionNamesString;
+            : menu.getMenuName() + "<br>" + "<h4>&nbsp;&nbsp;• 옵션 : &nbsp;" + optionNamesString + "</h4>";
     }
 
     /**
