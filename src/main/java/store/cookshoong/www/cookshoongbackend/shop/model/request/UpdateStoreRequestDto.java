@@ -31,4 +31,12 @@ public class UpdateStoreRequestDto {
     private String bankCode;
     private String bankAccount;
     private String savedName;
+
+    private Integer minimumOrderPrice;
+
+    private Integer deliveryCost;
+
+    private String locationType;
+    private String domainName;
+
 }

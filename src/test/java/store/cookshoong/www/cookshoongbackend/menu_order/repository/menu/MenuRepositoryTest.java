@@ -12,6 +12,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
+import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
+import store.cookshoong.www.cookshoongbackend.file.model.LocationType;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.MenuStatus;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
@@ -41,7 +43,7 @@ class MenuRepositoryTest {
     @BeforeEach
     void setup() {
         store = testPersistEntity.getOpenStore();
-        image = testEntity.getImage("메뉴사진", true);
+        image = testEntity.getImage(LocationType.OBJECT_S.getVariable(), FileDomain.MENU_IMAGE.getVariable(), "메뉴사진", true);
         menuStatus = testEntity.getMenuStatus("OPEN", "판매중");
         menu = new Menu(menuStatus, store, "테스트메뉴", 5000, "메뉴설명", image, 40, new BigDecimal("1.2"));
 

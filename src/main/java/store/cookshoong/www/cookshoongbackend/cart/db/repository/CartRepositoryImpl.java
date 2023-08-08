@@ -84,8 +84,8 @@ public class CartRepositoryImpl implements CartRepositoryCustom {
             .innerJoin(menuStatus).on(menu.menuStatus.eq(menuStatus))
             .innerJoin(image).on(menu.image.id.eq(image.id))
             .leftJoin(cartDetailMenuOption).on(cartDetail.id.eq(cartDetailMenuOption.cartDetail.id))
-            .leftJoin(cartDetailMenuOption.option, option)
-            .where(account.id.eq(accountId), option.isDeleted.eq(Boolean.FALSE), menuStatus.code.ne("OUTED"))
+            .leftJoin(cartDetailMenuOption.option, option).on(option.isDeleted.eq(Boolean.FALSE))
+            .where(account.id.eq(accountId), menuStatus.code.ne("OUTED"))
             .transform(groupBy(cartDetail.id)
                 .list(constructor(
                     CartResponseDto.class,
@@ -96,10 +96,12 @@ public class CartRepositoryImpl implements CartRepositoryCustom {
                         CartMenuResponseDto.class,
                         menu.id,
                         menu.name,
-                        image.savedName,
+                        menu.image.savedName,
                         menu.price,
                         cartDetail.createdTimeMillis,
-                        cartDetail.count
+                        cartDetail.count,
+                        menu.image.locationType,
+                        menu.image.domainName
                     ),
                     list(constructor(
                         CartOptionResponseDto.class,

@@ -27,4 +27,10 @@ public class CreatePaymentDto {
     private Integer chargedAmount;
     @NotBlank
     private String paymentKey;
+    @NotBlank
+    private String cartKey;
+
+    private UUID couponCode;
+
+    private Integer point;
 }

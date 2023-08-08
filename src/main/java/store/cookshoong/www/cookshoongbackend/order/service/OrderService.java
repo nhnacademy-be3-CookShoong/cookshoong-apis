@@ -1,6 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.order.service;
 
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -99,8 +100,13 @@ public class OrderService {
 
         OrderDetail orderDetail = orderDetailRepository.save(cartMenu.toEntity(order, menu));
 
-        cartMenu.getOptions()
-            .forEach(optionDto -> createOrderDetailMenuOption(optionDto, orderDetail));
+        List<CartOptionDto> options = cartMenu.getOptions();
+
+        if (Objects.isNull(options)) {
+            return;
+        }
+
+        options.forEach(optionDto -> createOrderDetailMenuOption(optionDto, orderDetail));
     }
 
     private void createOrderDetailMenuOption(CartOptionDto optionDto,

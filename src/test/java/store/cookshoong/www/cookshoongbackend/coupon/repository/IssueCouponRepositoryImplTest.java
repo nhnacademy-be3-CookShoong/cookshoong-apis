@@ -35,6 +35,8 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.ProvideIssueCouponFailureException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectOwnCouponResponseDto;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
+import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
+import store.cookshoong.www.cookshoongbackend.file.model.LocationType;
 import store.cookshoong.www.cookshoongbackend.order.entity.Order;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
@@ -86,8 +88,8 @@ class IssueCouponRepositoryImplTest {
     void beforeEach() {
         customer = tpe.getLevelOneActiveCustomer();
         Merchant merchant = te.getMerchant();
-        Image businessImage = te.getImage("사업자등록증.jpg", false);
-        Image storeImage = te.getImage("우리 매장 대표사진.jpg", true);
+        Image businessImage = te.getImage(LocationType.OBJECT_S.getVariable(), FileDomain.BUSINESS_INFO_IMAGE.getVariable(), "사업자등록증.jpg", false);
+        Image storeImage = te.getImage(LocationType.OBJECT_S.getVariable(), FileDomain.STORE_IMAGE.getVariable(), "우리 매장 대표사진.jpg", true);
         hasAllUsageCouponMerchant =
             te.getStore(merchant, tpe.getLevelOneActiveCustomer(), te.getBankTypeKb(), te.getStoreStatusOpen(), businessImage, storeImage);
         hasMerchantUsageCouponMerchant =

@@ -59,7 +59,7 @@ public class CartService {
         // DB 에 회원에 대한 장바구니
         deleteCartDb(Long.valueOf(id));
 
-        if (cartRedisList == null) {
+        if (cartRedisList == null || cartRedisList.isEmpty()) {
             return;
         }
 
@@ -82,13 +82,15 @@ public class CartService {
             cartDetailRepository.save(cartDetail);
             List<CartOptionDto> optionDtos = cartRedisDto.getOptions();
 
-            for (CartOptionDto optionDto : optionDtos) {
-                Option option =
-                    optionRepository.findById(optionDto.getOptionId()).orElseThrow(OptionNotFoundException::new);
+            if (optionDtos != null) {
+                for (CartOptionDto optionDto : optionDtos) {
+                    Option option =
+                        optionRepository.findById(optionDto.getOptionId()).orElseThrow(OptionNotFoundException::new);
 
-                CartDetailMenuOption.Pk pk = new CartDetailMenuOption.Pk(cartDetail.getId(), option.getId());
-                CartDetailMenuOption cartDetailMenuOption = new CartDetailMenuOption(pk, cartDetail, option);
-                cartDetailMenuOptionRepository.save(cartDetailMenuOption);
+                    CartDetailMenuOption.Pk pk = new CartDetailMenuOption.Pk(cartDetail.getId(), option.getId());
+                    CartDetailMenuOption cartDetailMenuOption = new CartDetailMenuOption(pk, cartDetail, option);
+                    cartDetailMenuOptionRepository.save(cartDetailMenuOption);
+                }
             }
         }
     }

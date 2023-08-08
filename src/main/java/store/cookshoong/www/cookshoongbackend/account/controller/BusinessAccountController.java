@@ -1,15 +1,14 @@
 package store.cookshoong.www.cookshoongbackend.account.controller;
 
-import com.ctc.wstx.shaded.msv_core.util.Uri;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,9 +18,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreValidException;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateStoreRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateCategoryRequestDto;
@@ -86,15 +87,22 @@ public class BusinessAccountController {
     public ResponseEntity<Void> postStore(@PathVariable("accountId") Long accountId,
                                           @RequestPart("requestDto") @Valid CreateStoreRequestDto registerRequestDto,
                                           BindingResult bindingResult,
-                                          @RequestPart("businessLicense") MultipartFile businessLicense,
-                                          @RequestPart("storeImage") MultipartFile image) throws IOException, URISyntaxException {
+                                          @RequestPart("businessInfoImage") MultipartFile businessLicense,
+                                          @RequestPart(name = "storeImage", required = false) MultipartFile image,
+                                          @RequestParam("storedAt") String storedAt) throws IOException, URISyntaxException {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors() || Objects.isNull(businessLicense)) {
             throw new StoreValidException(bindingResult);
         }
 
-        Long storeId = storeService.createStore(accountId, registerRequestDto, businessLicense, image);
-        URI uri = new URI("/stores/"+storeId+"/store-info-manager");
+        Map<String, MultipartFile> fileMap = new HashMap<>();
+        fileMap.put(FileDomain.BUSINESS_INFO_IMAGE.getVariable(), businessLicense);
+        if (Objects.nonNull(image)) {
+            fileMap.put(FileDomain.STORE_IMAGE.getVariable(), image);
+        }
+
+        Long storeId = storeService.createStore(accountId, registerRequestDto, storedAt, fileMap);
+        URI uri = new URI("/stores/" + storeId + "/store-info-manager");
 
         return ResponseEntity
             .created(uri)
@@ -116,11 +124,13 @@ public class BusinessAccountController {
                                          @PathVariable("accountId") Long accountId,
                                          @RequestPart("requestDto") @Valid UpdateStoreRequestDto requestDto,
                                          BindingResult bindingResult,
-                                         @RequestPart("storeImage") MultipartFile storeImage) throws IOException {
+                                         @RequestPart("storeImage") MultipartFile storeImage,
+                                         @RequestParam("storedAt") String storedAt) throws IOException {
         if (bindingResult.hasErrors()) {
             throw new StoreValidException(bindingResult);
         }
-        storeService.updateStore(accountId, storeId, requestDto, storeImage);
+
+        storeService.updateStore(accountId, storeId, requestDto, storedAt, storeImage);
         return ResponseEntity
             .ok()
             .build();

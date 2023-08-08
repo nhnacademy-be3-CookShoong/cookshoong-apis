@@ -94,7 +94,8 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
                 store.openingDate,
                 store.name, store.phoneNumber,
                 address.mainPlace, address.detailPlace, address.latitude, address.longitude, store.defaultEarningRate,
-                store.description, bankType.description, store.bankAccountNumber, store.storeImage.savedName))
+                store.minimumOrderPrice, store.description, bankType.description, store.bankAccountNumber,
+                store.storeImage.savedName, store.storeImage.locationType, store.storeImage.domainName, store.deliveryCost))
             .from(store)
             .innerJoin(store.address, address)
             .innerJoin(store.bankTypeCode, bankType)
@@ -116,7 +117,7 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
             .select(new QSelectStoreForUserResponseDto(
                 store.businessLicenseNumber, store.representativeName, store.openingDate, store.name,
                 store.phoneNumber, address.mainPlace, address.detailPlace, store.description,
-                store.storeImage.savedName))
+                store.storeImage.locationType, store.storeImage.domainName, store.storeImage.savedName, store.minimumOrderPrice, store.deliveryCost))
             .from(store)
             .innerJoin(store.address, address)
             .innerJoin(store.storeImage, image)
@@ -145,7 +146,8 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
         return jpaQueryFactory
             .select(new QSelectAllStoresNotOutedResponseDto(
                 store.id, store.name, storeStatus.description, address.mainPlace,
-                address.detailPlace, address.latitude, address.longitude, storeCategory.categoryCode, store.storeImage.savedName))
+                address.detailPlace, address.latitude, address.longitude, storeCategory.categoryCode, store.storeImage.savedName,
+                store.storeImage.locationType, store.storeImage.domainName, store.minimumOrderPrice, store.deliveryCost))
             .from(store)
             .innerJoin(store.storeStatus, storeStatus)
             .innerJoin(store.address, address)

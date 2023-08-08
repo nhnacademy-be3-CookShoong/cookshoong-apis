@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
+import store.cookshoong.www.cookshoongbackend.file.model.LocationType;
 import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
 
 /**
@@ -19,20 +20,32 @@ import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
  */
 @Service
 @RequiredArgsConstructor
-public class LocalFileService implements FileService {
+public class LocalFileService implements FileUtils {
     private final ImageRepository imageRepository;
 
     private final String rootPath = System.getProperty("user.dir");
     @Value("${file.save.base.path}")
     private String fileDir;
 
+    @Override
+    public String getStorageType() {
+        return LocationType.LOCAL_S.getVariable();
+    }
+
     /**
      * 파일 경로 가져오기 (root 경로 + 폴더명 + 파일이름).
      *
+     * @param domain   the domain
      * @param filename the filename
      * @return the full path
      */
+    @Override
     public String getFullPath(String domain, String filename) {
+        return "/images/local?imageName="+rootPath + fileDir + domain + "/" + filename;
+    }
+
+    @Override
+    public String getSavedPath(String domain, String filename){
         return rootPath + fileDir + domain + "/" + filename;
     }
 
@@ -51,8 +64,8 @@ public class LocalFileService implements FileService {
         String originFilename = multipartFile.getOriginalFilename();
         String storeFilename = UUID.randomUUID() + "." + extractExt(Objects.requireNonNull(originFilename));
 
-        multipartFile.transferTo(Paths.get(getFullPath(domain, storeFilename)));
-        return imageRepository.save(new Image(originFilename, storeFilename, isPublic));
+        multipartFile.transferTo(Paths.get(getSavedPath(domain, storeFilename)));
+        return imageRepository.save(new Image(getStorageType(), domain, originFilename, storeFilename, isPublic));
     }
 
     private String extractExt(String originalFilename) { // 확장자명 가져오기
