@@ -47,19 +47,7 @@ public class CartService {
     private final StoreRepository storeRepository;
     private final MenuRepository menuRepository;
     private final OptionRepository optionRepository;
-    private final LockProcessor lockProcessor;
     private static final String CART = "cartKey=";
-
-    /**
-     * 동시성 문제를 해결하기 위해 분산락을 사용하는 메서드.
-     *
-     * @param redisKey          redis key
-     * @param cartRedisList     장바구니 목록
-     */
-    public void createCartDbWithRock(String redisKey, List<CartRedisDto> cartRedisList) {
-
-        lockProcessor.lock(redisKey, ignore -> createCartDb(redisKey, cartRedisList));
-    }
 
     /**
      * Redis Key 에 만료기간이 끝나면 Key 삭제 되기전 장바구니 데이터를 DB 에 저장하느 메서드.    <br>
@@ -71,6 +59,7 @@ public class CartService {
     public void createCartDb(String redisKey, List<CartRedisDto> cartRedisDtoList) {
 
         if (cartRedisRepository.existKeyInCartRedis(redisKey)) {
+
             updateRedisCartKey(redisKey, cartRedisDtoList);
         }
     }
@@ -78,7 +67,6 @@ public class CartService {
     private void updateRedisCartKey(String accountId, List<CartRedisDto> cartRedisList) {
 
         String id = accountId.replaceAll(CART, "");
-
         // DB 에 회원에 대한 장바구니
         deleteCartDb(Long.valueOf(id));
 
