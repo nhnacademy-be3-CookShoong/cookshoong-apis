@@ -39,8 +39,8 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepositoryCustom {
             .matchQuery("keywordText", keywordText)
             .fuzziness("AUTO");
 
-        Double lat = addressService.selectAccountAddressRenewalAt(addressId).getLatitude().doubleValue();
-        Double lon = addressService.selectAccountAddressRenewalAt(addressId).getLongitude().doubleValue();
+        Double lat = addressService.selectAccountChoiceAddress(addressId).getLatitude().doubleValue();
+        Double lon = addressService.selectAccountChoiceAddress(addressId).getLongitude().doubleValue();
 
         GeoDistanceQueryBuilder geoDistanceQueryBuilder = QueryBuilders
             .geoDistanceQuery("location")
