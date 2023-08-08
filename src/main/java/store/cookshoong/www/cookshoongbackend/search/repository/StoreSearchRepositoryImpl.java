@@ -57,7 +57,7 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepositoryCustom {
 
         BoolQueryBuilder boolQueryBuilder = QueryBuilders
             .boolQuery()
-            .mustNot(QueryBuilders.termQuery("store_status_code", "OUTED"))
+            .mustNot(QueryBuilders.termQuery("store_status_code.keyword", "OUTED"))
             .must(matchQueryBuilder)
             .filter(geoDistanceQueryBuilder);
 
@@ -91,7 +91,7 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepositoryCustom {
 
         BoolQueryBuilder boolQueryBuilder = QueryBuilders
             .boolQuery()
-            .mustNot(QueryBuilders.termQuery("store_status_code", "OUTED"))
+            .mustNot(QueryBuilders.termQuery("store_status_code.keyword", "OUTED"))
             .must(geoDistanceQueryBuilder);
 
         FieldSortBuilder sortBuilder = SortBuilders.fieldSort("store_status_code.keyword")
