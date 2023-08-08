@@ -55,4 +55,7 @@ public class Image {
         this.savedName = savedName;
         this.isPublic = isPublic;
     }
+    public void updateImageInfo(String originName){
+        this.originName = originName;
+    }
 }
