@@ -41,6 +41,9 @@ public interface FileUtils {
      */
     Image storeFile(MultipartFile multipartFile, String domainName, boolean isPublic) throws IOException;
 
+    Image updateFile(MultipartFile multipartFile, Image image) throws IOException;
+    void deleteFile(Image image) throws IOException;
+
     /**
      * 저장된 이미지의 전체 경로.
      *
@@ -49,5 +52,6 @@ public interface FileUtils {
      * @return the full path
      */
     String getFullPath(String domain, String filename);
+
     String getSavedPath(String domain, String filename);
 }

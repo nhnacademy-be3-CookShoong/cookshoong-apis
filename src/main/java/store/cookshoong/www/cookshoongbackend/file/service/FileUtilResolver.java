@@ -3,7 +3,7 @@ package store.cookshoong.www.cookshoongbackend.file.service;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import store.cookshoong.www.cookshoongbackend.file.model.LocationType;
+import store.cookshoong.www.cookshoongbackend.file.exception.LocationTypeNotFoundException;
 
 /**
  * 파일 저장 경로에 따라 사용하는 Storage 방식 결정.
@@ -27,6 +27,6 @@ public class FileUtilResolver {
         return fileUtilsList.stream()
             .filter(fileUtils -> fileUtils.matchStorageType(locationType))
             .findAny()
-            .orElse(fileUtilsList.get(0));
+            .orElseThrow((LocationTypeNotFoundException::new));
     }
 }

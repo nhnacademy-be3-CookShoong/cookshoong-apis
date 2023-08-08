@@ -19,6 +19,7 @@ import store.cookshoong.www.cookshoongbackend.account.repository.AccountReposito
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
 import store.cookshoong.www.cookshoongbackend.address.model.response.AddressResponseDto;
 import store.cookshoong.www.cookshoongbackend.address.repository.accountaddress.AccountAddressRepository;
+import store.cookshoong.www.cookshoongbackend.file.ImageNotFoundException;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
 import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
@@ -39,7 +40,8 @@ import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreStatusNo
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.UserAccessDeniedException;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateStoreRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateCategoryRequestDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreRequestDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreInfoRequestDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreManagerRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreStatusRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
@@ -72,6 +74,7 @@ public class StoreService {
     private final FileUtilResolver fileUtilResolver;
     private final ImageRepository imageRepository;
 
+    private static final Long BASIC_IMAGE = 1L;
     private static final BigDecimal DISTANCE = new BigDecimal("3.0");
     private static final Double RADIUS = 6371.0;
     private static final Double TO_RADIAN = Math.PI / 180;
@@ -195,8 +198,7 @@ public class StoreService {
 
         FileUtils fileUtils = fileUtilResolver.getFileService(storedAt);
         Image businessLicenseImage = storeFile(fileUtils, fileMap, FileDomain.BUSINESS_INFO_IMAGE.getVariable(), false);
-        Image storeMainImage = imageRepository.findById(1L).orElseThrow();
-        //TODO throw 처리
+        Image storeMainImage = imageRepository.findById(BASIC_IMAGE).orElseThrow((ImageNotFoundException::new));
         if (fileMap.containsKey(FileDomain.STORE_IMAGE.getVariable())) {
             storeMainImage = storeFile(fileUtils, fileMap, FileDomain.STORE_IMAGE.getVariable(), true);
         }
@@ -219,33 +221,56 @@ public class StoreService {
     }
 
     /**
-     * 사업자 : 매장 정보 수정.
+     * 사업자 : 매장 정보 수정 (사업자 정보).
      *
      * @param accountId  the account id
      * @param storeId    the store id
      * @param requestDto 매장 수정 정보
-     * @param storeImage the store image
      * @throws IOException the io exception
      */
-    public void updateStore(Long accountId, Long storeId, UpdateStoreRequestDto requestDto, String storedAt, MultipartFile storeImage) throws IOException {
+    public void updateStore(Long accountId, Long storeId, UpdateStoreManagerRequestDto requestDto){
         Store store = getStoreById(storeId);
-        Account account = getAccountById(accountId);
         accessDeniedException(accountId, store);
         BankType bankType = getBankTypeByCode(requestDto.getBankCode());
-        StoreStatus storeStatus = store.getStoreStatus();
-        FileUtils fileUtils = fileUtilResolver.getFileService(storedAt);
-        Image storeMainImage = fileUtils.storeFile(storeImage, FileDomain.STORE_IMAGE.getVariable(), true);
-        store.modifyStoreInfo(
-            account,
-            bankType,
-            storeStatus,
-            storeMainImage,
-            requestDto
-        );
+
+        store.modifyStore(bankType, requestDto);
+
+    }
+
+    /**
+     * 사업자 : 매장 정보 수정 (영업점 정보).
+     *
+     * @param accountId  the account id
+     * @param storeId    the store id
+     * @param requestDto the request dto
+     */
+    public void updateStoreInfo(Long accountId, Long storeId, UpdateStoreInfoRequestDto requestDto){
+        Store store = getStoreById(storeId);
+        accessDeniedException(accountId, store);
+
+        store.modifyStoreInformation(requestDto);
 
         Address address = new Address(requestDto.getMainPlace(), requestDto.getDetailPlace(),
             requestDto.getLatitude(), requestDto.getLongitude());
         store.modifyAddress(address);
+    }
+
+    /**
+     * 매장 사진을 수정하기 위한 서비스 코드.
+     *
+     * @param accountId  the account id
+     * @param storeId    the store id
+     * @param storeImage the store image
+     * @throws IOException the io exception
+     */
+    public void updateStoreImage(Long accountId, Long storeId, MultipartFile storeImage) throws IOException {
+        Store store = getStoreById(storeId);
+        accessDeniedException(accountId, store);
+        Image storeMainImage = imageRepository.findById(store.getStoreImage().getId()).orElseThrow((ImageNotFoundException::new));
+        FileUtils fileUtils = fileUtilResolver.getFileService(storeMainImage.getLocationType());
+        Image updatedImage = fileUtils.updateFile(storeImage, storeMainImage);
+
+        store.modifyStoreImage(updatedImage);
     }
 
     /**
@@ -276,6 +301,27 @@ public class StoreService {
         accessDeniedException(accountId, store);
         StoreStatus storeStatus = getStoreStatusByCode(requestDto.getStatusCode());
         store.modifyStoreStatus(storeStatus);
+    }
+
+    /**
+     * 사업자 : 매장 이미지 삭제.
+     *
+     * @param accountId the account id
+     * @param storeId   the store id
+     * @throws IOException the io exception
+     */
+    public void deleteStoreImage(Long accountId, Long storeId) throws IOException {
+        Store store = getStoreById(storeId);
+        accessDeniedException(accountId, store);
+
+        FileUtils fileUtils = fileUtilResolver.getFileService(store.getStoreImage().getLocationType());
+        fileUtils.deleteFile(store.getStoreImage());
+
+        imageRepository.deleteById(store.getStoreImage().getId());
+
+        Image image = imageRepository.findById(BASIC_IMAGE).orElseThrow((ImageNotFoundException::new));
+        store.modifyStoreImage(image);
+
     }
 
     /**
