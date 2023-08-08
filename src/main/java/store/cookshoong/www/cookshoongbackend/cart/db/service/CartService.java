@@ -47,6 +47,7 @@ public class CartService {
     private final StoreRepository storeRepository;
     private final MenuRepository menuRepository;
     private final OptionRepository optionRepository;
+    private final LockProcessor lockProcessor;
     private static final String CART = "cartKey=";
 
     /**
@@ -58,10 +59,11 @@ public class CartService {
      */
     public void createCartDb(String redisKey, List<CartRedisDto> cartRedisDtoList) {
 
-        if (cartRedisRepository.existKeyInCartRedis(redisKey)) {
-
-            updateRedisCartKey(redisKey, cartRedisDtoList);
-        }
+        lockProcessor.lock(redisKey, ignore -> {
+            if (cartRedisRepository.existKeyInCartRedis(redisKey)) {
+                updateRedisCartKey(redisKey, cartRedisDtoList);
+            }
+        });
     }
 
     private void updateRedisCartKey(String accountId, List<CartRedisDto> cartRedisList) {
