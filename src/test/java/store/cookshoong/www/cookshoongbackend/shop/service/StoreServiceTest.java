@@ -5,8 +5,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -201,7 +199,8 @@ class StoreServiceTest {
             store.getStoreImage().getDomainName(),
             store.getStoreImage().getSavedName(),
             store.getMinimumOrderPrice(),
-            store.getDeliveryCost()
+            store.getDeliveryCost(),
+            store.getStoreStatus().getDescription()
         );
 
         when(storeRepository.lookupStoreForUser(store.getId())).thenReturn(Optional.of(selectStore));
