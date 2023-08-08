@@ -16,4 +16,7 @@ public class StoreDocumentRequestDto {
     private String savedName;
     private String locationType;
     private String domainName;
+    private String storeStatus;
+    private Integer minimumOrderPrice;
+    private Integer minimumCookingTime;
 }

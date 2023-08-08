@@ -23,7 +23,9 @@ import org.springframework.data.elasticsearch.annotations.Field;
 public class StoreDocument {
     @Id
     private Long id;
+    @Field("name")
     private String name;
+    @Field("description")
     private String description;
     @Field("saved_name")
     private String savedName;
@@ -31,6 +33,12 @@ public class StoreDocument {
     private String locationType;
     @Field("domain_name")
     private String domainName;
+    @Field("store_status_code")
+    private String storeStatus;
+    @Field("minimum_order_price")
+    private Integer minimumOrderPrice;
+    @Field("minimum_cooking_time")
+    private Integer minimumCookingTime;
 
     public static StoreDocument from(StoreDocumentRequestDto storeDocumentRequestDto) {
         return StoreDocument.builder()
@@ -40,6 +48,9 @@ public class StoreDocument {
             .savedName(storeDocumentRequestDto.getSavedName())
             .locationType(storeDocumentRequestDto.getLocationType())
             .domainName(storeDocumentRequestDto.getDomainName())
+            .storeStatus(storeDocumentRequestDto.getStoreStatus())
+            .minimumOrderPrice(storeDocumentRequestDto.getMinimumOrderPrice())
+            .minimumCookingTime(storeDocumentRequestDto.getMinimumCookingTime())
             .build();
     }
 }
