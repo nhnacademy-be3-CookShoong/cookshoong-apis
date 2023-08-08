@@ -105,4 +105,105 @@ class AccountIntegrationTests extends IntegrationTestBase {
 
         assertThat(actual).isAfter(expect);
     }
+
+    @Test
+    @DisplayName("회원 존재여부 확인 - 기존 회원 조회")
+    void isAccountExists() throws Exception {
+        RequestBuilder request = MockMvcRequestBuilders.get("/api/accounts/{accountId}/exists",
+            testAccount.getId());
+
+        mockMvc.perform(request)
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("회원 존재여부 확인 - 없는 회원 조회")
+    void isAccountExists_2() throws Exception {
+        RequestBuilder request = MockMvcRequestBuilders.get("/api/accounts/{accountId}/exists",
+            Long.MAX_VALUE);
+
+        mockMvc.perform(request)
+            .andExpect(status().isNotFound());
+    }
+
+    @ParameterizedTest
+    @DisplayName("회원 정보 수정 - 검증 실패 - 전화번호")
+    @ValueSource(strings = {"010-1512-1231", "itnotaphonenumber", "숫자만들어와야함", "010123"})
+    void updateAccountInfo(String phoneNumber) throws Exception {
+        UpdateAccountInfoRequestDto testDto = ReflectionUtils.newInstance(UpdateAccountInfoRequestDto.class);
+        ReflectionTestUtils.setField(testDto, "nickname", "koesnam");
+        ReflectionTestUtils.setField(testDto, "email", "asd@asd.com");
+        ReflectionTestUtils.setField(testDto, "phoneNumber", phoneNumber);
+
+        RequestBuilder request = MockMvcRequestBuilders.put("/api/accounts/{accountId}", testAccount.getId())
+            .content(objectMapper.writeValueAsString(testDto))
+            .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(request)
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.phoneNumber").exists());
+    }
+
+    @ParameterizedTest
+    @DisplayName("회원 정보 수정 - 검증 실패 - 별명")
+    @ValueSource(strings = {"", "itnotaphonenumberitnotaphonenumber"})
+    void updateAccountInfo_2(String nickname) throws Exception {
+        UpdateAccountInfoRequestDto testDto = ReflectionUtils.newInstance(UpdateAccountInfoRequestDto.class);
+        ReflectionTestUtils.setField(testDto, "nickname", nickname);
+        ReflectionTestUtils.setField(testDto, "email", "asd@asd.com");
+        ReflectionTestUtils.setField(testDto, "phoneNumber", "01057555143");
+
+        RequestBuilder request = MockMvcRequestBuilders.put("/api/accounts/{accountId}", testAccount.getId())
+            .content(objectMapper.writeValueAsString(testDto))
+            .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(request)
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.nickname").exists());
+    }
+
+    @ParameterizedTest
+    @DisplayName("회원 정보 수정 - 검증 실패 - 이메일")
+    @ValueSource(strings = {"@", "1@.", "", " ", "@  . ", " @  . "})
+    void updateAccountInfo_3(String email) throws Exception {
+        UpdateAccountInfoRequestDto testDto = ReflectionUtils.newInstance(UpdateAccountInfoRequestDto.class);
+        ReflectionTestUtils.setField(testDto, "nickname", "koesnam");
+        ReflectionTestUtils.setField(testDto, "email", email);
+        ReflectionTestUtils.setField(testDto, "phoneNumber", "01057555143");
+
+        RequestBuilder request = MockMvcRequestBuilders.put("/api/accounts/{accountId}", testAccount.getId())
+            .content(objectMapper.writeValueAsString(testDto))
+            .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(request)
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.email").exists());
+    }
+
+    @Test
+    @DisplayName("회원 정보 수정 - 검증 성공")
+    void updateAccountInfo_4() throws Exception {
+        UpdateAccountInfoRequestDto testDto = ReflectionUtils.newInstance(UpdateAccountInfoRequestDto.class);
+        ReflectionTestUtils.setField(testDto, "nickname", "koesnam");
+        ReflectionTestUtils.setField(testDto, "email", "asd@asd.com");
+        ReflectionTestUtils.setField(testDto, "phoneNumber", "01057555143");
+        String expectNickname = testDto.getNickname();
+        String expectEmail = testDto.getEmail();
+        String phoneNumber = testDto.getPhoneNumber();
+
+
+        RequestBuilder request = MockMvcRequestBuilders.put("/api/accounts/{accountId}", testAccount.getId())
+            .content(objectMapper.writeValueAsString(testDto))
+            .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(request)
+            .andExpect(status().isOk());
+
+        Account actual = em.find(Account.class, testAccount.getId());
+        assertAll(
+            () -> assertEquals(actual.getNickname(), expectNickname),
+            () -> assertEquals(actual.getEmail(), expectEmail),
+            () -> assertEquals(actual.getPhoneNumber(), phoneNumber)
+        );
+    }
 }

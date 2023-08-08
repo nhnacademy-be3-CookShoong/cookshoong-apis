@@ -13,8 +13,8 @@ import store.cookshoong.www.cookshoongbackend.account.entity.OauthType;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.account.exception.DuplicatedUserException;
 import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
-import store.cookshoong.www.cookshoongbackend.account.model.request.OAuth2SignUpRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
+import store.cookshoong.www.cookshoongbackend.account.model.request.UpdateAccountInfoRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountAuthResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountInfoResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
@@ -166,5 +166,18 @@ public class AccountService {
 
     public HttpStatus selectAccountExists(String loginId) {
         return accountRepository.existsByLoginId(loginId) ? HttpStatus.OK : HttpStatus.NOT_FOUND;
+    }
+
+    /**
+     * 변경가능한 회원정보를 수정하는 메서드.
+     *
+     * @param accountId                   the account id
+     * @param updateAccountInfoRequestDto the update account info request dto
+     */
+    @Transactional
+    public void updateMutableAccountInfo(Long accountId, UpdateAccountInfoRequestDto updateAccountInfoRequestDto) {
+        Account account = accountRepository.findById(accountId)
+            .orElseThrow(UserNotFoundException::new);
+        account.updateMutableInfo(updateAccountInfoRequestDto);
     }
 }
