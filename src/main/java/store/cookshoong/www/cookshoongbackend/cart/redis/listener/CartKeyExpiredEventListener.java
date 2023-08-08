@@ -24,6 +24,7 @@ public class CartKeyExpiredEventListener extends KeyExpirationEventMessageListen
 
     private static final String PHANTOM = ":phantom";
     private static final String NO_MENU = "NO_KEY";
+    private static final String CART = "cartKey=";
     private final CartService cartService;
     private final CartRedisService cartRedisService;
     private final LockProcessor lockProcessor;
@@ -56,6 +57,12 @@ public class CartKeyExpiredEventListener extends KeyExpirationEventMessageListen
         }
 
         String redisKey = expiredRedisKey.replaceAll(PHANTOM, "");
+
+        String id = redisKey.replaceAll(CART, "");
+        if (cartService.hasCartByAccountId(Long.valueOf(id))) {
+            // DB 에 회원에 대한 장바구니
+            cartService.deleteCartDb(Long.valueOf(id));
+        }
 
         // Lock을 사용하여 처리할 작업을 묶어줍니다.
         lockProcessor.lock(redisKey, ignore -> {
