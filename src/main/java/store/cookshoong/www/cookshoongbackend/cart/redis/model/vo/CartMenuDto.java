@@ -26,4 +26,6 @@ public class CartMenuDto {
     private String menuImage;
     @NotNull
     private Integer menuPrice;
+    private String locationType;
+    private String domainName;
 }

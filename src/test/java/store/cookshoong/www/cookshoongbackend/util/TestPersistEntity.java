@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.util;
 
+import javax.xml.stream.Location;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -15,6 +16,9 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
+import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
+import store.cookshoong.www.cookshoongbackend.file.model.LocationType;
+import store.cookshoong.www.cookshoongbackend.file.service.LocalFileService;
 import store.cookshoong.www.cookshoongbackend.order.entity.Order;
 import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
@@ -46,16 +50,16 @@ public class TestPersistEntity {
         Account account = getLevelOneActiveCustomer();
         BankType bankTypeKb = testEntity.getBankTypeKb();
         StoreStatus storeStatusOpen = testEntity.getStoreStatusOpen();
-        Image businessImage = testEntity.getImage("사업자등록증.jpg", false);
-        Image storeImage = testEntity.getImage("매장사진.png", true);
+        Image businessImage = testEntity.getImage(LocationType.OBJECT_S.getVariable(), FileDomain.BUSINESS_INFO_IMAGE.getVariable(), "사업자등록증.jpg",false);
+        Image storeImage = testEntity.getImage(LocationType.OBJECT_S.getVariable(),FileDomain.STORE_IMAGE.getVariable(), "매장사진.png",true);
         return testEntity.getStore(null, account, bankTypeKb, storeStatusOpen, businessImage, storeImage);
     }
 
     public Store getOpenStoreByOneAccount(Account account) {
         BankType bankTypeKb = testEntity.getBankTypeKb();
         StoreStatus storeStatusOpen = testEntity.getStoreStatusOpen();
-        Image businessImage = testEntity.getImage("사업자등록증.jpg",false);
-        Image storeImage = testEntity.getImage("매장사진.png",true);
+        Image businessImage = testEntity.getImage(LocationType.OBJECT_S.getVariable(), FileDomain.BUSINESS_INFO_IMAGE.getVariable(), "사업자등록증.jpg",false);
+        Image storeImage = testEntity.getImage(LocationType.OBJECT_S.getVariable(),FileDomain.STORE_IMAGE.getVariable(), "매장사진.png",true);
         return testEntity.getStore(null, account, bankTypeKb, storeStatusOpen, businessImage, storeImage);
     }
 
@@ -64,8 +68,8 @@ public class TestPersistEntity {
         Account account = getLevelOneActiveCustomer();
         BankType bankTypeKb = testEntity.getBankTypeKb();
         StoreStatus storeStatusOpen = testEntity.getStoreStatusOpen();
-        Image businessImage = testEntity.getImage("사업자등록증.png", false);
-        Image storeImage = testEntity.getImage("매장시진.jpg", true);
+        Image businessImage = testEntity.getImage(LocationType.OBJECT_S.getVariable(), FileDomain.BUSINESS_INFO_IMAGE.getVariable(), "사업자등록증.jpg",false);
+        Image storeImage = testEntity.getImage(LocationType.OBJECT_S.getVariable(),FileDomain.STORE_IMAGE.getVariable(), "매장사진.png",true);
         return testEntity.getStore(merchant, account, bankTypeKb, storeStatusOpen, businessImage, storeImage);
     }
 

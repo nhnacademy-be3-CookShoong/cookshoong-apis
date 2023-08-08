@@ -7,6 +7,8 @@ import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import store.cookshoong.www.cookshoongbackend.common.property.ObjectStorageProperties;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
+import store.cookshoong.www.cookshoongbackend.file.model.LocationType;
 import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
 
 /**
@@ -26,11 +29,16 @@ import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
  */
 @Service
 @RequiredArgsConstructor
-public class ObjectStorageService implements FileService {
+public class ObjectStorageService implements FileUtils {
     private final ObjectStorageAuth objectStorageAuth;
     private final ObjectStorageProperties objectStorageProperties;
     private final ImageRepository imageRepository;
+    private final RestTemplate restTemplate;
 
+    @Override
+    public String getStorageType() {
+        return LocationType.OBJECT_S.getVariable();
+    }
 
     /**
      * 파일이 저장된 전체 경로로 생성.
@@ -39,7 +47,17 @@ public class ObjectStorageService implements FileService {
      * @param fileName   the file name
      * @return 전체 경로
      */
+    @Override
     public String getFullPath(String objectPath, String fileName) {
+        return String.format("%s/%s/%s/%s",
+            objectStorageProperties.getStorageUrl(),
+            objectStorageProperties.getContainerName(),
+            objectPath,
+            fileName);
+    }
+
+    @Override
+    public String getSavedPath(String objectPath, String fileName) {
         return String.format("%s/%s/%s/%s",
             objectStorageProperties.getStorageUrl(),
             objectStorageProperties.getContainerName(),
@@ -75,6 +93,7 @@ public class ObjectStorageService implements FileService {
         restTemplate.execute(url, HttpMethod.PUT, requestCallback, responseExtractor);
     }
 
+
     @Override
     public Image storeFile(MultipartFile multipartFile, String domainName, boolean isPublic) throws IOException {
         if (multipartFile.isEmpty()) {
@@ -89,12 +108,52 @@ public class ObjectStorageService implements FileService {
         }
         String savedName = UUID.randomUUID() + "." + extractExt(originFileName); // 저장된 이름
 
-        String url = getFullPath(domainName, savedName);
+        String url = getSavedPath(domainName, savedName);
         InputStream inputStream = new ByteArrayInputStream(multipartFile.getBytes());
 
         uploadObject(inputStream, url, token); // 업로드
 
-        return imageRepository.save(new Image(originFileName, savedName, isPublic));
+        return imageRepository.save(new Image(getStorageType(), domainName, originFileName, savedName, isPublic));
     }
 
+    @Override
+    public Image updateFile(MultipartFile multipartFile, Image image) throws IOException {
+        if (multipartFile.isEmpty()) {
+            return null;
+        }
+
+        String token = objectStorageAuth.requestToken(); // 토큰 가져오기
+
+        String originFileName = multipartFile.getOriginalFilename(); // 파일 업로드시 이름
+        if (Objects.isNull(originFileName)) {
+            throw new NullPointerException();
+        }
+
+        String url = getSavedPath(image.getDomainName(), image.getSavedName());
+        InputStream inputStream = new ByteArrayInputStream(multipartFile.getBytes());
+
+        uploadObject(inputStream, url, token); // 업로드(파일교체)
+
+        image.updateImageInfo(originFileName);
+
+
+        return image;
+    }
+
+    @Override
+    public void deleteFile(Image image) throws IOException {
+        String token = objectStorageAuth.requestToken(); // 토큰 가져오기
+
+        String url = getSavedPath(image.getDomainName(), image.getSavedName());
+        deleteObject(url, token);
+
+    }
+
+    private void deleteObject(String url, String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-Auth-Token", token);
+        HttpEntity<String> requestHttpEntity = new HttpEntity<>(null, headers);
+
+        this.restTemplate.exchange(url, HttpMethod.DELETE, requestHttpEntity, String.class);
+    }
 }

@@ -37,6 +37,8 @@ import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartOptionDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartRedisDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.repository.CartRedisRepository;
 import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
+import store.cookshoong.www.cookshoongbackend.file.model.LocationType;
+import store.cookshoong.www.cookshoongbackend.file.service.FileUtilResolver;
 import store.cookshoong.www.cookshoongbackend.file.service.ObjectStorageService;
 
 /**
@@ -56,7 +58,8 @@ class CartRedisServiceTest {
     private CartRedisRepository cartRedisRepository;
     @Mock
     private CartRepository cartRepository;
-
+    @Mock
+    private FileUtilResolver fileUtilResolver;
     @Mock
     private ObjectStorageService objectStorageService;
 
@@ -81,6 +84,8 @@ class CartRedisServiceTest {
         ReflectionTestUtils.setField(cartMenuDto, "menuName", "menuName2");
         ReflectionTestUtils.setField(cartMenuDto, "menuImage", menuImagePath);
         ReflectionTestUtils.setField(cartMenuDto, "menuPrice", 3);
+        ReflectionTestUtils.setField(cartMenuDto, "locationType", LocationType.OBJECT_S.getVariable());
+        ReflectionTestUtils.setField(cartMenuDto, "domainName", FileDomain.MENU_IMAGE.getVariable());
 
         cartOptionDto = ReflectionUtils.newInstance(CartOptionDto.class);
         ReflectionTestUtils.setField(cartOptionDto, "optionId", 1L);
@@ -395,7 +400,8 @@ class CartRedisServiceTest {
     void selectCartMenuAll_List_Redis_isEmpty() {
         String menuImagePath = objectStorageService.getFullPath(FileDomain.MENU_IMAGE.getVariable(), UUID.randomUUID()+".png");
         CartMenuResponseDto cartMenuResponseDto =
-            new CartMenuResponseDto(menuId, "menuName2", menuImagePath, 3, System.currentTimeMillis(), 3);
+            new CartMenuResponseDto(menuId, "menuName2", menuImagePath, 3, System.currentTimeMillis(), 3,
+                LocationType.OBJECT_S.getVariable(), FileDomain.MENU_IMAGE.getVariable());
 
         CartOptionResponseDto cartOptionResponseDto =
             new CartOptionResponseDto(1L, "optionName2", 2000);
@@ -440,7 +446,7 @@ class CartRedisServiceTest {
         when(cartRepository.hasCartByAccountId(accountId)).thenReturn(true);
         when(cartRepository.lookupCartDbList(accountId)).thenReturn(carDBtList);
         when(cartRedisRepository.findByCartAll(String.valueOf(accountId))).thenReturn(cartRedisList);
-
+        when(fileUtilResolver.getFileService(eq(LocationType.OBJECT_S.getVariable()))).thenReturn(objectStorageService);
         List<CartRedisDto> actual = cartRedisService.selectCartMenuAll(String.valueOf(accountId));
 
         verify(cartRedisRepository, times(1)).existKeyInCartRedis(String.valueOf(accountId));

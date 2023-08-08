@@ -117,8 +117,8 @@ public class TestEntity {
             storeStatus, businessImage, createStoreRequestDto, storeImage);
     }
 
-    public Image getImage(String name, boolean isPublic) {
-        return createImage(name, isPublic);
+    public Image getImage(String locationType, String domainName, String name, boolean isPublic) {
+        return createImage(locationType, domainName, name, isPublic);
     }
 
     public StoreCategory getStoreCategory() {
@@ -194,6 +194,7 @@ public class TestEntity {
         ReflectionTestUtils.setField(createStoreRequestDto, "phoneNumber", "01012341234");
         ReflectionTestUtils.setField(createStoreRequestDto, "description", "타코집에 많이 와주세요");
         ReflectionTestUtils.setField(createStoreRequestDto, "earningRate", BigDecimal.ONE);
+        ReflectionTestUtils.setField(createStoreRequestDto, "minimumOrderPrice", 0);
         ReflectionTestUtils.setField(createStoreRequestDto, "storeCategories", List.of("NIG"));
         ReflectionTestUtils.setField(createStoreRequestDto, "bankCode", bankType.getBankTypeCode());
         ReflectionTestUtils.setField(createStoreRequestDto, "bankAccount", "123456");
@@ -239,8 +240,10 @@ public class TestEntity {
         return orderStatus;
     }
 
-    public Image createImage(String name, boolean isPublic) {
+    public Image createImage(String locationType, String domainName, String name, boolean isPublic) {
         Image image = createUsingDeclared(Image.class);
+        ReflectionTestUtils.setField(image, "locationType", locationType);
+        ReflectionTestUtils.setField(image, "domainName", domainName);
         ReflectionTestUtils.setField(image, "originName", name);
         ReflectionTestUtils.setField(image, "savedName", UUID.randomUUID() + ".jpg");
         ReflectionTestUtils.setField(image, "isPublic", isPublic);

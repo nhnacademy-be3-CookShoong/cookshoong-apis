@@ -27,6 +27,10 @@ public class SelectStoreForUserResponseDto {
     private final String mainPlace;
     private final String detailPlace;
     private final String description;
+    private final Integer minimumOrderPrice;
+    private final Integer deliveryCost;
+    private final String locationType;
+    private final String domainName;
     @Setter
     private String savedName;
     @Setter
@@ -47,7 +51,7 @@ public class SelectStoreForUserResponseDto {
     @QueryProjection
     public SelectStoreForUserResponseDto(String businessLicenseNumber, String representativeName, LocalDate openingDate,
                                          String storeName, String phoneNumber, String mainPlace, String detailPlace, String description,
-                                         String savedName) {
+                                         String locationType, String domainName, String savedName, Integer minimumOrderPrice, Integer deliveryCost) {
         this.businessLicenseNumber = businessLicenseNumber;
         this.representativeName = representativeName;
         this.openingDate = openingDate;
@@ -56,6 +60,10 @@ public class SelectStoreForUserResponseDto {
         this.mainPlace = mainPlace;
         this.detailPlace = detailPlace;
         this.description = description;
+        this.locationType = locationType;
+        this.domainName = domainName;
         this.savedName = savedName;
+        this.minimumOrderPrice = minimumOrderPrice;
+        this.deliveryCost = deliveryCost;
     }
 }
