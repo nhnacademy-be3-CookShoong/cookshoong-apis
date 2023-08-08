@@ -53,17 +53,19 @@ public class CartKeyExpiredEventListener extends KeyExpirationEventMessageListen
 
         String redisKey = expiredRedisKey.replaceAll(PHANTOM, "");
 
+        // 두 인스턴스를 통해서 들어오는 키에 대해서 분산락을 건다.
+
         if (cartRedisService.hasMenuInCartRedis(redisKey, NO_MENU)) {
 
             cartRedisList = new ArrayList<>();
-            cartService.createCartDb(redisKey, cartRedisList);
+            cartService.createCartDbWithRock(redisKey, cartRedisList);
             return;
         }
 
         cartRedisList = cartRedisService.selectCartMenuAll(redisKey);
 
         if (!cartRedisList.isEmpty()) {
-            cartService.createCartDb(redisKey, cartRedisList);
+            cartService.createCartDbWithRock(redisKey, cartRedisList);
         }
     }
 }

@@ -41,7 +41,7 @@ public class Cart {
     private UUID id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "account_id", unique = true)
     private Account account;
 
     @ManyToOne(fetch = FetchType.LAZY)

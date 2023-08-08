@@ -30,6 +30,7 @@ import store.cookshoong.www.cookshoongbackend.cart.db.repository.CartRepository;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartMenuDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartOptionDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartRedisDto;
+import store.cookshoong.www.cookshoongbackend.cart.redis.repository.CartRedisRepository;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.option.Option;
 import store.cookshoong.www.cookshoongbackend.menu_order.repository.menu.MenuRepository;
@@ -49,34 +50,30 @@ class CartServiceTest {
 
     @InjectMocks
     private CartService cartService;
-
     @Mock
     private CartDetailMenuOptionRepository cartDetailMenuOptionRepository;
     @Mock
     private CartDetailRepository cartDetailRepository;
-
     @Mock
     private CartRepository cartRepository;
-
+    @Mock
+    private CartRedisRepository cartRedisRepository;
     @Mock
     private AccountRepository accountRepository;
-
     @Mock
     private StoreRepository storeRepository;
-
     @Mock
     private MenuRepository menuRepository;
-
     @Mock
     private OptionRepository optionRepository;
 
-    String accountId;
+    String redisKey;
     List<CartRedisDto> cartRedisDtoList;
 
     @Test
     @DisplayName("DB 장바구니에 저장하기")
     void createCartDb() {
-        accountId = "1";
+        redisKey = "cartKey=1";
         cartRedisDtoList = new ArrayList<>();
 
         CartOptionDto cartOptionDto = ReflectionUtils.newInstance(CartOptionDto.class);
@@ -111,8 +108,9 @@ class CartServiceTest {
         when(menuRepository.findById(1L)).thenReturn(Optional.of(menu));
         Option option = ReflectionUtils.newInstance(Option.class);
         when(optionRepository.findById(1L)).thenReturn(Optional.of(option));
+        when(cartRedisRepository.existKeyInCartRedis(redisKey)).thenReturn(true);
 
-        assertDoesNotThrow(() -> cartService.createCartDb(accountId, cartRedisDtoList));
+        assertDoesNotThrow(() -> cartService.createCartDb(redisKey, cartRedisDtoList));
 
         verify(cartRepository).save(any(Cart.class));
         verify(cartDetailRepository).save(any(CartDetail.class));
@@ -124,7 +122,7 @@ class CartServiceTest {
     @Test
     @DisplayName("DB 장바구니에 저장하기 - DB 에 회원 장바구니 존재시 삭제 후 저장")
     void createCartDb_delete() {
-        accountId = "1";
+        redisKey = "cartKey=1";
         cartRedisDtoList = new ArrayList<>();
 
         CartOptionDto cartOptionDto = ReflectionUtils.newInstance(CartOptionDto.class);
@@ -159,8 +157,9 @@ class CartServiceTest {
         when(menuRepository.findById(1L)).thenReturn(Optional.of(menu));
         Option option = ReflectionUtils.newInstance(Option.class);
         when(optionRepository.findById(1L)).thenReturn(Optional.of(option));
+        when(cartRedisRepository.existKeyInCartRedis(redisKey)).thenReturn(true);
 
-        assertDoesNotThrow(() -> cartService.createCartDb(accountId, cartRedisDtoList));
+        assertDoesNotThrow(() -> cartService.createCartDb(redisKey, cartRedisDtoList));
 
         verify(cartRepository).save(any(Cart.class));
         verify(cartDetailRepository).save(any(CartDetail.class));
