@@ -27,6 +27,10 @@ public class StoreDocument {
     private String description;
     @Field("saved_name")
     private String savedName;
+    @Field("location_code")
+    private String locationType;
+    @Field("domain_name")
+    private String domainName;
 
     public static StoreDocument from(StoreDocumentRequestDto storeDocumentRequestDto) {
         return StoreDocument.builder()
@@ -34,6 +38,8 @@ public class StoreDocument {
             .name(storeDocumentRequestDto.getName())
             .description(storeDocumentRequestDto.getDescription())
             .savedName(storeDocumentRequestDto.getSavedName())
+            .locationType(storeDocumentRequestDto.getLocationType())
+            .domainName(storeDocumentRequestDto.getDomainName())
             .build();
     }
 }

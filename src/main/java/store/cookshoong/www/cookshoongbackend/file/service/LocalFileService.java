@@ -1,6 +1,8 @@
 package store.cookshoong.www.cookshoongbackend.file.service;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.UUID;
@@ -41,11 +43,11 @@ public class LocalFileService implements FileUtils {
      */
     @Override
     public String getFullPath(String domain, String filename) {
-        return "/images/local?imageName="+rootPath + fileDir + domain + "/" + filename;
+        return "/images/local?imageName=" + rootPath + fileDir + domain + "/" + filename;
     }
 
     @Override
-    public String getSavedPath(String domain, String filename){
+    public String getSavedPath(String domain, String filename) {
         return rootPath + fileDir + domain + "/" + filename;
     }
 
@@ -71,5 +73,25 @@ public class LocalFileService implements FileUtils {
     private String extractExt(String originalFilename) { // 확장자명 가져오기
         int pos = originalFilename.lastIndexOf(".");
         return originalFilename.substring(pos + 1);
+    }
+
+    @Override
+    public Image updateFile(MultipartFile multipartFile, Image image) throws IOException {
+        if (multipartFile.isEmpty()) {
+            return null;
+        }
+        String originFilename = multipartFile.getOriginalFilename();
+        //해당 파일 경로에 파일 생성해서 덮어씌움.
+        String existingFilePath = getSavedPath(image.getDomainName(), image.getSavedName());
+
+        multipartFile.transferTo(Paths.get(existingFilePath));
+        image.updateImageInfo(originFilename);
+        return image;
+    }
+
+    @Override
+    public void deleteFile(Image image) throws IOException {
+        Path filePath = Paths.get(getSavedPath(image.getDomainName(), image.getSavedName()));
+        Files.deleteIfExists(filePath);
     }
 }

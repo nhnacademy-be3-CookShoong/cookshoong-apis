@@ -2,23 +2,19 @@ package store.cookshoong.www.cookshoongbackend.shop.model.request;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import javax.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 
 /**
- * 매장 수정을 위한 dto.
+ * 매장 영업점 정보에 대한 수정 dto.
  *
  * @author seungyeon
- * @since 2023.07.13
+ * @since 2023.08.08
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UpdateStoreRequestDto {
-    private String businessLicenseNumber;
-    private String representativeName;
+public class UpdateStoreInfoRequestDto {
     private LocalDate openingDate;
     private String storeName;
     private String mainPlace;
@@ -28,15 +24,6 @@ public class UpdateStoreRequestDto {
     private String phoneNumber;
     private String description;
     private BigDecimal earningRate;
-    private String bankCode;
-    private String bankAccount;
-    private String savedName;
-
     private Integer minimumOrderPrice;
-
     private Integer deliveryCost;
-
-    private String locationType;
-    private String domainName;
-
 }
