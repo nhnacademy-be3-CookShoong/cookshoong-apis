@@ -54,56 +54,66 @@ public class CartService {
 
     /**
      * Redis Key 에 만료기간이 끝나면 Key 삭제 되기전 장바구니 데이터를 DB 에 저장하느 메서드.    <br>
-     * 회원에 대한 장바구니 정보가 DB 에 있으면 삭제하고 새롭게 생성해준다.
+     * 회원에 대한 장바구니 정보가 DB 에 있으면 삭제하고 새롭게 생성해준다.<br>
+     * DB 가 생성이 되면 Lock 에 대한 키를 생성하고 이 키가 존재하지 않을 때만 생성한다. <br>
+     * Cart 에 회원은 유니크 제약조건이 걸려 있으므로 중복으로 저장되지 않도록 DB 에 회원에 대한 카트가 존재하면 생성하지 못하도록 막는다 <br>
      *
      * @param cartRedisDtoList      해당 key 장바구니 내역
      */
     public void createCartDb(Long accountId, List<CartRedisDto> cartRedisDtoList) {
 
         if (!cartRedisRepository.existKeyInCartRedis(LOCK + accountId)) {
+
+            if (cartRepository.hasCartByAccountId(accountId)) {
+                deleteCartDb(accountId);
+            }
             updateRedisCartKey(accountId, cartRedisDtoList);
         }
     }
 
     private void updateRedisCartKey(Long accountId, List<CartRedisDto> cartRedisList) {
 
-
         if (cartRedisList == null || cartRedisList.isEmpty()) {
+
+            cartRedisRepository.createLockRedis(LOCK + accountId, LOCK);
             return;
         }
 
-        Account account =
-            accountRepository.findById(cartRedisList.get(0).getAccountId()).orElseThrow(UserNotFoundException::new);
-        Store store =
-            storeRepository.findById(cartRedisList.get(0).getStoreId()).orElseThrow(StoreNotFoundException::new);
+        if (!cartRepository.hasCartByAccountId(accountId)) {
 
-        Cart cart = new Cart(account, store);
-        cartRepository.save(cart);
+            Account account =
+                accountRepository.findById(cartRedisList.get(0).getAccountId()).orElseThrow(UserNotFoundException::new);
+            Store store =
+                storeRepository.findById(cartRedisList.get(0).getStoreId()).orElseThrow(StoreNotFoundException::new);
 
-        for (CartRedisDto cartRedisDto : cartRedisList) {
+            Cart cart = new Cart(account, store);
+            cartRepository.save(cart);
 
-            Menu menu =
-                menuRepository.findById(cartRedisDto.getMenu().getMenuId()).orElseThrow(MenuNotFoundException::new);
+            for (CartRedisDto cartRedisDto : cartRedisList) {
 
-            CartDetail cartDetail =
-                new CartDetail(cart, menu, cartRedisDto.getCount(), cartRedisDto.getCreateTimeMillis());
+                Menu menu =
+                    menuRepository.findById(cartRedisDto.getMenu().getMenuId()).orElseThrow(MenuNotFoundException::new);
 
-            cartDetailRepository.save(cartDetail);
-            List<CartOptionDto> optionDtos = cartRedisDto.getOptions();
+                CartDetail cartDetail =
+                    new CartDetail(cart, menu, cartRedisDto.getCount(), cartRedisDto.getCreateTimeMillis());
 
-            if (optionDtos != null) {
-                for (CartOptionDto optionDto : optionDtos) {
-                    Option option =
-                        optionRepository.findById(optionDto.getOptionId()).orElseThrow(OptionNotFoundException::new);
+                cartDetailRepository.save(cartDetail);
+                List<CartOptionDto> optionDtos = cartRedisDto.getOptions();
 
-                    CartDetailMenuOption.Pk pk = new CartDetailMenuOption.Pk(cartDetail.getId(), option.getId());
-                    CartDetailMenuOption cartDetailMenuOption = new CartDetailMenuOption(pk, cartDetail, option);
-                    cartDetailMenuOptionRepository.save(cartDetailMenuOption);
+                if (optionDtos != null) {
+                    for (CartOptionDto optionDto : optionDtos) {
+                        Option option =
+                            optionRepository.findById(optionDto.getOptionId()).orElseThrow(OptionNotFoundException::new);
+
+                        CartDetailMenuOption.Pk pk = new CartDetailMenuOption.Pk(cartDetail.getId(), option.getId());
+                        CartDetailMenuOption cartDetailMenuOption = new CartDetailMenuOption(pk, cartDetail, option);
+                        cartDetailMenuOptionRepository.save(cartDetailMenuOption);
+                    }
                 }
             }
-        }
 
-        cartRedisRepository.createLockRedis(LOCK + accountId, LOCK);
+            cartRedisRepository.createLockRedis(LOCK + accountId, LOCK);
+        }
     }
 
     /**

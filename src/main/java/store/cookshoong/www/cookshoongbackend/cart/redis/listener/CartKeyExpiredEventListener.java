@@ -63,10 +63,6 @@ public class CartKeyExpiredEventListener extends KeyExpirationEventMessageListen
 
         Long accountId = Long.valueOf(redisKey.replaceAll(CART, ""));
 
-        if (cartService.hasCartByAccountId(accountId)) {
-            cartService.deleteCartDb(accountId);
-        }
-
         lockProcessor.lock(redisKey, ignore -> {
             if (cartRedisService.hasMenuInCartRedis(redisKey, NO_MENU)) {
                 cartService.createCartDb(accountId, cartRedisList);
