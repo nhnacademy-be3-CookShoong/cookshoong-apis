@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.order.model.request;
 
+import java.util.Objects;
 import java.util.UUID;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -24,4 +25,16 @@ public class CreateOrderRequestDto {
     private String memo;
     private UUID issueCouponCode;
     private Integer pointAmount;
+
+    /**
+     * pointAmount null이거나 음수라면 0으로 반환.
+     *
+     * @return the point amount
+     */
+    public int getPointAmount() {
+        if (Objects.isNull(pointAmount) || pointAmount < 0) {
+            return 0;
+        }
+        return pointAmount;
+    }
 }

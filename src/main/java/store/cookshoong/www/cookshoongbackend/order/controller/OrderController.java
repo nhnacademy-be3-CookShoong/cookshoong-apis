@@ -114,12 +114,7 @@ public class OrderController {
     }
 
     private int getPointDiscount(CreateOrderRequestDto createOrderRequestDto) {
-        Integer pointAmount = createOrderRequestDto.getPointAmount();
-
-        if (Objects.isNull(pointAmount) || pointAmount == 0) {
-            return 0;
-        }
-
+        int pointAmount = createOrderRequestDto.getPointAmount();
         pointService.validPoint(createOrderRequestDto.getAccountId(), pointAmount);
         return pointAmount;
     }
