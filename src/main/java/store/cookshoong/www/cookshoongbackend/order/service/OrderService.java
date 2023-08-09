@@ -2,6 +2,8 @@ package store.cookshoong.www.cookshoongbackend.order.service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,7 @@ import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus;
 import store.cookshoong.www.cookshoongbackend.order.exception.OrderStatusNotFoundException;
 import store.cookshoong.www.cookshoongbackend.order.exception.PriceIncreaseException;
 import store.cookshoong.www.cookshoongbackend.order.model.request.CreateOrderRequestDto;
+import store.cookshoong.www.cookshoongbackend.order.model.request.PatchOrderRequestDto;
 import store.cookshoong.www.cookshoongbackend.order.repository.OrderDetailMenuOptionRepository;
 import store.cookshoong.www.cookshoongbackend.order.repository.OrderDetailRepository;
 import store.cookshoong.www.cookshoongbackend.order.repository.OrderRepository;
@@ -123,5 +126,21 @@ public class OrderService {
         if (nowPrice.compareTo(cartPrice) > 0) {
             throw new PriceIncreaseException();
         }
+    }
+
+    /**
+     * 주문 상태 변경.
+     *
+     * @param orderCode  the order code
+     * @param statusCode the status code
+     */
+    public void changeStatus(@Valid UUID orderCode, OrderStatus.StatusCode statusCode) {
+        Order order = orderRepository.findById(orderCode)
+            .orElseThrow(StoreNotFoundException::new);
+
+        OrderStatus orderStatus = orderStatusRepository.findById(statusCode.toString())
+            .orElseThrow(OrderStatusNotFoundException::new);
+
+        order.updateOrderStatus(orderStatus);
     }
 }
