@@ -51,8 +51,7 @@ public class PointEventService {
      * @param accountId the account id
      */
     public void createSignupPoint(Long accountId) {
-        Account account = accountRepository.findById(accountId)
-            .orElseThrow(UserNotFoundException::new);
+        Account account = accountRepository.getReferenceById(accountId);
         PointReasonSignup pointReasonSignup = pointReasonRepository.save(new PointReasonSignup(account));
         pointLogRepository.save(new PointLog(account, pointReasonSignup, SIGNUP_POINT));
     }
