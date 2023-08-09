@@ -9,5 +9,5 @@ import store.cookshoong.www.cookshoongbackend.order.entity.OrderDetail;
  * @author papel (윤동현)
  * @since 2023.07.11
  */
-public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> {
+public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long>, OrderDetailRepositoryCustom {
 }

@@ -30,6 +30,6 @@ public class OrderStatus {
      * 저장된 statusCode.
      */
     public enum StatusCode {
-        CREATE, PAY, PAY_FAIL, FOOD_OUT, UNDELEV, ORD_FLOOD, DELIV_FAIL, MPAY_FAIL, MISDELEV, FOOD_ISSUE, COMPLETE
+        CREATE, PAY, CANCEL, COOKING, FOOD_OUT, ORD_FLOOD, DELIVER, COMPLETE, PARTIAL;
     }
 }

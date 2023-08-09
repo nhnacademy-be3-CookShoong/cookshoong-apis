@@ -46,6 +46,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.service.ProvideCouponServic
 import store.cookshoong.www.cookshoongbackend.menu_order.exception.menu.BelowMinimumOrderPriceException;
 import store.cookshoong.www.cookshoongbackend.order.model.request.CreateOrderRequestDto;
 import store.cookshoong.www.cookshoongbackend.order.service.OrderService;
+import store.cookshoong.www.cookshoongbackend.point.service.PointService;
 import store.cookshoong.www.cookshoongbackend.shop.service.StoreService;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
 
@@ -66,6 +67,8 @@ class OrderControllerTest {
     AddressService addressService;
     @MockBean
     StoreService storeService;
+    @MockBean
+    PointService pointService;
 
     TestEntity te = new TestEntity();
 

@@ -3,6 +3,7 @@ package store.cookshoong.www.cookshoongbackend.account.controller;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -30,6 +31,7 @@ import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccou
 import store.cookshoong.www.cookshoongbackend.account.model.response.UpdateAccountStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.service.AccountService;
 import store.cookshoong.www.cookshoongbackend.address.service.AddressService;
+import store.cookshoong.www.cookshoongbackend.point.model.event.PointSignupEvent;
 
 /**
  * 회원가입, 회원 조회, 회원 관련 정보 수정를 다루는 컨트롤러.
@@ -44,6 +46,7 @@ import store.cookshoong.www.cookshoongbackend.address.service.AddressService;
 public class AccountController {
     private final AccountService accountService;
     private final AddressService addressService;
+    private final ApplicationEventPublisher publisher;
 
     /**
      * 회원 정보를 전달받아 DB에 저장하게한다.
@@ -67,6 +70,8 @@ public class AccountController {
 
         Long accountId = accountService.createAccount(signUpRequestDto, Authority.Code.valueOf(authorityCodeUpperCase));
         addressService.createAccountAddress(accountId, signUpRequestDto.getCreateAccountAddressRequestDto());
+
+        publisher.publishEvent(new PointSignupEvent(this, accountId));
 
         return ResponseEntity.status(HttpStatus.CREATED)
             .build();

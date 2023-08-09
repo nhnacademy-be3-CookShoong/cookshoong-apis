@@ -123,6 +123,7 @@ class PaymentControllerTest {
 
 
         CreateRefundDto createRefundDto = ReflectionUtils.newInstance(CreateRefundDto.class);
+        ReflectionTestUtils.setField(createRefundDto, "orderCode", UUID.randomUUID());
         ReflectionTestUtils.setField(createRefundDto, "chargeCode", uuid);
         ReflectionTestUtils.setField(createRefundDto, "refundAt", "2023-08-03T14:30:00+00:00");
         ReflectionTestUtils.setField(createRefundDto, "refundAmount", 20000);
@@ -136,6 +137,7 @@ class PaymentControllerTest {
                 ResourceSnippetParameters.builder()
                     .requestSchema(schema("PostCreateRefund")),
                 requestFields(
+                    fieldWithPath("orderCode").description("주문코드"),
                     fieldWithPath("chargeCode").description("결제코드"),
                     fieldWithPath("refundAt").description("환불시간"),
                     fieldWithPath("refundAmount").description("환불금액"),

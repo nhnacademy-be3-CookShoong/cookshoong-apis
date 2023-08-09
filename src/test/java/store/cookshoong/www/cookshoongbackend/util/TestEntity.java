@@ -31,7 +31,9 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.MenuStatus;
+import store.cookshoong.www.cookshoongbackend.order.entity.OrderDetail;
 import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus;
 import store.cookshoong.www.cookshoongbackend.payment.entity.ChargeType;
 import store.cookshoong.www.cookshoongbackend.order.entity.Order;
@@ -177,6 +179,12 @@ public class TestEntity {
     public CreateStoreRequestDto getCreateStoreRequestDto(Merchant merchant, BankType bankType){
         return createStoreRequestDto(merchant, bankType);
     }
+
+    public Menu getMenu(MenuStatus menuStatus, Store store, Image image, BigDecimal bigDecimal) {
+        return new Menu(menuStatus, store, "메뉴", 2_000, "메뉴입니다.", image, 10,
+            bigDecimal);
+    }
+
     private CreateStoreRequestDto createStoreRequestDto(Merchant merchant, BankType bankType) {
         CreateStoreRequestDto createStoreRequestDto = createUsingDeclared(CreateStoreRequestDto.class);
         ReflectionTestUtils.setField(createStoreRequestDto, "merchantId", 1L);

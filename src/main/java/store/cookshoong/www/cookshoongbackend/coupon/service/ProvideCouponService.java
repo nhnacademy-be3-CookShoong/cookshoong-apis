@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponLog;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponLogType;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponPolicy;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.AlreadyHasCouponWithinSamePolicyException;
@@ -29,8 +30,8 @@ import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponLogReposit
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponRedisRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.IssueCouponRepository;
-import store.cookshoong.www.cookshoongbackend.menu_order.exception.menu.BelowMinimumOrderPriceException;
 import store.cookshoong.www.cookshoongbackend.lock.LockProcessor;
+import store.cookshoong.www.cookshoongbackend.menu_order.exception.menu.BelowMinimumOrderPriceException;
 
 /**
  * 쿠폰 발급 서비스.
@@ -42,7 +43,6 @@ import store.cookshoong.www.cookshoongbackend.lock.LockProcessor;
 @Transactional
 @RequiredArgsConstructor
 public class ProvideCouponService {
-    private static final String STATUS_USE = "USE";
     private static final int SPARE_MINUTE = 30;
 
     private final IssueCouponRepository issueCouponRepository;
@@ -191,7 +191,7 @@ public class ProvideCouponService {
     }
 
     private void validRecentCouponLog(CouponLog couponLog) {
-        if (couponLog.getCouponLogType().getCode().equals(STATUS_USE)) {
+        if (couponLog.getCouponLogType().getCode().equals(CouponLogType.Code.USE.toString())) {
             throw new AlreadyUsedCouponException();
         }
     }

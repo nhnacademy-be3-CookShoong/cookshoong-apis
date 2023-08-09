@@ -60,4 +60,8 @@ public class CouponLog {
         this.order = order;
         this.recordAt = LocalDateTime.now();
     }
+
+    public void updateCouponLogType(CouponLogType couponLogType) {
+        this.couponLogType = couponLogType;
+    }
 }
