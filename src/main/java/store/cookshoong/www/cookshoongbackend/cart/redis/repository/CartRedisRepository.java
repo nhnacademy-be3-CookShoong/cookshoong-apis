@@ -39,6 +39,18 @@ public class CartRedisRepository {
     }
 
     /**
+     * Lock 을 구분할 수 있는 redis Key 를 생성.
+     *
+     * @param lockKey       lock redis key
+     * @param hashKey       lock redis hashKey
+     */
+    public void createLockRedis(String lockKey, String hashKey) {
+
+        redisTemplate.opsForHash().put(lockKey, hashKey, "lock");
+        redisTemplate.expire(lockKey, 30, TimeUnit.SECONDS);
+    }
+
+    /**
      * key 에 해당되는 특정 hashKey 에 값을 새로운 객체로 덮어씌움으로 Redis 객체를 변경해주는 메서드.
      *
      * @param redisKey    redis key

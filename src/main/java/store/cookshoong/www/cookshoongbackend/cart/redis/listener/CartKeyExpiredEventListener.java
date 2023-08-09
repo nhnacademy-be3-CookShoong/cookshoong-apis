@@ -60,6 +60,7 @@ public class CartKeyExpiredEventListener extends KeyExpirationEventMessageListen
 
         // Lock을 사용하여 처리할 작업을 묶어줍니다.
         List<CartRedisDto> finalCartRedisList = cartRedisService.selectCartMenuAll(redisKey);
+
         lockProcessor.lock(redisKey, ignore -> {
             if (cartRedisService.hasMenuInCartRedis(redisKey, NO_MENU)) {
                 cartService.createCartDb(redisKey, cartRedisList);
