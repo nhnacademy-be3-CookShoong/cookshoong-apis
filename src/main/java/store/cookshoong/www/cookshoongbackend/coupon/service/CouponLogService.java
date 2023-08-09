@@ -3,6 +3,7 @@ package store.cookshoong.www.cookshoongbackend.coupon.service;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponLog;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponLogType;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
@@ -21,6 +22,7 @@ import store.cookshoong.www.cookshoongbackend.order.repository.OrderRepository;
  * @since 2023.08.09
  */
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CouponLogService {
     private final CouponLogRepository couponLogRepository;
