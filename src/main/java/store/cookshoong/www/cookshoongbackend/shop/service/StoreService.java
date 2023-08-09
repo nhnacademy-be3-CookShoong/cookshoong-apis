@@ -186,7 +186,7 @@ public class StoreService {
         responseDto.setDistance(meterDistance);
         Integer extraDeliveryCost = (meterDistance / 1000) * 1000;
         responseDto.setTotalDeliveryCost(store.getDeliveryCost() + extraDeliveryCost);
-        Integer deliveryTime = (meterDistance / 500) * 5;
+        Integer deliveryTime = 10 + (meterDistance / 500) * 5;
         responseDto.setDeliveryTime(deliveryTime);
 
         return responseDto;
