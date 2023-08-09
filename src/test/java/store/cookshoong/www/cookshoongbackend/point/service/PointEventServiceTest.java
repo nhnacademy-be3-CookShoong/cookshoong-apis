@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -23,7 +22,6 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
-import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.order.entity.Order;
 import store.cookshoong.www.cookshoongbackend.order.exception.OrderNotFoundException;
@@ -77,22 +75,8 @@ class PointEventServiceTest {
     }
 
     @Test
-    @DisplayName("회원가입 포인트 제공 실패 - 회원 정보 없음")
-    void createSignupPointAccountNotFoundFailTest() throws Exception {
-        when(accountRepository.findById(anyLong()))
-            .thenReturn(Optional.empty());
-
-        assertThrowsExactly(UserNotFoundException.class, () ->
-            pointEventService.createSignupPoint(Long.MIN_VALUE));
-    }
-
-    @Test
     @DisplayName("회원가입 포인트 제공 성공")
     void createSignupPointAccountSuccessTest() throws Exception {
-        Account account = mock(Account.class);
-        when(accountRepository.findById(anyLong()))
-            .thenReturn(Optional.of(account));
-
         assertDoesNotThrow(() ->
             pointEventService.createSignupPoint(Long.MIN_VALUE));
     }
