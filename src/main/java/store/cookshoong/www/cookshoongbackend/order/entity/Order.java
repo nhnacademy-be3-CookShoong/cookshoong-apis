@@ -65,4 +65,8 @@ public class Order {
         this.orderedAt = LocalDateTime.now();
         this.memo = memo;
     }
+
+    public void updateOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
 }
