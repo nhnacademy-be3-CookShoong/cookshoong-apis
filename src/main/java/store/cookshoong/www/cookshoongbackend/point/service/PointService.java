@@ -59,6 +59,7 @@ public class PointService {
      * @param accountId the account id
      * @param usePoint  the use point
      */
+    @Transactional(readOnly = true)
     public void validPoint(Long accountId, Integer usePoint) {
         Account account = accountRepository.findById(accountId)
             .orElseThrow(UserNotFoundException::new);
