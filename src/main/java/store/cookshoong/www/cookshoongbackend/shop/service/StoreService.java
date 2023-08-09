@@ -19,6 +19,7 @@ import store.cookshoong.www.cookshoongbackend.account.repository.AccountReposito
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
 import store.cookshoong.www.cookshoongbackend.address.model.response.AddressResponseDto;
 import store.cookshoong.www.cookshoongbackend.address.repository.accountaddress.AccountAddressRepository;
+import store.cookshoong.www.cookshoongbackend.address.service.AddressService;
 import store.cookshoong.www.cookshoongbackend.file.ImageNotFoundException;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
@@ -73,6 +74,7 @@ public class StoreService {
     private final AccountAddressRepository accountAddressRepository;
     private final FileUtilResolver fileUtilResolver;
     private final ImageRepository imageRepository;
+    private final AddressService addressService;
 
     private static final Long BASIC_IMAGE = 1L;
     private static final BigDecimal DISTANCE = new BigDecimal("3.0");
@@ -166,11 +168,28 @@ public class StoreService {
      * @param storeId 매장 아이디
      * @return 매장 정보 조회
      */
-    public SelectStoreForUserResponseDto selectStoreForUser(Long storeId) {
+    public SelectStoreForUserResponseDto selectStoreForUser(Long addressId, Long storeId) {
         SelectStoreForUserResponseDto responseDto = storeRepository.lookupStoreForUser(storeId)
             .orElseThrow(StoreNotFoundException::new);
         FileUtils fileUtils = fileUtilResolver.getFileService(responseDto.getLocationType());
         responseDto.setSavedName(fileUtils.getFullPath(responseDto.getDomainName(), responseDto.getSavedName()));
+
+        Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
+
+        BigDecimal distance = calculateDistance(
+            addressService.selectAccountChoiceAddress(addressId).getLatitude(),
+            addressService.selectAccountChoiceAddress(addressId).getLongitude(),
+            addressService.selectAccountChoiceAddress(store.getAddress().getId()).getLatitude(),
+            addressService.selectAccountChoiceAddress(store.getAddress().getId()).getLongitude()
+        );
+
+        int meterDistance = (int) (distance.doubleValue() * 1000);
+        responseDto.setDistance(meterDistance);
+        Integer extraDeliveryCost = (meterDistance / 1000) * 1000;
+        responseDto.setTotalDeliveryCost(store.getDeliveryCost() + extraDeliveryCost);
+        Integer deliveryTime = 10 + (meterDistance / 500) * 5;
+        responseDto.setDeliveryTime(deliveryTime);
+
         return responseDto;
     }
 
@@ -228,7 +247,7 @@ public class StoreService {
      * @param requestDto 매장 수정 정보
      * @throws IOException the io exception
      */
-    public void updateStore(Long accountId, Long storeId, UpdateStoreManagerRequestDto requestDto){
+    public void updateStore(Long accountId, Long storeId, UpdateStoreManagerRequestDto requestDto) {
         Store store = getStoreById(storeId);
         accessDeniedException(accountId, store);
         BankType bankType = getBankTypeByCode(requestDto.getBankCode());
@@ -244,7 +263,7 @@ public class StoreService {
      * @param storeId    the store id
      * @param requestDto the request dto
      */
-    public void updateStoreInfo(Long accountId, Long storeId, UpdateStoreInfoRequestDto requestDto){
+    public void updateStoreInfo(Long accountId, Long storeId, UpdateStoreInfoRequestDto requestDto) {
         Store store = getStoreById(storeId);
         accessDeniedException(accountId, store);
 

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import store.cookshoong.www.cookshoongbackend.coupon.service.CouponPolicyService;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllCategoriesResponseDto;
@@ -35,8 +36,10 @@ public class StoreController {
      * @return 매장 정보
      */
     @GetMapping("/{storeId}/info")
-    public ResponseEntity<SelectStoreForUserResponseDto> getStoreInformation(@PathVariable("storeId") Long storeId) {
-        SelectStoreForUserResponseDto selectStoreForUserResponseDto = storeService.selectStoreForUser(storeId);
+    public ResponseEntity<SelectStoreForUserResponseDto> getStoreInformation(
+        @PathVariable("storeId") Long storeId,
+        @RequestParam("addressId") Long addressId) {
+        SelectStoreForUserResponseDto selectStoreForUserResponseDto = storeService.selectStoreForUser(addressId, storeId);
 
         selectStoreForUserResponseDto.setProvableCouponPolicies(
             couponPolicyService.getProvableStoreCouponPolicies(storeId));

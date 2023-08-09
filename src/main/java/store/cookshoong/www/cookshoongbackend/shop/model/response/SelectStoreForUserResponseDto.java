@@ -32,6 +32,12 @@ public class SelectStoreForUserResponseDto {
     @Setter
     private List<SelectProvableStoreCouponPolicyResponseDto> provableCouponPolicies;
     private final String storeStatus;
+    @Setter
+    private Integer distance;
+    @Setter
+    private Integer totalDeliveryCost;
+    @Setter
+    private Integer deliveryTime;
 
     /**
      * 일반회원 : 일반회원이 조회할 수 있는 매장의 정보.

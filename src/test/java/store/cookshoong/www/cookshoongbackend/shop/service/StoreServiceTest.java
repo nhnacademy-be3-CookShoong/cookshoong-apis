@@ -32,6 +32,8 @@ import org.springframework.web.multipart.MultipartFile;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
+import store.cookshoong.www.cookshoongbackend.address.model.response.AddressResponseDto;
+import store.cookshoong.www.cookshoongbackend.address.service.AddressService;
 import store.cookshoong.www.cookshoongbackend.common.property.ObjectStorageProperties;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
@@ -98,6 +100,8 @@ class StoreServiceTest {
     private ObjectStorageService objectStorageService;
     @Mock
     private LocalFileService localFileService;
+    @Mock
+    private AddressService addressService;
     @InjectMocks
     private StoreService storeService;
 
@@ -183,8 +187,9 @@ class StoreServiceTest {
     @DisplayName("사용자 : 매장 정보 조회 - 성공")
     void selectStoreForUser() {
         Store store = tpe.getOpenStoreByOneAccount(account);
+        Address address = new Address("광주 지산동", "조선대 정문", BigDecimal.ONE, BigDecimal.ONE);
         ReflectionTestUtils.setField(store, "id", 1L);
-        store.modifyAddress(new Address("광주 지산동", "조선대 정문", BigDecimal.ONE, BigDecimal.ONE));
+        store.modifyAddress(address);
 
         SelectStoreForUserResponseDto selectStore = new SelectStoreForUserResponseDto(
             store.getBusinessLicenseNumber(),
@@ -203,13 +208,23 @@ class StoreServiceTest {
             store.getStoreStatus().getDescription()
         );
 
+        AddressResponseDto addressResponseDto = new AddressResponseDto(
+            address.getId(),
+            address.getMainPlace(),
+            address.getDetailPlace(),
+            address.getLatitude(),
+            address.getLongitude()
+        );
+
+        when(storeRepository.findById(store.getId())).thenReturn(Optional.of(store));
         when(storeRepository.lookupStoreForUser(store.getId())).thenReturn(Optional.of(selectStore));
         when(fileUtilResolver.getFileService(store.getStoreImage().getLocationType()))
             .thenReturn(objectStorageService);
+        when(addressService.selectAccountChoiceAddress(address.getId())).thenReturn(addressResponseDto);
         selectStore.setSavedName(objectStorageService
             .getFullPath(store.getStoreImage().getDomainName(), selectStore.getSavedName()));
 
-        SelectStoreForUserResponseDto result = storeService.selectStoreForUser(store.getId());
+        SelectStoreForUserResponseDto result = storeService.selectStoreForUser(address.getId(), store.getId());
 
         assertThat(result.getStoreName()).isEqualTo(selectStore.getStoreName());
         assertThat(result.getRepresentativeName()).isEqualTo(selectStore.getRepresentativeName());
