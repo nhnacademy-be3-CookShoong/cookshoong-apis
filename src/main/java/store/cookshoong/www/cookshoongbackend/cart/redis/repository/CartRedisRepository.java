@@ -47,7 +47,7 @@ public class CartRedisRepository {
     public void createLockRedis(String lockKey, String hashKey) {
 
         redisTemplate.opsForHash().put(lockKey, hashKey, "lock");
-        redisTemplate.expire(lockKey, 2, TimeUnit.MINUTES);
+        redisTemplate.expire(lockKey, 30, TimeUnit.SECONDS);
     }
 
     /**
