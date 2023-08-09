@@ -1,7 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.shop.repository.businesshour;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import java.util.List;
 import org.springframework.data.repository.NoRepositoryBean;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectBusinessHourResponseDto;
 
@@ -13,12 +12,11 @@ import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectBusiness
  */
 @NoRepositoryBean
 public interface BusinessHourRepositoryCustom {
-
     /**
-     * 영업시간 리스트 페이지별 조회.
+     * 매장 영업시간 리스트 조회.
      *
-     * @param pageable 페이지 정보
-     * @return 각 매장별 영업시간 리스트
+     * @param storeId 매장 아이디
+     * @return 매장의 영업시간 리스트
      */
-    Page<SelectBusinessHourResponseDto> lookupBusinessHourPage(Long storeId, Pageable pageable);
+    List<SelectBusinessHourResponseDto> lookupBusinessHours(Long storeId);
 }
