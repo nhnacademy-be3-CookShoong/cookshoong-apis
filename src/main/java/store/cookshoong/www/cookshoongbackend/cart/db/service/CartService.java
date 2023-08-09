@@ -60,9 +60,7 @@ public class CartService {
      */
     public void createCartDb(String redisKey, List<CartRedisDto> cartRedisDtoList) {
 
-        if (cartRedisRepository.existKeyInCartRedis(redisKey)) {
-            updateRedisCartKey(redisKey, cartRedisDtoList);
-        }
+        updateRedisCartKey(redisKey, cartRedisDtoList);
     }
 
     private void updateRedisCartKey(String redisKey, List<CartRedisDto> cartRedisList) {
