@@ -38,6 +38,10 @@ import store.cookshoong.www.cookshoongbackend.point.repository.PointReasonReposi
 @RequiredArgsConstructor
 public class PointEventService {
     private static final int SIGNUP_POINT = 4_000;
+    private static final String ORDER_COMPLETE_POINT_EXPLAIN = "주문 완료로 인한 포인트 적립";
+    private static final String ORDER_ABORT_POINT_EXPLAIN = "주문 취소로 인한 사용 포인트 환불";
+    private static final String ORDER_POINT_LOG_EMPTY = "주문코드: `{}`에 대한 포인트 적립이 검색되지 않음.";
+
     private final AccountRepository accountRepository;
     private final PointReasonRepository pointReasonRepository;
     private final PointLogRepository pointLogRepository;
@@ -89,7 +93,7 @@ public class PointEventService {
         int point = (int) ((double) charge.getChargedAmount() / originChargeAmount * originPoint);
 
         PointReasonOrder pointReasonOrder = pointReasonRepository.save(
-            new PointReasonOrder(order, "주문 완료로 인한 포인트 적립"));
+            new PointReasonOrder(order, ORDER_COMPLETE_POINT_EXPLAIN));
         pointLogRepository.save(new PointLog(account, pointReasonOrder, point));
     }
 
@@ -118,7 +122,7 @@ public class PointEventService {
             .collect(Collectors.toList());
 
         if (pointLogs.isEmpty()) {
-            log.warn("주문코드: `{}`에 대한 포인트 적립이 검색되지 않음.", orderCode);
+            log.warn(ORDER_POINT_LOG_EMPTY, orderCode);
             return;
         }
 
@@ -131,6 +135,6 @@ public class PointEventService {
         int pointMovement = pointLog.getPointMovement();
 
         pointLogRepository.save(
-            new PointLog(account, new PointReasonOrder(order, "주문 취소로 인한 사용 포인트 환불"), pointMovement));
+            new PointLog(account, new PointReasonOrder(order, ORDER_ABORT_POINT_EXPLAIN), pointMovement));
     }
 }
