@@ -32,7 +32,7 @@ public class CouponLogType {
      */
     public enum Code {
         USE,
-        REFUND
+        CANCEL
     }
 
 }
