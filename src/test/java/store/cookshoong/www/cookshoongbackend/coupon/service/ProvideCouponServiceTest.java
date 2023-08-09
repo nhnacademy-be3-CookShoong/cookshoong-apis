@@ -453,7 +453,7 @@ class ProvideCouponServiceTest {
             .thenReturn(Optional.of(issueCoupon));
 
         when(issueCoupon.getExpirationDate())
-            .thenReturn(LocalDate.now().minusDays(1));
+            .thenReturn(LocalDate.now().minusDays(2));
 
         assertThrowsExactly(ExpiredCouponException.class, () ->
             provideCouponService.validExpirationDateTime(UUID.randomUUID()));
