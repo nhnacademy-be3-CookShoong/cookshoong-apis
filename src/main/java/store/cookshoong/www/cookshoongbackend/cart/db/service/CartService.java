@@ -3,6 +3,7 @@ package store.cookshoong.www.cookshoongbackend.cart.db.service;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
@@ -33,6 +34,7 @@ import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreReposit
  * @author jeongjewan
  * @since 2023.07.27
  */
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -48,6 +50,7 @@ public class CartService {
     private final OptionRepository optionRepository;
     private static final String CART = "cartKey=";
 
+
     /**
      * Redis Key 에 만료기간이 끝나면 Key 삭제 되기전 장바구니 데이터를 DB 에 저장하느 메서드.    <br>
      * 회원에 대한 장바구니 정보가 DB 에 있으면 삭제하고 새롭게 생성해준다.
@@ -62,7 +65,14 @@ public class CartService {
         }
     }
 
-    private void updateRedisCartKey(String accountId, List<CartRedisDto> cartRedisList) {
+    private void updateRedisCartKey(String redisKey, List<CartRedisDto> cartRedisList) {
+
+        String id = redisKey.replaceAll(CART, "");
+
+        if (cartRepository.hasCartByAccountId(Long.valueOf(id))) {
+            // DB 에 회원에 대한 장바구니
+            deleteCartDb(Long.valueOf(id));
+        }
 
         if (cartRedisList == null || cartRedisList.isEmpty()) {
             return;
@@ -99,8 +109,8 @@ public class CartService {
             }
         }
 
-        if (cartRedisRepository.existKeyInCartRedis(accountId)) {
-            cartRedisRepository.deleteCartAll(accountId);
+        if (cartRedisRepository.existKeyInCartRedis(redisKey)) {
+            cartRedisRepository.deleteCartAll(redisKey);
         }
     }
 
