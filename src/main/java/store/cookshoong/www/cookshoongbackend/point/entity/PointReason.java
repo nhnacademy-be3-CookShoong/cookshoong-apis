@@ -14,7 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 포인트 이유 entity.
+ * 포인트 사유 entity.
  *
  * @author eora21 (김주호)
  * @since 2023.08.07
