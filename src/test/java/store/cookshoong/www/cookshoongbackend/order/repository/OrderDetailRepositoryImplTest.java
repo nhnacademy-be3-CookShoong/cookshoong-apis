@@ -52,9 +52,9 @@ class OrderDetailRepositoryImplTest {
 
         MenuStatus menuStatus = em.persist(new MenuStatus("OPEN", "판매중"));
 
-        Image firstImage = te.getImage("이미지", true);
-        Image secondImage = te.getImage("이미지", true);
-        Image thirdImage = te.getImage("이미지", true);
+        Image firstImage = te.getImage("이미지", "", "", true);
+        Image secondImage = te.getImage("이미지", "", "",true);
+        Image thirdImage = te.getImage("이미지", "", "",true);
 
         Menu firstMenu = te.getMenu(menuStatus, store, firstImage, new BigDecimal("1.5"));
         Menu secondMenu = te.getMenu(menuStatus, store, secondImage, new BigDecimal("2.0"));
