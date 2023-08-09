@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import store.cookshoong.www.cookshoongbackend.account.exception.AccountStatusNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.exception.AuthorityNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.exception.DuplicatedUserException;
+import store.cookshoong.www.cookshoongbackend.account.exception.SignUpValidationException;
+import store.cookshoong.www.cookshoongbackend.account.exception.UpdateAccountInfoValidationException;
 import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
 import store.cookshoong.www.cookshoongbackend.common.exception.ErrorMessage;
 import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException;
@@ -34,7 +36,7 @@ public class RequestExceptionHandler {
      * @param e 검증실패 예외
      * @return 검증실패 필드와 메세지
      */
-    @ExceptionHandler({ValidationFailureException.class})
+    @ExceptionHandler({SignUpValidationException.class, UpdateAccountInfoValidationException.class})
     public ResponseEntity<Map<String, String>> handleValidationFailure(ValidationFailureException e,
                                                                        HttpServletRequest request) {
         log.error(CLIENT_IP_LOG, IpResolver.getClientIp(request));

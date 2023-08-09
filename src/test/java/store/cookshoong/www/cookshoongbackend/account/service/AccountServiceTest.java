@@ -300,5 +300,14 @@ class AccountServiceTest {
             () -> accountService.createOAuth2Account(inputAccountId, inputAccountCode, inputProvider)
         ).isInstanceOf(NullPointerException.class);
     }
+
+    @Test
+    @DisplayName("마지막 로그인 업데이트 - 없는 회원의 로그인 날짜를 변경하려는 경우")
+    void updateLastLoginDate() {
+        when(accountRepository.findById(anyLong())).thenReturn(Optional.empty());
+        assertThatThrownBy(() ->
+            accountService.updateLastLoginDate(Long.MAX_VALUE))
+            .isInstanceOf(UserNotFoundException.class);
+    }
 }
 
