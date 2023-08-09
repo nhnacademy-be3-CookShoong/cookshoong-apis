@@ -2,6 +2,7 @@ package store.cookshoong.www.cookshoongbackend.account.service;
 
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
@@ -12,8 +13,8 @@ import store.cookshoong.www.cookshoongbackend.account.entity.OauthType;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.account.exception.DuplicatedUserException;
 import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
-import store.cookshoong.www.cookshoongbackend.account.model.request.OAuth2SignUpRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
+import store.cookshoong.www.cookshoongbackend.account.model.request.UpdateAccountInfoRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountAuthResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountInfoResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
@@ -145,5 +146,38 @@ public class AccountService {
         Account account = accountRepository.getReferenceById(accountId);
         OauthType oauthType = oauthTypeRepository.getReferenceByProvider(provider);
         oauthAccountRepository.save(new OauthAccount(account, oauthType, accountCode));
+    }
+
+    /**
+     * 마지막 로그인 날짜를 업데이트한다.
+     *
+     * @param accountId the account id
+     */
+    @Transactional
+    public void updateLastLoginDate(Long accountId) {
+        Account account = accountRepository.findById(accountId)
+            .orElseThrow(UserNotFoundException::new);
+        account.updateLastLoginAt();
+    }
+
+    public HttpStatus selectAccountExists(Long accountId) {
+        return accountRepository.existsById(accountId) ? HttpStatus.OK : HttpStatus.NOT_FOUND;
+    }
+
+    public HttpStatus selectAccountExists(String loginId) {
+        return accountRepository.existsByLoginId(loginId) ? HttpStatus.OK : HttpStatus.NOT_FOUND;
+    }
+
+    /**
+     * 변경가능한 회원정보를 수정하는 메서드.
+     *
+     * @param accountId                   the account id
+     * @param updateAccountInfoRequestDto the update account info request dto
+     */
+    @Transactional
+    public void updateMutableAccountInfo(Long accountId, UpdateAccountInfoRequestDto updateAccountInfoRequestDto) {
+        Account account = accountRepository.findById(accountId)
+            .orElseThrow(UserNotFoundException::new);
+        account.updateMutableInfo(updateAccountInfoRequestDto);
     }
 }
