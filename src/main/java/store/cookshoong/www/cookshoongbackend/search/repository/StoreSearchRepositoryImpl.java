@@ -57,11 +57,11 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepositoryCustom {
 
         BoolQueryBuilder boolQueryBuilder = QueryBuilders
             .boolQuery()
-            .mustNot(QueryBuilders.termQuery("store_status_code.keyword", "OUTED"))
+            .mustNot(QueryBuilders.termQuery("store_status_code", "OUTED"))
             .must(matchQueryBuilder)
             .filter(geoDistanceQueryBuilder);
 
-        FieldSortBuilder sortBuilder = SortBuilders.fieldSort("store_status_code.keyword")
+        FieldSortBuilder sortBuilder = SortBuilders.fieldSort("store_status_code")
             .order(SortOrder.DESC);
 
         NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
@@ -91,10 +91,10 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepositoryCustom {
 
         BoolQueryBuilder boolQueryBuilder = QueryBuilders
             .boolQuery()
-            .mustNot(QueryBuilders.termQuery("store_status_code.keyword", "OUTED"))
+            .mustNot(QueryBuilders.termQuery("store_status_code", "OUTED"))
             .must(geoDistanceQueryBuilder);
 
-        FieldSortBuilder sortBuilder = SortBuilders.fieldSort("store_status_code.keyword")
+        FieldSortBuilder sortBuilder = SortBuilders.fieldSort("store_status_code")
             .order(SortOrder.DESC);
 
         NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
