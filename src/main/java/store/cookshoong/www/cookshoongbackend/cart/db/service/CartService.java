@@ -3,6 +3,7 @@ package store.cookshoong.www.cookshoongbackend.cart.db.service;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
@@ -16,6 +17,7 @@ import store.cookshoong.www.cookshoongbackend.cart.db.repository.CartDetailRepos
 import store.cookshoong.www.cookshoongbackend.cart.db.repository.CartRepository;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartOptionDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartRedisDto;
+import store.cookshoong.www.cookshoongbackend.cart.redis.repository.CartRedisRepository;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.option.Option;
 import store.cookshoong.www.cookshoongbackend.menu_order.exception.menu.MenuNotFoundException;
@@ -32,6 +34,7 @@ import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreReposit
  * @author jeongjewan
  * @since 2023.07.27
  */
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -40,24 +43,36 @@ public class CartService {
     private final CartDetailMenuOptionRepository cartDetailMenuOptionRepository;
     private final CartDetailRepository cartDetailRepository;
     private final CartRepository cartRepository;
+    private final CartRedisRepository cartRedisRepository;
     private final AccountRepository accountRepository;
     private final StoreRepository storeRepository;
     private final MenuRepository menuRepository;
     private final OptionRepository optionRepository;
     private static final String CART = "cartKey=";
 
+
     /**
      * Redis Key 에 만료기간이 끝나면 Key 삭제 되기전 장바구니 데이터를 DB 에 저장하느 메서드.    <br>
      * 회원에 대한 장바구니 정보가 DB 에 있으면 삭제하고 새롭게 생성해준다.
      *
-     * @param accountId     회원 아이디
+     * @param redisKey              장바구니 key
+     * @param cartRedisDtoList      해당 key 장바구니 내역
      */
-    public void createCartDb(String accountId, List<CartRedisDto> cartRedisList) {
+    public void createCartDb(String redisKey, List<CartRedisDto> cartRedisDtoList) {
 
-        String id = accountId.replaceAll(CART, "");
+        if (cartRedisRepository.existKeyInCartRedis(redisKey)) {
+            updateRedisCartKey(redisKey, cartRedisDtoList);
+        }
+    }
 
-        // DB 에 회원에 대한 장바구니
-        deleteCartDb(Long.valueOf(id));
+    private void updateRedisCartKey(String redisKey, List<CartRedisDto> cartRedisList) {
+
+        String id = redisKey.replaceAll(CART, "");
+
+        if (cartRepository.hasCartByAccountId(Long.valueOf(id))) {
+            // DB 에 회원에 대한 장바구니
+            deleteCartDb(Long.valueOf(id));
+        }
 
         if (cartRedisList == null || cartRedisList.isEmpty()) {
             return;
@@ -92,6 +107,10 @@ public class CartService {
                     cartDetailMenuOptionRepository.save(cartDetailMenuOption);
                 }
             }
+        }
+
+        if (cartRedisRepository.existKeyInCartRedis(redisKey)) {
+            cartRedisRepository.deleteCartAll(redisKey);
         }
     }
 

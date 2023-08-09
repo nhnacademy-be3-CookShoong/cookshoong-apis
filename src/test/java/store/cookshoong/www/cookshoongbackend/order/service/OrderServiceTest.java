@@ -26,6 +26,8 @@ import store.cookshoong.www.cookshoongbackend.account.repository.AccountReposito
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartMenuDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartOptionDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartRedisDto;
+import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
+import store.cookshoong.www.cookshoongbackend.file.model.LocationType;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.MenuStatus;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.option.Option;
@@ -100,7 +102,7 @@ class OrderServiceTest {
 
         cartItems = List.of(
             new CartRedisDto(accountId, storeId, "주호타코",
-                new CartMenuDto(1L, "타코야끼", null, 4_000),
+                new CartMenuDto(1L, "타코야끼", null, 4_000, LocationType.OBJECT_S.getVariable(), FileDomain.MENU_IMAGE.getVariable()),
                 List.of(new CartOptionDto(2L, "가쓰오부시 추가", 500)),
                 100L, "hashKey", 2, "타코야끼 : 가쓰오부시 추가",
                 "9_000"));

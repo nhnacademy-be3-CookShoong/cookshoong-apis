@@ -29,6 +29,8 @@ import store.cookshoong.www.cookshoongbackend.cart.db.entity.CartDetailMenuOptio
 import store.cookshoong.www.cookshoongbackend.cart.db.model.response.CartResponseDto;
 import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
+import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
+import store.cookshoong.www.cookshoongbackend.file.model.LocationType;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.MenuStatus;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menugroup.MenuGroup;
@@ -89,8 +91,8 @@ class CartRepositoryImplTest {
 
         StoreStatus storeStatus = tm.getStoreStatusOpen();
         BankType bankType = tm.getBankTypeKb();
-        businessImage = tm.getImage("사업자등록증.png", false);
-        storeImage = tm.getImage("매장사진.png", true);
+        businessImage = tm.getImage(LocationType.OBJECT_S.getVariable(), FileDomain.BUSINESS_INFO_IMAGE.getVariable(), "사업자등록증.png", false);
+        storeImage = tm.getImage(LocationType.OBJECT_S.getVariable(), FileDomain.STORE_IMAGE.getVariable(), "매장사진.png", true);
         store = tm.getStore(merchant, account, bankType, storeStatus, businessImage, storeImage);
 
         em.persist(accountStatus);
@@ -104,7 +106,7 @@ class CartRepositoryImplTest {
         em.persist(storeImage);
         em.persist(store);
 
-        menuImage = tm.getImage("메뉴사진.png", true);
+        menuImage = tm.getImage(LocationType.OBJECT_S.getVariable(), FileDomain.MENU_IMAGE.getVariable(), "메뉴사진.png", true);
         menuStatus = ReflectionUtils.newInstance(MenuStatus.class);
         ReflectionTestUtils.setField(menuStatus, "code", "OPEN");
         ReflectionTestUtils.setField(menuStatus, "description", "판매중");

@@ -24,7 +24,8 @@ import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateStoreRequestDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreRequestDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreInfoRequestDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreManagerRequestDto;
 
 /**
  * 매장 엔티티.
@@ -63,7 +64,7 @@ public class Store {
     @JoinColumn(name = "store_status_code", nullable = false)
     private StoreStatus storeStatus;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "business_license_image_id", nullable = false)
     private Image businessLicense;
 
@@ -82,18 +83,22 @@ public class Store {
     @Column(name = "phone_number", nullable = false, length = 12)
     private String phoneNumber;
 
-    @Column(name = "default_earning_rate", nullable = false, precision = 4, scale = 1)
+    @Column(name = "default_earning_rate", nullable = false, precision = 2, scale = 1)
     private BigDecimal defaultEarningRate;
 
     @Lob
     private String description;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_image_id", nullable = false)
+    @JoinColumn(name = "store_image_id")
     private Image storeImage;
 
     @Column(name = "bank_account_number", nullable = false, length = 20)
     private String bankAccountNumber;
+    @Column(name = "minimum_order_price", nullable = false)
+    private Integer minimumOrderPrice;
+    @Column(name = "delivery_cost")
+    private Integer deliveryCost;
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.PERSIST)
     private final Set<StoresHasCategory> storesHasCategories = new HashSet<>();
@@ -122,9 +127,11 @@ public class Store {
         this.name = createStoreRequestDto.getStoreName();
         this.phoneNumber = createStoreRequestDto.getPhoneNumber();
         this.defaultEarningRate = createStoreRequestDto.getEarningRate();
+        this.minimumOrderPrice = createStoreRequestDto.getMinimumOrderPrice();
         this.description = createStoreRequestDto.getDescription();
         this.storeImage = storeImage;
         this.bankAccountNumber = createStoreRequestDto.getBankAccount();
+        this.deliveryCost = createStoreRequestDto.getDeliveryCost();
     }
 
     /**
@@ -139,26 +146,38 @@ public class Store {
     /**
      * 매장 정보 수정.
      *
-     * @param account      the account
      * @param bankTypeCode the bank type code
-     * @param storeStatus  the store status
-     * @param storeImage   the store image
      * @param requestDto   the request dto
      */
-    public void modifyStoreInfo(Account account, BankType bankTypeCode, StoreStatus storeStatus,
-                                Image storeImage, UpdateStoreRequestDto requestDto) {
-        this.account = account;
+    public void modifyStore(BankType bankTypeCode,
+                                UpdateStoreManagerRequestDto requestDto) {
         this.bankTypeCode = bankTypeCode;
-        this.storeStatus = storeStatus;
         this.businessLicenseNumber = requestDto.getBusinessLicenseNumber();
         this.representativeName = requestDto.getRepresentativeName();
+
+    }
+
+    /**
+     * Modify store info.
+     *
+     * @param requestDto the request dto
+     */
+    public void modifyStoreInformation(UpdateStoreInfoRequestDto requestDto) {
         this.openingDate = requestDto.getOpeningDate();
         this.name = requestDto.getStoreName();
         this.phoneNumber = requestDto.getPhoneNumber();
         this.defaultEarningRate = requestDto.getEarningRate();
         this.description = requestDto.getDescription();
+        this.deliveryCost = requestDto.getDeliveryCost();
+    }
+
+    /**
+     * 매장 이미지 수정
+     *
+     * @param storeImage the store image
+     */
+    public void modifyStoreImage(Image storeImage) {
         this.storeImage = storeImage;
-        this.bankAccountNumber = requestDto.getBankAccount();
     }
 
     /**

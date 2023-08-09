@@ -30,6 +30,10 @@ public class SelectStoreResponseDto {
     private final String bankAccountNumber;
     @Setter
     private String pathName;
+    private final String locationType;
+    private final String domainName;
+    private final Integer minimumOrderPrice;
+    private final Integer deliveryCost;
 
     /**
      * 사업자 : 해당 매장 정보에대한 response dto.
@@ -52,8 +56,9 @@ public class SelectStoreResponseDto {
     @QueryProjection
     public SelectStoreResponseDto(String businessLicenseNumber, String representativeName,
                                   LocalDate openingDate, String storeName, String phoneNumber, String mainPlace,
-                                  String detailPlace, BigDecimal latitude, BigDecimal longitude, BigDecimal defaultEarningRate, String description, String bankCode,
-                                  String bankAccountNumber, String pathName) {
+                                  String detailPlace, BigDecimal latitude, BigDecimal longitude, BigDecimal defaultEarningRate,
+                                  Integer minimumOrderPrice, String description, String bankCode, String bankAccountNumber,
+                                  String pathName, String locationType, String domainName, Integer deliveryCost) {
         this.businessLicenseNumber = businessLicenseNumber;
         this.representativeName = representativeName;
         this.openingDate = openingDate;
@@ -68,5 +73,9 @@ public class SelectStoreResponseDto {
         this.bankCode = bankCode;
         this.bankAccountNumber = bankAccountNumber;
         this.pathName = pathName;
+        this.locationType = locationType;
+        this.domainName = domainName;
+        this.minimumOrderPrice = minimumOrderPrice;
+        this.deliveryCost = deliveryCost;
     }
 }

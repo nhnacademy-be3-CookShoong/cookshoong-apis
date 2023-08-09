@@ -20,8 +20,10 @@ import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
 import store.cookshoong.www.cookshoongbackend.account.exception.AccountStatusNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.exception.AuthorityNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.exception.SignUpValidationException;
+import store.cookshoong.www.cookshoongbackend.account.exception.UpdateAccountInfoValidationException;
 import store.cookshoong.www.cookshoongbackend.account.model.request.OAuth2SignUpRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
+import store.cookshoong.www.cookshoongbackend.account.model.request.UpdateAccountInfoRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountAuthResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountInfoResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
@@ -122,6 +124,37 @@ public class AccountController {
     }
 
     /**
+     * 변경가능한 회원 정보를 수정한다.
+     *
+     * @param accountId the account id
+     * @return the response entity
+     */
+    @PutMapping("/{accountId}")
+    public ResponseEntity<Void> putAccount(@PathVariable Long accountId,
+                                           @RequestBody @Valid UpdateAccountInfoRequestDto updateAccountInfoRequestDto,
+                                           BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new UpdateAccountInfoValidationException(bindingResult);
+        }
+        accountService.updateMutableAccountInfo(accountId, updateAccountInfoRequestDto);
+        return ResponseEntity.status(HttpStatus.OK)
+            .build();
+    }
+
+    /**
+     * 로그인 성공시 마지막 로그인 날짜를 업데이트한다.
+     *
+     * @param accountId the account id
+     * @return the response entity
+     */
+    @PutMapping("/{accountId}/auth-success")
+    public ResponseEntity<Void> putloginLogging(@PathVariable Long accountId) {
+        accountService.updateLastLoginDate(accountId);
+        return ResponseEntity.status(HttpStatus.OK)
+            .build();
+    }
+
+    /**
      * 로그인아이디를 경로로 받아와 자격증명에 필요한 정보를 조회한다.
      *
      * @param loginId the login id
@@ -166,5 +199,31 @@ public class AccountController {
         UpdateAccountStatusResponseDto response = accountService.updateAccountStatus(accountId, uppercaseCode);
         return ResponseEntity.status(HttpStatus.OK)
             .body(response);
+    }
+
+    /**
+     * 회원이 존재하는지만 조회한다.
+     *
+     * @param accountId the account id
+     * @return the response entity
+     */
+    @GetMapping("/{accountId}/exists")
+    public ResponseEntity<Void> getAccountExists(@PathVariable Long accountId) {
+        HttpStatus httpStatus = accountService.selectAccountExists(accountId);
+        return ResponseEntity.status(httpStatus)
+            .build();
+    }
+
+    /**
+     * 회원아이디 기준으로 존재하는지 조회한다.
+     *
+     * @param loginId the login id
+     * @return the response entity
+     */
+    @GetMapping("/login-id-exists/{loginId}")
+    public ResponseEntity<Void> getAccountExists(@PathVariable String loginId) {
+        HttpStatus httpStatus = accountService.selectAccountExists(loginId);
+        return ResponseEntity.status(httpStatus)
+            .build();
     }
 }
