@@ -209,7 +209,7 @@ class StoreServiceTest {
         selectStore.setSavedName(objectStorageService
             .getFullPath(store.getStoreImage().getDomainName(), selectStore.getSavedName()));
 
-        SelectStoreForUserResponseDto result = storeService.selectStoreForUser(store.getId());
+        SelectStoreForUserResponseDto result = storeService.selectStoreForUser(store.getAddress().getId(), store.getId());
 
         assertThat(result.getStoreName()).isEqualTo(selectStore.getStoreName());
         assertThat(result.getRepresentativeName()).isEqualTo(selectStore.getRepresentativeName());
