@@ -1,5 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.cart.redis.repository;
 
+import static store.cookshoong.www.cookshoongbackend.cart.utils.CartConstant.PHANTOM;
+
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -18,7 +20,6 @@ import org.springframework.stereotype.Component;
 public class CartRedisRepository {
 
     private final RedisTemplate<String, Object> redisTemplate;
-    private static final String PHANTOM = ":phantom";
 
     /**
      * 메뉴를 장바구니에 담으면 Redis 에 저장되는 메서드.  <br>
@@ -30,7 +31,6 @@ public class CartRedisRepository {
      * @param cartRequest   저장될 객체
      */
     public void cartRedisSave(String redisKey, String hashKey, Object cartRequest) {
-
 
         redisTemplate.opsForHash().put(redisKey, hashKey, cartRequest);
         redisTemplate.opsForHash().put(redisKey + PHANTOM, hashKey, null);
@@ -47,7 +47,7 @@ public class CartRedisRepository {
     public void createLockRedis(String lockKey, String hashKey) {
 
         redisTemplate.opsForHash().put(lockKey, hashKey, "lock");
-        redisTemplate.expire(lockKey, 30, TimeUnit.SECONDS);
+        redisTemplate.expire(lockKey, 20, TimeUnit.SECONDS);
     }
 
     /**

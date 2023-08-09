@@ -1,5 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.cart.db.service;
 
+import static store.cookshoong.www.cookshoongbackend.cart.utils.CartConstant.LOCK;
+
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -48,19 +50,15 @@ public class CartService {
     private final StoreRepository storeRepository;
     private final MenuRepository menuRepository;
     private final OptionRepository optionRepository;
-    private static final String CART = "cartKey=";
-    private static final String LOCK = "lockKey=";
 
 
     /**
      * Redis Key 에 만료기간이 끝나면 Key 삭제 되기전 장바구니 데이터를 DB 에 저장하느 메서드.    <br>
      * 회원에 대한 장바구니 정보가 DB 에 있으면 삭제하고 새롭게 생성해준다.
      *
-     * @param redisKey              장바구니 key
      * @param cartRedisDtoList      해당 key 장바구니 내역
      */
-    public void createCartDb(String redisKey, List<CartRedisDto> cartRedisDtoList) {
-        Long accountId = Long.valueOf(redisKey.replaceAll(CART, ""));
+    public void createCartDb(Long accountId, List<CartRedisDto> cartRedisDtoList) {
 
         if (!cartRedisRepository.existKeyInCartRedis(LOCK + accountId)) {
             updateRedisCartKey(accountId, cartRedisDtoList);
@@ -69,12 +67,6 @@ public class CartService {
 
     private void updateRedisCartKey(Long accountId, List<CartRedisDto> cartRedisList) {
 
-        log.info("ACCOUNTID: {}", accountId);
-
-        if (cartRepository.hasCartByAccountId(accountId)) {
-            // DB 에 회원에 대한 장바구니
-            deleteCartDb(accountId);
-        }
 
         if (cartRedisList == null || cartRedisList.isEmpty()) {
             return;

@@ -1,5 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.order.controller;
 
+import static store.cookshoong.www.cookshoongbackend.cart.utils.CartConstant.CART;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -66,7 +68,7 @@ public class OrderController {
         validOrderDistance(createOrderRequestDto);
 
         List<CartRedisDto> cartItems = cartRedisService.selectCartMenuAll(
-            CartRedisService.CART + createOrderRequestDto.getAccountId());
+                CART + createOrderRequestDto.getAccountId());
 
         int totalPrice = cartRedisService.getTotalPrice(cartItems);
 

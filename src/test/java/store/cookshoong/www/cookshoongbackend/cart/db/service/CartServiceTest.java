@@ -68,6 +68,7 @@ class CartServiceTest {
     private OptionRepository optionRepository;
     private static final String LOCK = "lockKey=";
 
+    Long accountId = 1L;
     String redisKey;
     List<CartRedisDto> cartRedisDtoList;
 
@@ -109,9 +110,9 @@ class CartServiceTest {
         when(menuRepository.findById(1L)).thenReturn(Optional.of(menu));
         Option option = ReflectionUtils.newInstance(Option.class);
         when(optionRepository.findById(1L)).thenReturn(Optional.of(option));
-        when(cartRedisRepository.existKeyInCartRedis(LOCK + 1)).thenReturn(false);
+        when(cartRedisRepository.existKeyInCartRedis(LOCK + accountId)).thenReturn(false);
 
-        assertDoesNotThrow(() -> cartService.createCartDb(redisKey, cartRedisDtoList));
+        assertDoesNotThrow(() -> cartService.createCartDb(accountId, cartRedisDtoList));
 
         verify(cartRepository).save(any(Cart.class));
         verify(cartDetailRepository).save(any(CartDetail.class));
@@ -158,9 +159,9 @@ class CartServiceTest {
         when(menuRepository.findById(1L)).thenReturn(Optional.of(menu));
         Option option = ReflectionUtils.newInstance(Option.class);
         when(optionRepository.findById(1L)).thenReturn(Optional.of(option));
-        when(cartRedisRepository.existKeyInCartRedis(LOCK + 1)).thenReturn(false);
+        when(cartRedisRepository.existKeyInCartRedis(LOCK + accountId)).thenReturn(false);
 
-        assertDoesNotThrow(() -> cartService.createCartDb(redisKey, cartRedisDtoList));
+        assertDoesNotThrow(() -> cartService.createCartDb(accountId, cartRedisDtoList));
 
         verify(cartRepository).save(any(Cart.class));
         verify(cartDetailRepository).save(any(CartDetail.class));
