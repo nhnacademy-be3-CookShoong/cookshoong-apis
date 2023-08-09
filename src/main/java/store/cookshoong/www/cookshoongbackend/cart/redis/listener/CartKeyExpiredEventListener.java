@@ -58,20 +58,14 @@ public class CartKeyExpiredEventListener extends KeyExpirationEventMessageListen
 
         String redisKey = expiredRedisKey.replaceAll(PHANTOM, "");
 
-        String id = redisKey.replaceAll(CART, "");
-        if (cartService.hasCartByAccountId(Long.valueOf(id))) {
-            // DB 에 회원에 대한 장바구니
-            cartService.deleteCartDb(Long.valueOf(id));
-        }
-
         // Lock을 사용하여 처리할 작업을 묶어줍니다.
+        List<CartRedisDto> finalCartRedisList = cartRedisService.selectCartMenuAll(redisKey);
         lockProcessor.lock(redisKey, ignore -> {
             if (cartRedisService.hasMenuInCartRedis(redisKey, NO_MENU)) {
                 cartService.createCartDb(redisKey, cartRedisList);
             } else {
-                cartRedisList.addAll(cartRedisService.selectCartMenuAll(redisKey)); // 리스트에 추가하도록 변경
-                if (!cartRedisList.isEmpty()) {
-                    cartService.createCartDb(redisKey, cartRedisList);
+                if (!finalCartRedisList.isEmpty()) {
+                    cartService.createCartDb(redisKey, finalCartRedisList);
                 }
             }
         });
