@@ -17,7 +17,6 @@ import store.cookshoong.www.cookshoongbackend.cart.db.repository.CartRepository;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartOptionDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartRedisDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.repository.CartRedisRepository;
-import store.cookshoong.www.cookshoongbackend.lock.LockProcessor;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.option.Option;
 import store.cookshoong.www.cookshoongbackend.menu_order.exception.menu.MenuNotFoundException;
@@ -59,16 +58,11 @@ public class CartService {
     public void createCartDb(String redisKey, List<CartRedisDto> cartRedisDtoList) {
 
         if (cartRedisRepository.existKeyInCartRedis(redisKey)) {
-
             updateRedisCartKey(redisKey, cartRedisDtoList);
         }
     }
 
     private void updateRedisCartKey(String accountId, List<CartRedisDto> cartRedisList) {
-
-        String id = accountId.replaceAll(CART, "");
-        // DB 에 회원에 대한 장바구니
-        deleteCartDb(Long.valueOf(id));
 
         if (cartRedisList == null || cartRedisList.isEmpty()) {
             return;

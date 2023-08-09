@@ -24,6 +24,7 @@ public class CartKeyExpiredEventListener extends KeyExpirationEventMessageListen
 
     private static final String PHANTOM = ":phantom";
     private static final String NO_MENU = "NO_KEY";
+    private static final String CART = "cartKey=";
     private final CartService cartService;
     private final CartRedisService cartRedisService;
     private final LockProcessor lockProcessor;
@@ -57,20 +58,22 @@ public class CartKeyExpiredEventListener extends KeyExpirationEventMessageListen
 
         String redisKey = expiredRedisKey.replaceAll(PHANTOM, "");
 
-        // 두 인스턴스를 통해서 들어오는 키에 대해서 분산락을 건다.
-
-        if (cartRedisService.hasMenuInCartRedis(redisKey, NO_MENU)) {
-
-            List<CartRedisDto> finalCartRedisList = new ArrayList<>();
-            lockProcessor.lock(redisKey, ignore -> cartService.createCartDb(redisKey, finalCartRedisList));
-            return;
+        String id = redisKey.replaceAll(CART, "");
+        if (cartService.hasCartByAccountId(Long.valueOf(id))) {
+            // DB 에 회원에 대한 장바구니
+            cartService.deleteCartDb(Long.valueOf(id));
         }
 
-        cartRedisList = cartRedisService.selectCartMenuAll(redisKey);
-
-        if (!cartRedisList.isEmpty()) {
-            List<CartRedisDto> finalCartRedisList1 = cartRedisList;
-            lockProcessor.lock(redisKey, ignore -> cartService.createCartDb(redisKey, finalCartRedisList1));
-        }
+        // Lock을 사용하여 처리할 작업을 묶어줍니다.
+        lockProcessor.lock(redisKey, ignore -> {
+            if (cartRedisService.hasMenuInCartRedis(redisKey, NO_MENU)) {
+                cartService.createCartDb(redisKey, cartRedisList);
+            } else {
+                cartRedisList.addAll(cartRedisService.selectCartMenuAll(redisKey)); // 리스트에 추가하도록 변경
+                if (!cartRedisList.isEmpty()) {
+                    cartService.createCartDb(redisKey, cartRedisList);
+                }
+            }
+        });
     }
 }
