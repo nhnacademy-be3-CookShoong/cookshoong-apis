@@ -63,10 +63,10 @@ public class CartKeyExpiredEventListener extends KeyExpirationEventMessageListen
 
         lockProcessor.lock(redisKey, ignore -> {
             if (cartRedisService.hasMenuInCartRedis(redisKey, NO_MENU)) {
-                cartService.createCartDb(expiredRedisKey, cartRedisList);
+                cartService.createCartDb(redisKey, cartRedisList);
             } else {
                 if (!finalCartRedisList.isEmpty()) {
-                    cartService.createCartDb(expiredRedisKey, finalCartRedisList);
+                    cartService.createCartDb(redisKey, finalCartRedisList);
                 }
             }
         });
