@@ -198,6 +198,7 @@ public class TestEntity {
         ReflectionTestUtils.setField(createStoreRequestDto, "storeCategories", List.of("NIG"));
         ReflectionTestUtils.setField(createStoreRequestDto, "bankCode", bankType.getBankTypeCode());
         ReflectionTestUtils.setField(createStoreRequestDto, "bankAccount", "123456");
+        ReflectionTestUtils.setField(createStoreRequestDto, "deliveryCost", 4000);
         return createStoreRequestDto;
     }
 

@@ -175,6 +175,7 @@ public class StoreService {
         responseDto.setSavedName(fileUtils.getFullPath(responseDto.getDomainName(), responseDto.getSavedName()));
 
         Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
+
         BigDecimal distance = calculateDistance(
             addressService.selectAccountChoiceAddress(addressId).getLatitude(),
             addressService.selectAccountChoiceAddress(addressId).getLongitude(),
