@@ -66,6 +66,7 @@ class CartServiceTest {
     private MenuRepository menuRepository;
     @Mock
     private OptionRepository optionRepository;
+    private static final String LOCK = "lockKey=";
 
     String redisKey;
     List<CartRedisDto> cartRedisDtoList;
@@ -108,6 +109,7 @@ class CartServiceTest {
         when(menuRepository.findById(1L)).thenReturn(Optional.of(menu));
         Option option = ReflectionUtils.newInstance(Option.class);
         when(optionRepository.findById(1L)).thenReturn(Optional.of(option));
+        when(cartRedisRepository.existKeyInCartRedis(LOCK + 1)).thenReturn(false);
 
         assertDoesNotThrow(() -> cartService.createCartDb(redisKey, cartRedisDtoList));
 
@@ -156,6 +158,7 @@ class CartServiceTest {
         when(menuRepository.findById(1L)).thenReturn(Optional.of(menu));
         Option option = ReflectionUtils.newInstance(Option.class);
         when(optionRepository.findById(1L)).thenReturn(Optional.of(option));
+        when(cartRedisRepository.existKeyInCartRedis(LOCK + 1)).thenReturn(false);
 
         assertDoesNotThrow(() -> cartService.createCartDb(redisKey, cartRedisDtoList));
 
