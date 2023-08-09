@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
@@ -35,6 +36,7 @@ import store.cookshoong.www.cookshoongbackend.point.repository.PointReasonReposi
  */
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class PointEventService {
     private static final int SIGNUP_POINT = 4_000;

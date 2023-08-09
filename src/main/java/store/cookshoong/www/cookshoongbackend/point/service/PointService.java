@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
@@ -19,6 +20,7 @@ import store.cookshoong.www.cookshoongbackend.point.repository.PointLogRepositor
  * @since 2023.08.08
  */
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class PointService {
     private final AccountRepository accountRepository;
