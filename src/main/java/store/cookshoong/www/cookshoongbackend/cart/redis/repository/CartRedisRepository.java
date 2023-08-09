@@ -34,8 +34,20 @@ public class CartRedisRepository {
 
         redisTemplate.opsForHash().put(redisKey, hashKey, cartRequest);
         redisTemplate.opsForHash().put(redisKey + PHANTOM, hashKey, null);
-        redisTemplate.expire(redisKey + PHANTOM, 120, TimeUnit.MINUTES);
+        redisTemplate.expire(redisKey + PHANTOM, 20, TimeUnit.SECONDS);
         redisTemplate.expire(redisKey, 125, TimeUnit.MINUTES);
+    }
+
+    /**
+     * Lock 을 구분할 수 있는 redis Key 를 생성.
+     *
+     * @param lockKey       lock redis key
+     * @param hashKey       lock redis hashKey
+     */
+    public void createLockRedis(String lockKey, String hashKey) {
+
+        redisTemplate.opsForHash().put(lockKey, hashKey, "lock");
+        redisTemplate.expire(lockKey, 2, TimeUnit.MINUTES);
     }
 
     /**

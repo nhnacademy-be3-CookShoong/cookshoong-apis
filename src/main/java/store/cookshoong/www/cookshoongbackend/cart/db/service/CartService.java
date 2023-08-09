@@ -49,6 +49,7 @@ public class CartService {
     private final MenuRepository menuRepository;
     private final OptionRepository optionRepository;
     private static final String CART = "cartKey=";
+    private static final String LOCK = "lockKey=";
 
 
     /**
@@ -59,17 +60,20 @@ public class CartService {
      * @param cartRedisDtoList      해당 key 장바구니 내역
      */
     public void createCartDb(String redisKey, List<CartRedisDto> cartRedisDtoList) {
+        Long accountId = Long.valueOf(redisKey.replaceAll(CART, ""));
 
-        updateRedisCartKey(redisKey, cartRedisDtoList);
+        if (!cartRedisRepository.existKeyInCartRedis(LOCK + accountId)) {
+            updateRedisCartKey(accountId, cartRedisDtoList);
+        }
     }
 
-    private void updateRedisCartKey(String redisKey, List<CartRedisDto> cartRedisList) {
+    private void updateRedisCartKey(Long accountId, List<CartRedisDto> cartRedisList) {
 
-        String id = redisKey.replaceAll(CART, "");
+        log.info("ACCOUNTID: {}", accountId);
 
-        if (cartRepository.hasCartByAccountId(Long.valueOf(id))) {
+        if (cartRepository.hasCartByAccountId(accountId)) {
             // DB 에 회원에 대한 장바구니
-            deleteCartDb(Long.valueOf(id));
+            deleteCartDb(accountId);
         }
 
         if (cartRedisList == null || cartRedisList.isEmpty()) {
@@ -106,6 +110,8 @@ public class CartService {
                 }
             }
         }
+
+        cartRedisRepository.createLockRedis(LOCK + accountId, LOCK);
     }
 
     /**
