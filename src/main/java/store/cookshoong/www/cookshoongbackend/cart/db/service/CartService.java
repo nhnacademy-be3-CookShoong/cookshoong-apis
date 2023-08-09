@@ -108,10 +108,6 @@ public class CartService {
                 }
             }
         }
-
-        if (cartRedisRepository.existKeyInCartRedis(redisKey)) {
-            cartRedisRepository.deleteCartAll(redisKey);
-        }
     }
 
     /**
