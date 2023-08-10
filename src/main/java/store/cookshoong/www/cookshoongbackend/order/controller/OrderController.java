@@ -9,7 +9,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +27,7 @@ import store.cookshoong.www.cookshoongbackend.order.exception.OutOfDistanceExcep
 import store.cookshoong.www.cookshoongbackend.order.model.request.CreateOrderRequestDto;
 import store.cookshoong.www.cookshoongbackend.order.model.request.PatchOrderRequestDto;
 import store.cookshoong.www.cookshoongbackend.order.model.response.CreateOrderResponseDto;
+import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderInProgressDto;
 import store.cookshoong.www.cookshoongbackend.order.service.OrderService;
 import store.cookshoong.www.cookshoongbackend.point.model.event.PointOrderCompleteEvent;
 import store.cookshoong.www.cookshoongbackend.point.service.PointService;
@@ -142,5 +145,10 @@ public class OrderController {
 
         return ResponseEntity.noContent()
             .build();
+    }
+
+    @GetMapping("/{storeId}")
+    public ResponseEntity<List<LookupOrderInProgressDto>> getOrderInProgress(@PathVariable Long storeId) {
+        return ResponseEntity.ok(orderService.lookupOrderInProgress(storeId));
     }
 }
