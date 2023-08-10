@@ -39,9 +39,9 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
      */
     @Override
     public List<LookupOrderInStatusResponseDto> lookupOrderInStatus(Store store, Set<String> orderStatusCode) {
-        List<LookupOrderInStatusResponseDto> selectOrderInProgresses = getOrderInProgresses(store, orderStatusCode);
+        List<LookupOrderInStatusResponseDto> orders = getOrderInStatus(store, orderStatusCode);
 
-        Set<Long> orderDetailIds = selectOrderInProgresses.stream()
+        Set<Long> orderDetailIds = orders.stream()
             .flatMap(selectOrderInProgressDto -> selectOrderInProgressDto.getSelectOrderDetails().stream()
                 .map(LookupOrderDetailMenuResponseDto::getOrderDetailId))
             .collect(Collectors.toSet());
@@ -49,16 +49,16 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         Map<Long, List<LookupOrderDetailMenuOptionResponseDto>> selectOrderDetailMenuOptions =
             getOrderDetailMenuOptions(orderDetailIds);
 
-        selectOrderInProgresses.stream()
+        orders.stream()
             .flatMap(selectOrderInProgress -> selectOrderInProgress.getSelectOrderDetails().stream())
             .forEach(selectOrderDetail -> selectOrderDetail.setSelectOrderDetailMenuOptions(
                 selectOrderDetailMenuOptions.getOrDefault(selectOrderDetail.getOrderDetailId(), Collections.emptyList())
             ));
 
-        return selectOrderInProgresses;
+        return orders;
     }
 
-    private List<LookupOrderInStatusResponseDto> getOrderInProgresses(Store store, Set<String> orderStatusCode) {
+    private List<LookupOrderInStatusResponseDto> getOrderInStatus(Store store, Set<String> orderStatusCode) {
         return jpaQueryFactory
             .selectFrom(order)
             .innerJoin(order.orderStatus, orderStatus)
