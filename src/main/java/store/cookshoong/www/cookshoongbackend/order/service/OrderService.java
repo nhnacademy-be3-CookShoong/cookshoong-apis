@@ -1,7 +1,12 @@
 package store.cookshoong.www.cookshoongbackend.order.service;
 
+import static store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus.StatusCode.COOKING;
+import static store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus.StatusCode.PAY;
+import static store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus.StatusCode.getStatusCodeString;
+
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +32,7 @@ import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus;
 import store.cookshoong.www.cookshoongbackend.order.exception.OrderStatusNotFoundException;
 import store.cookshoong.www.cookshoongbackend.order.exception.PriceIncreaseException;
 import store.cookshoong.www.cookshoongbackend.order.model.request.CreateOrderRequestDto;
-import store.cookshoong.www.cookshoongbackend.order.model.request.PatchOrderRequestDto;
+import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderInProgressDto;
 import store.cookshoong.www.cookshoongbackend.order.repository.OrderDetailMenuOptionRepository;
 import store.cookshoong.www.cookshoongbackend.order.repository.OrderDetailRepository;
 import store.cookshoong.www.cookshoongbackend.order.repository.OrderRepository;
@@ -68,7 +73,7 @@ public class OrderService {
         Account account = accountRepository.findById(createOrderRequestDto.getAccountId())
             .orElseThrow(UserNotFoundException::new);
 
-        OrderStatus orderStatusCreate = orderStatusRepository.findById(OrderStatus.StatusCode.CREATE.toString())
+        OrderStatus orderStatusCreate = orderStatusRepository.findByOrderStatusCode(OrderStatus.StatusCode.CREATE)
             .orElseThrow(OrderStatusNotFoundException::new);
 
         Store store = storeRepository.findById(createOrderRequestDto.getStoreId())
@@ -138,9 +143,24 @@ public class OrderService {
         Order order = orderRepository.findById(orderCode)
             .orElseThrow(StoreNotFoundException::new);
 
-        OrderStatus orderStatus = orderStatusRepository.findById(statusCode.toString())
+        OrderStatus orderStatus = orderStatusRepository.findByOrderStatusCode(statusCode)
             .orElseThrow(OrderStatusNotFoundException::new);
 
         order.updateOrderStatus(orderStatus);
+    }
+
+    /**
+     * 진행중인 주문 확인.
+     *
+     * @param storeId the store id
+     * @return the list
+     */
+    public List<LookupOrderInProgressDto> lookupOrderInProgress(Long storeId) {
+        Store store = storeRepository.findById(storeId)
+            .orElseThrow(StoreNotFoundException::new);
+
+        Set<String> statusCodeString = getStatusCodeString(Set.of(PAY, COOKING));
+
+        return orderRepository.lookupOrderInStatus(store, statusCodeString);
     }
 }
