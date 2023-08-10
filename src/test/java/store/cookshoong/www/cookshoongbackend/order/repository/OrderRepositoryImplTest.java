@@ -22,7 +22,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.entity.optiongroup.Opti
 import store.cookshoong.www.cookshoongbackend.order.entity.Order;
 import store.cookshoong.www.cookshoongbackend.order.entity.OrderDetail;
 import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus;
-import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderInProgressDto;
+import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderInStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.payment.entity.ChargeType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
@@ -93,7 +93,7 @@ class OrderRepositoryImplTest {
     @Test
     @DisplayName("주문 메뉴 목록 확인 테스트")
     void selectOrderInProgressTest() throws Exception {
-        List<LookupOrderInProgressDto> selectOrderInProgresses =
+        List<LookupOrderInStatusResponseDto> selectOrderInProgresses =
             orderRepository.lookupOrderInStatus(store, getStatusCodeString(Set.of(PAY, COOKING)));
         System.out.println();
     }

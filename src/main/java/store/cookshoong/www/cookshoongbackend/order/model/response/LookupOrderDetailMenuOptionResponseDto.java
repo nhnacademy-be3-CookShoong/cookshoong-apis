@@ -10,11 +10,11 @@ import lombok.Getter;
  * @since 2023.08.09
  */
 @Getter
-public class LookupOrderDetailMenuOptionDto {
+public class LookupOrderDetailMenuOptionResponseDto {
     private final String optionName;
 
     @QueryProjection
-    public LookupOrderDetailMenuOptionDto(String optionName) {
+    public LookupOrderDetailMenuOptionResponseDto(String optionName) {
         this.optionName = optionName;
     }
 }

@@ -16,9 +16,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderDetailDto;
-import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderDetailMenuOptionDto;
-import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderInProgressDto;
+import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderDetailMenuOptionResponseDto;
+import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderDetailMenuResponseDto;
+import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderInStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.order.model.response.QLookupOrderDetailDto;
 import store.cookshoong.www.cookshoongbackend.order.model.response.QLookupOrderDetailMenuOptionDto;
 import store.cookshoong.www.cookshoongbackend.order.model.response.QLookupOrderInProgressDto;
@@ -38,15 +38,15 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
      * {@inheritDoc}
      */
     @Override
-    public List<LookupOrderInProgressDto> lookupOrderInStatus(Store store, Set<String> orderStatusCode) {
-        List<LookupOrderInProgressDto> selectOrderInProgresses = getOrderInProgresses(store, orderStatusCode);
+    public List<LookupOrderInStatusResponseDto> lookupOrderInStatus(Store store, Set<String> orderStatusCode) {
+        List<LookupOrderInStatusResponseDto> selectOrderInProgresses = getOrderInProgresses(store, orderStatusCode);
 
         Set<Long> orderDetailIds = selectOrderInProgresses.stream()
             .flatMap(selectOrderInProgressDto -> selectOrderInProgressDto.getSelectOrderDetails().stream()
-                .map(LookupOrderDetailDto::getOrderDetailId))
+                .map(LookupOrderDetailMenuResponseDto::getOrderDetailId))
             .collect(Collectors.toSet());
 
-        Map<Long, List<LookupOrderDetailMenuOptionDto>> selectOrderDetailMenuOptions =
+        Map<Long, List<LookupOrderDetailMenuOptionResponseDto>> selectOrderDetailMenuOptions =
             getOrderDetailMenuOptions(orderDetailIds);
 
         selectOrderInProgresses.stream()
@@ -58,7 +58,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         return selectOrderInProgresses;
     }
 
-    private List<LookupOrderInProgressDto> getOrderInProgresses(Store store, Set<String> orderStatusCode) {
+    private List<LookupOrderInStatusResponseDto> getOrderInProgresses(Store store, Set<String> orderStatusCode) {
         return jpaQueryFactory
             .selectFrom(order)
             .innerJoin(order.orderStatus, orderStatus)
@@ -86,7 +86,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
             );
     }
 
-    private Map<Long, List<LookupOrderDetailMenuOptionDto>> getOrderDetailMenuOptions(Set<Long> orderDetailIds) {
+    private Map<Long, List<LookupOrderDetailMenuOptionResponseDto>> getOrderDetailMenuOptions(Set<Long> orderDetailIds) {
         return jpaQueryFactory
             .selectFrom(orderDetailMenuOption)
             .innerJoin(orderDetailMenuOption.orderDetail, orderDetail)

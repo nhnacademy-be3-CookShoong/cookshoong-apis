@@ -27,7 +27,7 @@ import store.cookshoong.www.cookshoongbackend.order.exception.OutOfDistanceExcep
 import store.cookshoong.www.cookshoongbackend.order.model.request.CreateOrderRequestDto;
 import store.cookshoong.www.cookshoongbackend.order.model.request.PatchOrderRequestDto;
 import store.cookshoong.www.cookshoongbackend.order.model.response.CreateOrderResponseDto;
-import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderInProgressDto;
+import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderInStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.order.service.OrderService;
 import store.cookshoong.www.cookshoongbackend.point.model.event.PointOrderCompleteEvent;
 import store.cookshoong.www.cookshoongbackend.point.service.PointService;
@@ -148,7 +148,7 @@ public class OrderController {
     }
 
     @GetMapping("/{storeId}")
-    public ResponseEntity<List<LookupOrderInProgressDto>> getOrderInProgress(@PathVariable Long storeId) {
+    public ResponseEntity<List<LookupOrderInStatusResponseDto>> getOrderInProgress(@PathVariable Long storeId) {
         return ResponseEntity.ok(orderService.lookupOrderInProgress(storeId));
     }
 }

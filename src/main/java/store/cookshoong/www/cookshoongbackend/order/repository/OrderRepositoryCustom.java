@@ -3,7 +3,7 @@ package store.cookshoong.www.cookshoongbackend.order.repository;
 import java.util.List;
 import java.util.Set;
 import org.springframework.data.repository.NoRepositoryBean;
-import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderInProgressDto;
+import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderInStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 
 /**
@@ -21,5 +21,5 @@ public interface OrderRepositoryCustom {
      * @param orderStatusCode the order status code
      * @return the list
      */
-    List<LookupOrderInProgressDto> lookupOrderInStatus(Store store, Set<String> orderStatusCode);
+    List<LookupOrderInStatusResponseDto> lookupOrderInStatus(Store store, Set<String> orderStatusCode);
 }

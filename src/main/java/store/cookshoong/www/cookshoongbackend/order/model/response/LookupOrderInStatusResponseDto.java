@@ -12,10 +12,10 @@ import lombok.Getter;
  * @since 2023.08.09
  */
 @Getter
-public class LookupOrderInProgressDto {
+public class LookupOrderInStatusResponseDto {
     private final UUID orderCode;
     private final String orderStatusCode;
-    private final List<LookupOrderDetailDto> selectOrderDetails;
+    private final List<LookupOrderDetailMenuResponseDto> selectOrderDetails;
     private final String memo;
     private final UUID chargeCode;
 
@@ -29,8 +29,8 @@ public class LookupOrderInProgressDto {
      * @param chargeCode         the charge id
      */
     @QueryProjection
-    public LookupOrderInProgressDto(UUID orderCode, String orderStatusCode,
-                                    List<LookupOrderDetailDto> selectOrderDetails, String memo, UUID chargeCode) {
+    public LookupOrderInStatusResponseDto(UUID orderCode, String orderStatusCode,
+                                          List<LookupOrderDetailMenuResponseDto> selectOrderDetails, String memo, UUID chargeCode) {
         this.orderCode = orderCode;
         this.orderStatusCode = orderStatusCode;
         this.selectOrderDetails = selectOrderDetails;

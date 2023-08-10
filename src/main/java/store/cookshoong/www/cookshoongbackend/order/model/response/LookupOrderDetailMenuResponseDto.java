@@ -12,13 +12,13 @@ import lombok.Setter;
  * @since 2023.08.09
  */
 @Getter
-public class LookupOrderDetailDto {
+public class LookupOrderDetailMenuResponseDto {
     private final Long orderDetailId;
     private final String menuName;
     private final int cookingTime;
     private final int count;
     @Setter
-    private List<LookupOrderDetailMenuOptionDto> selectOrderDetailMenuOptions;
+    private List<LookupOrderDetailMenuOptionResponseDto> selectOrderDetailMenuOptions;
 
     /**
      * Instantiates a new Select order detail dto.
@@ -28,7 +28,7 @@ public class LookupOrderDetailDto {
      * @param count       the count
      */
     @QueryProjection
-    public LookupOrderDetailDto(Long orderDetailId, String menuName, int cookingTime, int count) {
+    public LookupOrderDetailMenuResponseDto(Long orderDetailId, String menuName, int cookingTime, int count) {
         this.orderDetailId = orderDetailId;
         this.menuName = menuName;
         this.cookingTime = cookingTime;

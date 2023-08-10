@@ -32,7 +32,7 @@ import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus;
 import store.cookshoong.www.cookshoongbackend.order.exception.OrderStatusNotFoundException;
 import store.cookshoong.www.cookshoongbackend.order.exception.PriceIncreaseException;
 import store.cookshoong.www.cookshoongbackend.order.model.request.CreateOrderRequestDto;
-import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderInProgressDto;
+import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderInStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.order.repository.OrderDetailMenuOptionRepository;
 import store.cookshoong.www.cookshoongbackend.order.repository.OrderDetailRepository;
 import store.cookshoong.www.cookshoongbackend.order.repository.OrderRepository;
@@ -155,7 +155,7 @@ public class OrderService {
      * @param storeId the store id
      * @return the list
      */
-    public List<LookupOrderInProgressDto> lookupOrderInProgress(Long storeId) {
+    public List<LookupOrderInStatusResponseDto> lookupOrderInProgress(Long storeId) {
         Store store = storeRepository.findById(storeId)
             .orElseThrow(StoreNotFoundException::new);
 
