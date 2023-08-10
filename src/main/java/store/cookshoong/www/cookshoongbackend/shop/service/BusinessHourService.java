@@ -1,8 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.shop.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BusinessHour;
@@ -40,15 +39,21 @@ public class BusinessHourService {
     private final StoreRepository storeRepository;
 
     /**
-     * 휴업일 리스트 조회를 위한 서비스 구현.
+     * 영업시간 생성을 위한 서비스 구현.
      *
-     * @param storeId  매장 아이디
-     * @param pageable 페이지 정보
-     * @return 휴업일 리스트
+     * @param storeId                      매장 아이디
+     * @param createBusinessHourRequestDto 영업시간 정보
      */
-    @Transactional(readOnly = true)
-    public Page<SelectHolidayResponseDto> selectHolidayPage(Long storeId, Pageable pageable) {
-        return holidayRepository.lookupHolidayPage(storeId, pageable);
+    public void createBusinessHour(Long storeId, CreateBusinessHourRequestDto createBusinessHourRequestDto) {
+        Store store = storeRepository.findById(storeId)
+            .orElseThrow(StoreNotFoundException::new);
+        DayType dayType = dayTypeRepository.findByDescription(createBusinessHourRequestDto.getDayCodeName())
+            .orElseThrow(DayTypeNotFoundException::new);
+        BusinessHour businessHour = new BusinessHour(store,
+            dayType,
+            createBusinessHourRequestDto.getOpenHour(),
+            createBusinessHourRequestDto.getCloseHour());
+        businessHourRepository.save(businessHour);
     }
 
     /**
@@ -67,44 +72,34 @@ public class BusinessHourService {
     }
 
     /**
+     * 영업시간 리스트 조회를 위한 서비스 구현.
+     *
+     * @param storeId  매장 아이디
+     * @return 영업시간 리스트
+     */
+    @Transactional(readOnly = true)
+    public List<SelectBusinessHourResponseDto> selectBusinessHours(Long storeId) {
+        return businessHourRepository.lookupBusinessHours(storeId);
+    }
+
+    /**
+     * 휴업일 리스트 조회를 위한 서비스 구현.
+     *
+     * @param storeId  매장 아이디
+     * @return 휴업일 리스트
+     */
+    @Transactional(readOnly = true)
+    public List<SelectHolidayResponseDto> selectHolidays(Long storeId) {
+        return holidayRepository.lookupHolidays(storeId);
+    }
+
+    /**
      * 휴업일 삭제를 위한 서비스 구현.
      *
      * @param holidayId 휴업일 아이디
      */
     public void removeHoliday(Long holidayId) {
         holidayRepository.deleteById(holidayId);
-    }
-
-
-    /**
-     * 영업시간 리스트 조회를 위한 서비스 구현.
-     *
-     * @param storeId  매장 아이디
-     * @param pageable 페이지 정보
-     * @return 영업시간 리스트
-     */
-    @Transactional(readOnly = true)
-    public Page<SelectBusinessHourResponseDto> selectBusinessHourPage(Long storeId, Pageable pageable) {
-        return businessHourRepository.lookupBusinessHourPage(storeId, pageable);
-    }
-
-    /**
-     * 영업시간 생성을 위한 서비스 구현.
-     *
-     * @param storeId                      매장 아이디
-     * @param createBusinessHourRequestDto 영업시간 정보
-     */
-    public void createBusinessHour(Long storeId, CreateBusinessHourRequestDto createBusinessHourRequestDto) {
-        Store store = storeRepository.findById(storeId)
-            .orElseThrow(StoreNotFoundException::new);
-        DayType dayType = dayTypeRepository.findByDescription(createBusinessHourRequestDto.getDayCodeName())
-            .orElseThrow(DayTypeNotFoundException::new);
-        BusinessHour businessHour = new BusinessHour(store,
-            dayType,
-            createBusinessHourRequestDto.getOpenHour(),
-            createBusinessHourRequestDto.getCloseHour());
-
-        businessHourRepository.save(businessHour);
     }
 
     /**

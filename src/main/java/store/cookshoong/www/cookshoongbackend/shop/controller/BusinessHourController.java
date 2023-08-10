@@ -1,9 +1,8 @@
 package store.cookshoong.www.cookshoongbackend.shop.controller;
 
+import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -30,60 +29,9 @@ import store.cookshoong.www.cookshoongbackend.shop.service.BusinessHourService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/stores/{storeId}")
+@RequestMapping("/api")
 public class BusinessHourController {
     private final BusinessHourService businessHourService;
-
-    /**
-     * 휴업일 리스트 조회를 위한 컨트롤러 구현.
-     *
-     * @param storeId  the store id
-     * @param pageable the pageable
-     * @return 200, 휴업일 페이지
-     */
-    @GetMapping("/holiday")
-    public ResponseEntity<Page<SelectHolidayResponseDto>> getHolidayPage(@PathVariable("storeId") Long storeId,
-                                                                         Pageable pageable) {
-
-        return ResponseEntity
-            .ok(businessHourService.selectHolidayPage(storeId, pageable));
-    }
-
-    /**
-     * 영업시간 리스트 조회를 위한 컨트롤러 구현.
-     *
-     * @param storeId  the store id
-     * @param pageable the pageable
-     * @return 200
-     */
-    @GetMapping("/businesshour")
-    public ResponseEntity<Page<SelectBusinessHourResponseDto>> getBusinessHourPage(@PathVariable("storeId") Long storeId,
-                                                                                   Pageable pageable) {
-        return ResponseEntity
-            .ok(businessHourService.selectBusinessHourPage(storeId, pageable));
-    }
-
-    /**
-     * 휴업일 등록을 위한 컨트롤러 구현.
-     *
-     * @param storeId                 the store id
-     * @param createHolidayRequestDto 휴업일 등록을 위한 Request Body
-     * @param bindingResult           validation 결과
-     * @return 201
-     */
-    @PostMapping("/holiday")
-    public ResponseEntity<Void> postHoliday(@PathVariable("storeId") Long storeId,
-                                            @RequestBody @Valid CreateHolidayRequestDto createHolidayRequestDto,
-                                            BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new HolidayValidationException(bindingResult);
-        }
-
-        businessHourService.createHoliday(storeId, createHolidayRequestDto);
-        return ResponseEntity
-            .status(HttpStatus.CREATED)
-            .build();
-    }
 
     /**
      * 영업시간 등록을 위한 컨트롤러 구현.
@@ -93,7 +41,7 @@ public class BusinessHourController {
      * @param bindingResult                validation 결과
      * @return 201
      */
-    @PostMapping("/businesshour")
+    @PostMapping("/stores/{storeId}/business-hour")
     public ResponseEntity<Void> postBusinessHour(@PathVariable("storeId") Long storeId,
                                                  @RequestBody @Valid CreateBusinessHourRequestDto createBusinessHourRequestDto,
                                                  BindingResult bindingResult) {
@@ -108,16 +56,53 @@ public class BusinessHourController {
     }
 
     /**
-     * 휴업일 삭제를 위한 컨트롤러 구현.
+     * 휴업일 등록을 위한 컨트롤러 구현.
      *
-     * @param holidayId 휴일 아이디
-     * @return 204
+     * @param storeId                 the store id
+     * @param createHolidayRequestDto 휴업일 등록을 위한 Request Body
+     * @param bindingResult           validation 결과
+     * @return 201
      */
-    @DeleteMapping("/holiday/{holidayId}")
-    public ResponseEntity<Void> deleteHoliday(@PathVariable("holidayId") Long holidayId) {
-        businessHourService.removeHoliday(holidayId);
-        return ResponseEntity.noContent().build();
+    @PostMapping("/stores/{storeId}/holiday")
+    public ResponseEntity<Void> postHoliday(@PathVariable("storeId") Long storeId,
+                                            @RequestBody @Valid CreateHolidayRequestDto createHolidayRequestDto,
+                                            BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new HolidayValidationException(bindingResult);
+        }
+
+        businessHourService.createHoliday(storeId, createHolidayRequestDto);
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .build();
     }
+
+    /**
+     * 영업시간 리스트 조회를 위한 컨트롤러 구현.
+     *
+     * @param storeId the store id
+     * @return 200 response, 영업시간 리스트
+     */
+    @GetMapping("/stores/{storeId}/business-hour")
+    public ResponseEntity<List<SelectBusinessHourResponseDto>> getBusinessHours(
+        @PathVariable("storeId") Long storeId) {
+        List<SelectBusinessHourResponseDto> businessHours = businessHourService.selectBusinessHours(storeId);
+        return ResponseEntity.ok(businessHours);
+    }
+
+    /**
+     * 휴업일 리스트 조회를 위한 컨트롤러 구현.
+     *
+     * @param storeId the store id
+     * @return 200 response, 휴업일 리스트
+     */
+    @GetMapping("/stores/{storeId}/holiday")
+    public ResponseEntity<List<SelectHolidayResponseDto>> getHolidays(
+        @PathVariable("storeId") Long storeId) {
+        List<SelectHolidayResponseDto> holidays = businessHourService.selectHolidays(storeId);
+        return ResponseEntity.ok(holidays);
+    }
+
 
     /**
      * 영업시간 삭제를 위한 컨트롤러 구현.
@@ -125,9 +110,26 @@ public class BusinessHourController {
      * @param businesshourId 영업시간 아이디
      * @return 204
      */
-    @DeleteMapping("/businesshour/{businesshourId}")
-    public ResponseEntity<Void> deleteBusinessHour(@PathVariable("businesshourId") Long businesshourId) {
+    @DeleteMapping("/stores/{storeId}/business-hour/{businesshourId}")
+    public ResponseEntity<Void> deleteBusinessHour(
+        @PathVariable("storeId") Long storeId,
+        @PathVariable("businesshourId") Long businesshourId) {
         businessHourService.removeBusinessHour(businesshourId);
         return ResponseEntity.noContent().build();
     }
+
+    /**
+     * 휴업일 삭제를 위한 컨트롤러 구현.
+     *
+     * @param holidayId 휴일 아이디
+     * @return 204
+     */
+    @DeleteMapping("/stores/{storeId}/holiday/{holidayId}")
+    public ResponseEntity<Void> deleteHoliday(
+        @PathVariable("storeId") Long storeId,
+        @PathVariable("holidayId") Long holidayId) {
+        businessHourService.removeHoliday(holidayId);
+        return ResponseEntity.noContent().build();
+    }
+
 }
