@@ -82,7 +82,9 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         list(new QLookupOrderDetailMenuResponseDto(
                             orderDetail.id, orderDetail.nowName, menu.cookingTime, orderDetail.count)),
                         order.memo,
-                        charge.code))
+                        charge.code,
+                        charge.chargedAmount,
+                        charge.paymentKey))
             );
     }
 
