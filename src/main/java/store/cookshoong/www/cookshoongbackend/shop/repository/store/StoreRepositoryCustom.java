@@ -48,9 +48,16 @@ public interface StoreRepositoryCustom {
     /**
      * 회원 위치에서 3km 이내에 있는 매장들을 조회하기 전, 모든 매장을 가져오는 메서드.
      *
+     * @param pageable the pageable
      * @return 모든 매장 정보 페이지로 반환.
      */
     Page<SelectAllStoresNotOutedResponseDto> lookupStoreLatLanPage(Pageable pageable);
 
+    /**
+     * 매장의 카테고리를 가져오는 메서드.
+     *
+     * @param storeId the store id
+     * @return the list
+     */
     List<SelectStoreCategoriesDto> lookupStoreCategories(Long storeId);
 }
