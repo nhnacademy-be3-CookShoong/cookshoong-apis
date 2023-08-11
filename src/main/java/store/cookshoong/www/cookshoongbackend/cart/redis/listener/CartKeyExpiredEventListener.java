@@ -1,5 +1,9 @@
 package store.cookshoong.www.cookshoongbackend.cart.redis.listener;
 
+import static store.cookshoong.www.cookshoongbackend.cart.utils.CartConstant.CART;
+import static store.cookshoong.www.cookshoongbackend.cart.utils.CartConstant.NO_MENU;
+import static store.cookshoong.www.cookshoongbackend.cart.utils.CartConstant.PHANTOM;
+
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -22,9 +26,6 @@ import store.cookshoong.www.cookshoongbackend.lock.LockProcessor;
 @Component
 public class CartKeyExpiredEventListener extends KeyExpirationEventMessageListener {
 
-    private static final String PHANTOM = ":phantom";
-    private static final String NO_MENU = "NO_KEY";
-    private static final String CART = "cartKey=";
     private final CartService cartService;
     private final CartRedisService cartRedisService;
     private final LockProcessor lockProcessor;
@@ -58,15 +59,16 @@ public class CartKeyExpiredEventListener extends KeyExpirationEventMessageListen
 
         String redisKey = expiredRedisKey.replaceAll(PHANTOM, "");
 
-        // Lock을 사용하여 처리할 작업을 묶어줍니다.
         List<CartRedisDto> finalCartRedisList = cartRedisService.selectCartMenuAll(redisKey);
+
+        Long accountId = Long.valueOf(redisKey.replaceAll(CART, ""));
 
         lockProcessor.lock(redisKey, ignore -> {
             if (cartRedisService.hasMenuInCartRedis(redisKey, NO_MENU)) {
-                cartService.createCartDb(redisKey, cartRedisList);
+                cartService.createCartDb(accountId, cartRedisList);
             } else {
                 if (!finalCartRedisList.isEmpty()) {
-                    cartService.createCartDb(redisKey, finalCartRedisList);
+                    cartService.createCartDb(accountId, finalCartRedisList);
                 }
             }
         });

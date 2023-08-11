@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -43,13 +44,14 @@ import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateStoreRequ
 import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateCategoryRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreInfoRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreManagerRequestDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreStatusRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreCategoriesDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.repository.bank.BankTypeRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.category.StoreCategoryRepository;
+import store.cookshoong.www.cookshoongbackend.shop.repository.category.StoresHasCategoryRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.merchant.MerchantRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.stauts.StoreStatusRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreRepository;
@@ -65,6 +67,7 @@ import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreReposit
 @RequiredArgsConstructor
 @Transactional
 public class StoreService {
+    private final EntityManager entityManager;
     private final StoreRepository storeRepository;
     private final BankTypeRepository bankTypeRepository;
     private final AccountRepository accountRepository;
@@ -75,6 +78,7 @@ public class StoreService {
     private final FileUtilResolver fileUtilResolver;
     private final ImageRepository imageRepository;
     private final AddressService addressService;
+    private final StoresHasCategoryRepository storesHasCategoryRepository;
 
     private static final Long BASIC_IMAGE = 1L;
     private static final BigDecimal DISTANCE = new BigDecimal("3.0");
@@ -157,6 +161,8 @@ public class StoreService {
         accessDeniedException(accountId, store);
         SelectStoreResponseDto responseDto = storeRepository.lookupStore(accountId, storeId)
             .orElseThrow(StoreNotFoundException::new);
+        List<SelectStoreCategoriesDto> categories = storeRepository.lookupStoreCategories(storeId);
+        responseDto.setStoreCategories(categories);
         FileUtils fileUtils = fileUtilResolver.getFileService(responseDto.getLocationType());
         responseDto.setPathName(fileUtils.getFullPath(responseDto.getDomainName(), responseDto.getPathName()));
         return responseDto;
@@ -165,7 +171,8 @@ public class StoreService {
     /**
      * 일반 유저 : 매장 정보 조회.
      *
-     * @param storeId 매장 아이디
+     * @param addressId the address id
+     * @param storeId   매장 아이디
      * @return 매장 정보 조회
      */
     public SelectStoreForUserResponseDto selectStoreForUser(Long addressId, Long storeId) {
@@ -286,10 +293,17 @@ public class StoreService {
         Store store = getStoreById(storeId);
         accessDeniedException(accountId, store);
         Image storeMainImage = imageRepository.findById(store.getStoreImage().getId()).orElseThrow((ImageNotFoundException::new));
-        FileUtils fileUtils = fileUtilResolver.getFileService(storeMainImage.getLocationType());
-        Image updatedImage = fileUtils.updateFile(storeImage, storeMainImage);
 
+        Image updatedImage = updateImage(store.getStoreImage().getId(), storeImage, storeMainImage);
         store.modifyStoreImage(updatedImage);
+    }
+
+    private Image updateImage(Long storeImageId, MultipartFile storeImage, Image storeMainImage) throws IOException {
+        FileUtils fileUtils = fileUtilResolver.getFileService(storeMainImage.getLocationType());
+        if (storeImageId == BASIC_IMAGE) {
+            return fileUtils.updateFile(storeImage, storeMainImage);
+        }
+        return fileUtils.storeFile(storeImage, FileDomain.STORE_IMAGE.getVariable(), true);
     }
 
     /**
@@ -303,22 +317,28 @@ public class StoreService {
         Store store = getStoreById(storeId);
         accessDeniedException(accountId, store);
 
+        storesHasCategoryRepository.deleteAllByPk_StoreId(storeId);
         store.initStoreCategories();
+        entityManager.flush();
+        addStoreCategory(requestDto.getUpdateStoreCategories(), store);
 
-        addStoreCategory(requestDto.getStoreCategories(), store);
+
     }
 
     /**
      * 사업자 : 매장 상태 변경.
      *
-     * @param accountId  the account id
-     * @param storeId    the store id
-     * @param requestDto 매장 상태 변경 코드
+     * @param accountId the account id
+     * @param storeId   the store id
+     * @param option    the option
      */
-    public void updateStoreStatus(Long accountId, Long storeId, UpdateStoreStatusRequestDto requestDto) {
+    public void updateStoreStatus(Long accountId, Long storeId, String option) {
         Store store = getStoreById(storeId);
         accessDeniedException(accountId, store);
-        StoreStatus storeStatus = getStoreStatusByCode(requestDto.getStatusCode());
+        if (store.getStoreStatus().equals(StoreStatus.StoreStatusCode.OUTED)) {
+            throw new UserAccessDeniedException("해당 매장 상태 변경을 할 수 있는 권한이 없습니다.");
+        }
+        StoreStatus storeStatus = getStoreStatusByCode(option);
         store.modifyStoreStatus(storeStatus);
     }
 
@@ -332,6 +352,10 @@ public class StoreService {
     public void deleteStoreImage(Long accountId, Long storeId) throws IOException {
         Store store = getStoreById(storeId);
         accessDeniedException(accountId, store);
+
+        if (store.getStoreImage().getId() == BASIC_IMAGE) {
+            throw new UserAccessDeniedException("삭제할 수 있는 권한이 없습니다.");
+        }
 
         FileUtils fileUtils = fileUtilResolver.getFileService(store.getStoreImage().getLocationType());
         fileUtils.deleteFile(store.getStoreImage());

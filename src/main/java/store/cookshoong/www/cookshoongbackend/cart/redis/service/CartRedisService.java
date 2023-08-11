@@ -1,5 +1,8 @@
 package store.cookshoong.www.cookshoongbackend.cart.redis.service;
 
+import static store.cookshoong.www.cookshoongbackend.cart.utils.CartConstant.CART;
+import static store.cookshoong.www.cookshoongbackend.cart.utils.CartConstant.NO_MENU;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -34,8 +37,6 @@ public class CartRedisService {
 
     private final CartRedisRepository cartRedisRepository;
     private final CartRepository cartRepository;
-    private static final String NO_MENU = "NO_KEY";
-    public static final String CART = "cartKey=";
     public final FileUtilResolver fileUtilResolver;
 
     /**
@@ -328,12 +329,14 @@ public class CartRedisService {
 
         for (CartResponseDto cartResponseDto : cartResponseDtos) {
 
-            FileUtils fileUtils = fileUtilResolver.getFileService(cartResponseDto.getCartMenuResponseDto().getLocationType());
+            FileUtils fileUtils =
+                fileUtilResolver.getFileService(cartResponseDto.getCartMenuResponseDto().getLocationType());
             CartMenuResponseDto cartMenuResponseDto = cartResponseDto.getCartMenuResponseDto();
             CartMenuDto cartMenuRedisDto =
                 new CartMenuDto(cartMenuResponseDto.getMenuId(), cartMenuResponseDto.getName(),
                     fileUtils.getFullPath(cartResponseDto.getCartMenuResponseDto().getDomainName(),
-                        cartMenuResponseDto.getSavedName()), cartMenuResponseDto.getPrice(), cartMenuResponseDto.getLocationType(), cartMenuResponseDto.getDomainName());
+                        cartMenuResponseDto.getSavedName()), cartMenuResponseDto.getPrice(),
+                    cartMenuResponseDto.getLocationType(), cartMenuResponseDto.getDomainName());
 
             List<CartOptionDto> cartOptionRedisDtos = new ArrayList<>();
             if (!(cartResponseDto.getCartOptionResponseDto().size() == 1

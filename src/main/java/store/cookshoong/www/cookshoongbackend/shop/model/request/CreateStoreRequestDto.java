@@ -3,7 +3,6 @@ package store.cookshoong.www.cookshoongbackend.shop.model.request;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;
@@ -29,7 +28,6 @@ import store.cookshoong.www.cookshoongbackend.common.util.ValidationFailureMessa
 public class CreateStoreRequestDto {
     private Long merchantId;
     @NotBlank
-    @Pattern(regexp = RegularExpressions.NUMBER_ONLY, message = ValidationFailureMessages.NUMBER_ONLY)
     private String businessLicenseNumber;
     @NotBlank
     @Pattern(regexp = RegularExpressions.LETTER_ONLY, message = ValidationFailureMessages.LETTER_ONLY)
@@ -49,29 +47,26 @@ public class CreateStoreRequestDto {
     @NotNull
     private BigDecimal longitude;
     @NotBlank
-    @Pattern(regexp = RegularExpressions.NUMBER_ONLY, message = ValidationFailureMessages.NUMBER_ONLY)
     private String phoneNumber;
     @NotBlank
     private String description;
 
     @DecimalMin(value = "0.0")
     @DecimalMax("9.9")
-    @NotBlank
     private BigDecimal earningRate;
 
-    @PositiveOrZero
-    @NotBlank
+    @Min(0)
+    @NotNull
     private Integer minimumOrderPrice;
 
     @Min(4000)
-    @NotBlank
+    @NotNull
     private Integer deliveryCost;
     @NotNull
     private List<String> storeCategories;
     @NotBlank
     private String bankCode;
     @NotBlank
-    @Pattern(regexp = RegularExpressions.NUMBER_ONLY, message = ValidationFailureMessages.NUMBER_ONLY)
     private String bankAccount;
 
 }

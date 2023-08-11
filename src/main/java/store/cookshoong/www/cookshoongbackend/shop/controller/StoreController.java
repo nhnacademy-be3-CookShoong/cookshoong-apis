@@ -21,9 +21,9 @@ import store.cookshoong.www.cookshoongbackend.shop.service.StoreService;
  * @contributor eora21 (김주호)
  * @since 2023.07.05
  */
-@RequestMapping("/api/stores")
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/stores")
 public class StoreController {
     private final StoreService storeService;
     private final CouponPolicyService couponPolicyService;

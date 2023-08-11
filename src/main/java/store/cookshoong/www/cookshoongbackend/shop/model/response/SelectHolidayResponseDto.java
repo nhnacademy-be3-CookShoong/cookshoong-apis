@@ -12,18 +12,19 @@ import lombok.Getter;
  */
 @Getter
 public class SelectHolidayResponseDto {
-    private LocalDate holidayStartDate;
-
-    private LocalDate holidayEndDate;
+    private final Long id;
+    private final LocalDate holidayStartDate;
+    private final LocalDate holidayEndDate;
 
     /**
      * 사업자 회원이 본인 매장 휴무일 조회.
      *
-     * @param holidayStartDate           휴무일 시작 날짜
-     * @param holidayEndDate             휴무일 종료 날짜
+     * @param holidayStartDate 휴무일 시작 날짜
+     * @param holidayEndDate   휴무일 종료 날짜
      */
     @QueryProjection
-    public SelectHolidayResponseDto(LocalDate holidayStartDate, LocalDate holidayEndDate) {
+    public SelectHolidayResponseDto(Long id, LocalDate holidayStartDate, LocalDate holidayEndDate) {
+        this.id = id;
         this.holidayStartDate = holidayStartDate;
         this.holidayEndDate = holidayEndDate;
     }
