@@ -228,7 +228,7 @@ public class BusinessAccountController {
      * @return the response entity
      * @throws IOException the io exception
      */
-    @DeleteMapping("/stores/{storeId}/storeImage/delete")
+    @DeleteMapping("/stores/{storeId}/storeImage")
     public ResponseEntity<Void> deleteStoreImage(@PathVariable("accountId") Long accountId,
                                                  @PathVariable("storeId") Long storeId) throws IOException {
         storeService.deleteStoreImage(accountId, storeId);
