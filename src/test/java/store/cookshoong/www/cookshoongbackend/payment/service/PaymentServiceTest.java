@@ -4,24 +4,31 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 import java.util.UUID;
+import javax.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
 import store.cookshoong.www.cookshoongbackend.order.entity.Order;
+import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus;
 import store.cookshoong.www.cookshoongbackend.order.exception.OrderNotFoundException;
 import store.cookshoong.www.cookshoongbackend.order.repository.OrderRepository;
+import store.cookshoong.www.cookshoongbackend.order.repository.OrderStatusRepository;
 import store.cookshoong.www.cookshoongbackend.payment.entity.Charge;
 import store.cookshoong.www.cookshoongbackend.payment.entity.ChargeType;
 import store.cookshoong.www.cookshoongbackend.payment.entity.Refund;
@@ -35,6 +42,7 @@ import store.cookshoong.www.cookshoongbackend.payment.repository.charge.ChargeRe
 import store.cookshoong.www.cookshoongbackend.payment.repository.chargetype.ChargeTypeRepository;
 import store.cookshoong.www.cookshoongbackend.payment.repository.refund.RefundRepository;
 import store.cookshoong.www.cookshoongbackend.payment.repository.refundtype.RefundTypeRepository;
+import store.cookshoong.www.cookshoongbackend.util.TestEntity;
 
 /**
  * Charge Service 테스트.
@@ -64,6 +72,9 @@ class PaymentServiceTest {
     @Mock
     private RefundTypeRepository refundTypeRepository;
 
+    @Mock
+    private OrderStatusRepository orderStatusRepository;
+
     UUID uuid = UUID.randomUUID();
 
     @Test
@@ -82,6 +93,10 @@ class PaymentServiceTest {
 
         when(orderRepository.findById(uuid)).thenReturn(Optional.of(mockOrder));
         when(chargeTypeRepository.findById("toss")).thenReturn(Optional.of(mockChargeType));
+
+        OrderStatus orderStatus = mock(OrderStatus.class);
+        when(orderStatusRepository.findByOrderStatusCode(OrderStatus.StatusCode.PAY))
+            .thenReturn(Optional.of(orderStatus));
 
         paymentService.createPayment(createPaymentDto);
 
@@ -121,6 +136,10 @@ class PaymentServiceTest {
         when(orderRepository.findById(uuid)).thenReturn(Optional.of(mockOrder));
         when(chargeTypeRepository.findById(createPaymentDto.getPaymentType())).thenReturn(Optional.empty());
 
+        OrderStatus orderStatus = mock(OrderStatus.class);
+        when(orderStatusRepository.findByOrderStatusCode(OrderStatus.StatusCode.PAY))
+            .thenReturn(Optional.of(orderStatus));
+        
         assertThrows(ChargeTypeNotFoundException.class, () -> paymentService.createPayment(createPaymentDto));
     }
 
