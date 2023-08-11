@@ -1,5 +1,10 @@
 package store.cookshoong.www.cookshoongbackend.cart.redis.repository;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -37,6 +42,7 @@ class CartRedisRepositoryTest extends IntegrationTestBase {
     private ObjectMapper om;
 
     String redisKey = "ded3e890-1c32-4dbc-bf35-55152b48c11d";
+    String hashKey = "112";
     Long accountId = 1L;
     Long storeId = 2L;
     String storeName = "네네치킨";
@@ -45,6 +51,7 @@ class CartRedisRepositoryTest extends IntegrationTestBase {
     private static final String NO_MENU = "NO_KEY";
 
     @Test
+    @Order(1)
     @DisplayName("Redis 서버에서 장바구니에 들어갈 메뉴 정보 담기")
     void addCartMenuRedis() {
 
@@ -82,53 +89,62 @@ class CartRedisRepositoryTest extends IntegrationTestBase {
         ReflectionTestUtils.setField(cartRedisDto, "menuOptName", cartRedisDto.generateMenuOptionName());
         ReflectionTestUtils.setField(cartRedisDto, "totalMenuPrice", cartRedisDto.generateTotalMenuPrice());
 
-        cartRedisRepository.cartRedisSave(redisKey, cartRedisDto.generateUniqueHashKey(), cartRedisDto);
+        cartRedisRepository.cartRedisSave(redisKey, hashKey, cartRedisDto);
+
+        assertTrue(cartRedisRepository.existMenuInCartRedis(redisKey, hashKey));
     }
 
     @Test
+    @Order(2)
     @DisplayName("Redis 서버에서 들어가 있는 장바구니 전부 가져오기 - LIST")
     void getCartMenuRedisAll_List() throws Exception {
 
-       List<Object> carts = cartRedisRepository.findByCartAll(redisKey);
-       List<CartRedisDto> cartList = new ArrayList<>();
+        List<Object> carts = cartRedisRepository.findByCartAll(redisKey);
+        List<CartRedisDto> cartList = new ArrayList<>();
 
-       for (Object cart : carts) {
-           cartList.add((CartRedisDto) cart);
-       }
+        for (Object cart : carts) {
+            cartList.add((CartRedisDto) cart);
+        }
 
         Comparator<CartRedisDto> sortCarts = Comparator.comparing(CartRedisDto::getCreateTimeMillis);
 
-       cartList = cartList.stream().sorted(sortCarts).collect(Collectors.toList());
+        cartList = cartList.stream().sorted(sortCarts).collect(Collectors.toList());
 
-       log.info("CART: {}", om.writerWithDefaultPrettyPrinter().writeValueAsString(cartList));
+        assertNotNull(cartList);
+        assertEquals(cartList.get(0).getAccountId(), accountId);
+        assertEquals(cartList.get(0).getStoreId(), storeId);
+        assertEquals(cartList.get(0).getStoreName(), storeName);
     }
 
     @Test
+    @Order(3)
     @DisplayName("Redis 서버에서 들어가 있는 장바구니 특정 메뉴 가져오기")
-    void getCartMenuRedis() throws Exception {
+    void getCartMenuRedis() {
 
-        Object carts = cartRedisRepository.findByCartMenu(redisKey, "NOMENU");
+        Object carts = cartRedisRepository.findByCartMenu(redisKey, hashKey);
 
         CartRedisDto cartRedisDto = (CartRedisDto) carts;
 
-        if (cartRedisRepository.existMenuInCartRedis(redisKey, "NOMENU")) {
-            log.info("존재합니다.");
-        }
-
-        log.info("CART ITEM: {}", om.writerWithDefaultPrettyPrinter().writeValueAsString(carts));
+        assertNotNull(cartRedisDto);
+        assertEquals(cartRedisDto.getAccountId(), accountId);
+        assertEquals(cartRedisDto.getStoreId(), storeId);
+        assertEquals(cartRedisDto.getStoreName(), storeName);
     }
 
 
     @Test
+    @Order(4)
     @DisplayName("Redis 서버에서 장바구니에 들어가 있는 개수 가져오기")
     void getCartRedisCount() {
 
         Long count = cartRedisRepository.cartRedisSize(redisKey);
 
-        log.info("COUNT: {}", count);
+        assertNotNull(count);
+        assertEquals(1, count);
     }
 
     @Test
+    @Order(5)
     @DisplayName("Redis 서버에서 장바구니에서 변경된 메뉴 수정 하기, 업데이트전 메뉴 먼저 삭제 후 수정")
     void updateCartMenuRedis() {
 
@@ -173,49 +189,77 @@ class CartRedisRepositoryTest extends IntegrationTestBase {
         CartRedisDto deleteCartMenu = (CartRedisDto) cartRedisRepository.findByCartMenu(redisKey, "112");
 
         cartRedisRepository.cartMenuRedisModify(redisKey, cartRedisDto.getHashKey(), cartRedisDto);
+
+        assertTrue(cartRedisRepository.existMenuInCartRedis(redisKey, cartRedisDto.getHashKey()));
     }
 
     @Test
+    @Order(6)
     @DisplayName("Redis 서버에서 장바구니에 들어가 있는 메뉴가 존재하는 확인하는 메서드")
     void isMenuInCartRedis() {
-        Long menuId = 3L;
 
-        boolean is = cartRedisRepository.existMenuInCartRedis(redisKey, String.valueOf(menuId));
+        boolean is = cartRedisRepository.existMenuInCartRedis(redisKey, hashKey);
 
-        log.info("BOOLEAN: {}", is);
+        assertTrue(is);
     }
 
     @Test
+    @Order(7)
+    @DisplayName("Redis 서버에서 장바구니키를 가져오는 메서드")
     void cartKeyInHashKey() {
 
         Set<Object> key = cartRedisRepository.cartKeyInHashKey(redisKey);
 
-        log.info("KEY: {}", key);
+        assertNotNull(key);
     }
 
     @Test
+    @Order(8)
     @DisplayName("Redis 서버에서 장바구니 카가 존재하는지 확인하는 매소드")
     void isKeyInCartRedis() {
 
         boolean is = cartRedisRepository.existKeyInCartRedis(redisKey);
 
-        log.info("BOOLEAN: {}", is);
+        assertTrue(is);
     }
 
     @Test
+    @Order(9)
+    @DisplayName("Lock 에 사용되는 키 생성")
+    void createLockRedis() {
+
+        String lockKey = "lockKey=1";
+        String hashKey = "lockHaskKey";
+
+        cartRedisRepository.createLockRedis(lockKey, hashKey);
+
+        Object cartRedis = cartRedisRepository.findByCartMenu(lockKey, hashKey);
+
+        String lock = (String) cartRedis;
+
+        assertNotNull(lock);
+        assertTrue(cartRedisRepository.existMenuInCartRedis(lockKey, hashKey));
+        assertEquals("lock", lock);
+    }
+
+    @Test
+    @Order(10)
     @DisplayName("Redis 서버에서 장바구니에 들어가 있는 메뉴 삭제하기")
     void deleteCartMenuRedis() {
-        Long menuId = 2L;
 
-        cartRedisRepository.deleteCartMenu(redisKey, String.valueOf(menuId));
+        cartRedisRepository.deleteCartMenu(redisKey, hashKey);
+
+        assertFalse(cartRedisRepository.existMenuInCartRedis(redisKey, hashKey));
     }
 
     @Test
-    @Order(Integer.MAX_VALUE)
+    @Order(11)
     @DisplayName("Redis 서버에서 들어가 있는 key 삭제하기")
     void deleteCartMenuRedisAll() {
 
         cartRedisRepository.deleteCartAll(redisKey);
+
+        assertFalse(cartRedisRepository.existKeyInCartRedis(redisKey));
     }
 
 }
