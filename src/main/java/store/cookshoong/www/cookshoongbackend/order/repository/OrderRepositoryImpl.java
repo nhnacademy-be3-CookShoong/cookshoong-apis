@@ -19,9 +19,9 @@ import lombok.RequiredArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderDetailMenuOptionResponseDto;
 import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderDetailMenuResponseDto;
 import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderInStatusResponseDto;
-import store.cookshoong.www.cookshoongbackend.order.model.response.QLookupOrderDetailDto;
-import store.cookshoong.www.cookshoongbackend.order.model.response.QLookupOrderDetailMenuOptionDto;
-import store.cookshoong.www.cookshoongbackend.order.model.response.QLookupOrderInProgressDto;
+import store.cookshoong.www.cookshoongbackend.order.model.response.QLookupOrderDetailMenuOptionResponseDto;
+import store.cookshoong.www.cookshoongbackend.order.model.response.QLookupOrderDetailMenuResponseDto;
+import store.cookshoong.www.cookshoongbackend.order.model.response.QLookupOrderInStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 
 /**
@@ -76,10 +76,10 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
             .transform(
                 groupBy(order)
-                    .list(new QLookupOrderInProgressDto(
+                    .list(new QLookupOrderInStatusResponseDto(
                         order.code,
                         orderStatus.code,
-                        list(new QLookupOrderDetailDto(
+                        list(new QLookupOrderDetailMenuResponseDto(
                             orderDetail.id, orderDetail.nowName, menu.cookingTime, orderDetail.count)),
                         order.memo,
                         charge.code))
@@ -93,7 +93,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
             .where(orderDetail.id.in(orderDetailIds))
             .transform(
                 groupBy(orderDetail.id)
-                    .as(list(new QLookupOrderDetailMenuOptionDto(orderDetailMenuOption.nowName)))
+                    .as(list(new QLookupOrderDetailMenuOptionResponseDto(orderDetailMenuOption.nowName)))
             );
     }
 }
