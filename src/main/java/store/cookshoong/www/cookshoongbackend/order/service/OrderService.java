@@ -1,15 +1,21 @@
 package store.cookshoong.www.cookshoongbackend.order.service;
 
+import static store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus.StatusCode.COMPLETE;
 import static store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus.StatusCode.COOKING;
+import static store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus.StatusCode.DELIVER;
 import static store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus.StatusCode.PAY;
 import static store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus.StatusCode.getStatusCodeString;
 
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
@@ -29,6 +35,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.repository.option.Optio
 import store.cookshoong.www.cookshoongbackend.order.entity.Order;
 import store.cookshoong.www.cookshoongbackend.order.entity.OrderDetail;
 import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus;
+import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus.StatusCode;
 import store.cookshoong.www.cookshoongbackend.order.exception.OrderStatusNotFoundException;
 import store.cookshoong.www.cookshoongbackend.order.exception.PriceIncreaseException;
 import store.cookshoong.www.cookshoongbackend.order.model.request.CreateOrderRequestDto;
@@ -37,6 +44,7 @@ import store.cookshoong.www.cookshoongbackend.order.repository.OrderDetailMenuOp
 import store.cookshoong.www.cookshoongbackend.order.repository.OrderDetailRepository;
 import store.cookshoong.www.cookshoongbackend.order.repository.OrderRepository;
 import store.cookshoong.www.cookshoongbackend.order.repository.OrderStatusRepository;
+import store.cookshoong.www.cookshoongbackend.point.model.event.PointOrderCompleteEvent;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreNotOpenException;
@@ -53,7 +61,7 @@ import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreReposit
 @RequiredArgsConstructor
 public class OrderService {
     private static final String STATUS_OPEN = "OPEN";
-
+    private final Map<StatusCode, Consumer<UUID>> statusCodeConsumer = createStatusCodeConsumer();
     private final OrderRepository orderRepository;
     private final OrderStatusRepository orderStatusRepository;
     private final AccountRepository accountRepository;
@@ -62,6 +70,15 @@ public class OrderService {
     private final OrderDetailMenuOptionRepository orderDetailMenuOptionRepository;
     private final MenuRepository menuRepository;
     private final OptionRepository optionRepository;
+    private final ApplicationEventPublisher publisher;
+
+    private Map<StatusCode, Consumer<UUID>> createStatusCodeConsumer() {
+        Map<StatusCode, Consumer<UUID>> statusCodeFunctions = new EnumMap<>(StatusCode.class);
+        statusCodeFunctions.put(COMPLETE, this::statusCompleteEvent);
+        statusCodeFunctions.put(DELIVER, this::startDeliverEvent);
+
+        return statusCodeFunctions;
+    }
 
     /**
      * 주문 생성.
@@ -73,7 +90,7 @@ public class OrderService {
         Account account = accountRepository.findById(createOrderRequestDto.getAccountId())
             .orElseThrow(UserNotFoundException::new);
 
-        OrderStatus orderStatusCreate = orderStatusRepository.findByOrderStatusCode(OrderStatus.StatusCode.CREATE)
+        OrderStatus orderStatusCreate = orderStatusRepository.findByOrderStatusCode(StatusCode.CREATE)
             .orElseThrow(OrderStatusNotFoundException::new);
 
         Store store = storeRepository.findById(createOrderRequestDto.getStoreId())
@@ -139,7 +156,7 @@ public class OrderService {
      * @param orderCode  the order code
      * @param statusCode the status code
      */
-    public void changeStatus(@Valid UUID orderCode, OrderStatus.StatusCode statusCode) {
+    public void changeStatus(@Valid UUID orderCode, StatusCode statusCode) {
         Order order = orderRepository.findById(orderCode)
             .orElseThrow(StoreNotFoundException::new);
 
@@ -147,6 +164,8 @@ public class OrderService {
             .orElseThrow(OrderStatusNotFoundException::new);
 
         order.updateOrderStatus(orderStatus);
+        statusCodeConsumer.getOrDefault(statusCode, ignore -> {})
+            .accept(orderCode);
     }
 
     /**
@@ -162,5 +181,13 @@ public class OrderService {
         Set<String> statusCodeString = getStatusCodeString(Set.of(PAY, COOKING));
 
         return orderRepository.lookupOrderInStatus(store, statusCodeString);
+    }
+
+    private void statusCompleteEvent(UUID orderCode) {
+        publisher.publishEvent(new PointOrderCompleteEvent(this, orderCode));
+    }
+
+    private void startDeliverEvent(UUID orderCode) {
+        // TODO: 배송 API 연결할 것
     }
 }
