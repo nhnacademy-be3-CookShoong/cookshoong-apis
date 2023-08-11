@@ -223,4 +223,9 @@ public class CouponPolicyService {
     public List<SelectProvableStoreCouponPolicyResponseDto> getProvableStoreCouponPolicies(Long storeId) {
         return couponPolicyRepository.lookupProvableStoreCouponPolicies(storeId);
     }
+
+    @Transactional(readOnly = true)
+    public boolean isOfferCouponInStore(Long storeId) {
+        return couponPolicyRepository.isOfferCouponInStore(storeId);
+    }
 }
