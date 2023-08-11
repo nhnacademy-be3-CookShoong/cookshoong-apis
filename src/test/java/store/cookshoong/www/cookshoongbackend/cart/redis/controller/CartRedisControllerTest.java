@@ -38,6 +38,8 @@ import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartMenuDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartOptionDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartRedisDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.service.CartRedisService;
+import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
+import store.cookshoong.www.cookshoongbackend.file.model.LocationType;
 
 /**
  * Redis 장바구니에 대한 Controller 테스트.
@@ -65,12 +67,13 @@ class CartRedisControllerTest {
     Long storeId = 1L;
     String storeName = "네네치킨";
     Long menuId = 1L;
-    Integer count = 1;
+    int count = 1;
     CartMenuDto cartMenuDto;
     CartOptionDto cartOptionDto;
     CartOptionDto cartOptionDto1;
     List<CartOptionDto> cartOptionDtos;
     CartRedisDto cartRedisDto;
+    private static final String NO_MENU = "NO_KEY";
 
     @BeforeEach
     void setUp() {
@@ -79,6 +82,8 @@ class CartRedisControllerTest {
         ReflectionTestUtils.setField(cartMenuDto, "menuName", "양념치킨");
         ReflectionTestUtils.setField(cartMenuDto, "menuImage", "menuImage");
         ReflectionTestUtils.setField(cartMenuDto, "menuPrice", 19000);
+        ReflectionTestUtils.setField(cartMenuDto, "locationType", LocationType.OBJECT_S.getVariable());
+        ReflectionTestUtils.setField(cartMenuDto, "domainName", FileDomain.MENU_IMAGE.getVariable());
 
         cartOptionDto = ReflectionUtils.newInstance(CartOptionDto.class);
         ReflectionTestUtils.setField(cartOptionDto, "optionId", 1L);
@@ -130,6 +135,8 @@ class CartRedisControllerTest {
                     fieldWithPath("menu.menuName").description("메뉴이름"),
                     fieldWithPath("menu.menuImage").description("메뉴이미지"),
                     fieldWithPath("menu.menuPrice").description("메뉴가격"),
+                    fieldWithPath("menu.locationType").description("저장소타입"),
+                    fieldWithPath("menu.domainName").description("저장폴더"),
                     fieldWithPath("options[].optionId").description("옵션아이"),
                     fieldWithPath("options[].optionName").description("옵션이름"),
                     fieldWithPath("options[].optionPrice").description("옵션가격"),
@@ -139,6 +146,34 @@ class CartRedisControllerTest {
                     fieldWithPath("menuOptName").description("메뉴+옵션명"),
                     fieldWithPath("totalMenuPrice").description("메뉴 총 가")
                 )));
+    }
+
+    @Test
+    @DisplayName("빈 장바구니 등록")
+    void postCreateEmptyCart() throws Exception {
+
+        mockMvc.perform(post("/api/carts/{cartKey}/add-menu/{noKey}/empty", redisKey, NO_MENU)
+                .contentType(APPLICATION_JSON))
+            .andExpect(status().isCreated())
+            .andDo(document("post-create-empty-cart",
+                ResourceSnippetParameters.builder()
+                    .pathParameters(parameterWithName("cartKey").description("장바구니 Redis Key"))
+                    .pathParameters(parameterWithName("noKey").description("빈 장바구니 메뉴 HashKey"))
+                    .requestSchema(schema("PostCreateEmptyCart"))));
+    }
+
+    @Test
+    @DisplayName("빈 장바구니 등록")
+    void postDbUploadRedis() throws Exception {
+
+        mockMvc.perform(post("/api/carts/{cartKey}/db-upload-redis/{accountId}", redisKey, accountId)
+                .contentType(APPLICATION_JSON))
+            .andExpect(status().isCreated())
+            .andDo(document("post-db-upload-redis",
+                ResourceSnippetParameters.builder()
+                    .pathParameters(parameterWithName("cartKey").description("장바구니 Redis Key"))
+                    .pathParameters(parameterWithName("accountId").description("회운 아이디"))
+                    .requestSchema(schema("PostDbUploadRedis"))));
     }
 
     @Test
@@ -202,6 +237,8 @@ class CartRedisControllerTest {
                     fieldWithPath("menu.menuName").description("메뉴이름"),
                     fieldWithPath("menu.menuImage").description("메뉴이미지"),
                     fieldWithPath("menu.menuPrice").description("메뉴가격"),
+                    fieldWithPath("menu.locationType").description("저장소타입"),
+                    fieldWithPath("menu.domainName").description("저장폴더"),
                     fieldWithPath("options[].optionId").description("옵션아이"),
                     fieldWithPath("options[].optionName").description("옵션이름"),
                     fieldWithPath("options[].optionPrice").description("옵션가격"),
@@ -272,6 +309,8 @@ class CartRedisControllerTest {
             .andExpect(jsonPath("$[0].menu.menuName").value(cartRedisDto.getMenu().getMenuName()))
             .andExpect(jsonPath("$[0].menu.menuImage").value(cartRedisDto.getMenu().getMenuImage()))
             .andExpect(jsonPath("$[0].menu.menuPrice").value(cartRedisDto.getMenu().getMenuPrice()))
+            .andExpect(jsonPath("$[0].menu.locationType").value(cartRedisDto.getMenu().getLocationType()))
+            .andExpect(jsonPath("$[0].menu.domainName").value(cartRedisDto.getMenu().getDomainName()))
             .andExpect(jsonPath("$[0].options[0].optionId").value(cartRedisDto.getOptions().get(0).getOptionId()))
             .andExpect(jsonPath("$[0].options[0].optionName").value(cartRedisDto.getOptions().get(0).getOptionName()))
             .andExpect(jsonPath("$[0].options[0].optionPrice").value(cartRedisDto.getOptions().get(0).getOptionPrice()))
@@ -292,6 +331,8 @@ class CartRedisControllerTest {
                 fieldWithPath("[].menu.menuName").description("메뉴이름"),
                 fieldWithPath("[].menu.menuImage").description("메뉴이미지"),
                 fieldWithPath("[].menu.menuPrice").description("메뉴가격"),
+                fieldWithPath("[].menu.locationType").description("저장소타입"),
+                fieldWithPath("[].menu.domainName").description("저장폴더"),
                 fieldWithPath("[].options[].optionId").description("옵션아이"),
                 fieldWithPath("[].options[].optionName").description("옵션이름"),
                 fieldWithPath("[].options[].optionPrice").description("옵션가격"),
@@ -318,6 +359,8 @@ class CartRedisControllerTest {
             .andExpect(jsonPath("$.menu.menuName").value(cartRedisDto.getMenu().getMenuName()))
             .andExpect(jsonPath("$.menu.menuImage").value(cartRedisDto.getMenu().getMenuImage()))
             .andExpect(jsonPath("$.menu.menuPrice").value(cartRedisDto.getMenu().getMenuPrice()))
+            .andExpect(jsonPath("$.menu.locationType").value(cartRedisDto.getMenu().getLocationType()))
+            .andExpect(jsonPath("$.menu.domainName").value(cartRedisDto.getMenu().getDomainName()))
             .andExpect(jsonPath("$.options[0].optionId").value(cartRedisDto.getOptions().get(0).getOptionId()))
             .andExpect(jsonPath("$.options[0].optionName").value(cartRedisDto.getOptions().get(0).getOptionName()))
             .andExpect(jsonPath("$.options[0].optionPrice").value(cartRedisDto.getOptions().get(0).getOptionPrice()))
@@ -339,6 +382,8 @@ class CartRedisControllerTest {
                     fieldWithPath("menu.menuName").description("메뉴이름"),
                     fieldWithPath("menu.menuImage").description("메뉴이미지"),
                     fieldWithPath("menu.menuPrice").description("메뉴가격"),
+                    fieldWithPath("menu.locationType").description("저장소타입"),
+                    fieldWithPath("menu.domainName").description("저장폴더"),
                     fieldWithPath("options[].optionId").description("옵션아이"),
                     fieldWithPath("options[].optionName").description("옵션이름"),
                     fieldWithPath("options[].optionPrice").description("옵션가격"),
@@ -369,6 +414,31 @@ class CartRedisControllerTest {
                 responseFields(
                     fieldWithPath("count").description("장바구니에 담긴 메뉴 수")
                 )));
+    }
+
+    @Test
+    @DisplayName("Redis 장바구니 redis Key 존재여부 확인")
+    void getExistKeyInCartRedis() throws Exception {
+
+        mockMvc.perform(get("/api/carts/redis/{cartKey}/exist", redisKey))
+            .andExpect(status().isOk())
+            .andDo(document("get-exist-key-in-cart-redis",
+                ResourceSnippetParameters.builder()
+                    .pathParameters(parameterWithName("cartKey").description("장바구니 Redis Key"))
+                    .requestSchema(schema("GetExistKeyInCartRedis"))));
+    }
+
+    @Test
+    @DisplayName("Redis 장바구니 redis Key 존재여부 확인")
+    void getExistMenuInCartRedis() throws Exception {
+
+        mockMvc.perform(get("/api/carts/redis/{cartKey}/exist/{menuKey}/menu", redisKey, hashKey))
+            .andExpect(status().isOk())
+            .andDo(document("get-exist-menu-in-cart-redis",
+                ResourceSnippetParameters.builder()
+                    .pathParameters(parameterWithName("cartKey").description("장바구니 Redis Key"))
+                    .pathParameters(parameterWithName("hashKey").description("장바구니 Redis HashKey"))
+                    .requestSchema(schema("GetExistMenuInCartRedis"))));
     }
 
     @Test

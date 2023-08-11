@@ -223,7 +223,7 @@ class AddressServiceTest {
     void selectAccountAddressList() {
 
         List<AccountAddressResponseDto> addressResponses = new ArrayList<>();
-        addressResponses.add(new AccountAddressResponseDto(testAccount.getId(), "alias", "성수동"));
+        addressResponses.add(new AccountAddressResponseDto(testAccount.getId(), "alias", "성수동", "앞마당"));
 
         when(accountRepository.findById(testAccount.getId())).thenReturn(Optional.of(testAccount));
         when(accountAddressRepository.lookupByAccountIdAddressAll(testAccount.getId())).thenReturn(addressResponses);

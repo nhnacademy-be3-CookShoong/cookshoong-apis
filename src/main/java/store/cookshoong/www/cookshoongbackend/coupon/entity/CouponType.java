@@ -29,4 +29,7 @@ public abstract class CouponType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    public abstract Integer getMinimumOrderPrice();
+
+    public abstract int getDiscountPrice(int totalPrice);
 }

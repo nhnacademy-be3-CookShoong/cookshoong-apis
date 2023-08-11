@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import store.cookshoong.www.cookshoongbackend.common.exception.ValidationFailureException;
 import store.cookshoong.www.cookshoongbackend.payment.exception.ChargeTypeNotFoundException;
+import store.cookshoong.www.cookshoongbackend.payment.exception.ChargeValidationException;
+import store.cookshoong.www.cookshoongbackend.payment.exception.RefundValidationException;
 import store.cookshoong.www.cookshoongbackend.payment.exception.TypeValidationException;
 
 /**
@@ -18,7 +20,7 @@ import store.cookshoong.www.cookshoongbackend.payment.exception.TypeValidationEx
 @RestControllerAdvice(basePackages = "store.cookshoong.www.cookshoongbackend.payment")
 public class PaymentRequestExceptionHandler {
 
-    @ExceptionHandler({TypeValidationException.class})
+    @ExceptionHandler({TypeValidationException.class, ChargeValidationException.class, RefundValidationException.class})
     public ResponseEntity<Map<String, String>> handleValidationFailure(ValidationFailureException e) {
 
         return ResponseEntity.badRequest().body(e.getErrors());

@@ -11,4 +11,5 @@ import store.cookshoong.www.cookshoongbackend.account.entity.OauthType;
  * @since 2023.07.04
  */
 public interface OauthTypeRepository extends JpaRepository<OauthType, Integer> {
+    OauthType getReferenceByProvider(String provider);
 }

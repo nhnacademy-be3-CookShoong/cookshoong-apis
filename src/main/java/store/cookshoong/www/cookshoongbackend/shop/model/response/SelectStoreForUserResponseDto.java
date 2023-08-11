@@ -3,13 +3,9 @@ package store.cookshoong.www.cookshoongbackend.shop.model.response;
 import com.querydsl.core.annotations.QueryProjection;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableStoreCouponPolicyResponseDto;
-import lombok.Setter;
-import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableStoreCouponPolicyResponseDto;
-import lombok.Setter;
 
 /**
  * 일반 고객이 볼 수 있는 매장 정보 조회.
@@ -27,10 +23,21 @@ public class SelectStoreForUserResponseDto {
     private final String mainPlace;
     private final String detailPlace;
     private final String description;
+    private final Integer minimumOrderPrice;
+    private final Integer deliveryCost;
+    private final String locationType;
+    private final String domainName;
     @Setter
     private String savedName;
     @Setter
     private List<SelectProvableStoreCouponPolicyResponseDto> provableCouponPolicies;
+    private final String storeStatus;
+    @Setter
+    private Integer distance;
+    @Setter
+    private Integer totalDeliveryCost;
+    @Setter
+    private Integer deliveryTime;
 
     /**
      * 일반회원 : 일반회원이 조회할 수 있는 매장의 정보.
@@ -47,7 +54,8 @@ public class SelectStoreForUserResponseDto {
     @QueryProjection
     public SelectStoreForUserResponseDto(String businessLicenseNumber, String representativeName, LocalDate openingDate,
                                          String storeName, String phoneNumber, String mainPlace, String detailPlace, String description,
-                                         String savedName) {
+                                         String locationType, String domainName, String savedName, Integer minimumOrderPrice,
+                                         Integer deliveryCost, String storeStatus) {
         this.businessLicenseNumber = businessLicenseNumber;
         this.representativeName = representativeName;
         this.openingDate = openingDate;
@@ -56,6 +64,11 @@ public class SelectStoreForUserResponseDto {
         this.mainPlace = mainPlace;
         this.detailPlace = detailPlace;
         this.description = description;
+        this.locationType = locationType;
+        this.domainName = domainName;
         this.savedName = savedName;
+        this.minimumOrderPrice = minimumOrderPrice;
+        this.deliveryCost = deliveryCost;
+        this.storeStatus = storeStatus;
     }
 }

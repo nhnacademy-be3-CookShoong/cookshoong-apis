@@ -46,7 +46,7 @@ public class MenuGroupController {
             throw new MenuGroupValidationException(bindingResult);
         }
 
-        menuGroupService.createMenuGroup(storeId, createMenuGroupRequestDto);
+        menuGroupService.updateMenuGroup(storeId, createMenuGroupRequestDto);
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .build();
@@ -59,7 +59,8 @@ public class MenuGroupController {
      * @return 200 response, 메뉴 그룹 리스트
      */
     @GetMapping("/stores/{storeId}/menu-group")
-    public ResponseEntity<List<SelectMenuGroupResponseDto>> getMenuGroups(@PathVariable("storeId") Long storeId) {
+    public ResponseEntity<List<SelectMenuGroupResponseDto>> getMenuGroups(
+        @PathVariable("storeId") Long storeId) {
         List<SelectMenuGroupResponseDto> menuGroups = menuGroupService.selectMenuGroups(storeId);
         return ResponseEntity.ok(menuGroups);
     }
@@ -86,8 +87,9 @@ public class MenuGroupController {
      * @return 200 response
      */
     @DeleteMapping("/stores/{storeId}/menu-group/{menuGroupId}")
-    public ResponseEntity<Void> deleteMenuGroup(@PathVariable("storeId") Long storeId,
-                                                @PathVariable("menuGroupId") Long menuGroupId) {
+    public ResponseEntity<Void> deleteMenuGroup(
+        @PathVariable("storeId") Long storeId,
+        @PathVariable("menuGroupId") Long menuGroupId) {
         menuGroupService.deleteMenuGroup(storeId, menuGroupId);
         return ResponseEntity
             .status(HttpStatus.OK)

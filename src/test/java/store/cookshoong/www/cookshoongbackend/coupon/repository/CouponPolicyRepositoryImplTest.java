@@ -29,7 +29,9 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageAll;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
+import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponPolicyNotFoundException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicyResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableStoreCouponPolicyResponseDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeCashVo;
 import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypePercentVo;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
@@ -322,5 +324,61 @@ class CouponPolicyRepositoryImplTest {
         Long unclaimedAllPercentCouponCount =
             couponPolicyRepository.lookupUnclaimedCouponCount(allPercentCouponPolicy.getId());
         assertThat(unclaimedAllPercentCouponCount).isEqualTo(provideSecondCount);
+    }
+
+    @Test
+    @DisplayName("제공 가능한 쿠폰 정책 확인 - 없음")
+    void lookupProvableStoreCouponPoliciesEmptyTest() throws Exception {
+        List<SelectProvableStoreCouponPolicyResponseDto> selectProvableStoreCouponPolicyResponses =
+            couponPolicyRepository.lookupProvableStoreCouponPolicies(store.getId());
+
+        assertThat(selectProvableStoreCouponPolicyResponses).isEmpty();
+    }
+    @Test
+    @DisplayName("제공 가능한 쿠폰 정책 확인 - 삭제됨")
+    void lookupProvableStoreCouponPoliciesDeletedTest() throws Exception {
+        em.persist(new IssueCoupon(storeCashCouponPolicy));
+        em.persist(new IssueCoupon(storePercentCouponPolicy));
+
+        couponPolicyRepository.findById(storeCashCouponPolicy.getId())
+            .orElseThrow(CouponPolicyNotFoundException::new)
+            .delete();
+
+        couponPolicyRepository.findById(storePercentCouponPolicy.getId())
+            .orElseThrow(CouponPolicyNotFoundException::new)
+            .delete();
+
+        List<SelectProvableStoreCouponPolicyResponseDto> selectProvableStoreCouponPolicyResponses =
+            couponPolicyRepository.lookupProvableStoreCouponPolicies(store.getId());
+
+        assertThat(selectProvableStoreCouponPolicyResponses).isEmpty();
+    }
+
+    @Test
+    @DisplayName("제공 가능한 쿠폰 정책 확인")
+    void lookupProvableStoreCouponPoliciesTest() throws Exception {
+        em.persist(new IssueCoupon(storeCashCouponPolicy));
+        em.persist(new IssueCoupon(storePercentCouponPolicy));
+
+        List<SelectProvableStoreCouponPolicyResponseDto> selectProvableStoreCouponPolicyResponses =
+            couponPolicyRepository.lookupProvableStoreCouponPolicies(store.getId());
+
+        assertThat(selectProvableStoreCouponPolicyResponses).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("매장 이벤트 유효한지 확인 - 수령 가능한 쿠폰 없음")
+    void isOfferCouponInStoreFalseTest() throws Exception {
+        assertThat(couponPolicyRepository.isOfferCouponInStore(store.getId()))
+            .isFalse();
+    }
+
+    @Test
+    @DisplayName("매장 이벤트 유효한지 확인 - 수령 가능한 쿠폰 있음")
+    void isOfferCouponInStoreTest() throws Exception {
+        te.getIssueCoupon(storeCashCouponPolicy);
+
+        assertThat(couponPolicyRepository.isOfferCouponInStore(store.getId()))
+            .isTrue();
     }
 }

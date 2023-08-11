@@ -10,6 +10,6 @@ import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException
  */
 public class MerchantNotFoundException extends NotFoundException {
     public MerchantNotFoundException() {
-        super("해당 가맹점은 존재하지 않습니다.");
+        super("가맹점");
     }
 }

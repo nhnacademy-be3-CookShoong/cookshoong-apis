@@ -95,4 +95,8 @@ public class StoreCategoryService {
         }
         storeCategoryRepository.deleteById(code);
     }
+
+    public List<String> selectCategoriesByStoreId(Long storeId) {
+        return storeCategoryRepository.findCategoryCodeByStoreId(storeId);
+    }
 }

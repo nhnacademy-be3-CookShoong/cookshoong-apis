@@ -5,6 +5,7 @@ package store.cookshoong.www.cookshoongbackend.common.util;
  *
  * @author koesnam
  * @since 2023.07.05
+ * @contributor seongyeon, jewan (유승연, 정제완)
  */
 public class RegularExpressions {
     private RegularExpressions() {
@@ -25,6 +26,10 @@ public class RegularExpressions {
     public static final String NUMBER_ONLY = "^\\d+$";
     // 숫자가 아닌 모든 문자(한글, 영어, 특수문자) (1개 이상)
     public static final String NOT_NUMBER = "(?=^\\D+$)(?=^\\S+$).*";
+
+    // 문자(영어_대문자)만 허용 (공백X)
+    public static final String ENGLISH_UPPER_ONLY = "^[A-Z]+$";
+
 }
 
 

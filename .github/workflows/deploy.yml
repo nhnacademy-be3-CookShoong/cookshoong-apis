@@ -9,8 +9,6 @@
 name: Deploy on cloud
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main" , "develop"]
     types:

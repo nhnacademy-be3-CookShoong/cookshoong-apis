@@ -1,27 +1,28 @@
 package store.cookshoong.www.cookshoongbackend.coupon.service;
 
-import java.time.LocalDate;
-import java.util.List;
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import store.cookshoong.www.cookshoongbackend.account.entity.Account;
-import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponPolicy;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
-import store.cookshoong.www.cookshoongbackend.coupon.exception.AlreadyHasCouponWithinSamePolicyException;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponPolicyNotFoundException;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.IssueCouponNotFoundException;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.IssueCouponOverCountException;
-import store.cookshoong.www.cookshoongbackend.coupon.exception.ProvideIssueCouponFailureException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateIssueCouponRequestDto;
-import store.cookshoong.www.cookshoongbackend.coupon.model.request.UpdateProvideCouponRequest;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;
+import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponRedisRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.IssueCouponRepository;
+import store.cookshoong.www.cookshoongbackend.coupon.util.IssueMethod;
 
 /**
- * 쿠폰 발급 서비스.
+ * 쿠폰 발행 서비스.
  *
  * @author eora21 (김주호)
  * @since 2023.07.17
@@ -30,9 +31,22 @@ import store.cookshoong.www.cookshoongbackend.coupon.repository.IssueCouponRepos
 @Transactional
 @RequiredArgsConstructor
 public class IssueCouponService {
+    private static final int LIMIT_COUNT = 1_000;
+
+    private final Map<IssueMethod, BiConsumer<CouponPolicy, Long>> issueMethodConsumer = createIssueConsumer();
+
     private final IssueCouponRepository issueCouponRepository;
     private final CouponPolicyRepository couponPolicyRepository;
-    private final AccountRepository accountRepository;
+    private final CouponRedisRepository couponRedisRepository;
+
+    private Map<IssueMethod, BiConsumer<CouponPolicy, Long>> createIssueConsumer() {
+        Map<IssueMethod, BiConsumer<CouponPolicy, Long>> enumMap = new EnumMap<>(IssueMethod.class);
+        enumMap.put(IssueMethod.BULK, this::createIssueCouponAllAccounts);
+        enumMap.put(IssueMethod.EVENT, this::createIssueCouponFirstComeFirstServe);
+        enumMap.put(IssueMethod.NORMAL, this::createIssueCouponInLimitCount);
+
+        return enumMap;
+    }
 
     /**
      * 쿠폰 발행 메서드.
@@ -44,13 +58,38 @@ public class IssueCouponService {
         CouponPolicy couponPolicy = couponPolicyRepository.findById(createIssueCouponRequestDto.getCouponPolicyId())
             .orElseThrow(CouponPolicyNotFoundException::new);
 
-        couponPolicy.getCouponUsage().limitCount()
-            .ifPresent(limitCount -> checkUnclaimedCouponCount(couponPolicy.getId(),
-                createIssueCouponRequestDto.getIssueQuantity(), limitCount));
+        IssueMethod issueMethod = createIssueCouponRequestDto.getIssueMethod();
 
-        for (long i = 0; i < createIssueCouponRequestDto.getIssueQuantity(); i++) {
-            issueCouponRepository.save(new IssueCoupon(couponPolicy));
-        }
+        couponPolicy.getCouponUsage()
+            .validIssueMethod(issueMethod);
+
+        issueMethodConsumer.get(issueMethod)
+            .accept(couponPolicy, createIssueCouponRequestDto.getIssueQuantity());
+    }
+
+    private void createIssueCouponAllAccounts(CouponPolicy couponPolicy, Long issueQuantity) {
+        // TODO: Spring Batch 적용 이후 이용해볼 것
+    }
+
+    private void createIssueCouponFirstComeFirstServe(CouponPolicy couponPolicy, Long issueQuantity) {
+        Set<IssueCoupon> issueCoupons = Stream.generate(() -> new IssueCoupon(couponPolicy))
+            .limit(issueQuantity)
+            .collect(Collectors.toSet());
+        issueCouponRepository.saveAllAndFlush(issueCoupons);
+
+        Set<UUID> couponCodes = issueCoupons.stream()
+            .map(IssueCoupon::getCode)
+            .collect(Collectors.toSet());
+
+        couponRedisRepository.bulkInsertCouponCode(couponCodes, String.valueOf(couponPolicy.getId()));
+    }
+
+    private void createIssueCouponInLimitCount(CouponPolicy couponPolicy, Long issueQuantity) {
+        checkUnclaimedCouponCount(couponPolicy.getId(), issueQuantity);
+
+        Stream.generate(() -> new IssueCoupon(couponPolicy))
+            .limit(issueQuantity)
+            .forEach(issueCouponRepository::save);
     }
 
     /**
@@ -58,63 +97,12 @@ public class IssueCouponService {
      *
      * @param couponPolicyId 쿠폰 정책 id
      * @param issueQuantity  발행 요청 개수
-     * @param limitCount     쿠폰 사용처 발행 제한값
      */
-    private void checkUnclaimedCouponCount(Long couponPolicyId, Long issueQuantity, int limitCount) {
+    private void checkUnclaimedCouponCount(Long couponPolicyId, Long issueQuantity) {
         Long unclaimedCouponCount = couponPolicyRepository.lookupUnclaimedCouponCount(couponPolicyId);
 
-        if (limitCount < unclaimedCouponCount + issueQuantity) {
-            throw new IssueCouponOverCountException(limitCount);
+        if (LIMIT_COUNT < unclaimedCouponCount + issueQuantity) {
+            throw new IssueCouponOverCountException(LIMIT_COUNT);
         }
-    }
-
-    /**
-     * 사용자가 쿠폰 발급을 요청했을 때, 해당 쿠폰 정책과 일치하는 쿠폰 중 하나를 발급해준다.
-     *
-     * @param accountId                  the account id
-     * @param updateProvideCouponRequest the offer coupon request
-     */
-    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
-    public void provideCouponToAccount(Long accountId, UpdateProvideCouponRequest updateProvideCouponRequest) {
-        CouponPolicy couponPolicy = couponPolicyRepository.findById(updateProvideCouponRequest.getCouponPolicyId())
-            .orElseThrow(CouponPolicyNotFoundException::new);
-        validPolicyDeleted(couponPolicy);
-        validReceivedBefore(accountId, couponPolicy);
-
-        List<IssueCoupon> issueCoupons = issueCouponRepository.findTop10ByCouponPolicyAndAccountIsNull(couponPolicy);
-        isIssueCouponsEmpty(issueCoupons);
-
-        LocalDate expirationDate = LocalDate.now().plusDays(couponPolicy.getUsagePeriod());
-        Account account = accountRepository.getReferenceById(accountId);
-
-        provideCoupon(issueCoupons, expirationDate, account);
-    }
-
-    private static void validPolicyDeleted(CouponPolicy couponPolicy) {
-        if (couponPolicy.isDeleted()) {
-            throw new CouponPolicyNotFoundException();
-        }
-    }
-
-    private void validReceivedBefore(Long accountId, CouponPolicy couponPolicy) {
-        if (issueCouponRepository.isReceivedBefore(couponPolicy.getId(), accountId, couponPolicy.getUsagePeriod())) {
-            throw new AlreadyHasCouponWithinSamePolicyException();
-        }
-    }
-
-    private static void isIssueCouponsEmpty(List<IssueCoupon> issueCoupons) {
-        if (issueCoupons.isEmpty()) {
-            throw new IssueCouponNotFoundException();
-        }
-    }
-
-    private void provideCoupon(List<IssueCoupon> issueCoupons, LocalDate expirationDate, Account account) {
-        for (IssueCoupon issueCoupon : issueCoupons) {
-            if (issueCouponRepository.provideCouponToAccount(issueCoupon.getCode(), expirationDate, account)) {
-                return;
-            }
-        }
-
-        throw new ProvideIssueCouponFailureException();
     }
 }

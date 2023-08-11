@@ -4,15 +4,20 @@ import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
+import store.cookshoong.www.cookshoongbackend.account.entity.OauthAccount;
+import store.cookshoong.www.cookshoongbackend.account.entity.OauthType;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponLog;
@@ -27,16 +32,22 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
-import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
-import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.OrderStatus;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.MenuStatus;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.option.Option;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.optiongroup.OptionGroup;
+import store.cookshoong.www.cookshoongbackend.order.entity.OrderDetail;
+import store.cookshoong.www.cookshoongbackend.order.entity.OrderDetailMenuOption;
+import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus;
+import store.cookshoong.www.cookshoongbackend.payment.entity.Charge;
 import store.cookshoong.www.cookshoongbackend.payment.entity.ChargeType;
-import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.Order;
+import store.cookshoong.www.cookshoongbackend.order.entity.Order;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
-import store.cookshoong.www.cookshoongbackend.shop.entity.Holiday;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.shop.entity.StoreCategory;
 import store.cookshoong.www.cookshoongbackend.shop.entity.StoreStatus;
+import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateStoreRequestDto;
 
 /**
  * 테스트 환경에서 원하는 entity 미리 만들어두는 클래스.
@@ -67,6 +78,20 @@ public class TestEntity {
         return new Rank("LEVEL_1", "프렌드");
     }
 
+    public OauthType getOauthTypePayco() {
+        return getOauthType("payco");
+    }
+
+    public OauthType getOauthType(String provider) {
+        OauthType oauthType = createUsingDeclared(OauthType.class);
+        ReflectionTestUtils.setField(oauthType, "provider", provider);
+        return oauthType;
+    }
+
+    public OauthAccount getOauthAccount(Account account, OauthType oauthType, String accountCode) {
+        return new OauthAccount(account, oauthType, accountCode);
+    }
+
     public Account getAccount(AccountStatus accountStatus, Authority authority, Rank rank) {
         return new Account(accountStatus, authority, rank, "eora21", "pwd", "김주호",
             "말비묵", "test@test.com", LocalDate.of(1996, 4, 1),
@@ -84,6 +109,9 @@ public class TestEntity {
     public StoreStatus getStoreStatusOpen() {
         return createTestStoreStatus("OPEN", "영업중");
     }
+    public StoreStatus getStoreStatusClose() {
+        return createTestStoreStatus("CLOSE", "휴식중");
+    }
 
     public Merchant getMerchant() {
         return new Merchant("네네치킨");
@@ -91,15 +119,15 @@ public class TestEntity {
 
     public Store getStore(Merchant merchant, Account account, BankType bankType,
                           StoreStatus storeStatus, Image businessImage, Image storeImage) {
+        CreateStoreRequestDto createStoreRequestDto = createStoreRequestDto(merchant, bankType);
         return new Store(merchant, account, bankType,
-            storeStatus,businessImage, "123456", "김주호",
-            LocalDate.of(2020, 2, 20), "주호타코", "01012345678", BigDecimal.ONE,
-            null, storeImage, "123456");
+            storeStatus, businessImage, createStoreRequestDto, storeImage);
     }
 
-    public Image getImage(String name, boolean isPublic){
-        return createImage(name,isPublic);
+    public Image getImage(String locationType, String domainName, String name, boolean isPublic) {
+        return createImage(locationType, domainName, name, isPublic);
     }
+
     public StoreCategory getStoreCategory() {
         return new StoreCategory("CHK", "치킨");
     }
@@ -137,19 +165,74 @@ public class TestEntity {
     }
 
     public CouponLog getCouponLog(IssueCoupon issueCoupon, CouponLogType couponLogType, Order order) {
-        return new CouponLog(issueCoupon, couponLogType, order, LocalDateTime.now());
+        return new CouponLog(issueCoupon, couponLogType, order);
     }
 
-    public Holiday getHoliday(Store store) {
-        return new Holiday(store, LocalDate.of(2020, 2, 20), LocalDate.of(2020, 2, 22));
+    public MenuStatus getMenuStatus(String menuStatusCode, String description) {
+        return new MenuStatus(menuStatusCode, description);
     }
 
-    public OrderStatus getOrderStatus(String orderStatusCode, String description) {
-        return createTestOrderStatus(orderStatusCode, description);
+
+    public OrderStatus getOrderStatus(String statusCode, String description) {
+        return createTestOrderStatus(statusCode, description);
     }
 
     public Order getOrder(Account account, Store store, OrderStatus orderStatus) {
         return createTestOrder(account, store, orderStatus);
+    }
+
+    public OrderDetail getOrderDetail(Order order, Menu menu, int count) {
+        return new OrderDetail(order, menu, count, "현재메뉴이름", 2_000);
+    }
+
+    public OrderDetailMenuOption getOrderDetailMenuOption(Option option, OrderDetail orderDetail) {
+        return new OrderDetailMenuOption(option, orderDetail, "현재옵션이름", 500);
+    }
+
+    public CreateStoreRequestDto getCreateStoreRequestDto(Merchant merchant, BankType bankType){
+        return createStoreRequestDto(merchant, bankType);
+    }
+
+    public Menu getMenu(MenuStatus menuStatus, Store store, Image image, BigDecimal bigDecimal) {
+        return new Menu(menuStatus, store, "메뉴", 2_000, "메뉴입니다.", image, 10,
+            bigDecimal);
+    }
+
+    public OptionGroup getOptionGroup(Store store) {
+        return new OptionGroup(store, "옵션그룹", 0, Integer.MAX_VALUE, false);
+    }
+
+    public Option getOption(OptionGroup optionGroup) {
+        return new Option(optionGroup, "옵션", 1_000, 1, false);
+    }
+
+    public Charge getCharge(ChargeType chargeType, Order order) {
+        return new Charge(chargeType, order, LocalDateTime.now(), 10_000, "paymentKey");
+    }
+
+    private CreateStoreRequestDto createStoreRequestDto(Merchant merchant, BankType bankType) {
+        CreateStoreRequestDto createStoreRequestDto = createUsingDeclared(CreateStoreRequestDto.class);
+        ReflectionTestUtils.setField(createStoreRequestDto, "merchantId", 1L);
+        if(Objects.nonNull(merchant)){
+            ReflectionTestUtils.setField(createStoreRequestDto, "merchantId", merchant.getId());
+        }
+        ReflectionTestUtils.setField(createStoreRequestDto, "businessLicenseNumber", "123456");
+        ReflectionTestUtils.setField(createStoreRequestDto, "representativeName", "김주호");
+        ReflectionTestUtils.setField(createStoreRequestDto, "openingDate", LocalDate.of(2020, 2, 20));
+        ReflectionTestUtils.setField(createStoreRequestDto, "storeName", "주호타코");
+        ReflectionTestUtils.setField(createStoreRequestDto, "mainPlace", "봉선2동 102길");
+        ReflectionTestUtils.setField(createStoreRequestDto, "detailPlace", "20-18");
+        ReflectionTestUtils.setField(createStoreRequestDto, "latitude", BigDecimal.ONE);
+        ReflectionTestUtils.setField(createStoreRequestDto, "longitude", BigDecimal.ONE);
+        ReflectionTestUtils.setField(createStoreRequestDto, "phoneNumber", "01012341234");
+        ReflectionTestUtils.setField(createStoreRequestDto, "description", "타코집에 많이 와주세요");
+        ReflectionTestUtils.setField(createStoreRequestDto, "earningRate", BigDecimal.ONE);
+        ReflectionTestUtils.setField(createStoreRequestDto, "minimumOrderPrice", 0);
+        ReflectionTestUtils.setField(createStoreRequestDto, "storeCategories", List.of("NIG"));
+        ReflectionTestUtils.setField(createStoreRequestDto, "bankCode", bankType.getBankTypeCode());
+        ReflectionTestUtils.setField(createStoreRequestDto, "bankAccount", "123456");
+        ReflectionTestUtils.setField(createStoreRequestDto, "deliveryCost", 4000);
+        return createStoreRequestDto;
     }
 
     private BankType createTestBankType(String bankTypeCode, String description) {
@@ -159,9 +242,9 @@ public class TestEntity {
         return bankType;
     }
 
-    private StoreStatus createTestStoreStatus(String storeStatusCode, String description) {
+    private StoreStatus createTestStoreStatus(String code, String description) {
         StoreStatus storeStatus = createUsingDeclared(StoreStatus.class);
-        ReflectionTestUtils.setField(storeStatus, "storeStatusCode", storeStatusCode);
+        ReflectionTestUtils.setField(storeStatus, "code", code);
         ReflectionTestUtils.setField(storeStatus, "description", description);
         return storeStatus;
     }
@@ -175,26 +258,28 @@ public class TestEntity {
 
     private Order createTestOrder(Account account, Store store, OrderStatus orderStatus) {
         Order order = createUsingDeclared(Order.class);
-        ReflectionTestUtils.setField(order, "orderCode", UUID.randomUUID());
+        ReflectionTestUtils.setField(order, "code", UUID.randomUUID());
         ReflectionTestUtils.setField(order, "orderedAt", LocalDateTime.now());
         ReflectionTestUtils.setField(order, "memo", "memo");
-        ReflectionTestUtils.setField(order, "orderStatusCode", orderStatus);
+        ReflectionTestUtils.setField(order, "orderStatus", orderStatus);
         ReflectionTestUtils.setField(order, "store", store);
         ReflectionTestUtils.setField(order, "account", account);
         return order;
     }
 
-    private OrderStatus createTestOrderStatus(String orderStatusCode, String description){
+    private OrderStatus createTestOrderStatus(String statusCode, String description){
         OrderStatus orderStatus = createUsingDeclared(OrderStatus.class);
-        ReflectionTestUtils.setField(orderStatus, "orderStatusCode", orderStatusCode);
+        ReflectionTestUtils.setField(orderStatus, "code", statusCode);
         ReflectionTestUtils.setField(orderStatus, "description", description);
         return orderStatus;
     }
 
-    public Image createImage(String name, boolean isPublic){
+    public Image createImage(String locationType, String domainName, String name, boolean isPublic) {
         Image image = createUsingDeclared(Image.class);
-        ReflectionTestUtils.setField(image,"originName", name);
-        ReflectionTestUtils.setField(image, "savedName", UUID.randomUUID()+".jpg");
+        ReflectionTestUtils.setField(image, "locationType", locationType);
+        ReflectionTestUtils.setField(image, "domainName", domainName);
+        ReflectionTestUtils.setField(image, "originName", name);
+        ReflectionTestUtils.setField(image, "savedName", UUID.randomUUID() + ".jpg");
         ReflectionTestUtils.setField(image, "isPublic", isPublic);
         return image;
     }

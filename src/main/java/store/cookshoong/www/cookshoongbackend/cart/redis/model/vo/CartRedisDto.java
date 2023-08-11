@@ -8,7 +8,10 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.Setter;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
+import store.cookshoong.www.cookshoongbackend.order.entity.Order;
+import store.cookshoong.www.cookshoongbackend.order.entity.OrderDetail;
 
 /**
  * 장바구니에 저장될 Dto.
@@ -17,7 +20,7 @@ import lombok.ToString;
  * @since 2023.07.20
  */
 @Getter
-@ToString
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class CartRedisDto {
@@ -31,7 +34,7 @@ public class CartRedisDto {
     private List<CartOptionDto> options;
     private Long createTimeMillis;
     private String hashKey;
-    private Integer count;
+    private int count;
     private String menuOptName;
     private String totalMenuPrice;
 
@@ -41,9 +44,11 @@ public class CartRedisDto {
      * @return      메뉴 + 옵션s -> hashKey 반환
      */
     public String generateUniqueHashKey() {
-        String optionIdsString = options.stream()
+        String optionIdsString = options != null
+            ? options.stream()
             .map(cartOptionDto -> cartOptionDto.getOptionId().toString())
-            .collect(Collectors.joining(""));
+            .collect(Collectors.joining(""))
+            : "";
 
         return menu.getMenuId() + optionIdsString;
     }
@@ -55,11 +60,15 @@ public class CartRedisDto {
      * @return      후라이드치킨 + 양념소스 -> hashKey 반환
      */
     public String generateMenuOptionName() {
-        String optionNamesString = options.stream()
+        String optionNamesString = options != null
+            ? options.stream()
             .map(CartOptionDto::getOptionName)
-            .collect(Collectors.joining(","));
+            .collect(Collectors.joining(","))
+            : "";
 
-        return menu.getMenuName() + "\n" + "옵션: " + optionNamesString;
+        return optionNamesString.isEmpty()
+            ? menu.getMenuName()
+            : menu.getMenuName() + "<br>" + "<h4>&nbsp;&nbsp;• 옵션 : &nbsp;" + optionNamesString + "</h4>";
     }
 
     /**
@@ -69,9 +78,11 @@ public class CartRedisDto {
      */
     public String generateTotalMenuPrice() {
         int menuPrice = menu.getMenuPrice();
-        int optionPrices = options.stream()
+        int optionPrices = options != null
+            ? options.stream()
             .mapToInt(CartOptionDto::getOptionPrice)
-            .sum();
+            .sum()
+            : 0;
 
         return String.valueOf((menuPrice + optionPrices) * count);
     }
@@ -129,5 +140,9 @@ public class CartRedisDto {
         if (count > 1) {
             count--;
         }
+    }
+
+    public OrderDetail toEntity(Order order, Menu menu) {
+        return new OrderDetail(order, menu, getCount(), menu.getName(), menu.getPrice());
     }
 }

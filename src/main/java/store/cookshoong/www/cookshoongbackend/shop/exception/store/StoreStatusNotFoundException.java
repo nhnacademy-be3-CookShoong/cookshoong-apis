@@ -10,6 +10,6 @@ import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException
  */
 public class StoreStatusNotFoundException extends NotFoundException {
     public StoreStatusNotFoundException(){
-        super("해당 코드는 존재하지 않습니다.");
+        super("코드");
     }
 }

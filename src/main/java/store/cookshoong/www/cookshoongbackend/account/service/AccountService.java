@@ -2,16 +2,21 @@ package store.cookshoong.www.cookshoongbackend.account.service;
 
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
 import store.cookshoong.www.cookshoongbackend.account.entity.Authority;
+import store.cookshoong.www.cookshoongbackend.account.entity.OauthAccount;
+import store.cookshoong.www.cookshoongbackend.account.entity.OauthType;
 import store.cookshoong.www.cookshoongbackend.account.entity.Rank;
 import store.cookshoong.www.cookshoongbackend.account.exception.DuplicatedUserException;
 import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
+import store.cookshoong.www.cookshoongbackend.account.model.request.UpdateAccountInfoRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountAuthResponseDto;
+import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountInfoResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.UpdateAccountStatusResponseDto;
@@ -20,6 +25,8 @@ import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountStat
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountStatusRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.AuthorityRepository;
+import store.cookshoong.www.cookshoongbackend.account.repository.OauthAccountRepository;
+import store.cookshoong.www.cookshoongbackend.account.repository.OauthTypeRepository;
 import store.cookshoong.www.cookshoongbackend.account.repository.RankRepository;
 
 /**
@@ -36,6 +43,8 @@ public class AccountService {
     private final RankRepository rankRepository;
     private final AccountStatusRepository accountStatusRepository;
     private final AuthorityRepository authorityRepository;
+    private final OauthAccountRepository oauthAccountRepository;
+    private final OauthTypeRepository oauthTypeRepository;
 
     /**
      * 올바른 데이터가 들어왔는지 확인하고 회원을 DB에 저장 시킨다.
@@ -59,6 +68,12 @@ public class AccountService {
             .getId();
     }
 
+    /**
+     * 회원이 가지는 모든 정보를 조회한다.
+     *
+     * @param accountId the account id
+     * @return the select account response dto
+     */
     public SelectAccountResponseDto selectAccount(Long accountId) {
         return accountRepository.lookupAccount(accountId)
             .orElseThrow(UserNotFoundException::new);
@@ -105,5 +120,64 @@ public class AccountService {
         account.updateStatus(accountStatus);
 
         return new UpdateAccountStatusResponseDto(accountStatus.getDescription(), LocalDateTime.now());
+    }
+
+    /**
+     * OAuth 로그인후 필요한 회원 정보를 조회한다.
+     *
+     * @param provider    the provider
+     * @param accountCode the account code
+     * @return the select account info response dto
+     */
+    public SelectAccountInfoResponseDto selectAccountInfoForOAuth(String provider, String accountCode) {
+        return accountRepository.lookupAccountInfoForOAuth(provider, accountCode)
+            .orElseThrow(UserNotFoundException::new);
+    }
+
+    /**
+     * 일반 회원과 연동된 OAuth 유저를 생성한다.
+     *
+     * @param accountId   the account id
+     * @param accountCode the account code
+     * @param provider    the provider
+     */
+    @Transactional
+    public void createOAuth2Account(Long accountId, String accountCode, String provider) {
+        Account account = accountRepository.getReferenceById(accountId);
+        OauthType oauthType = oauthTypeRepository.getReferenceByProvider(provider);
+        oauthAccountRepository.save(new OauthAccount(account, oauthType, accountCode));
+    }
+
+    /**
+     * 마지막 로그인 날짜를 업데이트한다.
+     *
+     * @param accountId the account id
+     */
+    @Transactional
+    public void updateLastLoginDate(Long accountId) {
+        Account account = accountRepository.findById(accountId)
+            .orElseThrow(UserNotFoundException::new);
+        account.updateLastLoginAt();
+    }
+
+    public HttpStatus selectAccountExists(Long accountId) {
+        return accountRepository.existsById(accountId) ? HttpStatus.OK : HttpStatus.NOT_FOUND;
+    }
+
+    public HttpStatus selectAccountExists(String loginId) {
+        return accountRepository.existsByLoginId(loginId) ? HttpStatus.OK : HttpStatus.NOT_FOUND;
+    }
+
+    /**
+     * 변경가능한 회원정보를 수정하는 메서드.
+     *
+     * @param accountId                   the account id
+     * @param updateAccountInfoRequestDto the update account info request dto
+     */
+    @Transactional
+    public void updateMutableAccountInfo(Long accountId, UpdateAccountInfoRequestDto updateAccountInfoRequestDto) {
+        Account account = accountRepository.findById(accountId)
+            .orElseThrow(UserNotFoundException::new);
+        account.updateMutableInfo(updateAccountInfoRequestDto);
     }
 }

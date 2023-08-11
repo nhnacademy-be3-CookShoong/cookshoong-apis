@@ -54,4 +54,6 @@ public interface CouponPolicyRepositoryCustom {
      * @return the list
      */
     List<SelectProvableStoreCouponPolicyResponseDto> lookupProvableStoreCouponPolicies(Long storeId);
+
+    boolean isOfferCouponInStore(Long storeId);
 }

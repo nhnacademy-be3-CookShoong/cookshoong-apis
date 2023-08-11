@@ -10,6 +10,25 @@
             </Policies>
             <DefaultRolloverStrategy max="30"/> <!-- 최대 30일까지 유지 -->
         </RollingFile>
+
+        <!-- LogNCrashHttpAppender 선언 -->
+        <appender name="logNCrashHttp" class="com.toast.java.logncrash.logback.LogNCrashHttpAppender">
+            <param name="appKey" value="nMWnKdBvAFvUW8XL"/>
+            <param name="logSource" value="${spring.profiles.active}"/>
+            <param name="version" value="1.0.0"/>
+            <param name="logType" value="log"/>
+            <param name="debug" value="true"/>
+            <param name="category" value="non"/>
+            <param name="errorCodeType" value="action"/>
+        </appender>
+
+        <!-- LogNCrashHttpAppender를 포함한 AsyncAppender 선언 -->
+        <appender name="LNCS-APPENDER" class="org.apache.log4j.AsyncAppender">
+            <param name="BufferSize" value="2048"/>
+            <param name="Blocking" value="false"/>
+            <appender-ref ref="logNCrashHttp"/>
+        </appender>
+
     </Appenders>
     <Loggers>
         <Root level="debug">
@@ -18,5 +37,11 @@
         <Root level="info">
             <AppenderRef ref="FileAppender"/>
         </Root>
+
+        <logger name="user-logger" additivity="false">
+            <level value="INFO"/>
+            <appender-ref ref="LNCS-APPENDER"/>
+        </logger>
+
     </Loggers>
 </Configuration>

@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.optiongroup.OptionGroup;
+import store.cookshoong.www.cookshoongbackend.menu_order.model.request.CreateOptionRequestDto;
 
 /**
  * 옵션 엔티티.
@@ -64,11 +65,30 @@ public class Option {
     }
 
     /**
+     * 옵션의 옵션그룹 변경.
+     *
+     * @param optionGroup 옵션 그룹
+     */
+    public void modifyOptionGroup(OptionGroup optionGroup) {
+        this.optionGroup = optionGroup;
+    }
+
+    /**
      * 옵션의 삭제여부 변경.
      *
      * @param isDeleted 옵션 삭제 여부
      */
     public void modifyOptionIsDeleted(boolean isDeleted) {
         this.isDeleted = isDeleted;
+    }
+
+    /**
+     * 옵션 내용 변경.
+     *
+     * @param createOptionRequestDto 옵션 내용 변경 Dto
+     */
+    public void modifyOption(CreateOptionRequestDto createOptionRequestDto) {
+        this.name = createOptionRequestDto.getName();
+        this.price = createOptionRequestDto.getPrice();
     }
 }

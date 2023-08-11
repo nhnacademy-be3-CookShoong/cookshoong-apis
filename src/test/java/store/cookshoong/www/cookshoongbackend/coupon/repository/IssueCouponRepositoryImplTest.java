@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,10 +32,12 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageAll;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageMerchant;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
-import store.cookshoong.www.cookshoongbackend.coupon.exception.IssueCouponNotFoundException;
+import store.cookshoong.www.cookshoongbackend.coupon.exception.ProvideIssueCouponFailureException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectOwnCouponResponseDto;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
-import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.Order;
+import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
+import store.cookshoong.www.cookshoongbackend.file.model.LocationType;
+import store.cookshoong.www.cookshoongbackend.order.entity.Order;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
@@ -85,8 +88,8 @@ class IssueCouponRepositoryImplTest {
     void beforeEach() {
         customer = tpe.getLevelOneActiveCustomer();
         Merchant merchant = te.getMerchant();
-        Image businessImage = te.getImage("사업자등록증.jpg", false);
-        Image storeImage = te.getImage("우리 매장 대표사진.jpg", true);
+        Image businessImage = te.getImage(LocationType.OBJECT_S.getVariable(), FileDomain.BUSINESS_INFO_IMAGE.getVariable(), "사업자등록증.jpg", false);
+        Image storeImage = te.getImage(LocationType.OBJECT_S.getVariable(), FileDomain.STORE_IMAGE.getVariable(), "우리 매장 대표사진.jpg", true);
         hasAllUsageCouponMerchant =
             te.getStore(merchant, tpe.getLevelOneActiveCustomer(), te.getBankTypeKb(), te.getStoreStatusOpen(), businessImage, storeImage);
         hasMerchantUsageCouponMerchant =
@@ -227,16 +230,19 @@ class IssueCouponRepositoryImplTest {
         IssueCoupon issueCoupon = te.getIssueCoupon(couponPolicy);
 
         assertDoesNotThrow(
-            () -> issueCouponRepository.provideCouponToAccount(issueCoupon.getCode(), LocalDate.now(), customer));
+            () -> issueCouponRepository.provideCouponToAccount(issueCoupon, customer));
 
         em.flush();
         em.clear();
 
-        IssueCoupon updateIssueCoupon = issueCouponRepository.findById(issueCoupon.getCode())
-            .orElseThrow(IssueCouponNotFoundException::new);
+        Optional<IssueCoupon> optionalIssueCoupon = issueCouponRepository.findById(issueCoupon.getCode());
+
+        assertThat(optionalIssueCoupon).isNotEmpty();
+
+        IssueCoupon updateIssueCoupon = optionalIssueCoupon.get();
 
         assertThat(updateIssueCoupon.getAccount().getId()).isEqualTo(customer.getId());
-        assertThat(updateIssueCoupon.getExpirationDate()).isEqualTo(LocalDate.now());
+        assertThat(updateIssueCoupon.getExpirationDate()).isEqualTo(LocalDate.now().plusDays(couponPolicy.getUsagePeriod()));
     }
 
     @Test
@@ -246,8 +252,8 @@ class IssueCouponRepositoryImplTest {
         IssueCoupon issueCoupon = te.getIssueCoupon(couponPolicy);
         issueCoupon.provideToAccount(customer);
 
-        assertThat(issueCouponRepository.provideCouponToAccount(issueCoupon.getCode(), LocalDate.now(), customer))
-            .isFalse();
+        assertThrowsExactly(ProvideIssueCouponFailureException.class,
+                () -> issueCouponRepository.provideCouponToAccount(issueCoupon, customer));
     }
 
     @ParameterizedTest

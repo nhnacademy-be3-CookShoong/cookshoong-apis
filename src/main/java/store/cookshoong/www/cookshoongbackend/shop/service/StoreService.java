@@ -3,10 +3,11 @@ package store.cookshoong.www.cookshoongbackend.shop.service;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -19,9 +20,13 @@ import store.cookshoong.www.cookshoongbackend.account.repository.AccountReposito
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
 import store.cookshoong.www.cookshoongbackend.address.model.response.AddressResponseDto;
 import store.cookshoong.www.cookshoongbackend.address.repository.accountaddress.AccountAddressRepository;
+import store.cookshoong.www.cookshoongbackend.address.service.AddressService;
+import store.cookshoong.www.cookshoongbackend.file.ImageNotFoundException;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
-import store.cookshoong.www.cookshoongbackend.file.service.ObjectStorageService;
+import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
+import store.cookshoong.www.cookshoongbackend.file.service.FileUtilResolver;
+import store.cookshoong.www.cookshoongbackend.file.service.FileUtils;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
@@ -37,15 +42,16 @@ import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreStatusNo
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.UserAccessDeniedException;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateStoreRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateCategoryRequestDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreRequestDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreStatusRequestDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreInfoRequestDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreManagerRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreCategoriesDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseTemp;
 import store.cookshoong.www.cookshoongbackend.shop.repository.bank.BankTypeRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.category.StoreCategoryRepository;
+import store.cookshoong.www.cookshoongbackend.shop.repository.category.StoresHasCategoryRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.merchant.MerchantRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.stauts.StoreStatusRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreRepository;
@@ -61,6 +67,7 @@ import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreReposit
 @RequiredArgsConstructor
 @Transactional
 public class StoreService {
+    private final EntityManager entityManager;
     private final StoreRepository storeRepository;
     private final BankTypeRepository bankTypeRepository;
     private final AccountRepository accountRepository;
@@ -68,10 +75,15 @@ public class StoreService {
     private final StoreStatusRepository storeStatusRepository;
     private final StoreCategoryRepository storeCategoryRepository;
     private final AccountAddressRepository accountAddressRepository;
+    private final FileUtilResolver fileUtilResolver;
+    private final ImageRepository imageRepository;
+    private final AddressService addressService;
+    private final StoresHasCategoryRepository storesHasCategoryRepository;
+
+    private static final Long BASIC_IMAGE = 1L;
     private static final BigDecimal DISTANCE = new BigDecimal("3.0");
     private static final Double RADIUS = 6371.0;
     private static final Double TO_RADIAN = Math.PI / 180;
-    private final ObjectStorageService objectStorageService;
 
     private static void accessDeniedException(Long accountId, Store store) {
         if (!store.getAccount().getId().equals(accountId)) {
@@ -90,16 +102,50 @@ public class StoreService {
         }
     }
 
+    private Image storeFile(FileUtils fileUtils, Map<String, MultipartFile> fileMap, String domainName, boolean isPublic) throws IOException {
+        MultipartFile multipartFile = fileMap.get(domainName);
+        if (Objects.isNull(multipartFile) || multipartFile.isEmpty()) {
+            return null;
+        }
+        return fileUtils.storeFile(multipartFile, domainName, isPublic);
+    }
+
+    private Merchant getMerchantById(Long merchantId) {
+        if (Objects.isNull(merchantId)) {
+            return null;
+        }
+        return merchantRepository.findById(merchantId)
+            .orElseThrow(MerchantNotFoundException::new);
+    }
+
+    private Account getAccountById(Long accountId) {
+        return accountRepository.findById(accountId).orElseThrow(UserNotFoundException::new);
+    }
+
+    private BankType getBankTypeByCode(String bankCode) {
+        return bankTypeRepository.findById(bankCode)
+            .orElseThrow(BankTypeNotFoundException::new);
+    }
+
+    private StoreStatus getStoreStatusByCode(String code) {
+        return storeStatusRepository.findById(code)
+            .orElseThrow(StoreStatusNotFoundException::new);
+    }
+
+    private Store getStoreById(Long storeId) {
+        return storeRepository.findById(storeId)
+            .orElseThrow(StoreNotFoundException::new);
+    }
+
     /**
      * 사업자 회원 : 매장을 pagination 으로 작성.
      *
      * @param accountId 회원아이디
-     * @param pageable  페이지 정보
      * @return the page
      */
     @Transactional(readOnly = true)
-    public Page<SelectAllStoresResponseDto> selectAllStores(Long accountId, Pageable pageable) {
-        return storeRepository.lookupStoresPage(accountId, pageable);
+    public List<SelectAllStoresResponseDto> selectAllStores(Long accountId) {
+        return storeRepository.lookupStores(accountId);
     }
 
     /**
@@ -111,26 +157,46 @@ public class StoreService {
      */
     @Transactional(readOnly = true)
     public SelectStoreResponseDto selectStore(Long accountId, Long storeId) {
-        Store store = storeRepository.findById(storeId)
-            .orElseThrow(StoreNotFoundException::new);
+        Store store = getStoreById(storeId);
         accessDeniedException(accountId, store);
-        SelectStoreResponseTemp responseVo = storeRepository.lookupStore(accountId, storeId)
+        SelectStoreResponseDto responseDto = storeRepository.lookupStore(accountId, storeId)
             .orElseThrow(StoreNotFoundException::new);
-        String pathName = objectStorageService
-            .getFullPath(FileDomain.STORE_IMAGE.getVariable(), responseVo.getSavedName());
-        return new SelectStoreResponseDto(responseVo, pathName);
+        List<SelectStoreCategoriesDto> categories = storeRepository.lookupStoreCategories(storeId);
+        responseDto.setStoreCategories(categories);
+        FileUtils fileUtils = fileUtilResolver.getFileService(responseDto.getLocationType());
+        responseDto.setPathName(fileUtils.getFullPath(responseDto.getDomainName(), responseDto.getPathName()));
+        return responseDto;
     }
 
     /**
      * 일반 유저 : 매장 정보 조회.
      *
-     * @param storeId 매장 아이디
+     * @param addressId the address id
+     * @param storeId   매장 아이디
      * @return 매장 정보 조회
      */
-    public SelectStoreForUserResponseDto selectStoreForUser(Long storeId) {
+    public SelectStoreForUserResponseDto selectStoreForUser(Long addressId, Long storeId) {
         SelectStoreForUserResponseDto responseDto = storeRepository.lookupStoreForUser(storeId)
             .orElseThrow(StoreNotFoundException::new);
-        responseDto.setSavedName(objectStorageService.getFullPath(FileDomain.STORE_IMAGE.getVariable(), responseDto.getSavedName()));
+        FileUtils fileUtils = fileUtilResolver.getFileService(responseDto.getLocationType());
+        responseDto.setSavedName(fileUtils.getFullPath(responseDto.getDomainName(), responseDto.getSavedName()));
+
+        Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
+
+        BigDecimal distance = calculateDistance(
+            addressService.selectAccountChoiceAddress(addressId).getLatitude(),
+            addressService.selectAccountChoiceAddress(addressId).getLongitude(),
+            addressService.selectAccountChoiceAddress(store.getAddress().getId()).getLatitude(),
+            addressService.selectAccountChoiceAddress(store.getAddress().getId()).getLongitude()
+        );
+
+        int meterDistance = (int) (distance.doubleValue() * 1000);
+        responseDto.setDistance(meterDistance);
+        Integer extraDeliveryCost = (meterDistance / 1000) * 1000;
+        responseDto.setTotalDeliveryCost(store.getDeliveryCost() + extraDeliveryCost);
+        Integer deliveryTime = 10 + (meterDistance / 500) * 5;
+        responseDto.setDeliveryTime(deliveryTime);
+
         return responseDto;
     }
 
@@ -140,42 +206,35 @@ public class StoreService {
      *
      * @param accountId          회원 아이디
      * @param registerRequestDto 매장 등록을 위한 정보
-     * @param businessImage      the business image
-     * @param storeImage         the store image
+     * @param storedAt           the stored at
+     * @param fileMap            the file map
+     * @return the long
      * @throws IOException the io exception
      */
-    public void createStore(Long accountId, CreateStoreRequestDto registerRequestDto,
-                            MultipartFile businessImage, MultipartFile storeImage) throws IOException {
+    public Long createStore(Long accountId, CreateStoreRequestDto registerRequestDto, String storedAt,
+                            Map<String, MultipartFile> fileMap) throws IOException {
         if (storeRepository.existsStoreByBusinessLicenseNumber(registerRequestDto.getBusinessLicenseNumber())) {
             throw new DuplicatedBusinessLicenseException(registerRequestDto.getBusinessLicenseNumber());
         }
-        Merchant merchant = null;
-        if (Objects.nonNull(registerRequestDto.getMerchantId())) {
-            merchant = merchantRepository.findById(registerRequestDto.getMerchantId())
-                .orElseThrow(MerchantNotFoundException::new);
-        }
-        Account account = accountRepository.findById(accountId)
-            .orElseThrow(UserNotFoundException::new);
-        BankType bankType = bankTypeRepository.findById(registerRequestDto.getBankCode())
-            .orElseThrow(BankTypeNotFoundException::new);
+        Merchant merchant = getMerchantById(registerRequestDto.getMerchantId());
+        Account account = getAccountById(accountId);
+        BankType bankType = getBankTypeByCode(registerRequestDto.getBankCode());
+
         StoreStatus storeStatus = storeStatusRepository.getReferenceById(StoreStatus.StoreStatusCode.CLOSE.name());
-        Image businessLicenseImage = objectStorageService
-            .storeFile(businessImage, FileDomain.BUSINESS_INFO_IMAGE.getVariable(), false);
-        Image storeMainImage = objectStorageService.storeFile(storeImage, FileDomain.STORE_IMAGE.getVariable(), true);
+
+        FileUtils fileUtils = fileUtilResolver.getFileService(storedAt);
+        Image businessLicenseImage = storeFile(fileUtils, fileMap, FileDomain.BUSINESS_INFO_IMAGE.getVariable(), false);
+        Image storeMainImage = imageRepository.findById(BASIC_IMAGE).orElseThrow((ImageNotFoundException::new));
+        if (fileMap.containsKey(FileDomain.STORE_IMAGE.getVariable())) {
+            storeMainImage = storeFile(fileUtils, fileMap, FileDomain.STORE_IMAGE.getVariable(), true);
+        }
         Store store = new Store(merchant,
             account,
             bankType,
             storeStatus,
             businessLicenseImage,
-            registerRequestDto.getBusinessLicenseNumber(),
-            registerRequestDto.getRepresentativeName(),
-            registerRequestDto.getOpeningDate(),
-            registerRequestDto.getStoreName(),
-            registerRequestDto.getPhoneNumber(),
-            registerRequestDto.getEarningRate(),
-            registerRequestDto.getDescription(),
-            storeMainImage,
-            registerRequestDto.getBankAccount());
+            registerRequestDto,
+            storeMainImage);
 
         List<String> categories = registerRequestDto.getStoreCategories();
         addStoreCategory(categories, store);
@@ -184,46 +243,67 @@ public class StoreService {
             registerRequestDto.getLatitude(), registerRequestDto.getLongitude());
         store.modifyAddress(address);
 
-        storeRepository.save(store);
+        return storeRepository.save(store).getId();
     }
 
     /**
-     * 사업자 : 매장 정보 수정.
+     * 사업자 : 매장 정보 수정 (사업자 정보).
      *
      * @param accountId  the account id
      * @param storeId    the store id
      * @param requestDto 매장 수정 정보
-     * @param storeImage the store image
      * @throws IOException the io exception
      */
-    public void updateStore(Long accountId, Long storeId, UpdateStoreRequestDto requestDto, MultipartFile storeImage) throws IOException {
-        Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
+    public void updateStore(Long accountId, Long storeId, UpdateStoreManagerRequestDto requestDto) {
+        Store store = getStoreById(storeId);
         accessDeniedException(accountId, store);
-        Account account = accountRepository.findById(accountId)
-            .orElseThrow(UserNotFoundException::new);
-        BankType bankType = bankTypeRepository.findByDescription(requestDto.getBankName())
-            .orElseThrow(BankTypeNotFoundException::new);
-        StoreStatus storeStatus = store.getStoreStatusCode();
+        BankType bankType = getBankTypeByCode(requestDto.getBankCode());
 
-        Image storeMainImage = objectStorageService.storeFile(storeImage, FileDomain.STORE_IMAGE.getVariable(), true);
-        store.modifyStoreInfo(
-            account,
-            bankType,
-            storeStatus,
-            requestDto.getBusinessLicenseNumber(),
-            requestDto.getRepresentativeName(),
-            requestDto.getOpeningDate(),
-            requestDto.getStoreName(),
-            requestDto.getPhoneNumber(),
-            requestDto.getEarningRate(),
-            requestDto.getDescription(),
-            storeMainImage,
-            requestDto.getBankAccount()
-        );
+        store.modifyStore(bankType, requestDto);
+
+    }
+
+    /**
+     * 사업자 : 매장 정보 수정 (영업점 정보).
+     *
+     * @param accountId  the account id
+     * @param storeId    the store id
+     * @param requestDto the request dto
+     */
+    public void updateStoreInfo(Long accountId, Long storeId, UpdateStoreInfoRequestDto requestDto) {
+        Store store = getStoreById(storeId);
+        accessDeniedException(accountId, store);
+
+        store.modifyStoreInformation(requestDto);
 
         Address address = new Address(requestDto.getMainPlace(), requestDto.getDetailPlace(),
             requestDto.getLatitude(), requestDto.getLongitude());
         store.modifyAddress(address);
+    }
+
+    /**
+     * 매장 사진을 수정하기 위한 서비스 코드.
+     *
+     * @param accountId  the account id
+     * @param storeId    the store id
+     * @param storeImage the store image
+     * @throws IOException the io exception
+     */
+    public void updateStoreImage(Long accountId, Long storeId, MultipartFile storeImage) throws IOException {
+        Store store = getStoreById(storeId);
+        accessDeniedException(accountId, store);
+        Image storeMainImage = imageRepository.findById(store.getStoreImage().getId()).orElseThrow((ImageNotFoundException::new));
+
+        Image updatedImage = updateImage(store.getStoreImage().getId(), storeImage, storeMainImage);
+        store.modifyStoreImage(updatedImage);
+    }
+
+    private Image updateImage(Long storeImageId, MultipartFile storeImage, Image storeMainImage) throws IOException {
+        FileUtils fileUtils = fileUtilResolver.getFileService(storeMainImage.getLocationType());
+        if (storeImageId == BASIC_IMAGE) {
+            return fileUtils.updateFile(storeImage, storeMainImage);
+        }
+        return fileUtils.storeFile(storeImage, FileDomain.STORE_IMAGE.getVariable(), true);
     }
 
     /**
@@ -234,27 +314,57 @@ public class StoreService {
      * @param requestDto 매장 카테고리 code list
      */
     public void updateStoreCategories(Long accountId, Long storeId, UpdateCategoryRequestDto requestDto) {
-        Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
+        Store store = getStoreById(storeId);
         accessDeniedException(accountId, store);
 
+        storesHasCategoryRepository.deleteAllByPk_StoreId(storeId);
         store.initStoreCategories();
+        entityManager.flush();
+        addStoreCategory(requestDto.getUpdateStoreCategories(), store);
 
-        addStoreCategory(requestDto.getStoreCategories(), store);
+
     }
 
     /**
      * 사업자 : 매장 상태 변경.
      *
-     * @param accountId  the account id
-     * @param storeId    the store id
-     * @param requestDto 매장 상태 변경 코드
+     * @param accountId the account id
+     * @param storeId   the store id
+     * @param option    the option
      */
-    public void updateStoreStatus(Long accountId, Long storeId, UpdateStoreStatusRequestDto requestDto) {
-        Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
+    public void updateStoreStatus(Long accountId, Long storeId, String option) {
+        Store store = getStoreById(storeId);
         accessDeniedException(accountId, store);
-        StoreStatus storeStatus = storeStatusRepository.findById(requestDto.getStatusCode())
-            .orElseThrow(StoreStatusNotFoundException::new);
+        if (store.getStoreStatus().equals(StoreStatus.StoreStatusCode.OUTED)) {
+            throw new UserAccessDeniedException("해당 매장 상태 변경을 할 수 있는 권한이 없습니다.");
+        }
+        StoreStatus storeStatus = getStoreStatusByCode(option);
         store.modifyStoreStatus(storeStatus);
+    }
+
+    /**
+     * 사업자 : 매장 이미지 삭제.
+     *
+     * @param accountId the account id
+     * @param storeId   the store id
+     * @throws IOException the io exception
+     */
+    public void deleteStoreImage(Long accountId, Long storeId) throws IOException {
+        Store store = getStoreById(storeId);
+        accessDeniedException(accountId, store);
+
+        if (store.getStoreImage().getId() == BASIC_IMAGE) {
+            throw new UserAccessDeniedException("삭제할 수 있는 권한이 없습니다.");
+        }
+
+        FileUtils fileUtils = fileUtilResolver.getFileService(store.getStoreImage().getLocationType());
+        fileUtils.deleteFile(store.getStoreImage());
+
+        imageRepository.deleteById(store.getStoreImage().getId());
+
+        Image image = imageRepository.findById(BASIC_IMAGE).orElseThrow((ImageNotFoundException::new));
+        store.modifyStoreImage(image);
+
     }
 
     /**
@@ -274,21 +384,45 @@ public class StoreService {
 
         List<SelectAllStoresNotOutedResponseDto> nearbyStores = allStore
             .stream()
-            .filter(store -> isWithDistance(addressLatLng, store))
+            .filter(store -> isInStandardDistance(addressLatLng, store))
             .collect(Collectors.toList());
-        nearbyStores.forEach(selectAllStoresNotOutedResponseDto ->
-            selectAllStoresNotOutedResponseDto.setSavedName(
-                objectStorageService.getFullPath(FileDomain.STORE_IMAGE.getVariable(), selectAllStoresNotOutedResponseDto.getSavedName())));
+
+        for (SelectAllStoresNotOutedResponseDto dto : nearbyStores) {
+            FileUtils fileUtils = fileUtilResolver.getFileService(dto.getLocationType());
+            dto.setSavedName(
+                fileUtils.getFullPath(dto.getDomainName(), dto.getSavedName()));
+        }
+
         return new PageImpl<>(nearbyStores, pageable, nearbyStores.size());
     }
 
-    private boolean isWithDistance(AddressResponseDto address, SelectAllStoresNotOutedResponseDto store) {
+    /**
+     * Is in standard distance boolean.
+     *
+     * @param accountAddress the account address
+     * @param storeId        the store id
+     * @return the boolean
+     */
+    public boolean isInStandardDistance(AddressResponseDto accountAddress, Long storeId) {
+        Store store = storeRepository.findById(storeId)
+            .orElseThrow(StoreNotFoundException::new);
 
-        BigDecimal storeDistance = calculateDistance(
+        Address storeAddress = store.getAddress();
+
+        return isInStandardDistance(
+            accountAddress.getLatitude(), accountAddress.getLongitude(),
+            storeAddress.getLatitude(), storeAddress.getLongitude());
+    }
+
+    private boolean isInStandardDistance(AddressResponseDto address, SelectAllStoresNotOutedResponseDto store) {
+        return isInStandardDistance(
             address.getLatitude(), address.getLongitude(),
             store.getLatitude(), store.getLongitude()
         );
+    }
 
+    private boolean isInStandardDistance(BigDecimal x1, BigDecimal y1, BigDecimal x2, BigDecimal y2) {
+        BigDecimal storeDistance = calculateDistance(x1, y1, x2, y2);
         return storeDistance.compareTo(DISTANCE) <= 0;
     }
 
