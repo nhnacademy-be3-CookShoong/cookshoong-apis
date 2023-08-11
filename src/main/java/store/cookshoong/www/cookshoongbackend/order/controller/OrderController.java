@@ -5,7 +5,6 @@ import java.util.Objects;
 import java.util.UUID;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -29,7 +28,6 @@ import store.cookshoong.www.cookshoongbackend.order.model.request.PatchOrderRequ
 import store.cookshoong.www.cookshoongbackend.order.model.response.CreateOrderResponseDto;
 import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderInStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.order.service.OrderService;
-import store.cookshoong.www.cookshoongbackend.point.model.event.PointOrderCompleteEvent;
 import store.cookshoong.www.cookshoongbackend.point.service.PointService;
 import store.cookshoong.www.cookshoongbackend.shop.service.StoreService;
 
@@ -48,7 +46,6 @@ public class OrderController {
     private final ProvideCouponService provideCouponService;
     private final AddressService addressService;
     private final StoreService storeService;
-    private final ApplicationEventPublisher publisher;
     private final PointService pointService;
 
     /**
@@ -138,10 +135,6 @@ public class OrderController {
 
         OrderStatus.StatusCode statusCode = patchOrderRequestDto.getStatusCode();
         orderService.changeStatus(patchOrderRequestDto.getOrderCode(), statusCode);
-
-        if (statusCode == OrderStatus.StatusCode.COMPLETE) {
-            publisher.publishEvent(new PointOrderCompleteEvent(this, patchOrderRequestDto.getOrderCode()));
-        }
 
         return ResponseEntity.noContent()
             .build();
