@@ -127,7 +127,7 @@ class OrderServiceTest {
         when(accountRepository.findById(anyLong()))
             .thenReturn(Optional.of(customer));
 
-        when(orderStatusRepository.findById(anyString()))
+        when(orderStatusRepository.findByOrderStatusCode(any(OrderStatus.StatusCode.class)))
             .thenReturn(Optional.empty());
 
         assertThrowsExactly(OrderStatusNotFoundException.class,
@@ -142,7 +142,7 @@ class OrderServiceTest {
             .thenReturn(Optional.of(customer));
 
         OrderStatus orderStatus = te.getOrderStatus("CREATE", "생성");
-        when(orderStatusRepository.findById(anyString()))
+        when(orderStatusRepository.findByOrderStatusCode(any(OrderStatus.StatusCode.class)))
             .thenReturn(Optional.of(orderStatus));
 
         when(storeRepository.findById(anyLong()))
@@ -160,7 +160,7 @@ class OrderServiceTest {
             .thenReturn(Optional.of(customer));
 
         OrderStatus orderStatus = te.getOrderStatus("CREATE", "생성");
-        when(orderStatusRepository.findById(anyString()))
+        when(orderStatusRepository.findByOrderStatusCode(any(OrderStatus.StatusCode.class)))
             .thenReturn(Optional.of(orderStatus));
 
         Store openStore = tpe.getOpenStore();
@@ -183,7 +183,7 @@ class OrderServiceTest {
             .thenReturn(Optional.of(customer));
 
         OrderStatus orderStatus = te.getOrderStatus("CREATE", "생성");
-        when(orderStatusRepository.findById(anyString()))
+        when(orderStatusRepository.findByOrderStatusCode(any(OrderStatus.StatusCode.class)))
             .thenReturn(Optional.of(orderStatus));
 
         Store openStore = tpe.getOpenStore();
@@ -208,7 +208,7 @@ class OrderServiceTest {
             .thenReturn(Optional.of(customer));
 
         OrderStatus orderStatus = te.getOrderStatus("CREATE", "생성");
-        when(orderStatusRepository.findById(anyString()))
+        when(orderStatusRepository.findByOrderStatusCode(any(OrderStatus.StatusCode.class)))
             .thenReturn(Optional.of(orderStatus));
 
         Store openStore = tpe.getOpenStore();
@@ -238,7 +238,7 @@ class OrderServiceTest {
             .thenReturn(Optional.of(customer));
 
         OrderStatus orderStatus = te.getOrderStatus("CREATE", "생성");
-        when(orderStatusRepository.findById(anyString()))
+        when(orderStatusRepository.findByOrderStatusCode(any(OrderStatus.StatusCode.class)))
             .thenReturn(Optional.of(orderStatus));
 
         Store openStore = tpe.getOpenStore();
@@ -268,7 +268,7 @@ class OrderServiceTest {
             .thenReturn(Optional.of(customer));
 
         OrderStatus orderStatus = te.getOrderStatus("CREATE", "생성");
-        when(orderStatusRepository.findById(anyString()))
+        when(orderStatusRepository.findByOrderStatusCode(any(OrderStatus.StatusCode.class)))
             .thenReturn(Optional.of(orderStatus));
 
         Store openStore = te.persist(tpe.getOpenStore());
@@ -298,7 +298,7 @@ class OrderServiceTest {
             .thenReturn(Optional.of(customer));
 
         OrderStatus orderStatus = te.getOrderStatus("CREATE", "생성");
-        when(orderStatusRepository.findById(anyString()))
+        when(orderStatusRepository.findByOrderStatusCode(any(OrderStatus.StatusCode.class)))
             .thenReturn(Optional.of(orderStatus));
 
         Store openStore = te.persist(tpe.getOpenStore());
@@ -334,7 +334,7 @@ class OrderServiceTest {
             .thenReturn(Optional.of(customer));
 
         OrderStatus orderStatus = te.getOrderStatus("CREATE", "생성");
-        when(orderStatusRepository.findById(anyString()))
+        when(orderStatusRepository.findByOrderStatusCode(any(OrderStatus.StatusCode.class)))
             .thenReturn(Optional.of(orderStatus));
 
         Store openStore = te.persist(tpe.getOpenStore());
@@ -373,7 +373,7 @@ class OrderServiceTest {
             .thenReturn(Optional.of(customer));
 
         OrderStatus orderStatus = te.getOrderStatus("CREATE", "생성");
-        when(orderStatusRepository.findById(anyString()))
+        when(orderStatusRepository.findByOrderStatusCode(any(OrderStatus.StatusCode.class)))
             .thenReturn(Optional.of(orderStatus));
 
         Store openStore = te.persist(tpe.getOpenStore());
