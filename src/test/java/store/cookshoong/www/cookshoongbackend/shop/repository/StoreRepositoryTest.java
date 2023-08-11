@@ -134,15 +134,15 @@ class StoreRepositoryTest {
     void select_stores_page() {
         Account expectAccount = em.find(Account.class, account.getId());
         List<Store> expect = List.of(
-            em.find(Store.class, store.getId()-2),
-            em.find(Store.class, store.getId()-1),
+            em.find(Store.class, store.getId() - 2),
+            em.find(Store.class, store.getId() - 1),
             em.find(Store.class, store.getId())
         );
         List<SelectAllStoresResponseDto> selectAllStores =
             storeRepository.lookupStores(expectAccount.getId());
 
         assertThat(selectAllStores.size()).isEqualTo(3);
-        for(int i= 0 ; i<3; i++){
+        for (int i = 0; i < 3; i++) {
             assertThat(selectAllStores.get(i).getStoreId()).isEqualTo(expect.get(i).getId());
             assertThat(selectAllStores.get(i).getStoreName()).isEqualTo(expect.get(i).getName());
             assertThat(selectAllStores.get(i).getStoreStatus()).isEqualTo(expect.get(i).getStoreStatus().getDescription());
@@ -204,7 +204,7 @@ class StoreRepositoryTest {
 
         storeList.add(expectFirst);
 
-        Store expectSecond =  em.find(Store.class, stores.get(1).getId());
+        Store expectSecond = em.find(Store.class, stores.get(1).getId());
 
         expectSecond.getStoresHasCategories().add(new StoresHasCategory(
             new StoresHasCategory.Pk(expectSecond.getId(), storeCategory.getCategoryCode()), expectSecond, storeCategory));
@@ -217,7 +217,7 @@ class StoreRepositoryTest {
 
         storeList.add(expectSecond);
 
-        Store expectThird =  em.find(Store.class, stores.get(2).getId());
+        Store expectThird = em.find(Store.class, stores.get(2).getId());
 
         StoreCategory storeCategory1 = ReflectionUtils.newInstance(StoreCategory.class);
         ReflectionTestUtils.setField(storeCategory1, "categoryCode", "DER");
