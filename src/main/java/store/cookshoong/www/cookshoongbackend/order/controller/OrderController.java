@@ -144,6 +144,12 @@ public class OrderController {
             .build();
     }
 
+    /**
+     * 진행중인 주문을 확인하는 엔드포인트.
+     *
+     * @param storeId the store id
+     * @return the order in progress
+     */
     @GetMapping("/{storeId}")
     public ResponseEntity<List<LookupOrderInStatusResponseDto>> getOrderInProgress(@PathVariable Long storeId) {
         return ResponseEntity.ok(orderService.lookupOrderInProgress(storeId));
