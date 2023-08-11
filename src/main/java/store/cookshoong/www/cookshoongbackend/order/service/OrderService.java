@@ -16,6 +16,8 @@ import java.util.function.Consumer;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
@@ -181,6 +183,22 @@ public class OrderService {
         Set<String> statusCodeString = getStatusCodeString(Set.of(PAY, COOKING));
 
         return orderRepository.lookupOrderInStatus(store, statusCodeString);
+    }
+
+    /**
+     * 완료된 주문 확인.
+     *
+     * @param storeId  the store id
+     * @param pageable the pageable
+     * @return the page
+     */
+    public Page<LookupOrderInStatusResponseDto> lookupOrderInComplete(Long storeId, Pageable pageable) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(StoreNotFoundException::new);
+
+        Set<String> statusCodeString = getStatusCodeString(Set.of(COMPLETE));
+
+        return orderRepository.lookupOrderInStatus(store, statusCodeString, pageable);
     }
 
     private void statusCompleteEvent(UUID orderCode) {
