@@ -7,6 +7,8 @@ import java.util.Objects;
 import java.util.UUID;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -145,5 +147,18 @@ public class OrderController {
     @GetMapping("/{storeId}")
     public ResponseEntity<List<LookupOrderInStatusResponseDto>> getOrderInProgress(@PathVariable Long storeId) {
         return ResponseEntity.ok(orderService.lookupOrderInProgress(storeId));
+    }
+
+    /**
+     * 완료된 주문 페이징 목록을 확인하는 엔드포인트.
+     *
+     * @param storeId  the store id
+     * @param pageable the pageable
+     * @return the order in complete
+     */
+    @GetMapping("/{storeId}/complete")
+    public ResponseEntity<Page<LookupOrderInStatusResponseDto>> getOrderInComplete(@PathVariable Long storeId,
+                                                                                   Pageable pageable) {
+        return ResponseEntity.ok(orderService.lookupOrderInComplete(storeId, pageable));
     }
 }
