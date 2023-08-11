@@ -16,6 +16,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderDetailMenuOptionResponseDto;
 import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderDetailMenuResponseDto;
 import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderInStatusResponseDto;
@@ -58,6 +61,18 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         return orders;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<LookupOrderInStatusResponseDto> lookupOrderInStatus(Store store, Set<String> orderStatusCode,
+                                                                    Pageable pageable) {
+        List<LookupOrderInStatusResponseDto> lookupOrderInStatusResponses = lookupOrderInStatus(store, orderStatusCode);
+        Long totalSize = getOrderInStatusSize(store, orderStatusCode);
+
+        return new PageImpl<>(lookupOrderInStatusResponses, pageable, totalSize);
+    }
+
     private List<LookupOrderInStatusResponseDto> getOrderInStatus(Store store, Set<String> orderStatusCode) {
         return jpaQueryFactory
             .selectFrom(order)
@@ -97,5 +112,24 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 groupBy(orderDetail.id)
                     .as(list(new QLookupOrderDetailMenuOptionResponseDto(orderDetailMenuOption.nowName)))
             );
+    }
+
+    private Long getOrderInStatusSize(Store store, Set<String> orderStatusCode) {
+        return jpaQueryFactory
+                .select(order.code.count())
+                .from(order)
+                .innerJoin(order.orderStatus, orderStatus)
+
+                .innerJoin(orderDetail)
+                .on(orderDetail.order.eq(order))
+
+                .innerJoin(orderDetail.menu, menu)
+
+                .innerJoin(charge)
+                .on(charge.order.eq(order))
+
+                .where(order.store.eq(store), orderStatus.code.in(orderStatusCode))
+
+                .fetchOne();
     }
 }
