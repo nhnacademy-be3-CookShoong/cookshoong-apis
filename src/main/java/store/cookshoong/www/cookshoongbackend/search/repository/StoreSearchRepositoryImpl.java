@@ -67,6 +67,7 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepositoryCustom {
         NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
             .withQuery(boolQueryBuilder)
             .withMinScore(0.6f)
+            .withPageable(pageable)
             .withSorts(sortBuilder, distanceSortBuilder)
             .build();
 
@@ -83,7 +84,7 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepositoryCustom {
         GeoDistanceQueryBuilder geoDistanceQueryBuilder = QueryBuilders
             .geoDistanceQuery("location")
             .point(lat, lon)
-            .distance(3, DistanceUnit.KILOMETERS);
+            .distance(15, DistanceUnit.KILOMETERS);
 
         GeoDistanceSortBuilder distanceSortBuilder = SortBuilders.geoDistanceSort("location", lat, lon)
             .order(SortOrder.ASC)
@@ -99,6 +100,7 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepositoryCustom {
 
         NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
             .withQuery(boolQueryBuilder)
+            .withPageable(pageable)
             .withSorts(sortBuilder, distanceSortBuilder)
             .build();
 
