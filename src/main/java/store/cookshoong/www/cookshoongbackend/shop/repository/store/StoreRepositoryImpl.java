@@ -16,10 +16,12 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.QStoreStatus;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QStoresHasCategory;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectAllStoresResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectStoreCategoriesDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectStoreForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectStoreResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreCategoriesDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseDto;
 
@@ -86,6 +88,7 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
         QAddress address = QAddress.address;
         QBankType bankType = QBankType.bankType;
         QImage image = QImage.image;
+        QStoreStatus storeStatus = QStoreStatus.storeStatus;
 
         return Optional.ofNullable(jpaQueryFactory
             .select(new QSelectStoreResponseDto(
@@ -95,13 +98,29 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
                 store.name, store.phoneNumber,
                 address.mainPlace, address.detailPlace, address.latitude, address.longitude, store.defaultEarningRate,
                 store.minimumOrderPrice, store.description, bankType.description, store.bankAccountNumber,
-                store.storeImage.savedName, store.storeImage.locationType, store.storeImage.domainName, store.deliveryCost))
+                store.storeImage.savedName, store.storeImage.locationType, store.storeImage.domainName, store.deliveryCost, store.storeStatus.description))
             .from(store)
             .innerJoin(store.address, address)
             .innerJoin(store.bankTypeCode, bankType)
             .innerJoin(store.storeImage, image)
+            .innerJoin(store.storeStatus, storeStatus)
             .where(store.id.eq(storeId))
             .fetchOne());
+    }
+
+    @Override
+    public List<SelectStoreCategoriesDto> lookupStoreCategories(Long storeId) {
+        QStore store = QStore.store;
+        QStoresHasCategory storesHasCategory = QStoresHasCategory.storesHasCategory;
+        QStoreCategory storeCategory = QStoreCategory.storeCategory;
+
+        return jpaQueryFactory
+            .select(new QSelectStoreCategoriesDto(storesHasCategory.categoryCode.description))
+            .from(storesHasCategory)
+            .innerJoin(storesHasCategory.store, store)
+            .innerJoin(storesHasCategory.categoryCode, storeCategory)
+            .where(storesHasCategory.pk.storeId.eq(storeId))
+            .fetch();
     }
 
     /**

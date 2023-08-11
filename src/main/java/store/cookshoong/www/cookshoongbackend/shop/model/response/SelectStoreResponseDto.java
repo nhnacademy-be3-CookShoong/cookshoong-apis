@@ -3,6 +3,7 @@ package store.cookshoong.www.cookshoongbackend.shop.model.response;
 import com.querydsl.core.annotations.QueryProjection;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -34,6 +35,9 @@ public class SelectStoreResponseDto {
     private final String domainName;
     private final Integer minimumOrderPrice;
     private final Integer deliveryCost;
+    private final String storeStatus;
+    @Setter
+    private List<SelectStoreCategoriesDto> storeCategories;
 
     /**
      * 사업자 : 해당 매장 정보에대한 response dto.
@@ -58,7 +62,7 @@ public class SelectStoreResponseDto {
                                   LocalDate openingDate, String storeName, String phoneNumber, String mainPlace,
                                   String detailPlace, BigDecimal latitude, BigDecimal longitude, BigDecimal defaultEarningRate,
                                   Integer minimumOrderPrice, String description, String bankCode, String bankAccountNumber,
-                                  String pathName, String locationType, String domainName, Integer deliveryCost) {
+                                  String pathName, String locationType, String domainName, Integer deliveryCost, String storeStatus) {
         this.businessLicenseNumber = businessLicenseNumber;
         this.representativeName = representativeName;
         this.openingDate = openingDate;
@@ -77,5 +81,6 @@ public class SelectStoreResponseDto {
         this.domainName = domainName;
         this.minimumOrderPrice = minimumOrderPrice;
         this.deliveryCost = deliveryCost;
+        this.storeStatus = storeStatus;
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresNotOutedResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreCategoriesDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseDto;
 
@@ -50,4 +51,6 @@ public interface StoreRepositoryCustom {
      * @return 모든 매장 정보 페이지로 반환.
      */
     Page<SelectAllStoresNotOutedResponseDto> lookupStoreLatLanPage(Pageable pageable);
+
+    List<SelectStoreCategoriesDto> lookupStoreCategories(Long storeId);
 }
