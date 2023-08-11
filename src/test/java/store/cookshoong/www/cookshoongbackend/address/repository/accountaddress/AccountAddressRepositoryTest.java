@@ -111,6 +111,7 @@ class AccountAddressRepositoryTest {
             accountAddressRepository.lookupByAccountIdAddressAll(account.getId());
 
         assertThat(accountAddressList.get(0).getMainPlace()).isEqualTo(accountAddress.getAddress().getMainPlace());
+        assertThat(accountAddressList.get(0).getDetailPlace()).isEqualTo(accountAddress.getAddress().getDetailPlace());
         assertThat(accountAddressList.get(0).getAlias()).isEqualTo(accountAddress.getAlias());
 
     }
