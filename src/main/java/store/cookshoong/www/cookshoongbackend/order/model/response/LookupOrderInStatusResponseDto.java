@@ -18,6 +18,8 @@ public class LookupOrderInStatusResponseDto {
     private final List<LookupOrderDetailMenuResponseDto> selectOrderDetails;
     private final String memo;
     private final UUID chargeCode;
+    private final int chargedAmount;
+    private final String paymentKey;
 
     /**
      * Instantiates a new Select order in progress dto.
@@ -27,14 +29,19 @@ public class LookupOrderInStatusResponseDto {
      * @param selectOrderDetails the select order details
      * @param memo               the memo
      * @param chargeCode         the charge id
+     * @param chargedAmount      the charged amount
+     * @param paymentKey         the payment key
      */
     @QueryProjection
     public LookupOrderInStatusResponseDto(UUID orderCode, String orderStatusCode,
-                                          List<LookupOrderDetailMenuResponseDto> selectOrderDetails, String memo, UUID chargeCode) {
+                                          List<LookupOrderDetailMenuResponseDto> selectOrderDetails, String memo,
+                                          UUID chargeCode, int chargedAmount, String paymentKey) {
         this.orderCode = orderCode;
         this.orderStatusCode = orderStatusCode;
         this.selectOrderDetails = selectOrderDetails;
         this.memo = memo;
         this.chargeCode = chargeCode;
+        this.chargedAmount = chargedAmount;
+        this.paymentKey = paymentKey;
     }
 }
