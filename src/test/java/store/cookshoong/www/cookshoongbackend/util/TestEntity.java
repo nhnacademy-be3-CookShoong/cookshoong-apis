@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -33,8 +34,12 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.MenuStatus;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.option.Option;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.optiongroup.OptionGroup;
 import store.cookshoong.www.cookshoongbackend.order.entity.OrderDetail;
+import store.cookshoong.www.cookshoongbackend.order.entity.OrderDetailMenuOption;
 import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus;
+import store.cookshoong.www.cookshoongbackend.payment.entity.Charge;
 import store.cookshoong.www.cookshoongbackend.payment.entity.ChargeType;
 import store.cookshoong.www.cookshoongbackend.order.entity.Order;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
@@ -176,6 +181,14 @@ public class TestEntity {
         return createTestOrder(account, store, orderStatus);
     }
 
+    public OrderDetail getOrderDetail(Order order, Menu menu, int count) {
+        return new OrderDetail(order, menu, count, "현재메뉴이름", 2_000);
+    }
+
+    public OrderDetailMenuOption getOrderDetailMenuOption(Option option, OrderDetail orderDetail) {
+        return new OrderDetailMenuOption(option, orderDetail, "현재옵션이름", 500);
+    }
+
     public CreateStoreRequestDto getCreateStoreRequestDto(Merchant merchant, BankType bankType){
         return createStoreRequestDto(merchant, bankType);
     }
@@ -183,6 +196,18 @@ public class TestEntity {
     public Menu getMenu(MenuStatus menuStatus, Store store, Image image, BigDecimal bigDecimal) {
         return new Menu(menuStatus, store, "메뉴", 2_000, "메뉴입니다.", image, 10,
             bigDecimal);
+    }
+
+    public OptionGroup getOptionGroup(Store store) {
+        return new OptionGroup(store, "옵션그룹", 0, Integer.MAX_VALUE, false);
+    }
+
+    public Option getOption(OptionGroup optionGroup) {
+        return new Option(optionGroup, "옵션", 1_000, 1, false);
+    }
+
+    public Charge getCharge(ChargeType chargeType, Order order) {
+        return new Charge(chargeType, order, LocalDateTime.now(), 10_000, "paymentKey");
     }
 
     private CreateStoreRequestDto createStoreRequestDto(Merchant merchant, BankType bankType) {
