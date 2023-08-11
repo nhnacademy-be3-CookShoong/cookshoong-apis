@@ -150,9 +150,9 @@ public class Store {
      * @param requestDto   the request dto
      */
     public void modifyStore(BankType bankTypeCode,
-                                UpdateStoreManagerRequestDto requestDto) {
+                            UpdateStoreManagerRequestDto requestDto) {
         this.bankTypeCode = bankTypeCode;
-        this.businessLicenseNumber = requestDto.getBusinessLicenseNumber();
+        this.bankAccountNumber = requestDto.getBankAccount();
         this.representativeName = requestDto.getRepresentativeName();
 
     }
@@ -166,6 +166,7 @@ public class Store {
         this.openingDate = requestDto.getOpeningDate();
         this.name = requestDto.getStoreName();
         this.phoneNumber = requestDto.getPhoneNumber();
+        this.minimumOrderPrice = requestDto.getMinimumOrderPrice();
         this.defaultEarningRate = requestDto.getEarningRate();
         this.description = requestDto.getDescription();
         this.deliveryCost = requestDto.getDeliveryCost();

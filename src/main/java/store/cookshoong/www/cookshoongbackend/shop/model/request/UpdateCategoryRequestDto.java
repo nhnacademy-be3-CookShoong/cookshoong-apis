@@ -1,6 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.shop.model.request;
 
 import java.util.List;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
  * @since 2023.07.13
  */
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UpdateCategoryRequestDto {
-    private List<String> storeCategories;
+    private List<String> updateStoreCategories;
 }

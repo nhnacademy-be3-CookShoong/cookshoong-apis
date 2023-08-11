@@ -33,7 +33,7 @@ public class CartRedisRepository {
     public void cartRedisSave(String redisKey, String hashKey, Object cartRequest) {
 
         redisTemplate.opsForHash().put(redisKey, hashKey, cartRequest);
-        redisTemplate.opsForHash().put(redisKey + PHANTOM, hashKey, null);
+        redisTemplate.opsForHash().put(redisKey + PHANTOM, hashKey, "");
         redisTemplate.expire(redisKey + PHANTOM, 120, TimeUnit.MINUTES);
         redisTemplate.expire(redisKey, 125, TimeUnit.MINUTES);
     }

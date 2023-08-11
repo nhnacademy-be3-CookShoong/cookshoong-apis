@@ -365,4 +365,20 @@ class CouponPolicyRepositoryImplTest {
 
         assertThat(selectProvableStoreCouponPolicyResponses).hasSize(2);
     }
+
+    @Test
+    @DisplayName("매장 이벤트 유효한지 확인 - 수령 가능한 쿠폰 없음")
+    void isOfferCouponInStoreFalseTest() throws Exception {
+        assertThat(couponPolicyRepository.isOfferCouponInStore(store.getId()))
+            .isFalse();
+    }
+
+    @Test
+    @DisplayName("매장 이벤트 유효한지 확인 - 수령 가능한 쿠폰 있음")
+    void isOfferCouponInStoreTest() throws Exception {
+        te.getIssueCoupon(storeCashCouponPolicy);
+
+        assertThat(couponPolicyRepository.isOfferCouponInStore(store.getId()))
+            .isTrue();
+    }
 }

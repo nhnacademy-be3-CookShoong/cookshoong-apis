@@ -2,6 +2,7 @@ package store.cookshoong.www.cookshoongbackend.shop.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.hibernate.validator.internal.util.Contracts.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -12,12 +13,15 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import org.apache.el.util.ReflectionUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,9 +54,13 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.shop.entity.StoreCategory;
 import store.cookshoong.www.cookshoongbackend.shop.entity.StoreStatus;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.DuplicatedBusinessLicenseException;
+import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreStatusNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateStoreRequestDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreInfoRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreManagerRequestDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreStatusRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreCategoriesDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreForUserResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.repository.bank.BankTypeRepository;
@@ -75,7 +83,8 @@ class StoreServiceTest {
     private BankTypeRepository bankTypeRepository;
     @Mock
     private MerchantRepository merchantRepository;
-
+    @Mock
+    private StoreStatusRepository storeStatusRepository;
     @Mock
     private AccountRepository accountRepository;
     @Mock
@@ -94,8 +103,6 @@ class StoreServiceTest {
     private ObjectStorageProperties objectStorageProperties;
     @Mock
     private FileUtils fileUtils;
-    @Mock
-    private StoreStatusRepository storeStatusRepository;
     @Mock
     private ObjectStorageService objectStorageService;
     @Mock
@@ -131,6 +138,19 @@ class StoreServiceTest {
 
         assertThat(result).isEqualTo(selectAllStores);
     }
+    @Test
+    @DisplayName("사장님 매장조회 : 아무 매장이 없는 경우 - empty로 반환")
+    void selectAllStore_fail(){
+        List<SelectAllStoresResponseDto> emptyStoreList = Collections.emptyList();
+
+        when(storeRepository.lookupStores(account.getId())).thenReturn(emptyStoreList);
+
+        List<SelectAllStoresResponseDto> result = storeService.selectAllStores(account.getId());
+
+        verify(storeRepository, times(1)).lookupStores(account.getId());
+
+        assertThat(result).isEqualTo(emptyStoreList);
+    }
 
     @Test
     @DisplayName("사장님 해당 매장 조회 - 성공")
@@ -156,7 +176,8 @@ class StoreServiceTest {
             store.getStoreImage().getSavedName(),
             store.getStoreImage().getLocationType(),
             store.getStoreImage().getDomainName(),
-            store.getDeliveryCost());
+            store.getDeliveryCost(),
+            store.getStoreStatus().getDescription());
         when(storeRepository.findById(store.getId())).thenReturn(Optional.of(store));
         when(fileUtilResolver.getFileService(store.getStoreImage().getLocationType())).thenReturn(objectStorageService);
         when(storeRepository.lookupStore(account.getId(), store.getId())).thenReturn(Optional.of(selectStore));
@@ -180,7 +201,6 @@ class StoreServiceTest {
 
         verify(storeRepository, times(1)).findById(store.getId());
         verify(storeRepository, times(1)).lookupStore(account.getId(), store.getId());
-       // verify(objectStorageService, times(1)).getFullPath(anyString(), anyString());
     }
 
     @Test
@@ -336,14 +356,11 @@ class StoreServiceTest {
 
     @Test
     @DisplayName("매장 정보 수정 - 성공")
-    void updateStore() throws IOException {
+    void updateStore(){
         Store store = tpe.getOpenStoreByOneAccount(account);
-        Address address = te.getAddress();
-        store.modifyAddress(address);
         BankType bankType = te.getBankTypeKb();
         ReflectionTestUtils.setField(store, "id", 1L);
         UpdateStoreManagerRequestDto updateStoreManagerRequestDto = ReflectionUtils.newInstance(UpdateStoreManagerRequestDto.class);
-        ReflectionTestUtils.setField(updateStoreManagerRequestDto, "businessLicenseNumber", store.getBusinessLicenseNumber());
         ReflectionTestUtils.setField(updateStoreManagerRequestDto, "representativeName", store.getRepresentativeName());
         ReflectionTestUtils.setField(updateStoreManagerRequestDto, "bankCode", bankType.getBankTypeCode());
         ReflectionTestUtils.setField(updateStoreManagerRequestDto, "bankAccount", store.getBankAccountNumber());
@@ -360,10 +377,64 @@ class StoreServiceTest {
     }
 
     @Test
+    @DisplayName("매장정보 수정 - 성공")
     void updateStoreCategories() {
+        Store store = tpe.getOpenStoreByOneAccount(account);
+        Address address = te.getAddress();
+        store.modifyAddress(address);
+
+        ReflectionTestUtils.setField(store, "id", 1L);
+        UpdateStoreInfoRequestDto storeInfoRequestDto = ReflectionUtils.newInstance(UpdateStoreInfoRequestDto.class);
+        ReflectionTestUtils.setField(storeInfoRequestDto, "openingDate", LocalDate.parse("2022-02-10"));
+        ReflectionTestUtils.setField(storeInfoRequestDto, "storeName", "엄마네 돼지찌개");
+        ReflectionTestUtils.setField(storeInfoRequestDto, "mainPlace", "광주광역시 동구 용산동");
+        ReflectionTestUtils.setField(storeInfoRequestDto, "detailPlace", "200-1길");
+        ReflectionTestUtils.setField(storeInfoRequestDto, "latitude", new BigDecimal("32.000000000"));
+        ReflectionTestUtils.setField(storeInfoRequestDto,"longitude", new BigDecimal("32.000000000"));
+        ReflectionTestUtils.setField(storeInfoRequestDto, "phoneNumber", "01099890201");
+        ReflectionTestUtils.setField(storeInfoRequestDto, "description", "우리가게 맛집입니다~~");
+        ReflectionTestUtils.setField(storeInfoRequestDto, "earningRate", new BigDecimal("2.2"));
+        ReflectionTestUtils.setField(storeInfoRequestDto, "minimumOrderPrice", 0);
+        ReflectionTestUtils.setField(storeInfoRequestDto, "deliveryCost", 4000);
+
+        when(storeRepository.findById(store.getId())).thenReturn(Optional.of(store));
+        assertThat(store.getAccount().getId()).isEqualTo(account.getId());
+
+        storeService.updateStoreInfo(account.getId(), store.getId(), storeInfoRequestDto);
+
+        verify(storeRepository, times(1)).findById(store.getId());
+
     }
 
     @Test
+    @DisplayName("매장 상태 변경 - 성공")
     void updateStoreStatus() {
+        Store store = tpe.getOpenStoreByOneAccount(account);
+
+        when(storeRepository.findById(store.getId())).thenReturn(Optional.of(store));
+        assertThat(store.getAccount().getId()).isEqualTo(account.getId());
+        assertThat(store.getStoreStatus().getDescription()).isNotEqualTo("폐업");
+        when(storeStatusRepository.findById("CLOSE")).thenReturn(Optional.of(new StoreStatus("CLOSE", "휴식중")));
+
+        storeService.updateStoreStatus(account.getId(), store.getId(), "CLOSE");
+
+        verify(storeRepository, times(1)).findById(store.getId());
+        verify(storeStatusRepository, times(1)).findById(store.getStoreStatus().getCode());
+    }
+
+    @Test
+    @DisplayName("매장 상태 변경 - 실패 : 존재하지 않는 매장 상태 코드 입력")
+    void updateStoreStatus_fail() {
+        Store store = tpe.getOpenStoreByOneAccount(account);
+
+        when(storeRepository.findById(store.getId())).thenReturn(Optional.of(store));
+        assertThat(store.getAccount().getId()).isEqualTo(account.getId());
+        assertThat(store.getStoreStatus().getDescription()).isNotEqualTo("폐업");
+        when(storeStatusRepository.findById("NONE")).thenThrow(StoreStatusNotFoundException.class);
+
+       assertThatThrownBy(
+            () -> storeService.updateStoreStatus(account.getId(), store.getId(), "NONE"))
+           .isInstanceOf(StoreStatusNotFoundException.class);
+        verify(storeRepository, times(1)).findById(store.getId());
     }
 }

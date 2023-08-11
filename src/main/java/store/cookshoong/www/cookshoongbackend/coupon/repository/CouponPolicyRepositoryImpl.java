@@ -15,6 +15,8 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -174,5 +176,22 @@ public class CouponPolicyRepositoryImpl implements CouponPolicyRepositoryCustom 
             .selectFrom(issueCoupon)
             .where(issueCoupon.couponPolicy.eq(couponPolicy), isUnclaimedCouponCount(true))
             .exists();
+    }
+
+    @Override
+    public boolean isOfferCouponInStore(Long storeId) {
+        Object uuid = queryFactory
+            .selectFrom(couponUsageStore)
+
+            .innerJoin(couponPolicy)
+            .on(couponPolicy.couponUsage.id.eq(couponUsageStore.id))
+
+            .innerJoin(issueCoupon)
+            .on(issueCoupon.couponPolicy.id.eq(couponPolicy.id))
+
+            .where(couponUsageStore.store.id.eq(storeId))
+            .fetchFirst();
+
+        return Objects.nonNull(uuid);
     }
 }

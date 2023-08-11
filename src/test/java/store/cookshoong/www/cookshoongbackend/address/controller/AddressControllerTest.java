@@ -154,7 +154,7 @@ class AddressControllerTest {
     void getAccountAddressList() throws Exception {
 
         AccountAddressResponseDto responseDto =
-            new AccountAddressResponseDto(1L, "NHN", "경기도 성남시 분당구 대왕판교로645번길 16");
+            new AccountAddressResponseDto(1L, "NHN", "경기도 성남시 분당구 대왕판교로645번길 16", "1층 삼거리");
 
         List<AccountAddressResponseDto> accountAddresses = Collections.singletonList(responseDto);
 
@@ -165,6 +165,7 @@ class AddressControllerTest {
             .andExpect(jsonPath("$[0].id").value(responseDto.getId()))
             .andExpect(jsonPath("$[0].alias").value(responseDto.getAlias()))
             .andExpect(jsonPath("$[0].mainPlace").value(responseDto.getMainPlace()))
+            .andExpect(jsonPath("$[0].detailPlace").value(responseDto.getDetailPlace()))
             .andDo(document("get-account-address-list",
                 ResourceSnippetParameters.builder()
                     .pathParameters(parameterWithName("accountId").description("회원 아이디"))
@@ -172,7 +173,8 @@ class AddressControllerTest {
                 responseFields(
                     fieldWithPath("[].id").description("주소 아이디"),
                     fieldWithPath("[].alias").description("별칭"),
-                    fieldWithPath("[].mainPlace").description("메인 주소")
+                    fieldWithPath("[].mainPlace").description("메인 주소"),
+                    fieldWithPath("[].detailPlace").description("메인 주소")
                 )));
     }
 

@@ -29,7 +29,6 @@ import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateStoreRequ
 import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateCategoryRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreInfoRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreManagerRequestDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreStatusRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStoresResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectStoreResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.service.StoreService;
@@ -79,7 +78,6 @@ public class BusinessAccountController {
      *
      * @param accountId          the account id
      * @param registerRequestDto 매장 등록을 위한 Request Body
-     * @param bindingResult      validation 결과
      * @param businessLicense    the business license
      * @param image              the image
      * @param storedAt           the stored at
@@ -123,7 +121,7 @@ public class BusinessAccountController {
      * @param bindingResult valid 결과값
      * @return 200 response entity
      */
-    @PatchMapping("/stores/{storeId}")
+    @PatchMapping("/stores/{storeId}/managerInfo")
     public ResponseEntity<Void> patchStore(@PathVariable("storeId") Long storeId,
                                            @PathVariable("accountId") Long accountId,
                                            @RequestBody @Valid UpdateStoreManagerRequestDto requestDto,
@@ -174,7 +172,7 @@ public class BusinessAccountController {
     @PatchMapping("/stores/{storeId}/storeImage")
     public ResponseEntity<Void> patchStore(@PathVariable("storeId") Long storeId,
                                            @PathVariable("accountId") Long accountId,
-                                           @RequestPart("storeImage") MultipartFile storeImage) throws IOException {
+                                           @RequestPart("uploadImage") MultipartFile storeImage) throws IOException {
         storeService.updateStoreImage(accountId, storeId, storeImage);
         return ResponseEntity
             .status(HttpStatus.CREATED)
@@ -184,15 +182,20 @@ public class BusinessAccountController {
     /**
      * 사업자 : 매장 카테고리 수정 컨트롤러.
      *
-     * @param accountId  the account id
-     * @param storeId    the store id
-     * @param requestDto 매장 카테고리 code 리스트
+     * @param accountId     the account id
+     * @param storeId       the store id
+     * @param requestDto    매장 카테고리 code 리스트
+     * @param bindingResult the binding result
      * @return 200 response entity
      */
-    @PatchMapping("/stores/{storeId}/categories")
+    @PatchMapping("/stores/{storeId}/categoryInfo")
     public ResponseEntity<Void> patchStoreCategory(@PathVariable("accountId") Long accountId,
                                                    @PathVariable("storeId") Long storeId,
-                                                   @RequestBody UpdateCategoryRequestDto requestDto) {
+                                                   @RequestBody @Valid UpdateCategoryRequestDto requestDto,
+                                                   BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new StoreValidException(bindingResult);
+        }
         storeService.updateStoreCategories(accountId, storeId, requestDto);
         return ResponseEntity
             .ok()
@@ -202,16 +205,16 @@ public class BusinessAccountController {
     /**
      * 사업자 : 매장 상태 변경 수정에 대한 컨트롤러.
      *
-     * @param accountId  the account id
-     * @param storeId    the store id
-     * @param requestDto the request dto
+     * @param accountId the account id
+     * @param storeId   the store id
+     * @param option    the option
      * @return 200 response entity
      */
     @PatchMapping("/stores/{storeId}/status")
     public ResponseEntity<Void> patchStoreStatus(@PathVariable("accountId") Long accountId,
                                                  @PathVariable("storeId") Long storeId,
-                                                 @RequestBody @Valid UpdateStoreStatusRequestDto requestDto) {
-        storeService.updateStoreStatus(accountId, storeId, requestDto);
+                                                 @RequestParam("option") String option) {
+        storeService.updateStoreStatus(accountId, storeId, option);
         return ResponseEntity
             .ok()
             .build();

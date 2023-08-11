@@ -30,6 +30,8 @@ public class StoreDocumentResponseDto {
     private Boolean isEventOngoing;
     @Setter
     private List<String> categories;
+    @Setter
+    private boolean offerCoupon;
 
     public StoreDocumentResponseDto(Long id, String name, String description, String savedName, String locationType, String domainName, String storeStatus, Integer minimumOrderPrice, Integer minimumCookingTime) {
         this.id = id;
