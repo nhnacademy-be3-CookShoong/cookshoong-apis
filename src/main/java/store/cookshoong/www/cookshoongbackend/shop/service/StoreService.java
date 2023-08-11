@@ -293,14 +293,17 @@ public class StoreService {
         Store store = getStoreById(storeId);
         accessDeniedException(accountId, store);
         Image storeMainImage = imageRepository.findById(store.getStoreImage().getId()).orElseThrow((ImageNotFoundException::new));
-        FileUtils fileUtils = fileUtilResolver.getFileService(storeMainImage.getLocationType());
-        Image updatedImage;
-        if (!store.getStoreImage().getId().equals(BASIC_IMAGE)) {
-            updatedImage = fileUtils.updateFile(storeImage, storeMainImage);
-        } else {
-            updatedImage = fileUtils.storeFile(storeImage, FileDomain.STORE_IMAGE.getVariable(), true);
-        }
+
+        Image updatedImage = updateImage(store.getStoreImage().getId(), storeImage, storeMainImage);
         store.modifyStoreImage(updatedImage);
+    }
+
+    private Image updateImage(Long storeImageId, MultipartFile storeImage, Image storeMainImage) throws IOException {
+        FileUtils fileUtils = fileUtilResolver.getFileService(storeMainImage.getLocationType());
+        if (storeImageId == BASIC_IMAGE) {
+            return fileUtils.updateFile(storeImage, storeMainImage);
+        }
+        return fileUtils.storeFile(storeImage, FileDomain.STORE_IMAGE.getVariable(), true);
     }
 
     /**
@@ -349,6 +352,10 @@ public class StoreService {
     public void deleteStoreImage(Long accountId, Long storeId) throws IOException {
         Store store = getStoreById(storeId);
         accessDeniedException(accountId, store);
+
+        if (store.getStoreImage().getId() == BASIC_IMAGE) {
+            throw new UserAccessDeniedException("삭제할 수 있는 권한이 없습니다.");
+        }
 
         FileUtils fileUtils = fileUtilResolver.getFileService(store.getStoreImage().getLocationType());
         fileUtils.deleteFile(store.getStoreImage());
