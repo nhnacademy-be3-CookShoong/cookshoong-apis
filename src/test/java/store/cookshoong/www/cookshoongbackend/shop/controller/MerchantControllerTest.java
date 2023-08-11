@@ -16,6 +16,7 @@ import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,7 @@ class MerchantControllerTest {
     private MerchantService merchantService;
 
     @Test
+    @DisplayName("관리자 - 가맹점 관리 페이지 조회")
     void getMerchants() throws Exception {
         SelectAllMerchantsResponseDto merchant = new SelectAllMerchantsResponseDto(1L, "네네치킨");
         SelectAllMerchantsResponseDto merchant2 = new SelectAllMerchantsResponseDto(2L, "비비큐");
@@ -106,6 +108,7 @@ class MerchantControllerTest {
     }
 
     @Test
+    @DisplayName("관리자 - 가맹점 등록")
     void postMerchant() throws Exception {
         CreateMerchantRequestDto requestDto = ReflectionUtils.newInstance(CreateMerchantRequestDto.class);
         ReflectionTestUtils.setField(requestDto, "merchantName", "도미노피자");
@@ -125,6 +128,7 @@ class MerchantControllerTest {
     }
 
     @Test
+    @DisplayName("관리자 - 가맹점 수정")
     void patchMerchant() throws Exception {
         UpdateMerchantRequestDto requestDto = ReflectionUtils.newInstance(UpdateMerchantRequestDto.class);
         ReflectionTestUtils.setField(requestDto, "merchantName", "BHC치킨");
@@ -147,6 +151,7 @@ class MerchantControllerTest {
     }
 
     @Test
+    @DisplayName("관리자 - 가맹점 삭제")
     void deleteStore() throws Exception {
         RequestBuilder requestBuilder = RestDocumentationRequestBuilders
             .delete("/api/admin/merchants/{merchantId}", 1L)
