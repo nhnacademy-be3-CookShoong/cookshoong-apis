@@ -20,8 +20,11 @@ import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponLogTypeRep
 import store.cookshoong.www.cookshoongbackend.coupon.repository.IssueCouponRepository;
 import store.cookshoong.www.cookshoongbackend.lock.LockProcessor;
 import store.cookshoong.www.cookshoongbackend.order.entity.Order;
+import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus;
 import store.cookshoong.www.cookshoongbackend.order.exception.OrderNotFoundException;
+import store.cookshoong.www.cookshoongbackend.order.exception.OrderStatusNotFoundException;
 import store.cookshoong.www.cookshoongbackend.order.repository.OrderRepository;
+import store.cookshoong.www.cookshoongbackend.order.repository.OrderStatusRepository;
 import store.cookshoong.www.cookshoongbackend.payment.entity.Charge;
 import store.cookshoong.www.cookshoongbackend.payment.entity.ChargeType;
 import store.cookshoong.www.cookshoongbackend.payment.entity.Refund;
@@ -57,6 +60,7 @@ public class PaymentService {
     private final CouponLogRepository couponLogRepository;
     private final CouponLogTypeRepository couponLogTypeRepository;
     private final LockProcessor lockProcessor;
+    private final OrderStatusRepository orderStatusRepository;
 
     /**
      * 결제 승인 후 결제가 완료되고나서 결제 정보를 DB 에 저장하는 메서드.
@@ -65,8 +69,13 @@ public class PaymentService {
      */
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public void createPayment(CreatePaymentDto createPaymentDto) {
-        Order order =
-            orderRepository.findById(createPaymentDto.getOrderId()).orElseThrow(OrderNotFoundException::new);
+        Order order = orderRepository.findById(createPaymentDto.getOrderId())
+                .orElseThrow(OrderNotFoundException::new);
+
+        OrderStatus orderStatus = orderStatusRepository.findByOrderStatusCode(OrderStatus.StatusCode.PAY)
+            .orElseThrow(OrderStatusNotFoundException::new);
+
+        order.updateOrderStatus(orderStatus);
 
         if (Objects.nonNull(createPaymentDto.getCouponCode())) {
             useCoupon(createPaymentDto, order);

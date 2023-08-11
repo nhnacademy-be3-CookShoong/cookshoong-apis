@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.order.repository;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus;
 
@@ -10,4 +11,7 @@ import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus;
  * @since 2023.07.17
  */
 public interface OrderStatusRepository extends JpaRepository<OrderStatus, String> {
+    default Optional<OrderStatus> findByOrderStatusCode(OrderStatus.StatusCode orderStatusCode) {
+        return findById(orderStatusCode.name());
+    }
 }

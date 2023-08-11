@@ -7,11 +7,12 @@ import java.util.Objects;
 import java.util.UUID;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,8 +28,8 @@ import store.cookshoong.www.cookshoongbackend.order.exception.OutOfDistanceExcep
 import store.cookshoong.www.cookshoongbackend.order.model.request.CreateOrderRequestDto;
 import store.cookshoong.www.cookshoongbackend.order.model.request.PatchOrderRequestDto;
 import store.cookshoong.www.cookshoongbackend.order.model.response.CreateOrderResponseDto;
+import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderInStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.order.service.OrderService;
-import store.cookshoong.www.cookshoongbackend.point.model.event.PointOrderCompleteEvent;
 import store.cookshoong.www.cookshoongbackend.point.service.PointService;
 import store.cookshoong.www.cookshoongbackend.shop.service.StoreService;
 
@@ -47,7 +48,6 @@ public class OrderController {
     private final ProvideCouponService provideCouponService;
     private final AddressService addressService;
     private final StoreService storeService;
-    private final ApplicationEventPublisher publisher;
     private final PointService pointService;
 
     /**
@@ -138,11 +138,12 @@ public class OrderController {
         OrderStatus.StatusCode statusCode = patchOrderRequestDto.getStatusCode();
         orderService.changeStatus(patchOrderRequestDto.getOrderCode(), statusCode);
 
-        if (statusCode == OrderStatus.StatusCode.COMPLETE) {
-            publisher.publishEvent(new PointOrderCompleteEvent(this, patchOrderRequestDto.getOrderCode()));
-        }
-
         return ResponseEntity.noContent()
             .build();
+    }
+
+    @GetMapping("/{storeId}")
+    public ResponseEntity<List<LookupOrderInStatusResponseDto>> getOrderInProgress(@PathVariable Long storeId) {
+        return ResponseEntity.ok(orderService.lookupOrderInProgress(storeId));
     }
 }

@@ -1,5 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.order.entity;
 
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -31,5 +33,17 @@ public class OrderStatus {
      */
     public enum StatusCode {
         CREATE, PAY, CANCEL, COOKING, FOOD_OUT, ORD_FLOOD, DELIVER, COMPLETE, PARTIAL;
+
+        /**
+         * Gets status code string.
+         *
+         * @param statusCodes the status codes
+         * @return the status code string
+         */
+        public static Set<String> getStatusCodeString(Set<StatusCode> statusCodes) {
+            return statusCodes.stream()
+                .map(StatusCode::name)
+                .collect(Collectors.toSet());
+        }
     }
 }

@@ -10,5 +10,5 @@ import store.cookshoong.www.cookshoongbackend.order.entity.Order;
  * @author seungyeon (유승연)
  * @since 2023.07.17
  */
-public interface OrderRepository extends JpaRepository<Order, UUID> {
+public interface OrderRepository extends JpaRepository<Order, UUID>, OrderRepositoryCustom {
 }
