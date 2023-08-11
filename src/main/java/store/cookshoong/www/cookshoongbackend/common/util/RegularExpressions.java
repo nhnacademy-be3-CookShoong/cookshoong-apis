@@ -30,7 +30,6 @@ public class RegularExpressions {
     // 문자(영어_대문자)만 허용 (공백X)
     public static final String ENGLISH_UPPER_ONLY = "^[A-Z]+$";
 
-    public static final String KOREAN_WITH_BLANK = "^[가-힣\\s]+$";
 }
 
 
