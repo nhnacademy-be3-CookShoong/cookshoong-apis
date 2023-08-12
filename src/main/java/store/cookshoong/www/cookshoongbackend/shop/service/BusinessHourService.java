@@ -131,7 +131,9 @@ public class BusinessHourService {
             return store;
         }
         String status = StoreStatus.StoreStatusCode.BREAK_TIME.name();
-        if (businessHourRepository.lookupBusinessHourByDayCode(storeId, LocalDate.now().getDayOfWeek().name().substring(0, 3), LocalTime.now())) {
+        if (businessHourRepository.lookupBusinessHourByDayCode(storeId,
+            LocalDate.now().getDayOfWeek().name().substring(0, 3),
+            LocalTime.now())) {
             status = StoreStatus.StoreStatusCode.OPEN.name();
         }
 
