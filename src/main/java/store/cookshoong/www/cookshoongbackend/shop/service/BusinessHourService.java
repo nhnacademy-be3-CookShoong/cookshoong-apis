@@ -1,5 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.shop.service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -8,6 +10,7 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.BusinessHour;
 import store.cookshoong.www.cookshoongbackend.shop.entity.DayType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Holiday;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
+import store.cookshoong.www.cookshoongbackend.shop.entity.StoreStatus;
 import store.cookshoong.www.cookshoongbackend.shop.exception.businesshour.DayTypeNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateBusinessHourRequestDto;
@@ -17,6 +20,7 @@ import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectHolidayR
 import store.cookshoong.www.cookshoongbackend.shop.repository.businesshour.BusinessHourRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.businesshour.DayTypeRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.businesshour.HolidayRepository;
+import store.cookshoong.www.cookshoongbackend.shop.repository.stauts.StoreStatusRepository;
 import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreRepository;
 
 /**
@@ -24,6 +28,7 @@ import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreReposit
  * 휴업일 추가, 휴업일 삭제, 영업시간 추가, 영업시간 삭제.
  *
  * @author papel (윤동현)
+ * @contributor seungyeon (유승연)
  * @since 2023.07.07
  */
 @Service
@@ -37,6 +42,7 @@ public class BusinessHourService {
     private final DayTypeRepository dayTypeRepository;
 
     private final StoreRepository storeRepository;
+    private final StoreStatusRepository storeStatusRepository;
 
     /**
      * 영업시간 생성을 위한 서비스 구현.
@@ -74,7 +80,7 @@ public class BusinessHourService {
     /**
      * 영업시간 리스트 조회를 위한 서비스 구현.
      *
-     * @param storeId  매장 아이디
+     * @param storeId 매장 아이디
      * @return 영업시간 리스트
      */
     @Transactional(readOnly = true)
@@ -85,7 +91,7 @@ public class BusinessHourService {
     /**
      * 휴업일 리스트 조회를 위한 서비스 구현.
      *
-     * @param storeId  매장 아이디
+     * @param storeId 매장 아이디
      * @return 휴업일 리스트
      */
     @Transactional(readOnly = true)
@@ -111,4 +117,30 @@ public class BusinessHourService {
         businessHourRepository.deleteById(businessHourId);
     }
 
+    /**
+     * 휴무일과 영업시간을 기준으로 매장 상태 변경하기.
+     *
+     * @param storeId the store id
+     * @return the boolean
+     */
+    public Store updateStoreStatusByTimer(Long storeId) { // 처음에 이걸 가져다 쓸 때 CLOSE가 아닐 때 해당 메소드가 실행이 되도록 조건을 걸어주세요.
+        Store store = getStoreById(storeId);
+
+        if (holidayRepository.lookupHolidayByStoreId(storeId, LocalDate.now())) {
+            store.modifyStoreStatus(storeStatusRepository.getReferenceById(StoreStatus.StoreStatusCode.BREAK_TIME.name()));
+            return store;
+        }
+        String status = StoreStatus.StoreStatusCode.BREAK_TIME.name();
+        if (businessHourRepository.lookupBusinessHourByDayCode(storeId, LocalDate.now().getDayOfWeek().name().substring(0, 3), LocalTime.now())) {
+            status = StoreStatus.StoreStatusCode.OPEN.name();
+        }
+
+        store.modifyStoreStatus(storeStatusRepository.getReferenceById(status));
+        return store;
+    }
+
+    private Store getStoreById(Long storeId) {
+        return storeRepository.findById(storeId)
+            .orElseThrow(StoreNotFoundException::new);
+    }
 }
