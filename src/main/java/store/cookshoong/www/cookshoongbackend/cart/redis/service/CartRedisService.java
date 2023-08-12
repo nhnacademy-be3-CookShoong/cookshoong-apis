@@ -353,8 +353,10 @@ public class CartRedisService {
 
             CartRedisDto cartRedisDto =
                 new CartRedisDto(cartResponseDto.getAccountId(), cartResponseDto.getStoreId(),
-                    cartResponseDto.getName(), cartMenuRedisDto, cartOptionRedisDtos,
-                    cartMenuResponseDto.getCreateTimeMillis(), null, cartMenuResponseDto.getCount(), null, null);
+                    cartResponseDto.getName(), cartResponseDto.getDeliveryCost(),
+                    cartResponseDto.getMinimumOrderPrice(), cartMenuRedisDto, cartOptionRedisDtos,
+                    cartMenuResponseDto.getCreateTimeMillis(), null,
+                    cartMenuResponseDto.getCount(), null, null);
 
             cartRedisDto.setHashKey(cartRedisDto.generateUniqueHashKey());
             cartRedisDto.setMenuOptName(cartRedisDto.generateMenuOptionName());

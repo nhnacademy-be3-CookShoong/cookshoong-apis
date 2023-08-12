@@ -165,6 +165,8 @@ class CartRepositoryImplTest {
         assertEquals(carts.get(0).getAccountId(), account.getId());
         assertEquals(carts.get(0).getStoreId(), store.getId());
         assertEquals(carts.get(0).getName(), store.getName());
+        assertEquals(carts.get(0).getDeliveryCost(), store.getDeliveryCost());
+        assertEquals(carts.get(0).getMinimumOrderPrice(), store.getMinimumOrderPrice());
         assertEquals(carts.get(0).getCartMenuResponseDto().getMenuId(), menu.getId());
         assertEquals(carts.get(0).getCartMenuResponseDto().getPrice(), menu.getPrice());
         assertEquals(carts.get(0).getCartMenuResponseDto().getSavedName(), menuImage.getSavedName());
