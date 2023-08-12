@@ -123,7 +123,7 @@ public class BusinessHourService {
      * @param storeId the store id
      * @return the boolean
      */
-    public Store updateStoreStatusByTimer(Long storeId) { // 처음에 이걸 가져다 쓸 때 CLOSE가 아닐 때 해당 메소드가 실행이 되도록 조건을 걸어주세요.
+    public Store updateStoreStatusByTimer(Long storeId) {
         Store store = getStoreById(storeId);
 
         if (holidayRepository.lookupHolidayByStoreId(storeId, LocalDate.now())) {
