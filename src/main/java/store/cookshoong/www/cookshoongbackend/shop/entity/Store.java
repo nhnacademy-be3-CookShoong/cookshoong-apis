@@ -95,8 +95,10 @@ public class Store {
 
     @Column(name = "bank_account_number", nullable = false, length = 20)
     private String bankAccountNumber;
+
     @Column(name = "minimum_order_price", nullable = false)
     private Integer minimumOrderPrice;
+
     @Column(name = "delivery_cost")
     private Integer deliveryCost;
 
