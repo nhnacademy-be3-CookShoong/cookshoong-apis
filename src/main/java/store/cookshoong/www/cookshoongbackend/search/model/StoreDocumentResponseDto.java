@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.search.model;
 
+import java.time.LocalTime;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +20,7 @@ public class StoreDocumentResponseDto {
     private String savedName;
     private String locationType;
     private String domainName;
+    @Setter
     private String storeStatus;
     private Integer minimumOrderPrice;
     private Integer minimumCookingTime;
@@ -33,7 +35,10 @@ public class StoreDocumentResponseDto {
     @Setter
     private boolean offerCoupon;
 
-    public StoreDocumentResponseDto(Long id, String name, String description, String savedName, String locationType, String domainName, String storeStatus, Integer minimumOrderPrice, Integer minimumCookingTime) {
+
+    public StoreDocumentResponseDto(Long id, String name, String description, String savedName,
+                                    String locationType, String domainName, String storeStatus,
+                                    Integer minimumOrderPrice, Integer minimumCookingTime) {
         this.id = id;
         this.name = name;
         this.description = description;
