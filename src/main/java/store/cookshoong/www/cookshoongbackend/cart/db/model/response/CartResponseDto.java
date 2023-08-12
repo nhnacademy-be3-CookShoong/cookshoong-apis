@@ -1,6 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.cart.db.model.response;
 
 import java.util.List;
+import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,8 @@ public class CartResponseDto {
     private Long accountId;
     private Long storeId;
     private String name;
+    private Integer deliveryCost;
+    private Integer minimumOrderPrice;
     private CartMenuResponseDto cartMenuResponseDto;
     private List<CartOptionResponseDto> cartOptionResponseDto;
 }
