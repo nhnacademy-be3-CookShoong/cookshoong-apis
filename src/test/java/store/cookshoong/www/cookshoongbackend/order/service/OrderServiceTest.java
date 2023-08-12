@@ -101,7 +101,7 @@ class OrderServiceTest {
         ReflectionTestUtils.setField(createOrderRequestDto, "pointAmount", 100);
 
         cartItems = List.of(
-            new CartRedisDto(accountId, storeId, "주호타코",
+            new CartRedisDto(accountId, storeId, "주호타코", 3000, 10000,
                 new CartMenuDto(1L, "타코야끼", null, 4_000, LocationType.OBJECT_S.getVariable(), FileDomain.MENU_IMAGE.getVariable()),
                 List.of(new CartOptionDto(2L, "가쓰오부시 추가", 500)),
                 100L, "hashKey", 2, "타코야끼 : 가쓰오부시 추가",

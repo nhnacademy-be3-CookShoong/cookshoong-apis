@@ -46,6 +46,8 @@ class CartRedisRepositoryTest extends IntegrationTestBase {
     Long accountId = 1L;
     Long storeId = 2L;
     String storeName = "네네치킨";
+    Integer deliveryCost = 3000;
+    Integer minimumOrderPrice = 10000;
     Long menuId = 1L;
     int count = 1;
     private static final String NO_MENU = "NO_KEY";
@@ -81,6 +83,8 @@ class CartRedisRepositoryTest extends IntegrationTestBase {
         ReflectionTestUtils.setField(cartRedisDto, "accountId", accountId);
         ReflectionTestUtils.setField(cartRedisDto, "storeId", storeId);
         ReflectionTestUtils.setField(cartRedisDto, "storeName", storeName);
+        ReflectionTestUtils.setField(cartRedisDto, "deliveryCost", deliveryCost);
+        ReflectionTestUtils.setField(cartRedisDto, "minimumOrderPrice", minimumOrderPrice);
         ReflectionTestUtils.setField(cartRedisDto, "menu", cartMenuDto);
         ReflectionTestUtils.setField(cartRedisDto, "options", cartOptionDtos);
         ReflectionTestUtils.setField(cartRedisDto, "createTimeMillis", System.currentTimeMillis());
@@ -177,6 +181,8 @@ class CartRedisRepositoryTest extends IntegrationTestBase {
         ReflectionTestUtils.setField(cartRedisDto, "accountId", accountId);
         ReflectionTestUtils.setField(cartRedisDto, "storeId", storeId);
         ReflectionTestUtils.setField(cartRedisDto, "storeName", storeName);
+        ReflectionTestUtils.setField(cartRedisDto, "deliveryCost", deliveryCost);
+        ReflectionTestUtils.setField(cartRedisDto, "minimumOrderPrice", minimumOrderPrice);
         ReflectionTestUtils.setField(cartRedisDto, "menu", cartMenuDto);
         ReflectionTestUtils.setField(cartRedisDto, "options", cartOptionDtos);
 

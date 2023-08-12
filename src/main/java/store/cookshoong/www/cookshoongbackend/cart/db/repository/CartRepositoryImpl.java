@@ -92,6 +92,8 @@ public class CartRepositoryImpl implements CartRepositoryCustom {
                     account.id,
                     cart.store.id,
                     cart.store.name,
+                    cart.store.deliveryCost,
+                    cart.store.minimumOrderPrice,
                     constructor(
                         CartMenuResponseDto.class,
                         menu.id,

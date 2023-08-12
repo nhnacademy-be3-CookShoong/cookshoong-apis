@@ -66,6 +66,8 @@ class CartRedisControllerTest {
     Long accountId = 1L;
     Long storeId = 1L;
     String storeName = "네네치킨";
+    Integer deliveryCost = 3000;
+    Integer minimumOrderPrice = 10000;
     Long menuId = 1L;
     int count = 1;
     CartMenuDto cartMenuDto;
@@ -105,6 +107,8 @@ class CartRedisControllerTest {
         ReflectionTestUtils.setField(cartRedisDto, "accountId", accountId);
         ReflectionTestUtils.setField(cartRedisDto, "storeId", storeId);
         ReflectionTestUtils.setField(cartRedisDto, "storeName", storeName);
+        ReflectionTestUtils.setField(cartRedisDto, "deliveryCost", deliveryCost);
+        ReflectionTestUtils.setField(cartRedisDto, "minimumOrderPrice", minimumOrderPrice);
         ReflectionTestUtils.setField(cartRedisDto, "menu", cartMenuDto);
         ReflectionTestUtils.setField(cartRedisDto, "options", cartOptionDtos);
         ReflectionTestUtils.setField(cartRedisDto, "createTimeMillis", System.currentTimeMillis());
@@ -131,6 +135,8 @@ class CartRedisControllerTest {
                     fieldWithPath("accountId").description("회원아이디"),
                     fieldWithPath("storeId").description("매장아이디"),
                     fieldWithPath("storeName").description("매장이름"),
+                    fieldWithPath("deliveryCost").description("배달비"),
+                    fieldWithPath("minimumOrderPrice").description("배달최소비용"),
                     fieldWithPath("menu.menuId").description("메뉴아이디"),
                     fieldWithPath("menu.menuName").description("메뉴이름"),
                     fieldWithPath("menu.menuImage").description("메뉴이미지"),
@@ -212,6 +218,8 @@ class CartRedisControllerTest {
         ReflectionTestUtils.setField(cartRedisDto2, "accountId", accountId);
         ReflectionTestUtils.setField(cartRedisDto2, "storeId", storeId);
         ReflectionTestUtils.setField(cartRedisDto2, "storeName", storeName);
+        ReflectionTestUtils.setField(cartRedisDto2, "deliveryCost", deliveryCost);
+        ReflectionTestUtils.setField(cartRedisDto2, "minimumOrderPrice", minimumOrderPrice);
         ReflectionTestUtils.setField(cartRedisDto2, "menu", cartMenuDto);
         ReflectionTestUtils.setField(cartRedisDto2, "options", cartOptions);
         ReflectionTestUtils.setField(cartRedisDto2, "createTimeMillis", System.currentTimeMillis());
@@ -233,6 +241,8 @@ class CartRedisControllerTest {
                     fieldWithPath("accountId").description("회원아이디"),
                     fieldWithPath("storeId").description("매장아이디"),
                     fieldWithPath("storeName").description("매장이름"),
+                    fieldWithPath("deliveryCost").description("배달비"),
+                    fieldWithPath("minimumOrderPrice").description("배달최소비용"),
                     fieldWithPath("menu.menuId").description("메뉴아이디"),
                     fieldWithPath("menu.menuName").description("메뉴이름"),
                     fieldWithPath("menu.menuImage").description("메뉴이미지"),
@@ -305,6 +315,8 @@ class CartRedisControllerTest {
             .andExpect(jsonPath("$[0].accountId").value(cartRedisDto.getAccountId()))
             .andExpect(jsonPath("$[0].storeId").value(cartRedisDto.getStoreId()))
             .andExpect(jsonPath("$[0].storeName").value(cartRedisDto.getStoreName()))
+            .andExpect(jsonPath("$[0].deliveryCost").value(cartRedisDto.getDeliveryCost()))
+            .andExpect(jsonPath("$[0].minimumOrderPrice").value(cartRedisDto.getMinimumOrderPrice()))
             .andExpect(jsonPath("$[0].menu.menuId").value(cartRedisDto.getMenu().getMenuId()))
             .andExpect(jsonPath("$[0].menu.menuName").value(cartRedisDto.getMenu().getMenuName()))
             .andExpect(jsonPath("$[0].menu.menuImage").value(cartRedisDto.getMenu().getMenuImage()))
@@ -327,6 +339,8 @@ class CartRedisControllerTest {
                 fieldWithPath("[].accountId").description("회원아이디"),
                 fieldWithPath("[].storeId").description("매장아이디"),
                 fieldWithPath("[].storeName").description("매장이름"),
+                fieldWithPath("[].deliveryCost").description("배달비"),
+                fieldWithPath("[].minimumOrderPrice").description("배달최소비용"),
                 fieldWithPath("[].menu.menuId").description("메뉴아이디"),
                 fieldWithPath("[].menu.menuName").description("메뉴이름"),
                 fieldWithPath("[].menu.menuImage").description("메뉴이미지"),
@@ -355,6 +369,8 @@ class CartRedisControllerTest {
             .andExpect(jsonPath("$.accountId").value(cartRedisDto.getAccountId()))
             .andExpect(jsonPath("$.storeId").value(cartRedisDto.getStoreId()))
             .andExpect(jsonPath("$.storeName").value(cartRedisDto.getStoreName()))
+            .andExpect(jsonPath("$.deliveryCost").value(cartRedisDto.getDeliveryCost()))
+            .andExpect(jsonPath("$.minimumOrderPrice").value(cartRedisDto.getMinimumOrderPrice()))
             .andExpect(jsonPath("$.menu.menuId").value(cartRedisDto.getMenu().getMenuId()))
             .andExpect(jsonPath("$.menu.menuName").value(cartRedisDto.getMenu().getMenuName()))
             .andExpect(jsonPath("$.menu.menuImage").value(cartRedisDto.getMenu().getMenuImage()))
@@ -378,6 +394,8 @@ class CartRedisControllerTest {
                     fieldWithPath("accountId").description("회원아이디"),
                     fieldWithPath("storeId").description("매장아이디"),
                     fieldWithPath("storeName").description("매장이름"),
+                    fieldWithPath("deliveryCost").description("배달비"),
+                    fieldWithPath("minimumOrderPrice").description("배달최소비용"),
                     fieldWithPath("menu.menuId").description("메뉴아이디"),
                     fieldWithPath("menu.menuName").description("메뉴이름"),
                     fieldWithPath("menu.menuImage").description("메뉴이미지"),
