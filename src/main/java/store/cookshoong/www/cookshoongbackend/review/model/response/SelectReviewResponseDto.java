@@ -3,6 +3,7 @@ package store.cookshoong.www.cookshoongbackend.review.model.response;
 import com.querydsl.core.annotations.QueryProjection;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.Getter;
 import lombok.Setter;
 
 /**
@@ -11,6 +12,7 @@ import lombok.Setter;
  * @author seungyeon
  * @since 2023.08.13
  */
+@Getter
 public class SelectReviewResponseDto {
     private final Long storeId;
     private final String storeName;
@@ -22,7 +24,8 @@ public class SelectReviewResponseDto {
     private final Integer rating;
     private final LocalDateTime writtenAt;
     private final LocalDateTime updatedAt;
-    private final List<SelectReviewImageResponseDto> imageResponseDtos;
+    @Setter
+    private List<SelectReviewImageResponseDto> imageResponseDtos;
     private final List<SelectReviewOrderMenuResponseDto> menuResponseDtos;
     private final List<SelectBusinessReviewResponseDto> replyResponseDtos;
 
@@ -43,7 +46,7 @@ public class SelectReviewResponseDto {
     @QueryProjection
     public SelectReviewResponseDto(Long storeId, String storeName, String storeImageName, String storeImageLocationType,
                                    String storeImageDomainName, String contents, Integer rating, LocalDateTime writtenAt, LocalDateTime updatedAt,
-                                   List<SelectReviewImageResponseDto> imageResponseDtos, List<SelectReviewOrderMenuResponseDto> menuResponseDtos,
+                                   List<SelectReviewOrderMenuResponseDto> menuResponseDtos,
                                    List<SelectBusinessReviewResponseDto> replyResponseDtos) {
         this.storeId = storeId;
         this.storeName = storeName;
@@ -54,7 +57,6 @@ public class SelectReviewResponseDto {
         this.rating = rating;
         this.writtenAt = writtenAt;
         this.updatedAt = updatedAt;
-        this.imageResponseDtos = imageResponseDtos;
         this.menuResponseDtos = menuResponseDtos;
         this.replyResponseDtos = replyResponseDtos;
     }

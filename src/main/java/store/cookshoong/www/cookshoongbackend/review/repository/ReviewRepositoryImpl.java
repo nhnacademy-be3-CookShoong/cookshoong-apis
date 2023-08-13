@@ -7,7 +7,6 @@ import static store.cookshoong.www.cookshoongbackend.file.entity.QImage.image;
 import static store.cookshoong.www.cookshoongbackend.order.entity.QOrder.order;
 import static store.cookshoong.www.cookshoongbackend.order.entity.QOrderDetail.orderDetail;
 import static store.cookshoong.www.cookshoongbackend.review.entity.QReview.review;
-import static store.cookshoong.www.cookshoongbackend.review.entity.QReviewHasImage.reviewHasImage;
 import static store.cookshoong.www.cookshoongbackend.review.entity.QReviewReply.reviewReply;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -27,6 +26,7 @@ import store.cookshoong.www.cookshoongbackend.review.model.response.QSelectBusin
 import store.cookshoong.www.cookshoongbackend.review.model.response.QSelectReviewImageResponseDto;
 import store.cookshoong.www.cookshoongbackend.review.model.response.QSelectReviewOrderMenuResponseDto;
 import store.cookshoong.www.cookshoongbackend.review.model.response.QSelectReviewResponseDto;
+import store.cookshoong.www.cookshoongbackend.review.model.response.SelectReviewImageResponseDto;
 import store.cookshoong.www.cookshoongbackend.review.model.response.SelectReviewResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QStore;
 
@@ -45,8 +45,27 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
     @Override
     public Page<SelectReviewResponseDto> lookupReviewByAccount(Long accountId, Pageable pageable) {
         List<SelectReviewResponseDto> responseDtos = lookupReviews(accountId, pageable);
+
         Long total = lookupTotal(accountId);
         return new PageImpl<>(responseDtos, pageable, total);
+    }
+
+    @Override
+    public List<SelectReviewImageResponseDto> lookupReviewImages(Long accountId, Pageable pageable) {
+        QReview review = QReview.review;
+        QReviewHasImage reviewHasImage = QReviewHasImage.reviewHasImage;
+
+        return jpaQueryFactory
+            .select(new QSelectReviewImageResponseDto(
+                reviewHasImage.image.savedName, reviewHasImage.image.locationType, reviewHasImage.image.domainName))
+            .from(review)
+            .leftJoin(reviewHasImage)
+            .on(reviewHasImage.review.eq(review))
+            .where(review.orderCode.account.id.eq(accountId))
+            .orderBy(review.writtenAt.desc())
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
     }
 
     private List<SelectReviewResponseDto> lookupReviews(Long accountId, Pageable pageable) {
@@ -65,12 +84,10 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
             .innerJoin(order)
             .on(order.store.eq(store))
 
-            .leftJoin(review.reviewHasImages, reviewHasImage)
+            .leftJoin(image)
+            .on(review.orderCode.store.storeImage.eq(image))
 
-            .leftJoin(reviewHasImage)
-            .on(reviewHasImage.image.eq(image))
-
-            .leftJoin(review)
+            .leftJoin(reviewReply)
             .on(reviewReply.review.eq(review))
             .where(account.id.eq(accountId))
             .orderBy(review.writtenAt.desc())
@@ -81,8 +98,6 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                     .list(new QSelectReviewResponseDto(review.orderCode.store.id, review.orderCode.store.name,
                             review.orderCode.store.storeImage.savedName, review.orderCode.store.storeImage.locationType,
                             review.orderCode.store.storeImage.domainName, review.contents, review.rating, review.writtenAt, review.updatedAt,
-                            list(new QSelectReviewImageResponseDto(
-                                reviewHasImage.image.savedName, reviewHasImage.image.locationType, reviewHasImage.image.domainName)),
                             list(new QSelectReviewOrderMenuResponseDto(orderDetail.menu.id, orderDetail.nowName)),
                             list(new QSelectBusinessReviewResponseDto(reviewReply.contents, reviewReply.writtenAt))
                         )

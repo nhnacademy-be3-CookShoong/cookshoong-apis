@@ -1,8 +1,10 @@
 package store.cookshoong.www.cookshoongbackend.review.repository;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;
+import store.cookshoong.www.cookshoongbackend.review.model.response.SelectReviewImageResponseDto;
 import store.cookshoong.www.cookshoongbackend.review.model.response.SelectReviewResponseDto;
 
 /**
@@ -14,4 +16,5 @@ import store.cookshoong.www.cookshoongbackend.review.model.response.SelectReview
 @NoRepositoryBean
 public interface ReviewRepositoryCustom {
     Page<SelectReviewResponseDto> lookupReviewByAccount(Long accountId, Pageable pageable);
+    List<SelectReviewImageResponseDto> lookupReviewImages(Long accountId, Pageable pageable);
 }
