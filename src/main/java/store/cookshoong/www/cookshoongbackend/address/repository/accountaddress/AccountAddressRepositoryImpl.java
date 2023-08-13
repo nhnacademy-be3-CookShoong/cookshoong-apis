@@ -34,6 +34,7 @@ public class AccountAddressRepositoryImpl implements AccountAddressRepositoryCus
             .from(accountAddress)
             .innerJoin(accountAddress.address, address)
             .where(accountAddress.pk.accountId.eq(accountId))
+            .orderBy(accountAddress.renewalAt.desc())
             .fetch();
     }
 
