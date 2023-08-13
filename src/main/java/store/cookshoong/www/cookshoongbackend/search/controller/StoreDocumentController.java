@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,6 +14,7 @@ import store.cookshoong.www.cookshoongbackend.file.service.FileUtilResolver;
 import store.cookshoong.www.cookshoongbackend.file.service.FileUtils;
 import store.cookshoong.www.cookshoongbackend.search.model.StoreDocumentResponseDto;
 import store.cookshoong.www.cookshoongbackend.search.service.StoreDocumentService;
+import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.shop.entity.StoreStatus;
 import store.cookshoong.www.cookshoongbackend.shop.service.BusinessHourService;
 import store.cookshoong.www.cookshoongbackend.shop.service.StoreCategoryService;
@@ -76,7 +78,8 @@ public class StoreDocumentController {
     private void updateStoreInfo(Page<StoreDocumentResponseDto> storeResponses) {
         for (StoreDocumentResponseDto s : storeResponses) {
             if (!s.getStoreStatus().equals(StoreStatus.StoreStatusCode.CLOSE.name())) {
-                businessHourService.updateStoreStatusByTimer(s.getId());
+                Store newStore = businessHourService.updateStoreStatusByTimer(s.getId());
+                s.setStoreStatus(newStore.getStoreStatus().getCode());
             }
             FileUtils fileUtils = fileUtilResolver.getFileService(s.getLocationType());
             s.setSavedName(fileUtils.getFullPath(s.getDomainName(), s.getSavedName()));
