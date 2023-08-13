@@ -32,7 +32,7 @@ public abstract class CouponType {
     public abstract Integer getMinimumOrderPrice();
 
     public int getDiscountPrice(int totalPrice) {
-        return Math.max(0, totalPrice - getDiscountPrice(totalPrice));
+        return Math.max(0, totalPrice - getDiscountAmount(totalPrice));
     }
 
     public abstract int getDiscountAmount(int totalPrice);
