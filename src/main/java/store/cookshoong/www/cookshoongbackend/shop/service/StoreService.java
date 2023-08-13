@@ -422,7 +422,7 @@ public class StoreService {
 
     private boolean isInStandardDistance(BigDecimal x1, BigDecimal y1, BigDecimal x2, BigDecimal y2) {
         BigDecimal storeDistance = calculateDistance(x1, y1, x2, y2);
-        return storeDistance.compareTo(DISTANCE) <= 0;
+        return storeDistance.compareTo(DISTANCE) >= 0;
     }
 
     private BigDecimal calculateDistance(BigDecimal x1, BigDecimal y1, BigDecimal x2, BigDecimal y2) {
