@@ -74,20 +74,26 @@ public class ReviewService {
         reviewRepository.save(review);
     }
 
+    /**
+     * 사용자 리뷰 목록 페이지로 조회.
+     *
+     * @param accountId the account id
+     * @param pageable  the pageable
+     * @return the page
+     */
     @Transactional(readOnly = true)
     public Page<SelectReviewResponseDto> selectReviewByAccount(Long accountId, Pageable pageable) {
         Page<SelectReviewResponseDto> responseDtos = reviewRepository.lookupReviewByAccount(accountId, pageable);
-        List<SelectReviewImageResponseDto> reviewImageDtos = reviewRepository.lookupReviewImages(accountId, pageable);
-        for (SelectReviewImageResponseDto dto : reviewImageDtos) {
-            if (Objects.nonNull(dto.getLocationType())) {
-                FileUtils fileUtils = fileUtilResolver.getFileService(dto.getLocationType());
-                dto.setSavedName(fileUtils.getFullPath(dto.getDomainName(), dto.getSavedName()));
-            }
-        }
+
         for (SelectReviewResponseDto reviewResponseDto : responseDtos) {
             FileUtils fileUtils = fileUtilResolver.getFileService(reviewResponseDto.getStoreImageLocationType());
             reviewResponseDto.setStoreImageName(fileUtils.getFullPath(reviewResponseDto.getStoreImageDomainName(), reviewResponseDto.getStoreImageName()));
-            reviewResponseDto.setImageResponseDtos(reviewImageDtos);
+            for (SelectReviewImageResponseDto dto : reviewResponseDto.getImageResponseDtos()) {
+                if (Objects.nonNull(dto.getLocationType())) {
+                    FileUtils reviewFileUtils = fileUtilResolver.getFileService(dto.getLocationType());
+                    dto.setSavedName(reviewFileUtils.getFullPath(dto.getDomainName(), dto.getSavedName()));
+                }
+            }
         }
         return responseDtos;
     }

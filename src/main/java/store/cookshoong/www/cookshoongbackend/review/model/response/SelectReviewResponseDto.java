@@ -46,7 +46,7 @@ public class SelectReviewResponseDto {
     @QueryProjection
     public SelectReviewResponseDto(Long storeId, String storeName, String storeImageName, String storeImageLocationType,
                                    String storeImageDomainName, String contents, Integer rating, LocalDateTime writtenAt, LocalDateTime updatedAt,
-                                   List<SelectReviewOrderMenuResponseDto> menuResponseDtos,
+                                   List<SelectReviewImageResponseDto> imageResponseDtos, List<SelectReviewOrderMenuResponseDto> menuResponseDtos,
                                    List<SelectBusinessReviewResponseDto> replyResponseDtos) {
         this.storeId = storeId;
         this.storeName = storeName;
@@ -57,6 +57,7 @@ public class SelectReviewResponseDto {
         this.rating = rating;
         this.writtenAt = writtenAt;
         this.updatedAt = updatedAt;
+        this.imageResponseDtos = imageResponseDtos;
         this.menuResponseDtos = menuResponseDtos;
         this.replyResponseDtos = replyResponseDtos;
     }

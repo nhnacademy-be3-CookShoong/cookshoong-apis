@@ -50,26 +50,10 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
         return new PageImpl<>(responseDtos, pageable, total);
     }
 
-    @Override
-    public List<SelectReviewImageResponseDto> lookupReviewImages(Long accountId, Pageable pageable) {
-        QReview review = QReview.review;
-        QReviewHasImage reviewHasImage = QReviewHasImage.reviewHasImage;
-
-        return jpaQueryFactory
-            .select(new QSelectReviewImageResponseDto(
-                reviewHasImage.image.savedName, reviewHasImage.image.locationType, reviewHasImage.image.domainName))
-            .from(review)
-            .leftJoin(reviewHasImage)
-            .on(reviewHasImage.review.eq(review))
-            .where(review.orderCode.account.id.eq(accountId))
-            .orderBy(review.writtenAt.desc())
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize())
-            .fetch();
-    }
-
     private List<SelectReviewResponseDto> lookupReviews(Long accountId, Pageable pageable) {
         QStore store = QStore.store;
+        QReviewHasImage reviewHasImage = QReviewHasImage.reviewHasImage;
+        QImage image = QImage.image;
 
         return jpaQueryFactory
             .selectFrom(review)
@@ -84,11 +68,9 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
             .innerJoin(order)
             .on(order.store.eq(store))
 
-            .leftJoin(image)
-            .on(review.orderCode.store.storeImage.eq(image))
-
-            .leftJoin(reviewReply)
-            .on(reviewReply.review.eq(review))
+            .leftJoin(reviewReply.review, review)
+            .leftJoin(review.reviewHasImages, reviewHasImage)
+            .leftJoin(reviewHasImage.image, image)
             .where(account.id.eq(accountId))
             .orderBy(review.writtenAt.desc())
             .offset(pageable.getOffset())
@@ -98,7 +80,9 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                     .list(new QSelectReviewResponseDto(review.orderCode.store.id, review.orderCode.store.name,
                             review.orderCode.store.storeImage.savedName, review.orderCode.store.storeImage.locationType,
                             review.orderCode.store.storeImage.domainName, review.contents, review.rating, review.writtenAt, review.updatedAt,
-                            list(new QSelectReviewOrderMenuResponseDto(orderDetail.menu.id, orderDetail.nowName)),
+                        list(new QSelectReviewImageResponseDto(
+                            reviewHasImage.image.savedName, reviewHasImage.image.locationType, reviewHasImage.image.domainName)),
+                        list(new QSelectReviewOrderMenuResponseDto(orderDetail.menu.id, orderDetail.nowName)),
                             list(new QSelectBusinessReviewResponseDto(reviewReply.contents, reviewReply.writtenAt))
                         )
                     )

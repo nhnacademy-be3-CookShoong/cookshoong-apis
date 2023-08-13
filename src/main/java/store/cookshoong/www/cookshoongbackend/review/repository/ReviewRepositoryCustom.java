@@ -16,5 +16,4 @@ import store.cookshoong.www.cookshoongbackend.review.model.response.SelectReview
 @NoRepositoryBean
 public interface ReviewRepositoryCustom {
     Page<SelectReviewResponseDto> lookupReviewByAccount(Long accountId, Pageable pageable);
-    List<SelectReviewImageResponseDto> lookupReviewImages(Long accountId, Pageable pageable);
 }
