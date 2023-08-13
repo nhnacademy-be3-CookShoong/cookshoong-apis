@@ -30,6 +30,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import store.cookshoong.www.cookshoongbackend.cart.db.service.CartService;
 import store.cookshoong.www.cookshoongbackend.cart.redis.service.CartRedisService;
+import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus;
+import store.cookshoong.www.cookshoongbackend.order.service.OrderService;
 import store.cookshoong.www.cookshoongbackend.payment.model.request.CreatePaymentDto;
 import store.cookshoong.www.cookshoongbackend.payment.model.request.CreateRefundDto;
 import store.cookshoong.www.cookshoongbackend.payment.model.response.TossPaymentKeyResponseDto;
@@ -59,8 +61,11 @@ class PaymentControllerTest {
 
     @MockBean
     private CartService cartService;
+    @MockBean
+    private OrderService orderService;
 
-    UUID uuid = UUID.randomUUID();
+    UUID uuidOrder = UUID.randomUUID();
+    UUID uuidCharge = UUID.randomUUID();
     public static final String CART = "cartKey=";
 
 
@@ -70,7 +75,7 @@ class PaymentControllerTest {
 
 
         CreatePaymentDto createPaymentDto = ReflectionUtils.newInstance(CreatePaymentDto.class);
-        ReflectionTestUtils.setField(createPaymentDto, "orderId", uuid);
+        ReflectionTestUtils.setField(createPaymentDto, "orderId", uuidOrder);
         ReflectionTestUtils.setField(createPaymentDto, "paymentType", "toss");
         ReflectionTestUtils.setField(createPaymentDto, "chargedAt", "2023-08-03T14:30:00+00:00");
         ReflectionTestUtils.setField(createPaymentDto, "chargedAmount", 50000);
@@ -98,6 +103,9 @@ class PaymentControllerTest {
                 )));
 
         verify(paymentService, times(1)).createPayment(any(CreatePaymentDto.class));
+        verify(cartRedisService, times(1)).removeCartMenuAll(createPaymentDto.getCartKey());
+        String id = createPaymentDto.getCartKey().replaceAll(CART, "");
+        verify(cartService, times(1)).deleteCartDb(Long.valueOf(id));
     }
 
     @Test
@@ -123,8 +131,8 @@ class PaymentControllerTest {
 
 
         CreateRefundDto createRefundDto = ReflectionUtils.newInstance(CreateRefundDto.class);
-        ReflectionTestUtils.setField(createRefundDto, "orderCode", UUID.randomUUID());
-        ReflectionTestUtils.setField(createRefundDto, "chargeCode", uuid);
+        ReflectionTestUtils.setField(createRefundDto, "orderCode", uuidOrder);
+        ReflectionTestUtils.setField(createRefundDto, "chargeCode", uuidCharge);
         ReflectionTestUtils.setField(createRefundDto, "refundAt", "2023-08-03T14:30:00+00:00");
         ReflectionTestUtils.setField(createRefundDto, "refundAmount", 20000);
         ReflectionTestUtils.setField(createRefundDto, "refundType", "partial");
@@ -145,10 +153,42 @@ class PaymentControllerTest {
                 )));
 
         verify(paymentService, times(1)).createRefund(any(CreateRefundDto.class));
+        verify(orderService, times(1)).changeStatus(uuidOrder, OrderStatus.StatusCode.PARTIAL);
     }
 
     @Test
     @DisplayName("주문에 대해서 환불되는 정보를 DB 에 저장")
+    void postCreateRefundPartial() throws Exception {
+
+
+        CreateRefundDto createRefundDto = ReflectionUtils.newInstance(CreateRefundDto.class);
+        ReflectionTestUtils.setField(createRefundDto, "orderCode", uuidOrder);
+        ReflectionTestUtils.setField(createRefundDto, "chargeCode", uuidCharge);
+        ReflectionTestUtils.setField(createRefundDto, "refundAt", "2023-08-03T14:30:00+00:00");
+        ReflectionTestUtils.setField(createRefundDto, "refundAmount", 20000);
+        ReflectionTestUtils.setField(createRefundDto, "refundType", "partial");
+
+        mockMvc.perform(post("/api/payments/refunds/partial")
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createRefundDto)))
+            .andExpect(status().isCreated())
+            .andDo(document("post-create-refund",
+                ResourceSnippetParameters.builder()
+                    .requestSchema(schema("PostCreateRefund")),
+                requestFields(
+                    fieldWithPath("orderCode").description("주문코드"),
+                    fieldWithPath("chargeCode").description("결제코드"),
+                    fieldWithPath("refundAt").description("환불시간"),
+                    fieldWithPath("refundAmount").description("환불금액"),
+                    fieldWithPath("refundType").description("환불타입")
+                )));
+
+        verify(paymentService, times(1)).createRefund(any(CreateRefundDto.class));
+        verify(orderService, times(1)).changeStatus(uuidOrder, OrderStatus.StatusCode.PARTIAL);
+    }
+
+    @Test
+    @DisplayName("주문에 대해서 환불되는 정보를 DB 에 저장 실패 - 결제 코드가 null 인 경우")
     void postCreateRefund_Validation_Exception() throws Exception {
 
         CreateRefundDto createRefundDto = ReflectionUtils.newInstance(CreateRefundDto.class);
@@ -168,7 +208,7 @@ class PaymentControllerTest {
     void getTossPaymentKey() throws Exception {
         TossPaymentKeyResponseDto tossPaymentKeyResponseDto = new TossPaymentKeyResponseDto("paymentKey");
 
-        mockMvc.perform(get("/api/payments/{orderCode}/select-paymentKey", uuid)
+        mockMvc.perform(get("/api/payments/{orderCode}/select-paymentKey", uuidOrder)
                 .contentType(APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(tossPaymentKeyResponseDto)))
             .andExpect(status().isOk())
@@ -186,7 +226,7 @@ class PaymentControllerTest {
     void getIsRefundAmountExceedsChargedAmount() throws Exception {
 
         RequestBuilder request = RestDocumentationRequestBuilders
-            .get("/api/payments/charges/{chargeCode}/refunds/verify", uuid)
+            .get("/api/payments/charges/{chargeCode}/refunds/verify", uuidCharge)
             .param("refundAmount", "20000")
             .contentType(MediaType.APPLICATION_JSON);
 
