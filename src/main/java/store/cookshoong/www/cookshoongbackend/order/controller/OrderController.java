@@ -31,6 +31,7 @@ import store.cookshoong.www.cookshoongbackend.order.model.request.CreateOrderReq
 import store.cookshoong.www.cookshoongbackend.order.model.request.PatchOrderRequestDto;
 import store.cookshoong.www.cookshoongbackend.order.model.response.CreateOrderResponseDto;
 import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderInStatusResponseDto;
+import store.cookshoong.www.cookshoongbackend.order.model.response.SelectOrderPossibleResponseDto;
 import store.cookshoong.www.cookshoongbackend.order.service.OrderService;
 import store.cookshoong.www.cookshoongbackend.point.service.PointService;
 import store.cookshoong.www.cookshoongbackend.shop.service.StoreService;
@@ -70,11 +71,14 @@ public class OrderController {
         validOrderDistance(createOrderRequestDto);
 
         List<CartRedisDto> cartItems = cartRedisService.selectCartMenuAll(
-                CART + createOrderRequestDto.getAccountId());
+            CART + createOrderRequestDto.getAccountId());
 
-        int totalPrice = cartRedisService.getTotalPrice(cartItems);
+        int totalPrice = getTotalPrice(cartItems);
 
-        int discountPrice = getDiscountPrice(createOrderRequestDto, totalPrice);
+        int deliveryCost = storeService.selectStoreDeliveryCost(createOrderRequestDto.getStoreId());
+        createOrderRequestDto.setDeliveryCost(deliveryCost);
+
+        int discountPrice = getDiscountPrice(createOrderRequestDto, totalPrice, deliveryCost);
 
         orderService.createOrder(createOrderRequestDto, cartItems);
 
@@ -83,21 +87,37 @@ public class OrderController {
     }
 
     private void validOrderDistance(CreateOrderRequestDto createOrderRequestDto) {
-        AddressResponseDto addressResponseDto =
-            addressService.selectAccountAddressRenewalAt(createOrderRequestDto.getAccountId());
-
         boolean inStandardDistance =
-            storeService.isInStandardDistance(addressResponseDto, createOrderRequestDto.getStoreId());
+            isInStandardDistance(createOrderRequestDto.getAccountId(), createOrderRequestDto.getStoreId());
 
         if (!inStandardDistance) {
             throw new OutOfDistanceException();
         }
     }
 
-    private int getDiscountPrice(CreateOrderRequestDto createOrderRequestDto, int totalPrice) {
+    private boolean isInStandardDistance(Long accountId, Long storeId) {
+        AddressResponseDto addressResponseDto =
+            addressService.selectAccountAddressRenewalAt(accountId);
+
+        return storeService.isInStandardDistance(addressResponseDto, storeId);
+    }
+
+    private int getTotalPrice(Long accountId) {
+        List<CartRedisDto> cartItems = cartRedisService.selectCartMenuAll(
+            CART + accountId);
+
+        return cartRedisService.getTotalPrice(cartItems);
+    }
+
+    private int getTotalPrice(List<CartRedisDto> cartItems) {
+        return cartRedisService.getTotalPrice(cartItems);
+    }
+
+    private int getDiscountPrice(CreateOrderRequestDto createOrderRequestDto, int totalPrice, int deliveryCost) {
         int couponDiscountPrice = getCouponDiscountPrice(createOrderRequestDto, totalPrice);
-        int pointDiscount = getPointDiscount(createOrderRequestDto);
-        return couponDiscountPrice - pointDiscount;
+        int beforePointDiscountPrice = couponDiscountPrice + deliveryCost;
+        int pointDiscount = getPointDiscount(createOrderRequestDto, beforePointDiscountPrice);
+        return couponDiscountPrice + deliveryCost - pointDiscount;
     }
 
     private int getCouponDiscountPrice(CreateOrderRequestDto createOrderRequestDto, int totalPrice) {
@@ -117,10 +137,14 @@ public class OrderController {
         provideCouponService.validExpirationDateTime(issueCouponCode);
     }
 
-    private int getPointDiscount(CreateOrderRequestDto createOrderRequestDto) {
+    private int getPointDiscount(CreateOrderRequestDto createOrderRequestDto, int beforePointDiscountPrice) {
         int pointAmount = createOrderRequestDto.getPointAmount();
-        pointService.validPoint(createOrderRequestDto.getAccountId(), pointAmount);
-        return pointAmount;
+        int validPoint =
+            pointService.getValidPoint(createOrderRequestDto.getAccountId(), pointAmount, beforePointDiscountPrice);
+
+        createOrderRequestDto.setPointAmount(validPoint);
+
+        return validPoint;
     }
 
     /**
@@ -166,5 +190,20 @@ public class OrderController {
     public ResponseEntity<Page<LookupOrderInStatusResponseDto>> getOrderInComplete(@PathVariable Long storeId,
                                                                                    Pageable pageable) {
         return ResponseEntity.ok(orderService.lookupOrderInComplete(storeId, pageable));
+    }
+
+    /**
+     * 주문 가능 여부를 반환하는 엔드포인트.
+     *
+     * @param storeId   the store id
+     * @param accountId the account id
+     * @return the order possible
+     */
+    @GetMapping("/{storeId}/possible/{accountId}")
+    public ResponseEntity<SelectOrderPossibleResponseDto> getOrderPossible(@PathVariable Long storeId,
+                                                                           @PathVariable Long accountId) {
+        boolean inStandardDistance = isInStandardDistance(accountId, storeId);
+        int totalPrice = getTotalPrice(accountId);
+        return ResponseEntity.ok(orderService.selectOrderPossible(inStandardDistance, storeId, totalPrice));
     }
 }

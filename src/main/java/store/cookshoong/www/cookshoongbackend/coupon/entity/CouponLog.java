@@ -47,6 +47,9 @@ public class CouponLog {
     @Column(name = "record_at", nullable = false)
     private LocalDateTime recordAt;
 
+    @Column(name = "discount_amount", nullable = false)
+    private Integer discountAmount;
+
     /**
      * 쿠폰 내역 생성자.
      *
@@ -54,11 +57,12 @@ public class CouponLog {
      * @param couponLogType the coupon log type
      * @param order         the order
      */
-    public CouponLog(IssueCoupon issueCoupon, CouponLogType couponLogType, Order order) {
+    public CouponLog(IssueCoupon issueCoupon, CouponLogType couponLogType, Order order, int discountAmount) {
         this.issueCoupon = issueCoupon;
         this.couponLogType = couponLogType;
         this.order = order;
         this.recordAt = LocalDateTime.now();
+        this.discountAmount = discountAmount;
     }
 
     public void updateCouponLogType(CouponLogType couponLogType) {

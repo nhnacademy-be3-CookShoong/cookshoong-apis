@@ -93,13 +93,15 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                 groupBy(order)
                     .list(new QLookupOrderInStatusResponseDto(
                         order.code,
-                        orderStatus.code,
+                        orderStatus.description,
                         list(new QLookupOrderDetailMenuResponseDto(
                             orderDetail.id, orderDetail.nowName, menu.cookingTime, orderDetail.count)),
                         order.memo,
                         charge.code,
                         charge.chargedAmount,
-                        charge.paymentKey))
+                        charge.paymentKey,
+                        order.orderedAt,
+                        order.deliveryAddress))
             );
     }
 

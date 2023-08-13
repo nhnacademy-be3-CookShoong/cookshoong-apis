@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
 import javax.validation.Valid;
@@ -42,6 +43,7 @@ import store.cookshoong.www.cookshoongbackend.order.exception.OrderStatusNotFoun
 import store.cookshoong.www.cookshoongbackend.order.exception.PriceIncreaseException;
 import store.cookshoong.www.cookshoongbackend.order.model.request.CreateOrderRequestDto;
 import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderInStatusResponseDto;
+import store.cookshoong.www.cookshoongbackend.order.model.response.SelectOrderPossibleResponseDto;
 import store.cookshoong.www.cookshoongbackend.order.repository.OrderDetailMenuOptionRepository;
 import store.cookshoong.www.cookshoongbackend.order.repository.OrderDetailRepository;
 import store.cookshoong.www.cookshoongbackend.order.repository.OrderRepository;
@@ -103,7 +105,8 @@ public class OrderService {
         }
 
         Order order = orderRepository.save(new Order(createOrderRequestDto.getOrderCode(), orderStatusCreate, account,
-            store, createOrderRequestDto.getMemo()));
+            store, createOrderRequestDto.getDeliveryAddress(), createOrderRequestDto.getDeliveryCost(),
+            createOrderRequestDto.getMemo()));
 
         cartItems.forEach(cartMenu -> createOrderDetail(cartMenu, order));
     }
@@ -207,5 +210,36 @@ public class OrderService {
 
     private void startDeliverEvent(UUID orderCode) {
         // TODO: 배송 API 연결할 것
+    }
+
+    /**
+     * 주문 가능한 지 여부를 반환.
+     *
+     * @param inStandardDistance the in standard distance
+     * @param storeId            the store id
+     * @param totalPrice         the total price
+     * @return the select order possible response dto
+     */
+    @Transactional(readOnly = true)
+    public SelectOrderPossibleResponseDto selectOrderPossible(boolean inStandardDistance, Long storeId,
+                                                              int totalPrice) {
+        boolean response = true;
+        StringJoiner stringJoiner = new StringJoiner("\n");
+
+        if (inStandardDistance) {
+            response = false;
+            stringJoiner.add("주문할 수 없는 거리입니다.");
+        }
+
+        Integer minimumOrderPrice = storeRepository.findById(storeId)
+            .orElseThrow(StoreNotFoundException::new)
+            .getMinimumOrderPrice();
+
+        if (totalPrice < minimumOrderPrice) {
+            response = false;
+            stringJoiner.add("총 금액이 최소 주문 금액 미만입니다.");
+        }
+
+        return new SelectOrderPossibleResponseDto(response, stringJoiner.toString());
     }
 }

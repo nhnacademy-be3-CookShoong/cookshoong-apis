@@ -30,7 +30,7 @@ public class CouponTypeCash extends CouponType {
     private Integer minimumOrderPrice;
 
     @Override
-    public int getDiscountPrice(int totalPrice) {
-        return Math.max(0, totalPrice - getDiscountAmount());
+    public int getDiscountAmount(int totalPrice) {
+        return getDiscountAmount();
     }
 }

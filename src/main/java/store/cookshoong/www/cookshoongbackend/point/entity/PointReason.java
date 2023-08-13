@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @DiscriminatorColumn(name = "sub_type")
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class PointReason {
-    public PointReason(String explain) {
+    protected PointReason(String explain) {
         this.explain = explain;
     }
 

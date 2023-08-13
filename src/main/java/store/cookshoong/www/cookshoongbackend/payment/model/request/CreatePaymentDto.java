@@ -33,4 +33,6 @@ public class CreatePaymentDto {
     private UUID couponCode;
 
     private Integer point;
+
+    private Integer discountAmount;
 }
