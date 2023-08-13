@@ -13,5 +13,12 @@ import store.cookshoong.www.cookshoongbackend.review.model.response.SelectReview
  */
 @NoRepositoryBean
 public interface ReviewRepositoryCustom {
+    /**
+     * 리뷰의 사진, 메뉴, 사장님 답글을 한번에 들고오는 메서드.
+     *
+     * @param accountId the account id
+     * @param pageable  the pageable
+     * @return the page
+     */
     Page<SelectReviewResponseDto> lookupReviewByAccount(Long accountId, Pageable pageable);
 }
