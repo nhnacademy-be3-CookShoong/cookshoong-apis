@@ -80,14 +80,16 @@ class OrderControllerTest {
         ReflectionTestUtils.setField(createOrderRequestDto, "orderCode", UUID.randomUUID());
         ReflectionTestUtils.setField(createOrderRequestDto, "accountId", 52L);
         ReflectionTestUtils.setField(createOrderRequestDto, "storeId", 33L);
+        ReflectionTestUtils.setField(createOrderRequestDto, "deliveryAddress", "충남 아산시");
         ReflectionTestUtils.setField(createOrderRequestDto, "memo", "김치 많이 주세요");
         ReflectionTestUtils.setField(createOrderRequestDto, "issueCouponCode", UUID.randomUUID());
         ReflectionTestUtils.setField(createOrderRequestDto, "pointAmount", 1_000);
+        ReflectionTestUtils.setField(createOrderRequestDto, "deliveryCost", 4_000);
     }
 
     @ParameterizedTest(name = "{index}: {0}")
     @CsvSource(value = {
-        "주문번호:orderCode", "사용자 id:accountId", "매장 id:storeId"
+        "주문번호:orderCode", "사용자 id:accountId", "매장 id:storeId", "배송주소:deliveryAddress"
     }, delimiter = ':')
     @DisplayName("주문 생성 실패 - 필수 필드 없음")
     void postOrderNonFieldFailTest(String displayName, String fieldName) throws Exception {
@@ -226,7 +228,10 @@ class OrderControllerTest {
                     fieldWithPath("storeId").description("매장 id"),
                     fieldWithPath("memo").optional().description("주문 요청사항"),
                     fieldWithPath("issueCouponCode").optional().description("쿠폰 코드"),
-                    fieldWithPath("pointAmount").optional().description("사용 포인트")),
+                    fieldWithPath("pointAmount").optional().description("사용 포인트"),
+                    fieldWithPath("deliveryAddress").optional().description("충남 아산시"),
+                    fieldWithPath("deliveryCost").optional().description("배달비")
+                ),
                 responseFields(
                     fieldWithPath("totalPrice").description("총합금액")
                 )
