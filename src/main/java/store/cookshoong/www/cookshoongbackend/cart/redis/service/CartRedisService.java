@@ -6,6 +6,7 @@ import static store.cookshoong.www.cookshoongbackend.cart.utils.CartConstant.NO_
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -320,6 +321,16 @@ public class CartRedisService {
         createAllCartFromDbToRedis(redisKey, cartRepository.lookupCartDbList(accountId));
     }
 
+    private String makeFullPath(CartResponseDto cartResponseDto) {
+        if (Objects.nonNull(cartResponseDto.getCartMenuResponseDto().getSavedName())) {
+            FileUtils fileUtils =
+                fileUtilResolver.getFileService(cartResponseDto.getCartMenuResponseDto().getLocationType());
+            return fileUtils.getFullPath(cartResponseDto.getCartMenuResponseDto().getDomainName(),
+                cartResponseDto.getCartMenuResponseDto().getSavedName());
+        }
+        return null;
+    }
+
     /**
      * DB 장바구니에서 가져온 정보를 Redis 장바구니에 저장하는 메서드.
      *
@@ -328,15 +339,10 @@ public class CartRedisService {
     private void createAllCartFromDbToRedis(String redisKey, List<CartResponseDto> cartResponseDtos) {
 
         for (CartResponseDto cartResponseDto : cartResponseDtos) {
-
-            FileUtils fileUtils =
-                fileUtilResolver.getFileService(cartResponseDto.getCartMenuResponseDto().getLocationType());
             CartMenuResponseDto cartMenuResponseDto = cartResponseDto.getCartMenuResponseDto();
             CartMenuDto cartMenuRedisDto =
                 new CartMenuDto(cartMenuResponseDto.getMenuId(), cartMenuResponseDto.getName(),
-                    fileUtils.getFullPath(cartResponseDto.getCartMenuResponseDto().getDomainName(),
-                        cartMenuResponseDto.getSavedName()), cartMenuResponseDto.getPrice(),
-                    cartMenuResponseDto.getLocationType(), cartMenuResponseDto.getDomainName());
+                    makeFullPath(cartResponseDto), cartMenuResponseDto.getPrice());
 
             List<CartOptionDto> cartOptionRedisDtos = new ArrayList<>();
             if (!(cartResponseDto.getCartOptionResponseDto().size() == 1

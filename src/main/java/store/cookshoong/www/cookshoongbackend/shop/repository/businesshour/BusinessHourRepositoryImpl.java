@@ -65,8 +65,8 @@ public class BusinessHourRepositoryImpl implements BusinessHourRepositoryCustom 
             .innerJoin(businessHour.dayCode, dayType)
             .where(businessHour.store.id.eq(storeId)
                 .and(businessHour.dayCode.dayCode.eq(dayCode))
-                .and(businessHour.openHour.loe(nowTime))
-                .and(businessHour.closeHour.goe(nowTime)))
+                .and((businessHour.openHour.loe(nowTime))
+                .and(businessHour.closeHour.goe(nowTime))))
             .fetchFirst() != null;
     }
 }
