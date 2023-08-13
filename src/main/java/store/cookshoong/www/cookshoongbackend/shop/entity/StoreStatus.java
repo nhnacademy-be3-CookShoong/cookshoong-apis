@@ -28,7 +28,25 @@ public class StoreStatus {
     @Column(name = "description", length = 30)
     private String description;
 
+    /**
+     * 매장 상태코드.
+     */
     public enum StoreStatusCode {
-        OPEN, CLOSE, OUTED
+        /**
+         * 매장 오픈.
+         */
+        OPEN,
+        /**
+         * 매장 강제 휴식/문닫기.
+         */
+        CLOSE,
+        /**
+         * 매장 영엄중단(폐업).
+         */
+        OUTED,
+        /**
+         * 매장 휴식(일정에 맞춘).
+         */
+        BREAK_TIME
     }
 }

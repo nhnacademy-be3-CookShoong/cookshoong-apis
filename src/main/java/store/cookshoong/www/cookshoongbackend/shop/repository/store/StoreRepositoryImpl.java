@@ -50,7 +50,7 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
         return jpaQueryFactory
             .select(new QSelectAllStoresResponseDto(
                 store.id, store.name,
-                address.mainPlace, address.detailPlace, storeStatus.description))
+                address.mainPlace, address.detailPlace, storeStatus.code))
             .from(store)
             .innerJoin(store.storeStatus, storeStatus)
             .innerJoin(store.address, address)

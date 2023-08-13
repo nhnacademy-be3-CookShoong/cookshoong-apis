@@ -194,7 +194,7 @@ public class Store {
     /**
      * 매장의 상태코드 변경.
      *
-     * @param storeStatus 매장 상태 코드(OPEN, CLOSE, OUTED)
+     * @param storeStatus 매장 상태 코드(OPEN, CLOSE, OUTED, BREAK_TIME)
      */
     public void modifyStoreStatus(StoreStatus storeStatus) {
         this.storeStatus = storeStatus;

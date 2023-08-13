@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.shop.repository.businesshour;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.repository.NoRepositoryBean;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectHolidayResponseDto;
@@ -19,4 +20,6 @@ public interface HolidayRepositoryCustom {
      * @return 매장의 휴업일 리스트
      */
     List<SelectHolidayResponseDto> lookupHolidays(Long storeId);
+
+    boolean lookupHolidayByStoreId(Long storeId, LocalDate nowDate);
 }
