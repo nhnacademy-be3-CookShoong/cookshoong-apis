@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
+import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
 import store.cookshoong.www.cookshoongbackend.file.service.FileUtilResolver;
 import store.cookshoong.www.cookshoongbackend.file.service.FileUtils;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
@@ -50,6 +51,7 @@ public class MenuService {
     private final StoreRepository storeRepository;
     private final MenuRepository menuRepository;
     private final MenuStatusRepository menuStatusRepository;
+    private final ImageRepository imageRepository;
     private final MenuHasMenuGroupRepository menuHasMenuGroupRepository;
     private final MenuGroupRepository menuGroupRepository;
     private final MenuHasOptionGroupRepository menuHasOptionGroupRepository;
@@ -69,9 +71,13 @@ public class MenuService {
             .orElseThrow(StoreNotFoundException::new);
         MenuStatus menuStatus = menuStatusRepository.findById(StoreStatus.StoreStatusCode.OPEN.name())
             .orElseThrow(MenuStatusNotFoundException::new);
-        FileUtils fileUtils = fileUtilResolver.getFileService(storedAt);
-        Image image = fileUtils.storeFile(file, FileDomain.MENU_IMAGE.getVariable(), true);
+        Image image = null;
+        FileUtils fileUtils;
         if (Objects.isNull(createMenuRequestDto.getTargetMenuId())) {
+            if (Objects.nonNull(file)) {
+                fileUtils = fileUtilResolver.getFileService(storedAt);
+                image = fileUtils.storeFile(file, FileDomain.MENU_IMAGE.getVariable(), true);
+            }
             Menu menu = new Menu(
                 menuStatus,
                 store,
@@ -87,6 +93,20 @@ public class MenuService {
         } else {
             Menu menu = menuRepository.findById(createMenuRequestDto.getTargetMenuId())
                 .orElseThrow(MenuNotFoundException::new);
+
+            if (Objects.nonNull(menu.getImage())) {
+                fileUtils = fileUtilResolver.getFileService(storedAt);
+                image = imageRepository.findById(menu.getImage().getId()).get();
+                if (Objects.nonNull(file)) {
+                    image = fileUtils.updateFile(file, image);
+                }
+            } else {
+                if (Objects.nonNull(file)) {
+                    fileUtils = fileUtilResolver.getFileService(storedAt);
+                    image = fileUtils.storeFile(file, FileDomain.MENU_IMAGE.getVariable(), true);
+                }
+            }
+            menu.modifyImage(image);
             menu.modifyMenu(createMenuRequestDto);
             clearMenuGroup(menu.getId());
             clearOptionGroup(menu.getId());
@@ -105,8 +125,10 @@ public class MenuService {
     public List<SelectMenuResponseDto> selectMenus(Long storeId) {
         List<SelectMenuResponseDto> responseDtos = menuRepository.lookupMenus(storeId);
         for (SelectMenuResponseDto dto : responseDtos) {
-            FileUtils fileUtils = fileUtilResolver.getFileService(dto.getLocationType());
-            dto.setSavedName(fileUtils.getFullPath(dto.getDomainName(), dto.getSavedName()));
+            if (Objects.nonNull(dto.getSavedName())) {
+                FileUtils fileUtils = fileUtilResolver.getFileService(dto.getLocationType());
+                dto.setSavedName(fileUtils.getFullPath(dto.getDomainName(), dto.getSavedName()));
+            }
         }
         return responseDtos;
     }
@@ -120,8 +142,10 @@ public class MenuService {
     public SelectMenuResponseDto selectMenu(Long menuId) {
         SelectMenuResponseDto responseDto = menuRepository.lookupMenu(menuId)
             .orElseThrow(MenuNotFoundException::new);
-        FileUtils fileUtils = fileUtilResolver.getFileService(responseDto.getLocationType());
-        responseDto.setSavedName(fileUtils.getFullPath(responseDto.getDomainName(), responseDto.getSavedName()));
+        if (Objects.nonNull(responseDto.getSavedName())) {
+            FileUtils fileUtils = fileUtilResolver.getFileService(responseDto.getLocationType());
+            responseDto.setSavedName(fileUtils.getFullPath(responseDto.getDomainName(), responseDto.getSavedName()));
+        }
         return responseDto;
     }
 
@@ -131,12 +155,16 @@ public class MenuService {
      * @param storeId 매장 아이디
      * @param menuId  메뉴 아이디
      */
-    public void deleteMenu(Long storeId, Long menuId) {
+    public void deleteMenu(Long storeId, Long menuId) throws IOException {
         Menu menu = menuRepository.findById(menuId)
             .orElseThrow(MenuNotFoundException::new);
         MenuStatus menuStatus = menuStatusRepository.findById("OUTED")
             .orElseThrow(MenuStatusNotFoundException::new);
         menu.modifyMenuStatus(menuStatus);
+        if (Objects.nonNull(menu.getImage().getId())) {
+            FileUtils fileUtils = fileUtilResolver.getFileService(menu.getImage().getLocationType());
+            fileUtils.deleteFile(menu.getImage());
+        }
     }
 
     /**

@@ -45,7 +45,7 @@ public class MenuController {
     public ResponseEntity<Void> postMenu(@PathVariable("storeId") Long storeId,
                                          @RequestPart("requestDto") @Valid CreateMenuRequestDto createMenuRequestDto,
                                          BindingResult bindingResult,
-                                         @RequestPart("menuImage") MultipartFile image,
+                                         @RequestPart(value = "menuImage", required = false) MultipartFile image,
                                          @RequestParam("storedAt") String storedAt) throws IOException {
         if (bindingResult.hasErrors()) {
             throw new MenuValidationException(bindingResult);
@@ -94,7 +94,7 @@ public class MenuController {
      */
     @DeleteMapping("/stores/{storeId}/menu/{menuId}")
     public ResponseEntity<Void> deleteMenu(@PathVariable("storeId") Long storeId,
-                                           @PathVariable("menuId") Long menuId) {
+                                           @PathVariable("menuId") Long menuId) throws IOException {
         menuService.deleteMenu(storeId, menuId);
         return ResponseEntity
             .status(HttpStatus.OK)

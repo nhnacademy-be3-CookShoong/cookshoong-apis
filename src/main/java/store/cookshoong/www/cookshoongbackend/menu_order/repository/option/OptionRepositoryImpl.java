@@ -35,7 +35,7 @@ public class OptionRepositoryImpl implements OptionRepositoryCustom {
 
         return Optional.ofNullable(jpaQueryFactory
             .select(new QSelectOptionResponseDto(
-                option.id, optionGroup.id, option.name,
+                option.id, option.optionGroup.id, option.name,
                 option.price, option.isDeleted,
                 option.optionSequence))
             .from(option)

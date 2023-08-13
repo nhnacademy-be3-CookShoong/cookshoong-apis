@@ -6,6 +6,7 @@ import static store.cookshoong.www.cookshoongbackend.cart.utils.CartConstant.NO_
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -328,7 +329,10 @@ public class CartRedisService {
     private void createAllCartFromDbToRedis(String redisKey, List<CartResponseDto> cartResponseDtos) {
 
         for (CartResponseDto cartResponseDto : cartResponseDtos) {
+            String imagePath = null;
+            if(Objects.nonNull(cartResponseDto.getCartMenuResponseDto().getSavedName())){
 
+            }
             FileUtils fileUtils =
                 fileUtilResolver.getFileService(cartResponseDto.getCartMenuResponseDto().getLocationType());
             CartMenuResponseDto cartMenuResponseDto = cartResponseDto.getCartMenuResponseDto();

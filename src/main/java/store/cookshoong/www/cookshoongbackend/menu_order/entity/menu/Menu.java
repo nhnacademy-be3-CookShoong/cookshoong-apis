@@ -70,10 +70,10 @@ public class Menu {
     private BigDecimal earningRate;
 
     @OneToMany(mappedBy = "menu", cascade = CascadeType.PERSIST)
-    private Set<MenuHasMenuGroup> menuHasMenuGroups = new HashSet<>();
+    private final Set<MenuHasMenuGroup> menuHasMenuGroups = new HashSet<>();
 
     @OneToMany(mappedBy = "menu", cascade = CascadeType.PERSIST)
-    private Set<MenuHasOptionGroup> menuHasOptionGroups = new HashSet<>();
+    private final Set<MenuHasOptionGroup> menuHasOptionGroups = new HashSet<>();
 
     /**
      * 메뉴 엔티티 생성자.
@@ -118,5 +118,14 @@ public class Menu {
         this.price = createMenuRequestDto.getPrice();
         this.cookingTime = createMenuRequestDto.getCookingTime();
         this.earningRate = createMenuRequestDto.getEarningRate();
+    }
+
+    /**
+     * 메뉴 이미지 수정.
+     *
+     * @param image the image
+     */
+    public void modifyImage(Image image) {
+        this.image = image;
     }
 }
