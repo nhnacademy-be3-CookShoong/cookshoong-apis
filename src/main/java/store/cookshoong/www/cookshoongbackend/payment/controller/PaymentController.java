@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import store.cookshoong.www.cookshoongbackend.cart.db.service.CartService;
 import store.cookshoong.www.cookshoongbackend.cart.redis.service.CartRedisService;
 import store.cookshoong.www.cookshoongbackend.coupon.model.event.CouponOrderAbortEvent;
+import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus;
+import store.cookshoong.www.cookshoongbackend.order.service.OrderService;
 import store.cookshoong.www.cookshoongbackend.payment.exception.ChargeValidationException;
 import store.cookshoong.www.cookshoongbackend.payment.exception.RefundValidationException;
 import store.cookshoong.www.cookshoongbackend.payment.model.request.CreatePaymentDto;
@@ -40,6 +42,7 @@ public class PaymentController {
     private final PaymentService paymentService;
     private final CartRedisService cartRedisService;
     private final CartService cartService;
+    private final OrderService orderService;
     private final ApplicationEventPublisher publisher;
 
     /**
@@ -83,7 +86,7 @@ public class PaymentController {
     }
 
     /**
-     * 주문에 대해 결제 취소 성공 후 활불 요청을 처리하는 메서드.
+     * 주문에 대해 결제 취소 성공 후 전액환불 요청을 처리하는 메서드.
      *
      * @param createRefundDto 환불에 대한 Dto
      * @param bindingResult   Validation 에 대한 bindingResult
@@ -97,10 +100,34 @@ public class PaymentController {
             throw new RefundValidationException(bindingResult);
         }
 
+        orderService.changeStatus(createRefundDto.getOrderCode(), OrderStatus.StatusCode.PARTIAL);
+
         paymentService.createRefund(createRefundDto);
 
         publisher.publishEvent(new CouponOrderAbortEvent(this, createRefundDto.getOrderCode()));
         publisher.publishEvent(new PointOrderAbortEvent(this, createRefundDto.getOrderCode()));
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    /**
+     * 주문에 대해 결제 취소 성공 후 부분환불 요청을 처리하는 메서드.
+     *
+     * @param createRefundDto 환불에 대한 Dto
+     * @param bindingResult   Validation 에 대한 bindingResult
+     * @return 상태코드 201(CREATED)와 함께 응답을 반환
+     */
+    @PostMapping("/refunds/partial")
+    public ResponseEntity<CreateRefundDto> postCreateRefundPartial(@RequestBody @Valid CreateRefundDto createRefundDto,
+                                                            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            throw new RefundValidationException(bindingResult);
+        }
+
+        orderService.changeStatus(createRefundDto.getOrderCode(), OrderStatus.StatusCode.PARTIAL);
+
+        paymentService.createRefund(createRefundDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
