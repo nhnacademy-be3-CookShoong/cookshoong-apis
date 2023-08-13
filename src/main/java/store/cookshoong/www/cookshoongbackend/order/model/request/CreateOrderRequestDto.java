@@ -2,6 +2,7 @@ package store.cookshoong.www.cookshoongbackend.order.model.request;
 
 import java.util.Objects;
 import java.util.UUID;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -23,7 +24,7 @@ public class CreateOrderRequestDto {
     private Long accountId;
     @NotNull
     private Long storeId;
-    @NotNull
+    @NotBlank
     private String deliveryAddress;
     private String memo;
     private UUID issueCouponCode;
