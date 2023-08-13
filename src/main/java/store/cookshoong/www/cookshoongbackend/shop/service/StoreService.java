@@ -447,4 +447,9 @@ public class StoreService {
 
         return BigDecimal.valueOf(distance);
     }
+
+    @Transactional(readOnly = true)
+    public int selectStoreDeliveryCost(Long storeId) {
+        return getStoreById(storeId).getDeliveryCost();
+    }
 }

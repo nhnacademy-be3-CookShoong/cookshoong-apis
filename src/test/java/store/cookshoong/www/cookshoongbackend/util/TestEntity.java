@@ -168,7 +168,7 @@ public class TestEntity {
     }
 
     public CouponLog getCouponLog(IssueCoupon issueCoupon, CouponLogType couponLogType, Order order) {
-        return new CouponLog(issueCoupon, couponLogType, order);
+        return new CouponLog(issueCoupon, couponLogType, order, 2_000);
     }
 
     public MenuStatus getMenuStatus(String menuStatusCode, String description) {

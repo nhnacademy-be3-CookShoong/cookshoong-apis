@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponLog;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponLogType;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
@@ -38,6 +39,10 @@ import store.cookshoong.www.cookshoongbackend.payment.repository.charge.ChargeRe
 import store.cookshoong.www.cookshoongbackend.payment.repository.chargetype.ChargeTypeRepository;
 import store.cookshoong.www.cookshoongbackend.payment.repository.refund.RefundRepository;
 import store.cookshoong.www.cookshoongbackend.payment.repository.refundtype.RefundTypeRepository;
+import store.cookshoong.www.cookshoongbackend.point.entity.PointLog;
+import store.cookshoong.www.cookshoongbackend.point.entity.PointReasonOrder;
+import store.cookshoong.www.cookshoongbackend.point.repository.PointLogRepository;
+import store.cookshoong.www.cookshoongbackend.point.repository.PointReasonOrderRepository;
 
 /**
  * 결제에 대한 Service.
@@ -61,6 +66,8 @@ public class PaymentService {
     private final CouponLogTypeRepository couponLogTypeRepository;
     private final LockProcessor lockProcessor;
     private final OrderStatusRepository orderStatusRepository;
+    private final PointReasonOrderRepository pointReasonOrderRepository;
+    private final PointLogRepository pointLogRepository;
 
     /**
      * 결제 승인 후 결제가 완료되고나서 결제 정보를 DB 에 저장하는 메서드.
@@ -79,6 +86,11 @@ public class PaymentService {
 
         if (Objects.nonNull(createPaymentDto.getCouponCode())) {
             useCoupon(createPaymentDto, order);
+        }
+
+        Integer point = createPaymentDto.getPoint();
+        if (Objects.nonNull(point) && 0 < point) {
+            usePoint(order, point);
         }
 
         ChargeType chargeType =
@@ -102,7 +114,17 @@ public class PaymentService {
 
             CouponLogType couponLogType = couponLogTypeRepository.findById(CouponLogType.Code.USE.toString())
                 .orElseThrow(CouponLogTypeNotFoundException::new);
-            couponLogRepository.saveAndFlush(new CouponLog(issueCoupon, couponLogType, order));
+            couponLogRepository.saveAndFlush(new CouponLog(issueCoupon, couponLogType, order,
+                createPaymentDto.getDiscountAmount()));
+        });
+    }
+
+    private void usePoint(Order order, Integer point) {
+        Account account = order.getAccount();
+        lockProcessor.lock(account.getId().toString(), ignore -> {
+            PointReasonOrder pointReasonOrder =
+                pointReasonOrderRepository.save(new PointReasonOrder(order, "주문 사용"));
+            pointLogRepository.save(new PointLog(account, pointReasonOrder, point));
         });
     }
 

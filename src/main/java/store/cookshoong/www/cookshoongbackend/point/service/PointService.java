@@ -32,6 +32,7 @@ public class PointService {
      * @param accountId the account id
      * @return the int
      */
+    @Transactional(readOnly = true)
     public PointResponseDto selectSumPoint(Long accountId) {
         Account account = accountRepository.findById(accountId)
             .orElseThrow(UserNotFoundException::new);
@@ -46,6 +47,7 @@ public class PointService {
      * @param pageable  the pageable
      * @return the page
      */
+    @Transactional(readOnly = true)
     public Page<PointLogResponseDto> selectAllPointLog(Long accountId, Pageable pageable) {
         Account account = accountRepository.findById(accountId)
             .orElseThrow(UserNotFoundException::new);
@@ -60,15 +62,17 @@ public class PointService {
      * @param usePoint  the use point
      */
     @Transactional(readOnly = true)
-    public void validPoint(Long accountId, Integer usePoint) {
+    public int getValidPoint(Long accountId, int usePoint, int beforePointDiscountPrice) {
         Account account = accountRepository.findById(accountId)
             .orElseThrow(UserNotFoundException::new);
 
-        Integer nowPoint = pointLogRepository.lookupMyPoint(account)
+        int nowPoint = pointLogRepository.lookupMyPoint(account)
             .getPoint();
 
         if (nowPoint < usePoint) {
             throw new LowPointException();
         }
+
+        return Math.min(usePoint, beforePointDiscountPrice);
     }
 }

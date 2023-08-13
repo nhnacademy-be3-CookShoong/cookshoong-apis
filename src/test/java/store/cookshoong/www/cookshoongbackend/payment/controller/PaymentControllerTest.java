@@ -94,7 +94,8 @@ class PaymentControllerTest {
                     fieldWithPath("paymentKey").description("toss 결제 Key"),
                     fieldWithPath("cartKey").description("장바구니 key"),
                     fieldWithPath("couponCode").optional().description("사용하는 쿠폰의 코드"),
-                    fieldWithPath("point").optional().description("사용하는 포인트")
+                    fieldWithPath("point").optional().description("사용하는 포인트"),
+                    fieldWithPath("discountAmount").optional().description("쿠폰에 의한 할인값")
                 )));
 
         verify(paymentService, times(1)).createPayment(any(CreatePaymentDto.class));

@@ -3,6 +3,7 @@ package store.cookshoong.www.cookshoongbackend.point.listener;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 import store.cookshoong.www.cookshoongbackend.point.model.event.PointOrderAbortEvent;
 import store.cookshoong.www.cookshoongbackend.point.service.PointEventService;
 
@@ -12,6 +13,7 @@ import store.cookshoong.www.cookshoongbackend.point.service.PointEventService;
  * @author eora21 (김주호)
  * @since 2023.08.07
  */
+@Component
 @RequiredArgsConstructor
 public class PointOrderAbortEventListener implements ApplicationListener<PointOrderAbortEvent> {
     private final PointEventService pointEventService;
