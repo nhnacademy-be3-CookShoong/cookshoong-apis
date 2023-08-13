@@ -47,7 +47,7 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
             .from(menu)
             .innerJoin(menu.menuStatus, menuStatus)
             .innerJoin(menu.store, store)
-            .innerJoin(menu.image, image)
+            .leftJoin(menu.image, image)
             .where(menu.id.eq(menuId))
             .fetchOne();
 
