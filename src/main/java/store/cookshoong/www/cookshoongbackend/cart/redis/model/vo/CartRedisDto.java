@@ -2,6 +2,7 @@ package store.cookshoong.www.cookshoongbackend.cart.redis.model.vo;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -30,6 +31,11 @@ public class CartRedisDto {
     private Long storeId;
     @NotBlank
     private String storeName;
+    @NotNull
+    private Integer deliveryCost;
+    @NotNull
+    private Integer minimumOrderPrice;
+    @Valid
     private CartMenuDto menu;
     private List<CartOptionDto> options;
     private Long createTimeMillis;

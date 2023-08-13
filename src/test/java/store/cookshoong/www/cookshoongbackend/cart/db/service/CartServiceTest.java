@@ -95,6 +95,8 @@ class CartServiceTest {
         ReflectionTestUtils.setField(cartRedisDto, "accountId", 1L);
         ReflectionTestUtils.setField(cartRedisDto, "storeId", 1L);
         ReflectionTestUtils.setField(cartRedisDto, "storeName", "어반");
+        ReflectionTestUtils.setField(cartRedisDto, "deliveryCost", 3000);
+        ReflectionTestUtils.setField(cartRedisDto, "minimumOrderPrice", 10000);
         ReflectionTestUtils.setField(cartRedisDto, "menu", cartMenuDto);
         ReflectionTestUtils.setField(cartRedisDto, "options", cartOptionDtoList);
         ReflectionTestUtils.setField(cartRedisDto, "createTimeMillis", 1L);
@@ -144,6 +146,8 @@ class CartServiceTest {
         ReflectionTestUtils.setField(cartRedisDto, "accountId", 1L);
         ReflectionTestUtils.setField(cartRedisDto, "storeId", 1L);
         ReflectionTestUtils.setField(cartRedisDto, "storeName", "어반");
+        ReflectionTestUtils.setField(cartRedisDto, "deliveryCost", 3000);
+        ReflectionTestUtils.setField(cartRedisDto, "minimumOrderPrice", 10000);
         ReflectionTestUtils.setField(cartRedisDto, "menu", cartMenuDto);
         ReflectionTestUtils.setField(cartRedisDto, "options", cartOptionDtoList);
         ReflectionTestUtils.setField(cartRedisDto, "createTimeMillis", 1L);
