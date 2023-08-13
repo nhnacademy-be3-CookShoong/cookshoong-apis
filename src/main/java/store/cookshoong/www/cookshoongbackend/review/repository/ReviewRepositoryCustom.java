@@ -1,14 +1,12 @@
 package store.cookshoong.www.cookshoongbackend.review.repository;
 
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;
-import store.cookshoong.www.cookshoongbackend.review.model.response.SelectReviewImageResponseDto;
 import store.cookshoong.www.cookshoongbackend.review.model.response.SelectReviewResponseDto;
 
 /**
- * {설명을 작성해주세요}.
+ * 사용자 리뷰조회, 사업자 리뷰조회 관리 repository.
  *
  * @author seungyeon
  * @since 2023.08.13
