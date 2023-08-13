@@ -321,8 +321,6 @@ public class StoreService {
         store.initStoreCategories();
         entityManager.flush();
         addStoreCategory(requestDto.getUpdateStoreCategories(), store);
-
-
     }
 
     /**
@@ -364,7 +362,6 @@ public class StoreService {
 
         Image image = imageRepository.findById(BASIC_IMAGE).orElseThrow((ImageNotFoundException::new));
         store.modifyStoreImage(image);
-
     }
 
     /**
@@ -388,9 +385,11 @@ public class StoreService {
             .collect(Collectors.toList());
 
         for (SelectAllStoresNotOutedResponseDto dto : nearbyStores) {
-            FileUtils fileUtils = fileUtilResolver.getFileService(dto.getLocationType());
-            dto.setSavedName(
-                fileUtils.getFullPath(dto.getDomainName(), dto.getSavedName()));
+            if (Objects.nonNull(dto.getSavedName())) {
+                FileUtils fileUtils = fileUtilResolver.getFileService(dto.getLocationType());
+                dto.setSavedName(
+                    fileUtils.getFullPath(dto.getDomainName(), dto.getSavedName()));
+            }
         }
 
         return new PageImpl<>(nearbyStores, pageable, nearbyStores.size());
