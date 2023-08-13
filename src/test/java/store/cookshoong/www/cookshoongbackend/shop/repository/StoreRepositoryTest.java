@@ -145,7 +145,7 @@ class StoreRepositoryTest {
         for (int i = 0; i < 3; i++) {
             assertThat(selectAllStores.get(i).getStoreId()).isEqualTo(expect.get(i).getId());
             assertThat(selectAllStores.get(i).getStoreName()).isEqualTo(expect.get(i).getName());
-            assertThat(selectAllStores.get(i).getStoreStatus()).isEqualTo(expect.get(i).getStoreStatus().getDescription());
+            assertThat(selectAllStores.get(i).getStoreStatus()).isEqualTo(expect.get(i).getStoreStatus().getCode());
             assertThat(selectAllStores.get(i).getStoreMainAddress()).isEqualTo(expect.get(i).getAddress().getMainPlace());
             assertThat(selectAllStores.get(i).getStoreDetailAddress()).isEqualTo(expect.get(i).getAddress().getDetailPlace());
         }

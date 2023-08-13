@@ -1,10 +1,14 @@
 package store.cookshoong.www.cookshoongbackend.shop.repository.businesshour;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QHoliday;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QStore;
+import store.cookshoong.www.cookshoongbackend.shop.entity.QStoreStatus;
+import store.cookshoong.www.cookshoongbackend.shop.entity.StoreStatus;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectHolidayResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectHolidayResponseDto;
 
@@ -37,5 +41,21 @@ public class HolidayRepositoryImpl implements HolidayRepositoryCustom {
             .innerJoin(holiday.store, store)
             .where(holiday.store.id.eq(storeId))
             .fetch();
+    }
+
+    @Override
+    public boolean lookupHolidayByStoreId(Long storeId, LocalDate nowDate) {
+        QStore store = QStore.store;
+        QHoliday holiday = QHoliday.holiday;
+
+        return jpaQueryFactory
+            .select(holiday.id)
+            .from(holiday)
+            .innerJoin(holiday.store, store)
+            .where(
+                holiday.store.id.eq(storeId)
+                    .and(holiday.holidayStartDate.loe(nowDate).and(holiday.holidayEndDate.goe(nowDate)))
+            )
+            .fetchFirst() != null;
     }
 }

@@ -45,6 +45,12 @@ public class TestPersistEntity {
         Rank rankLevelOne = testEntity.getRankLevelOne();
         return testEntity.getAccount(accountStatusActive, authorityCustomer, rankLevelOne);
     }
+    public Account getLevelOneActiveBusiness() {
+        AccountStatus accountStatusActive = testEntity.getAccountStatusActive();
+        Authority authorityCustomer = testEntity.getAuthorityBusiness();
+        Rank rankLevelOne = testEntity.getRankLevelOne();
+        return testEntity.getAccount(accountStatusActive, authorityCustomer, rankLevelOne);
+    }
 
     public Store getOpenStore() {
         Account account = getLevelOneActiveCustomer();

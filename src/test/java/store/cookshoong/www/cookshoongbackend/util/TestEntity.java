@@ -73,6 +73,9 @@ public class TestEntity {
     public Authority getAuthorityCustomer() {
         return new Authority("CUSTOMER", "일반회원");
     }
+    public Authority getAuthorityBusiness() {
+        return new Authority("BUSINESS", "사업자회원");
+    }
 
     public Rank getRankLevelOne() {
         return new Rank("LEVEL_1", "프렌드");
