@@ -4,7 +4,6 @@ import static store.cookshoong.www.cookshoongbackend.cart.utils.CartConstant.CAR
 
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -76,7 +75,10 @@ public class OrderController {
 
         int totalPrice = getTotalPrice(cartItems);
 
-        int discountPrice = getDiscountPrice(createOrderRequestDto, totalPrice);
+        int deliveryCost = storeService.selectStoreDeliveryCost(createOrderRequestDto.getStoreId());
+        createOrderRequestDto.setDeliveryCost(deliveryCost);
+
+        int discountPrice = getDiscountPrice(createOrderRequestDto, totalPrice, deliveryCost);
 
         orderService.createOrder(createOrderRequestDto, cartItems);
 
@@ -111,10 +113,11 @@ public class OrderController {
         return cartRedisService.getTotalPrice(cartItems);
     }
 
-    private int getDiscountPrice(CreateOrderRequestDto createOrderRequestDto, int totalPrice) {
+    private int getDiscountPrice(CreateOrderRequestDto createOrderRequestDto, int totalPrice, int deliveryCost) {
         int couponDiscountPrice = getCouponDiscountPrice(createOrderRequestDto, totalPrice);
-        int pointDiscount = getPointDiscount(createOrderRequestDto);
-        return couponDiscountPrice - pointDiscount;
+        int beforePointDiscountPrice = couponDiscountPrice + deliveryCost;
+        int pointDiscount = getPointDiscount(createOrderRequestDto, beforePointDiscountPrice);
+        return couponDiscountPrice + deliveryCost - pointDiscount;
     }
 
     private int getCouponDiscountPrice(CreateOrderRequestDto createOrderRequestDto, int totalPrice) {
@@ -134,10 +137,14 @@ public class OrderController {
         provideCouponService.validExpirationDateTime(issueCouponCode);
     }
 
-    private int getPointDiscount(CreateOrderRequestDto createOrderRequestDto) {
+    private int getPointDiscount(CreateOrderRequestDto createOrderRequestDto, int beforePointDiscountPrice) {
         int pointAmount = createOrderRequestDto.getPointAmount();
-        pointService.validPoint(createOrderRequestDto.getAccountId(), pointAmount);
-        return pointAmount;
+        int validPoint =
+            pointService.getValidPoint(createOrderRequestDto.getAccountId(), pointAmount, beforePointDiscountPrice);
+
+        createOrderRequestDto.setPointAmount(validPoint);
+
+        return validPoint;
     }
 
     /**

@@ -105,7 +105,8 @@ public class OrderService {
         }
 
         Order order = orderRepository.save(new Order(createOrderRequestDto.getOrderCode(), orderStatusCreate, account,
-            store, createOrderRequestDto.getMemo()));
+            store, createOrderRequestDto.getDeliveryAddress(), createOrderRequestDto.getDeliveryCost(),
+            createOrderRequestDto.getMemo()));
 
         cartItems.forEach(cartMenu -> createOrderDetail(cartMenu, order));
     }

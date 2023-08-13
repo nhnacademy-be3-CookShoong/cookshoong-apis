@@ -6,6 +6,7 @@ import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * 주문을 생성할 때 사용하는 dto.
@@ -22,9 +23,14 @@ public class CreateOrderRequestDto {
     private Long accountId;
     @NotNull
     private Long storeId;
+    @NotNull
+    private String deliveryAddress;
     private String memo;
     private UUID issueCouponCode;
+    @Setter
     private Integer pointAmount;
+    @Setter
+    private int deliveryCost;
 
     /**
      * pointAmount null이거나 음수라면 0으로 반환.

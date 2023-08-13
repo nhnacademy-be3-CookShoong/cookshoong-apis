@@ -31,5 +31,9 @@ public abstract class CouponType {
 
     public abstract Integer getMinimumOrderPrice();
 
-    public abstract int getDiscountPrice(int totalPrice);
+    public int getDiscountPrice(int totalPrice) {
+        return Math.max(0, totalPrice - getDiscountPrice(totalPrice));
+    }
+
+    public abstract int getDiscountAmount(int totalPrice);
 }

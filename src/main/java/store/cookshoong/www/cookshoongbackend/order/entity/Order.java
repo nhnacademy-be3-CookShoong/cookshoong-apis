@@ -42,6 +42,15 @@ public class Order {
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
+    @Column(name = "delivery_address")
+    private String deliveryAddress;
+
+    @Column(name = "delivery_cost")
+    private Integer deliveryCost;
+
+    @Column(name = "estimated_time_of_arrival")
+    private LocalDateTime estimatedTimeOfArrival;
+
     @Column(name = "ordered_at", nullable = false)
     private LocalDateTime orderedAt;
 
@@ -57,16 +66,23 @@ public class Order {
      * @param store       the store
      * @param memo        the memo
      */
-    public Order(UUID code, OrderStatus orderStatus, Account account, Store store, String memo) {
+    public Order(UUID code, OrderStatus orderStatus, Account account, Store store, String deliveryAddress,
+                 Integer deliveryCost, String memo) {
         this.code = code;
         this.orderStatus = orderStatus;
         this.account = account;
         this.store = store;
+        this.deliveryAddress = deliveryAddress;
+        this.deliveryCost = deliveryCost;
         this.orderedAt = LocalDateTime.now();
         this.memo = memo;
     }
 
     public void updateOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+    public void updateEstimatedTimeOfArrival(LocalDateTime estimatedTimeOfArrival) {
+        this.estimatedTimeOfArrival = estimatedTimeOfArrival;
     }
 }
