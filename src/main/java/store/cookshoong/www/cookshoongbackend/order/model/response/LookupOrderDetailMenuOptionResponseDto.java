@@ -12,9 +12,11 @@ import lombok.Getter;
 @Getter
 public class LookupOrderDetailMenuOptionResponseDto {
     private final String optionName;
+    private final int price;
 
     @QueryProjection
-    public LookupOrderDetailMenuOptionResponseDto(String optionName) {
+    public LookupOrderDetailMenuOptionResponseDto(String optionName, int price) {
         this.optionName = optionName;
+        this.price = price;
     }
 }
