@@ -10,7 +10,7 @@ name: Deploy on cloud
 
 on:
   pull_request:
-    branches: [ "main" , "develop"]
+    branches: [ "main" , "develop" ]
     types:
       - closed
 
@@ -23,6 +23,9 @@ jobs:
       SECURE_KEY_MANAGER_APP_KEY: ${{ secrets.SECURE_KEY_MANAGER_APP_KEY }}
 
     steps:
+      - name: set KoreaTime
+        run: sudo rdate -s time.bora.net
+
       - uses: actions/checkout@v3
       - name: Set up JDK 11
         uses: actions/setup-java@v3
