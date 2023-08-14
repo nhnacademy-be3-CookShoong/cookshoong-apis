@@ -10,14 +10,15 @@ import static store.cookshoong.www.cookshoongbackend.review.entity.QReview.revie
 import static store.cookshoong.www.cookshoongbackend.review.entity.QReviewHasImage.reviewHasImage;
 import static store.cookshoong.www.cookshoongbackend.review.entity.QReviewReply.reviewReply;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import store.cookshoong.www.cookshoongbackend.file.entity.QImage;
-import store.cookshoong.www.cookshoongbackend.review.entity.QReviewHasImage;
+import store.cookshoong.www.cookshoongbackend.review.entity.Review;
 import store.cookshoong.www.cookshoongbackend.review.model.response.QSelectBusinessReviewResponseDto;
 import store.cookshoong.www.cookshoongbackend.review.model.response.QSelectReviewImageResponseDto;
 import store.cookshoong.www.cookshoongbackend.review.model.response.QSelectReviewOrderMenuResponseDto;
@@ -36,20 +37,26 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.QStore;
  */
 @RequiredArgsConstructor
 public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
+    private static final QStore store = new QStore("StoreEntity");
+
+    private static BooleanExpression inStore(Long storeId) {
+        return store.id.eq(storeId);
+    }
+
+    private static BooleanExpression inAccount(Long accountId) {
+        return account.id.eq(accountId);
+    }
 
     private final JPAQueryFactory jpaQueryFactory;
-    QStore store = new QStore("StoreEntity");
 
     @Override
     public Page<SelectReviewResponseDto> lookupReviewByAccount(Long accountId, Pageable pageable) {
-        List<SelectReviewResponseDto> responseDtos = lookupReviews(accountId, pageable);
-
-        Long total = lookupTotal(accountId);
-        return new PageImpl<>(responseDtos, pageable, total);
+        List<SelectReviewResponseDto> responses = lookupReviews(accountId, pageable);
+        Long total = lookupTotal(inAccount(accountId));
+        return new PageImpl<>(responses, pageable, total);
     }
 
-    private List<SelectReviewResponseDto> lookupReviews(Long accountId, Pageable pageable) {
-
+    private JPAQuery<Review> getReviewInfo(BooleanExpression filter, Pageable pageable) {
         return jpaQueryFactory
             .selectFrom(review)
             .innerJoin(review.order, order)
@@ -70,75 +77,44 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
 
             .leftJoin(reviewHasImage.image, image)
 
-            .where(account.id.eq(accountId))
+            .where(filter)
             .orderBy(review.writtenAt.desc())
             .offset(pageable.getOffset())
-            .limit(pageable.getPageSize())
+            .limit(pageable.getPageSize());
+    }
+
+    private static QSelectReviewResponseDto createReview() {
+        return new QSelectReviewResponseDto(store.id, store.name,
+            store.storeImage.savedName, store.storeImage.locationType,
+            store.storeImage.domainName, review.contents, review.rating, review.writtenAt, review.updatedAt,
+            list(new QSelectReviewImageResponseDto(
+                reviewHasImage.image.savedName, reviewHasImage.image.locationType, reviewHasImage.image.domainName)),
+            list(new QSelectReviewOrderMenuResponseDto(orderDetail.menu.id, orderDetail.nowName)),
+            list(new QSelectBusinessReviewResponseDto(reviewReply.contents, reviewReply.writtenAt)));
+    }
+
+    private List<SelectReviewResponseDto> lookupReviews(Long accountId, Pageable pageable) {
+        return getReviewInfo(inAccount(accountId), pageable)
             .transform(
                 groupBy(review)
-                    .list(new QSelectReviewResponseDto(store.id, store.name,
-                            store.storeImage.savedName, store.storeImage.locationType,
-                            store.storeImage.domainName, review.contents, review.rating, review.writtenAt, review.updatedAt,
-                            list(new QSelectReviewImageResponseDto(
-                                reviewHasImage.image.savedName, reviewHasImage.image.locationType, reviewHasImage.image.domainName)),
-                            list(new QSelectReviewOrderMenuResponseDto(orderDetail.menu.id, orderDetail.nowName)),
-                            list(new QSelectBusinessReviewResponseDto(reviewReply.contents, reviewReply.writtenAt))
-                        )
-                    )
-            );
-
+                    .list(createReview()));
     }
 
     @Override
     public Page<SelectReviewStoreResponseDto> lookupReviewByStore(Long storeId, Pageable pageable) {
-        List<SelectReviewStoreResponseDto> responseDtos = lookupReviewsStore(storeId, pageable);
-
-        Long total = lookupTotal(storeId);
-        return new PageImpl<>(responseDtos, pageable, total);
+        List<SelectReviewStoreResponseDto> responses = lookupReviewsStore(storeId, pageable);
+        Long total = lookupTotal(inStore(storeId));
+        return new PageImpl<>(responses, pageable, total);
     }
 
     private List<SelectReviewStoreResponseDto> lookupReviewsStore(Long storeId, Pageable pageable) {
-
-        return jpaQueryFactory
-            .selectFrom(review)
-            .innerJoin(review.order, order)
-
-            .innerJoin(orderDetail)
-            .on(orderDetail.order.eq(order))
-
-            .innerJoin(order.account, account)
-
-            .innerJoin(store)
-            .on(order.store.eq(store))
-
-            .leftJoin(reviewReply)
-            .on(reviewReply.review.eq(review))
-
-            .leftJoin(reviewHasImage)
-            .on(reviewHasImage.review.eq(review))
-
-            .leftJoin(reviewHasImage.image, image)
-
-            .where(account.id.eq(storeId))
-            .orderBy(review.writtenAt.desc())
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize())
+        return getReviewInfo(inStore(storeId), pageable)
             .transform(
                 groupBy(review)
-                    .list(new QSelectReviewStoreResponseDto(account.nickname, new QSelectReviewResponseDto(store.id, store.name,
-                        store.storeImage.savedName, store.storeImage.locationType,
-                        store.storeImage.domainName, review.contents, review.rating, review.writtenAt, review.updatedAt,
-                        list(new QSelectReviewImageResponseDto(
-                            reviewHasImage.image.savedName, reviewHasImage.image.locationType, reviewHasImage.image.domainName)),
-                        list(new QSelectReviewOrderMenuResponseDto(orderDetail.menu.id, orderDetail.nowName)),
-                        list(new QSelectBusinessReviewResponseDto(reviewReply.contents, reviewReply.writtenAt))
-                    )
-                    ))
-            );
+                    .list(new QSelectReviewStoreResponseDto(account.nickname, createReview())));
     }
 
-    private Long lookupTotal(Long accountId) {
-
+    private Long lookupTotal(BooleanExpression filter) {
         return jpaQueryFactory
             .select(review.id.count())
             .from(review)
@@ -160,7 +136,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
 
             .leftJoin(reviewHasImage.image, image)
 
-            .where(account.id.eq(accountId))
+            .where(filter)
             .fetchOne();
     }
 }
