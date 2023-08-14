@@ -12,10 +12,9 @@ jobs:
       SECURE_KEY_MANAGER_APP_KEY: ${{ secrets.SECURE_KEY_MANAGER_APP_KEY }}
 
     steps:
-      - name: set KoreaTime
-        run: |
-          sudo apt install rdate \
-          && sudo rdate -s time.bora.net
+      - uses: szenius/set-timezone@v1.2
+        with:
+          timezoneLinux: "Asia/Seoul"
 
       - uses: actions/checkout@v3
       - name: Set up JDK 11
