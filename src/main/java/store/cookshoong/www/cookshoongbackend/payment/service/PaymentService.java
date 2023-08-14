@@ -124,7 +124,7 @@ public class PaymentService {
         lockProcessor.lock(account.getId().toString(), ignore -> {
             PointReasonOrder pointReasonOrder =
                 pointReasonOrderRepository.save(new PointReasonOrder(order, "주문 사용"));
-            pointLogRepository.save(new PointLog(account, pointReasonOrder, point));
+            pointLogRepository.save(new PointLog(account, pointReasonOrder, -point));
         });
     }
 
