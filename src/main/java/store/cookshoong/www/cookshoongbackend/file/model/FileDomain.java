@@ -25,7 +25,8 @@ public enum FileDomain {
     /**
      * 로컬에서 파일 관리하는 폴더명.
      */
-    FILES("files");
+    FILES("files"),
+    REVIEW("reviewImage");
     private final String variable;
 
     /**

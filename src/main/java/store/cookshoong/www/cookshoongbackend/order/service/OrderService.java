@@ -232,7 +232,7 @@ public class OrderService {
         boolean response = true;
         StringJoiner stringJoiner = new StringJoiner("\n");
 
-        if (inStandardDistance) {
+        if (!inStandardDistance) {
             response = false;
             stringJoiner.add("주문할 수 없는 거리입니다.");
         }

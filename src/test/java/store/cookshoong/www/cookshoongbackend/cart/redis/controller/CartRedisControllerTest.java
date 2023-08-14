@@ -84,8 +84,6 @@ class CartRedisControllerTest {
         ReflectionTestUtils.setField(cartMenuDto, "menuName", "양념치킨");
         ReflectionTestUtils.setField(cartMenuDto, "menuImage", "menuImage");
         ReflectionTestUtils.setField(cartMenuDto, "menuPrice", 19000);
-        ReflectionTestUtils.setField(cartMenuDto, "locationType", LocationType.OBJECT_S.getVariable());
-        ReflectionTestUtils.setField(cartMenuDto, "domainName", FileDomain.MENU_IMAGE.getVariable());
 
         cartOptionDto = ReflectionUtils.newInstance(CartOptionDto.class);
         ReflectionTestUtils.setField(cartOptionDto, "optionId", 1L);
@@ -141,8 +139,6 @@ class CartRedisControllerTest {
                     fieldWithPath("menu.menuName").description("메뉴이름"),
                     fieldWithPath("menu.menuImage").description("메뉴이미지"),
                     fieldWithPath("menu.menuPrice").description("메뉴가격"),
-                    fieldWithPath("menu.locationType").description("저장소타입"),
-                    fieldWithPath("menu.domainName").description("저장폴더"),
                     fieldWithPath("options[].optionId").description("옵션아이"),
                     fieldWithPath("options[].optionName").description("옵션이름"),
                     fieldWithPath("options[].optionPrice").description("옵션가격"),
@@ -247,8 +243,6 @@ class CartRedisControllerTest {
                     fieldWithPath("menu.menuName").description("메뉴이름"),
                     fieldWithPath("menu.menuImage").description("메뉴이미지"),
                     fieldWithPath("menu.menuPrice").description("메뉴가격"),
-                    fieldWithPath("menu.locationType").description("저장소타입"),
-                    fieldWithPath("menu.domainName").description("저장폴더"),
                     fieldWithPath("options[].optionId").description("옵션아이"),
                     fieldWithPath("options[].optionName").description("옵션이름"),
                     fieldWithPath("options[].optionPrice").description("옵션가격"),
@@ -321,8 +315,6 @@ class CartRedisControllerTest {
             .andExpect(jsonPath("$[0].menu.menuName").value(cartRedisDto.getMenu().getMenuName()))
             .andExpect(jsonPath("$[0].menu.menuImage").value(cartRedisDto.getMenu().getMenuImage()))
             .andExpect(jsonPath("$[0].menu.menuPrice").value(cartRedisDto.getMenu().getMenuPrice()))
-            .andExpect(jsonPath("$[0].menu.locationType").value(cartRedisDto.getMenu().getLocationType()))
-            .andExpect(jsonPath("$[0].menu.domainName").value(cartRedisDto.getMenu().getDomainName()))
             .andExpect(jsonPath("$[0].options[0].optionId").value(cartRedisDto.getOptions().get(0).getOptionId()))
             .andExpect(jsonPath("$[0].options[0].optionName").value(cartRedisDto.getOptions().get(0).getOptionName()))
             .andExpect(jsonPath("$[0].options[0].optionPrice").value(cartRedisDto.getOptions().get(0).getOptionPrice()))
@@ -345,8 +337,6 @@ class CartRedisControllerTest {
                 fieldWithPath("[].menu.menuName").description("메뉴이름"),
                 fieldWithPath("[].menu.menuImage").description("메뉴이미지"),
                 fieldWithPath("[].menu.menuPrice").description("메뉴가격"),
-                fieldWithPath("[].menu.locationType").description("저장소타입"),
-                fieldWithPath("[].menu.domainName").description("저장폴더"),
                 fieldWithPath("[].options[].optionId").description("옵션아이"),
                 fieldWithPath("[].options[].optionName").description("옵션이름"),
                 fieldWithPath("[].options[].optionPrice").description("옵션가격"),
@@ -375,8 +365,6 @@ class CartRedisControllerTest {
             .andExpect(jsonPath("$.menu.menuName").value(cartRedisDto.getMenu().getMenuName()))
             .andExpect(jsonPath("$.menu.menuImage").value(cartRedisDto.getMenu().getMenuImage()))
             .andExpect(jsonPath("$.menu.menuPrice").value(cartRedisDto.getMenu().getMenuPrice()))
-            .andExpect(jsonPath("$.menu.locationType").value(cartRedisDto.getMenu().getLocationType()))
-            .andExpect(jsonPath("$.menu.domainName").value(cartRedisDto.getMenu().getDomainName()))
             .andExpect(jsonPath("$.options[0].optionId").value(cartRedisDto.getOptions().get(0).getOptionId()))
             .andExpect(jsonPath("$.options[0].optionName").value(cartRedisDto.getOptions().get(0).getOptionName()))
             .andExpect(jsonPath("$.options[0].optionPrice").value(cartRedisDto.getOptions().get(0).getOptionPrice()))
@@ -400,8 +388,6 @@ class CartRedisControllerTest {
                     fieldWithPath("menu.menuName").description("메뉴이름"),
                     fieldWithPath("menu.menuImage").description("메뉴이미지"),
                     fieldWithPath("menu.menuPrice").description("메뉴가격"),
-                    fieldWithPath("menu.locationType").description("저장소타입"),
-                    fieldWithPath("menu.domainName").description("저장폴더"),
                     fieldWithPath("options[].optionId").description("옵션아이"),
                     fieldWithPath("options[].optionName").description("옵션이름"),
                     fieldWithPath("options[].optionPrice").description("옵션가격"),

@@ -86,8 +86,6 @@ class CartRedisServiceTest {
         ReflectionTestUtils.setField(cartMenuDto, "menuName", "menuName2");
         ReflectionTestUtils.setField(cartMenuDto, "menuImage", menuImagePath);
         ReflectionTestUtils.setField(cartMenuDto, "menuPrice", 3);
-        ReflectionTestUtils.setField(cartMenuDto, "locationType", LocationType.OBJECT_S.getVariable());
-        ReflectionTestUtils.setField(cartMenuDto, "domainName", FileDomain.MENU_IMAGE.getVariable());
 
         cartOptionDto = ReflectionUtils.newInstance(CartOptionDto.class);
         ReflectionTestUtils.setField(cartOptionDto, "optionId", 1L);
@@ -462,7 +460,6 @@ class CartRedisServiceTest {
         when(cartRepository.hasCartByAccountId(accountId)).thenReturn(true);
         when(cartRepository.lookupCartDbList(accountId)).thenReturn(carDBtList);
         when(cartRedisRepository.findByCartAll(String.valueOf(accountId))).thenReturn(cartRedisList);
-        when(fileUtilResolver.getFileService(eq(LocationType.OBJECT_S.getVariable()))).thenReturn(objectStorageService);
         List<CartRedisDto> actual = cartRedisService.selectCartMenuAll(String.valueOf(accountId));
 
         verify(cartRedisRepository, times(1)).existKeyInCartRedis(String.valueOf(accountId));

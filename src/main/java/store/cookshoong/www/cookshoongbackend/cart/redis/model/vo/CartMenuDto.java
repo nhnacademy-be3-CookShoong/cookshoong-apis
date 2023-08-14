@@ -22,10 +22,7 @@ public class CartMenuDto {
     private Long menuId;
     @NotBlank
     private String menuName;
-    @NotBlank
     private String menuImage;
     @NotNull
     private Integer menuPrice;
-    private String locationType;
-    private String domainName;
 }

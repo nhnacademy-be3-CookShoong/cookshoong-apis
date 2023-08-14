@@ -174,7 +174,7 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
             .innerJoin(store.address, address)
             .innerJoin(store.storesHasCategories, storesHasCategory)
             .innerJoin(storesHasCategory.categoryCode, storeCategory)
-            .innerJoin(store.storeImage, image)
+            .leftJoin(store.storeImage, image)
             .where(storeStatus.code.ne("OUTED"))
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
