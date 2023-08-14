@@ -24,7 +24,9 @@ jobs:
 
     steps:
       - name: set KoreaTime
-        run: sudo rdate -s time.bora.net
+        run: |
+          sudo apt install rdate \
+          && sudo rdate -s time.bora.net
 
       - uses: actions/checkout@v3
       - name: Set up JDK 11
