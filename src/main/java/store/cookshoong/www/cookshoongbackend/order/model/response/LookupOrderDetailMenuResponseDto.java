@@ -3,7 +3,6 @@ package store.cookshoong.www.cookshoongbackend.order.model.response;
 import com.querydsl.core.annotations.QueryProjection;
 import java.util.List;
 import lombok.Getter;
-import lombok.Setter;
 
 /**
  * 주문 메뉴 정보를 확인하는 dto.
