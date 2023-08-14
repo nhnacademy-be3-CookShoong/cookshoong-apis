@@ -41,4 +41,16 @@ public class ReviewReply {
     @Column(name = "written_at", nullable = false)
     private LocalDateTime writtenAt;
 
+    /**
+     * 리뷰 답글을 생성하는 생성자.
+     *
+     * @param review        the review
+     * @param contents      답글 내용
+     */
+    public ReviewReply(Review review, String contents) {
+
+        this.review = review;
+        this.contents = contents;
+        this.writtenAt = LocalDateTime.now();
+    }
 }
