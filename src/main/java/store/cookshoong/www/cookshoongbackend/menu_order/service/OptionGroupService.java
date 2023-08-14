@@ -10,6 +10,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.entity.optiongroup.Opti
 import store.cookshoong.www.cookshoongbackend.menu_order.exception.option.OptionGroupNotFoundException;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.request.CreateOptionGroupRequestDto;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectOptionGroupResponseDto;
+import store.cookshoong.www.cookshoongbackend.menu_order.repository.menu.MenuRepository;
 import store.cookshoong.www.cookshoongbackend.menu_order.repository.option.OptionGroupRepository;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreNotFoundException;
@@ -27,6 +28,7 @@ import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreReposit
 public class OptionGroupService {
     private final OptionGroupRepository optionGroupRepository;
     private final StoreRepository storeRepository;
+    private final MenuRepository menuRepository;
 
     /**
      * 옵션 그룹 등록 서비스.
@@ -61,6 +63,16 @@ public class OptionGroupService {
      */
     public List<SelectOptionGroupResponseDto> selectOptionGroups(Long storeId) {
         return optionGroupRepository.lookupOptionGroups(storeId);
+    }
+
+    /**
+     * 각 메뉴 별 옵션 그룹 리스트 조회 서비스.
+     *
+     * @param storeId 매장 아이디
+     * @return 매장의 옵션 그룹 리스트
+     */
+    public List<SelectOptionGroupResponseDto> selectOptionGroupsByMenu(Long storeId, Long menuId) {
+        return menuRepository.lookupOptionGroupByMenu(storeId, menuId);
     }
 
     /**
