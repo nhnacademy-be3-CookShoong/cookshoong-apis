@@ -1,8 +1,12 @@
 package store.cookshoong.www.cookshoongbackend.order.service;
 
+import static store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus.StatusCode.CANCEL;
 import static store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus.StatusCode.COMPLETE;
 import static store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus.StatusCode.COOKING;
 import static store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus.StatusCode.DELIVER;
+import static store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus.StatusCode.FOOD_OUT;
+import static store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus.StatusCode.ORD_FLOOD;
+import static store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus.StatusCode.PARTIAL;
 import static store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus.StatusCode.PAY;
 import static store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus.StatusCode.getStatusCodeString;
 
@@ -42,6 +46,7 @@ import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus.StatusCod
 import store.cookshoong.www.cookshoongbackend.order.exception.OrderStatusNotFoundException;
 import store.cookshoong.www.cookshoongbackend.order.exception.PriceIncreaseException;
 import store.cookshoong.www.cookshoongbackend.order.model.request.CreateOrderRequestDto;
+import store.cookshoong.www.cookshoongbackend.order.model.response.LookupAccountOrderInStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderInStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.order.model.response.SelectOrderPossibleResponseDto;
 import store.cookshoong.www.cookshoongbackend.order.repository.OrderDetailMenuOptionRepository;
@@ -169,7 +174,8 @@ public class OrderService {
             .orElseThrow(OrderStatusNotFoundException::new);
 
         order.updateOrderStatus(orderStatus);
-        statusCodeConsumer.getOrDefault(statusCode, ignore -> {})
+        statusCodeConsumer.getOrDefault(statusCode, ignore -> {
+            })
             .accept(orderCode);
     }
 
@@ -197,7 +203,7 @@ public class OrderService {
      */
     public Page<LookupOrderInStatusResponseDto> lookupOrderInComplete(Long storeId, Pageable pageable) {
         Store store = storeRepository.findById(storeId)
-                .orElseThrow(StoreNotFoundException::new);
+            .orElseThrow(StoreNotFoundException::new);
 
         Set<String> statusCodeString = getStatusCodeString(Set.of(COMPLETE));
 
@@ -241,5 +247,23 @@ public class OrderService {
         }
 
         return new SelectOrderPossibleResponseDto(response, stringJoiner.toString());
+    }
+
+    /**
+     * 사용자의 주문 페이지 확인.
+     *
+     * @param accountId the account id
+     * @param pageable  the pageable
+     * @return the page
+     */
+    @Transactional(readOnly = true)
+    public Page<LookupAccountOrderInStatusResponseDto> lookupAccountOrders(Long accountId, Pageable pageable) {
+        Account account = accountRepository.findById(accountId)
+            .orElseThrow(UserNotFoundException::new);
+
+        Set<StatusCode> statusCodes = Set.of(PAY, CANCEL, COOKING, FOOD_OUT, ORD_FLOOD, DELIVER, COMPLETE, PARTIAL);
+
+        return orderRepository.lookupOrderInStatus(
+            account, OrderStatus.StatusCode.getStatusCodeString(statusCodes), pageable);
     }
 }
