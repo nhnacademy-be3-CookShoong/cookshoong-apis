@@ -24,11 +24,24 @@ import store.cookshoong.www.cookshoongbackend.order.service.OrderService;
 public class MyPageController {
     private final OrderService orderService;
 
+    /**
+     * 사용자 id 반환.
+     *
+     * @param accountId the account id
+     * @return the account id
+     */
     @ModelAttribute
     public Long getAccountId(@PathVariable Long accountId) {
         return accountId;
     }
 
+    /**
+     * 내 주문 확인.
+     *
+     * @param accountId the account id
+     * @param pageable  the pageable
+     * @return the orders
+     */
     @GetMapping("/orders")
     public Page<LookupAccountOrderInStatusResponseDto> getOrders(@ModelAttribute Long accountId, Pageable pageable) {
         return orderService.lookupAccountOrders(accountId, pageable);
