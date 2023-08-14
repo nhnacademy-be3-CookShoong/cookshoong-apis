@@ -10,8 +10,11 @@ import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.QMenu;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.QMenuStatus;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menugroup.QMenuHasMenuGroup;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.optiongroup.QMenuHasOptionGroup;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.optiongroup.QOptionGroup;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.response.QSelectMenuResponseDto;
+import store.cookshoong.www.cookshoongbackend.menu_order.model.response.QSelectOptionGroupResponseDto;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectMenuResponseDto;
+import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectOptionGroupResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QStore;
 
 /**
@@ -116,5 +119,27 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
         }
 
         return selectMenuResponseDtoList;
+    }
+
+    @Override
+    public List<SelectOptionGroupResponseDto> lookupOptionGroupByMenu(Long storeId, Long menuId) {
+        QOptionGroup optionGroup = QOptionGroup.optionGroup;
+        QStore store = QStore.store;
+        QMenuHasOptionGroup menuHasOptionGroup = QMenuHasOptionGroup.menuHasOptionGroup;
+        QMenu menu = QMenu.menu;
+
+        return jpaQueryFactory
+            .select(new QSelectOptionGroupResponseDto(
+                menuHasOptionGroup.optionGroup.id, store.id, menuHasOptionGroup.optionGroup.name,
+                menuHasOptionGroup.optionGroup.minSelectCount, menuHasOptionGroup.optionGroup.maxSelectCount,
+                menuHasOptionGroup.optionGroup.isDeleted
+            ))
+            .from(menu)
+            .innerJoin(menu.menuHasOptionGroups, menuHasOptionGroup)
+            .innerJoin(menuHasOptionGroup.optionGroup, optionGroup)
+            .innerJoin(menu.store, store)
+            .where(optionGroup.isDeleted.isFalse(),
+                menu.id.eq(menuId), menu.store.id.eq(storeId))
+            .fetch();
     }
 }
