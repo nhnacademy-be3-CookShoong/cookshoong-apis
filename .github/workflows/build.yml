@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       SECURE_KEY_MANAGER_PASSWORD: ${{ secrets.SECURE_KEY_MANAGER_PASSWORD }}
       SECURE_KEY_MANAGER_APP_KEY: ${{ secrets.SECURE_KEY_MANAGER_APP_KEY }}
