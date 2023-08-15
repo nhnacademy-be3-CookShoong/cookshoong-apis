@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import store.cookshoong.www.cookshoongbackend.file.ImageNotFoundException;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
 import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
@@ -59,61 +60,65 @@ public class MenuService {
     private final FileUtilResolver fileUtilResolver;
     private final EntityManager entityManager;
 
+    private Image getImage(String storedAt, MultipartFile file, FileDomain fileDomain) throws IOException {
+        if (Objects.nonNull(file)) {
+            FileUtils fileUtils = fileUtilResolver.getFileService(storedAt);
+            return fileUtils.storeFile(file, fileDomain.getVariable(), true);
+        }
+        return null;
+    }
+
+    public void createMenu(Long storeId, CreateMenuRequestDto createMenuRequestDto,
+                           String storedAt, MultipartFile file) throws IOException {
+        Store store = storeRepository.findById(storeId)
+            .orElseThrow(StoreNotFoundException::new);
+        MenuStatus menuStatus = menuStatusRepository.findById(StoreStatus.StoreStatusCode.OPEN.name())
+            .orElseThrow(MenuStatusNotFoundException::new);
+
+        Menu menu = new Menu(
+            menuStatus,
+            store,
+            createMenuRequestDto.getName(),
+            createMenuRequestDto.getPrice(),
+            createMenuRequestDto.getDescription(),
+            getImage(storedAt, file, FileDomain.MENU_IMAGE),
+            createMenuRequestDto.getCookingTime(),
+            createMenuRequestDto.getEarningRate());
+        menuRepository.save(menu);
+        addMenuGroup(createMenuRequestDto.getMenuGroups(), menu.getId());
+        addOptionGroup(createMenuRequestDto.getOptionGroups(), menu.getId());
+    }
+
     /**
      * 메뉴 등록 및 수정 서비스.
      *
      * @param storeId              매장 아이디
      * @param createMenuRequestDto 메뉴 등록 Dto
      */
-    public void updateMenu(Long storeId, CreateMenuRequestDto createMenuRequestDto, String storedAt, MultipartFile file)
+    public void updateMenu(CreateMenuRequestDto createMenuRequestDto,
+                           String storedAt, MultipartFile file)
         throws IOException {
-        Store store = storeRepository.findById(storeId)
-            .orElseThrow(StoreNotFoundException::new);
-        MenuStatus menuStatus = menuStatusRepository.findById(StoreStatus.StoreStatusCode.OPEN.name())
-            .orElseThrow(MenuStatusNotFoundException::new);
-        Image image = null;
-        FileUtils fileUtils;
-        if (Objects.isNull(createMenuRequestDto.getTargetMenuId())) {
-            if (Objects.nonNull(file)) {
-                fileUtils = fileUtilResolver.getFileService(storedAt);
-                image = fileUtils.storeFile(file, FileDomain.MENU_IMAGE.getVariable(), true);
-            }
-            Menu menu = new Menu(
-                menuStatus,
-                store,
-                createMenuRequestDto.getName(),
-                createMenuRequestDto.getPrice(),
-                createMenuRequestDto.getDescription(),
-                image,
-                createMenuRequestDto.getCookingTime(),
-                createMenuRequestDto.getEarningRate());
-            menuRepository.save(menu);
-            addMenuGroup(createMenuRequestDto.getMenuGroups(), menu.getId());
-            addOptionGroup(createMenuRequestDto.getOptionGroups(), menu.getId());
-        } else {
-            Menu menu = menuRepository.findById(createMenuRequestDto.getTargetMenuId())
-                .orElseThrow(MenuNotFoundException::new);
+        Menu menu = menuRepository.findById(createMenuRequestDto.getTargetMenuId())
+            .orElseThrow(MenuNotFoundException::new);
 
-            if (Objects.nonNull(menu.getImage())) {
-                fileUtils = fileUtilResolver.getFileService(storedAt);
-                image = imageRepository.findById(menu.getImage().getId()).get();
-                if (Objects.nonNull(file)) {
-                    image = fileUtils.updateFile(file, image);
-                }
-            } else {
-                if (Objects.nonNull(file)) {
-                    fileUtils = fileUtilResolver.getFileService(storedAt);
-                    image = fileUtils.storeFile(file, FileDomain.MENU_IMAGE.getVariable(), true);
-                }
+        Image newImage = getImage(storedAt, file, FileDomain.MENU_IMAGE);
+        if (Objects.nonNull(menu.getImage())) {
+            Image oldImage = imageRepository.findById(menu.getImage().getId()).orElseThrow(ImageNotFoundException::new);
+            FileUtils fileUtils = fileUtilResolver.getFileService(oldImage.getLocationType());
+
+            if (Objects.nonNull(newImage)) {
+                fileUtils.deleteFile(oldImage);
+                menu.modifyImage(newImage);
             }
-            menu.modifyImage(image);
-            menu.modifyMenu(createMenuRequestDto);
-            clearMenuGroup(menu.getId());
-            clearOptionGroup(menu.getId());
-            entityManager.flush();
-            addMenuGroup(createMenuRequestDto.getMenuGroups(), menu.getId());
-            addOptionGroup(createMenuRequestDto.getOptionGroups(), menu.getId());
+        } else {
+            menu.modifyImage(newImage);
         }
+        menu.modifyMenu(createMenuRequestDto);
+        clearMenuGroup(menu.getId());
+        clearOptionGroup(menu.getId());
+        entityManager.flush();
+        addMenuGroup(createMenuRequestDto.getMenuGroups(), menu.getId());
+        addOptionGroup(createMenuRequestDto.getOptionGroups(), menu.getId());
     }
 
     /**
@@ -161,7 +166,7 @@ public class MenuService {
         MenuStatus menuStatus = menuStatusRepository.findById("OUTED")
             .orElseThrow(MenuStatusNotFoundException::new);
         menu.modifyMenuStatus(menuStatus);
-        if (Objects.nonNull(menu.getImage().getId())) {
+        if (Objects.nonNull(menu.getImage())) {
             FileUtils fileUtils = fileUtilResolver.getFileService(menu.getImage().getLocationType());
             fileUtils.deleteFile(menu.getImage());
         }

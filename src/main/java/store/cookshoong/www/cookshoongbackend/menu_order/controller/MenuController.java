@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,9 +37,9 @@ public class MenuController {
     /**
      * 메뉴 등록 컨트롤러.
      *
-     * @param storeId        매장 아이디
+     * @param storeId              매장 아이디
      * @param createMenuRequestDto 메뉴 등록 Dto
-     * @param bindingResult  validation
+     * @param bindingResult        validation
      * @return 201 response
      */
     @PostMapping("/stores/{storeId}/menu")
@@ -51,11 +52,29 @@ public class MenuController {
             throw new MenuValidationException(bindingResult);
         }
 
-        menuService.updateMenu(storeId, createMenuRequestDto, storedAt, image);
+        menuService.createMenu(storeId, createMenuRequestDto, storedAt, image);
 
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
+            .build();
+    }
+
+    @PatchMapping("/stores/{storeId}/menu")
+    public ResponseEntity<Void> patchMenu(@PathVariable("storeId") Long storeId,
+                                          @RequestPart("requestDto") @Valid CreateMenuRequestDto createMenuRequestDto,
+                                          BindingResult bindingResult,
+                                          @RequestPart(value = "menuImage", required = false) MultipartFile image,
+                                          @RequestParam("storedAt") String storedAt) throws IOException {
+        if (bindingResult.hasErrors()) {
+            throw new MenuValidationException(bindingResult);
+        }
+
+        menuService.updateMenu(createMenuRequestDto, storedAt, image);
+
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
             .build();
     }
 
