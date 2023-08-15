@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       SECURE_KEY_MANAGER_PASSWORD: ${{ secrets.SECURE_KEY_MANAGER_PASSWORD }}
       SECURE_KEY_MANAGER_APP_KEY: ${{ secrets.SECURE_KEY_MANAGER_APP_KEY }}
@@ -23,12 +23,6 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: maven
-
-      - uses: actions/checkout@v3
-      - id: setup
-        uses: shogo82148/actions-setup-redis@v1
-        # connect to the redis-server via TCP
-      - run: redis-cli ping
 
       - name: Build with Maven
         run: mvn -B package -file pom.xml
