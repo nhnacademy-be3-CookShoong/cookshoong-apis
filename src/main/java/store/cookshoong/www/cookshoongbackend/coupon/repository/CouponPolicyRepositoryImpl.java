@@ -186,7 +186,7 @@ public class CouponPolicyRepositoryImpl implements CouponPolicyRepositoryCustom 
             .innerJoin(couponPolicy.couponUsage, couponUsage)
             .on(filter)
 
-            .where(couponPolicy.deleted.isFalse(), existReceivableIssueCoupon())
+            .where(couponPolicy.deleted.isFalse(), couponPolicy.hidden.isFalse(), existReceivableIssueCoupon())
             .fetch();
     }
 
