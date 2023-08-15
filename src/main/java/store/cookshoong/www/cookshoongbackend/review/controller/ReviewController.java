@@ -2,7 +2,6 @@ package store.cookshoong.www.cookshoongbackend.review.controller;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,7 +30,7 @@ import store.cookshoong.www.cookshoongbackend.review.service.ReviewService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/accounts/{accountId}")
+@RequestMapping("/api/accounts/{accountId}/review")
 public class ReviewController {
     private final ReviewService reviewService;
 
@@ -39,7 +38,6 @@ public class ReviewController {
      * 리뷰 등록에 대한 컨트롤러.
      *
      * @param accountId     the account id
-     * @param orderCode     the order code
      * @param requestDto    the request dto
      * @param bindingResult the binding result
      * @param images        the images
@@ -47,9 +45,8 @@ public class ReviewController {
      * @return the response entity
      * @throws IOException the io exception
      */
-    @PostMapping("/orders/{orderCode}/review")
+    @PostMapping
     public ResponseEntity<Void> postReview(@PathVariable("accountId") Long accountId,
-                                           @PathVariable("orderCode") UUID orderCode,
                                            @RequestPart("requestDto") @Valid CreateReviewRequestDto requestDto,
                                            BindingResult bindingResult,
                                            @RequestPart(value = "reviewImage", required = false) List<MultipartFile> images,
@@ -57,7 +54,7 @@ public class ReviewController {
         if (bindingResult.hasErrors()) {
             throw new ReviewValidException(bindingResult);
         }
-        reviewService.createReview(accountId, orderCode, requestDto, images, storedAt);
+        reviewService.createReview(accountId, requestDto, images, storedAt);
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .build();
@@ -70,7 +67,7 @@ public class ReviewController {
      * @param pageable  the pageable
      * @return the review by account
      */
-    @GetMapping("/review")
+    @GetMapping
     public ResponseEntity<Page<SelectReviewResponseDto>> getReviewByAccount(@PathVariable("accountId") Long accountId,
                                                                             Pageable pageable) {
         return ResponseEntity

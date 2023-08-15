@@ -1,6 +1,5 @@
 package store.cookshoong.www.cookshoongbackend.review.model.request;
 
-import java.time.LocalDateTime;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -18,7 +17,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CreateReviewRequestDto {
     @NotBlank
-    private String contents;
+    private String orderCode;
     @NotNull
     private Integer rating;
+    @NotBlank
+    private String contents;
 }
