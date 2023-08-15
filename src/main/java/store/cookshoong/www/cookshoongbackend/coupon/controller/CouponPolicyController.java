@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -196,6 +197,20 @@ public class CouponPolicyController {
     @DeleteMapping("/{policyId}")
     public ResponseEntity<Void> deletePolicy(@PathVariable Long policyId) {
         couponPolicyService.deletePolicy(policyId);
+        return ResponseEntity
+            .noContent()
+            .build();
+    }
+
+    /**
+     * 쿠폰 정책 숨김 엔드포인트.
+     *
+     * @param policyId the policy id
+     * @return the response entity
+     */
+    @PatchMapping("/{policyId}")
+    public ResponseEntity<Void> patchHidePolicy(@PathVariable Long policyId) {
+        couponPolicyService.patchHidePolicy(policyId);
         return ResponseEntity
             .noContent()
             .build();
