@@ -74,7 +74,7 @@ public class CouponPolicyController {
      * 매장 금액 쿠폰 정책 생성을 위한 엔드포인트.
      *
      * @param storeId       the store id
-     * @param dto           가게에서 쿠폰 금액 정책을 생성할 때 사용되는 dto
+     * @param dto           매장에서 쿠폰 금액 정책을 생성할 때 사용되는 dto
      * @param bindingResult the binding result
      * @return CREATED status 및 쿠폰 정책 id
      */
@@ -94,7 +94,7 @@ public class CouponPolicyController {
      * 매장 포인트 쿠폰 정책 생성을 위한 엔드포인트.
      *
      * @param storeId       the store id
-     * @param dto           가게에서 쿠폰 포인트 정책을 생성할 때 사용되는 dto
+     * @param dto           매장에서 쿠폰 퍼센트 정책을 생성할 때 사용되는 dto
      * @param bindingResult the binding result
      * @return CREATED status 및 쿠폰 정책 id
      */
@@ -135,15 +135,15 @@ public class CouponPolicyController {
      * 가맹점 포인트 쿠폰 정책 생성을 위한 엔드포인트.
      *
      * @param merchantId    the merchant id
-     * @param dto           가맹점에서 쿠폰 포인트 정책을 생성할 때 사용되는 dto
+     * @param dto           가맹점에서 쿠폰 퍼센트 정책을 생성할 때 사용되는 dto
      * @param bindingResult the binding result
      * @return CREATED status 및 쿠폰 정책 id
      */
     @PostMapping("/merchants/{merchantId}/percent")
-    public ResponseEntity<Void> postMerchantPointCouponPolicy(@PathVariable Long merchantId,
-                                                              @RequestBody @Valid
-                                                              CreatePercentCouponPolicyRequestDto dto,
-                                                              BindingResult bindingResult) {
+    public ResponseEntity<Void> postMerchantPercentCouponPolicy(@PathVariable Long merchantId,
+                                                                @RequestBody @Valid
+                                                                CreatePercentCouponPolicyRequestDto dto,
+                                                                BindingResult bindingResult) {
         validPolicyRequest(bindingResult);
         couponPolicyService.createMerchantPercentCouponPolicy(merchantId, dto);
 
@@ -173,13 +173,13 @@ public class CouponPolicyController {
     /**
      * 모든 범위 포인트 쿠폰 정책 생성을 위한 엔드포인트.
      *
-     * @param dto           쿠폰 포인트 정책을 생성할 때 사용되는 dto
+     * @param dto           쿠폰 퍼센트 정책을 생성할 때 사용되는 dto
      * @param bindingResult the binding result
      * @return CREATED status 및 쿠폰 정책 id
      */
     @PostMapping("/all/percent")
-    public ResponseEntity<Void> postAllPointCouponPolicy(@RequestBody @Valid CreatePercentCouponPolicyRequestDto dto,
-                                                         BindingResult bindingResult) {
+    public ResponseEntity<Void> postAllPercentCouponPolicy(@RequestBody @Valid CreatePercentCouponPolicyRequestDto dto,
+                                                           BindingResult bindingResult) {
         validPolicyRequest(bindingResult);
         couponPolicyService.createAllPercentCouponPolicy(dto);
 
