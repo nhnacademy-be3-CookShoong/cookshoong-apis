@@ -215,13 +215,32 @@ public class CouponPolicyService {
     }
 
     /**
-     * 제공 가능한 쿠폰 정책 목록 전달.
+     * 매장에서 제공 가능한 쿠폰 정책 목록 전달.
      *
      * @param storeId the store id
      * @return the provable store coupon policies
      */
     public List<SelectProvableCouponPolicyResponseDto> getProvableStoreCouponPolicies(Long storeId) {
         return couponPolicyRepository.lookupProvableStoreCouponPolicies(storeId);
+    }
+
+    /**
+     * 가맹점에서 제공 가능한 쿠폰 정책 목록 전달.
+     *
+     * @param merchantId the merchant id
+     * @return the provable store coupon policies
+     */
+    public List<SelectProvableCouponPolicyResponseDto> getProvableMerchantCouponPolicies(Long merchantId) {
+        return couponPolicyRepository.lookupProvableMerchantCouponPolicies(merchantId);
+    }
+
+    /**
+     * 모든 사용처 제공 가능한 쿠폰 정책 목록 전달.
+     *
+     * @return the provable store coupon policies
+     */
+    public List<SelectProvableCouponPolicyResponseDto> getProvableUsageAllCouponPolicies() {
+        return couponPolicyRepository.lookupProvableUsageAllCouponPolicies();
     }
 
     /**
