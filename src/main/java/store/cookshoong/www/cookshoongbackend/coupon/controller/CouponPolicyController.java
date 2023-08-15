@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.coupon.controller;
 
+import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponPolicyReque
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateCashCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreatePercentCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicyResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableCouponPolicyResponseDto;
 import store.cookshoong.www.cookshoongbackend.coupon.service.CouponPolicyService;
 
 /**
@@ -220,5 +222,15 @@ public class CouponPolicyController {
         if (bindingResult.hasErrors()) {
             throw new CouponPolicyRequestValidationException(bindingResult);
         }
+    }
+
+    @GetMapping("/event")
+    public List<SelectProvableCouponPolicyResponseDto> getProvableUsageAllCouponPolicy() {
+        return couponPolicyService.getProvableUsageAllCouponPolicies();
+    }
+
+    @GetMapping("/event/merchants/{merchantId}")
+    public List<SelectProvableCouponPolicyResponseDto> getProvableMerchantCouponPolicy(@PathVariable Long merchantId) {
+        return couponPolicyService.getProvableMerchantCouponPolicies(merchantId);
     }
 }
