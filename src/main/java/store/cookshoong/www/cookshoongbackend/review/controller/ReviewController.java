@@ -30,7 +30,7 @@ import store.cookshoong.www.cookshoongbackend.review.service.ReviewService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/accounts/{accountId}")
+@RequestMapping("/api/accounts/{accountId}/review")
 public class ReviewController {
     private final ReviewService reviewService;
 
@@ -45,7 +45,7 @@ public class ReviewController {
      * @return the response entity
      * @throws IOException the io exception
      */
-    @PostMapping("/review")
+    @PostMapping
     public ResponseEntity<Void> postReview(@PathVariable("accountId") Long accountId,
                                            @RequestPart("requestDto") @Valid CreateReviewRequestDto requestDto,
                                            BindingResult bindingResult,
@@ -67,7 +67,7 @@ public class ReviewController {
      * @param pageable  the pageable
      * @return the review by account
      */
-    @GetMapping("/review")
+    @GetMapping
     public ResponseEntity<Page<SelectReviewResponseDto>> getReviewByAccount(@PathVariable("accountId") Long accountId,
                                                                             Pageable pageable) {
         return ResponseEntity
