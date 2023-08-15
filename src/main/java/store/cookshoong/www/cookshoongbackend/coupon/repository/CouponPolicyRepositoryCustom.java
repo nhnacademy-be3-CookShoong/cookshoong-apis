@@ -55,5 +55,26 @@ public interface CouponPolicyRepositoryCustom {
      */
     List<SelectProvableStoreCouponPolicyResponseDto> lookupProvableStoreCouponPolicies(Long storeId);
 
+    /**
+     * 이벤트 페이지에서 발급 가능한 가맹점 쿠폰 정책 목록을 제공하는 메서드.
+     *
+     * @param merchantId the merchant id
+     * @return the list
+     */
+    List<SelectProvableStoreCouponPolicyResponseDto> lookupProvableMerchantCouponPolicies(Long merchantId);
+
+    /**
+     * 이벤트 페이지에서 발급 가능한 모든 사용처 쿠폰 정책 목록을 제공하는 메서드.
+     *
+     * @return the list
+     */
+    List<SelectProvableStoreCouponPolicyResponseDto> lookupProvableUsageAllCouponPolicies();
+
+    /**
+     * 매장에서 제공중인 쿠폰이 있는지 확인하는 메서드.
+     *
+     * @param storeId the store id
+     * @return the boolean
+     */
     boolean isOfferCouponInStore(Long storeId);
 }
