@@ -54,6 +54,28 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
         List<SelectReviewResponseDto> responses = lookupReviews(accountId, pageable);
         Long total = lookupTotal(inAccount(accountId));
         return new PageImpl<>(responses, pageable, total);
+
+    }
+
+    private List<SelectReviewResponseDto> lookupReviews(Long accountId, Pageable pageable) {
+        return getReviewInfo(inAccount(accountId), pageable)
+            .transform(
+                groupBy(review)
+                    .list(createReview()));
+    }
+
+    @Override
+    public Page<SelectReviewStoreResponseDto> lookupReviewByStore(Long storeId, Pageable pageable) {
+        List<SelectReviewStoreResponseDto> responses = lookupReviewsStore(storeId, pageable);
+        Long total = lookupTotal(inStore(storeId));
+        return new PageImpl<>(responses, pageable, total);
+    }
+
+    private List<SelectReviewStoreResponseDto> lookupReviewsStore(Long storeId, Pageable pageable) {
+        return getReviewInfo(inStore(storeId), pageable)
+            .transform(
+                groupBy(review)
+                    .list(new QSelectReviewStoreResponseDto(account.id, account.nickname, createReview())));
     }
 
     private JPAQuery<Review> getReviewInfo(BooleanExpression filter, Pageable pageable) {
@@ -86,32 +108,11 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
     private static QSelectReviewResponseDto createReview() {
         return new QSelectReviewResponseDto(store.id, store.name,
             store.storeImage.savedName, store.storeImage.locationType,
-            store.storeImage.domainName, review.contents, review.rating, review.writtenAt, review.updatedAt,
+            store.storeImage.domainName, review.id, review.contents, review.rating, review.writtenAt, review.updatedAt,
             list(new QSelectReviewImageResponseDto(
                 reviewHasImage.image.savedName, reviewHasImage.image.locationType, reviewHasImage.image.domainName)),
             list(new QSelectReviewOrderMenuResponseDto(orderDetail.menu.id, orderDetail.nowName)),
-            list(new QSelectBusinessReviewResponseDto(reviewReply.contents, reviewReply.writtenAt)));
-    }
-
-    private List<SelectReviewResponseDto> lookupReviews(Long accountId, Pageable pageable) {
-        return getReviewInfo(inAccount(accountId), pageable)
-            .transform(
-                groupBy(review)
-                    .list(createReview()));
-    }
-
-    @Override
-    public Page<SelectReviewStoreResponseDto> lookupReviewByStore(Long storeId, Pageable pageable) {
-        List<SelectReviewStoreResponseDto> responses = lookupReviewsStore(storeId, pageable);
-        Long total = lookupTotal(inStore(storeId));
-        return new PageImpl<>(responses, pageable, total);
-    }
-
-    private List<SelectReviewStoreResponseDto> lookupReviewsStore(Long storeId, Pageable pageable) {
-        return getReviewInfo(inStore(storeId), pageable)
-            .transform(
-                groupBy(review)
-                    .list(new QSelectReviewStoreResponseDto(account.nickname, createReview())));
+            list(new QSelectBusinessReviewResponseDto(reviewReply.id, reviewReply.contents, reviewReply.writtenAt)));
     }
 
     private Long lookupTotal(BooleanExpression filter) {
