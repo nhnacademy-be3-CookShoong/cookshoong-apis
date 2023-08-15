@@ -20,6 +20,7 @@ public class SelectReviewResponseDto {
     private String storeImageName;
     private final String storeImageLocationType;
     private final String storeImageDomainName;
+    private final Long reviewId;
     private final String contents;
     private final Integer rating;
     private final LocalDateTime writtenAt;
@@ -37,6 +38,7 @@ public class SelectReviewResponseDto {
      * @param storeImageName         the store image name
      * @param storeImageLocationType the store image location type
      * @param storeImageDomainName   the store image domain name
+     * @param reviewId               the review id
      * @param contents               the contents
      * @param rating                 the rating
      * @param imageResponseDtos      the image response dtos
@@ -45,7 +47,7 @@ public class SelectReviewResponseDto {
      */
     @QueryProjection
     public SelectReviewResponseDto(Long storeId, String storeName, String storeImageName, String storeImageLocationType,
-                                   String storeImageDomainName, String contents, Integer rating, LocalDateTime writtenAt, LocalDateTime updatedAt,
+                                   String storeImageDomainName, Long reviewId, String contents, Integer rating, LocalDateTime writtenAt, LocalDateTime updatedAt,
                                    List<SelectReviewImageResponseDto> imageResponseDtos, List<SelectReviewOrderMenuResponseDto> menuResponseDtos,
                                    List<SelectBusinessReviewResponseDto> replyResponseDtos) {
         this.storeId = storeId;
@@ -53,6 +55,7 @@ public class SelectReviewResponseDto {
         this.storeImageName = storeImageName;
         this.storeImageLocationType = storeImageLocationType;
         this.storeImageDomainName = storeImageDomainName;
+        this.reviewId = reviewId;
         this.contents = contents;
         this.rating = rating;
         this.writtenAt = writtenAt;

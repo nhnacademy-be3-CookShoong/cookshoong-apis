@@ -15,6 +15,7 @@ import lombok.ToString;
 @Getter
 public class SelectReviewStoreResponseDto {
 
+    private final Long accountId;
     private final String nickname;
 
     @Setter
@@ -23,12 +24,14 @@ public class SelectReviewStoreResponseDto {
     /**
      * 매장에 대한 리뷰를 보여줄 생성자.
      *
-     * @param nickname                  사용자 닉네임
-     * @param selectReviewResponseDto   매장에 보여줄 정보
+     * @param accountId               리뷰 적은 회원 아이디
+     * @param nickname                사용자 닉네임
+     * @param selectReviewResponseDto 매장에 보여줄 정보
      */
     @QueryProjection
-    public SelectReviewStoreResponseDto(String nickname,
+    public SelectReviewStoreResponseDto(Long accountId, String nickname,
                                         SelectReviewResponseDto selectReviewResponseDto) {
+        this.accountId = accountId;
         this.nickname = nickname;
         this.selectReviewResponseDto = selectReviewResponseDto;
     }
