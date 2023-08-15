@@ -26,6 +26,7 @@ import store.cookshoong.www.cookshoongbackend.review.model.ReviewStatusManager;
 import store.cookshoong.www.cookshoongbackend.review.model.request.CreateReviewRequestDto;
 import store.cookshoong.www.cookshoongbackend.review.model.response.SelectReviewImageResponseDto;
 import store.cookshoong.www.cookshoongbackend.review.model.response.SelectReviewResponseDto;
+import store.cookshoong.www.cookshoongbackend.review.model.response.SelectReviewStoreResponseDto;
 import store.cookshoong.www.cookshoongbackend.review.repository.ReviewRepository;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.UserAccessDeniedException;
 
@@ -94,6 +95,34 @@ public class ReviewService {
             FileUtils fileUtils = fileUtilResolver.getFileService(reviewResponseDto.getStoreImageLocationType());
             reviewResponseDto.setStoreImageName(fileUtils.getFullPath(reviewResponseDto.getStoreImageDomainName(), reviewResponseDto.getStoreImageName()));
             for (SelectReviewImageResponseDto dto : reviewResponseDto.getImageResponseDtos()) {
+                if (Objects.nonNull(dto.getLocationType())) {
+                    FileUtils reviewFileUtils = fileUtilResolver.getFileService(dto.getLocationType());
+                    dto.setSavedName(reviewFileUtils.getFullPath(dto.getDomainName(), dto.getSavedName()));
+                }
+            }
+        }
+        return responseDtos;
+    }
+
+    /**
+     * 사장님 매장 리뷰 목록 페이지로 조회.
+     *
+     * @param storeId   the store id
+     * @param pageable  the pageable
+     * @return the page
+     */
+    @Transactional(readOnly = true)
+    public Page<SelectReviewStoreResponseDto> selectReviewByStore(Long storeId, Pageable pageable) {
+
+        Page<SelectReviewStoreResponseDto> responseDtos = reviewRepository.lookupReviewByStore(storeId, pageable);
+
+        for (SelectReviewStoreResponseDto reviewResponseDto : responseDtos) {
+            FileUtils fileUtils = fileUtilResolver.getFileService(
+                reviewResponseDto.getSelectReviewResponseDto().getStoreImageLocationType());
+            reviewResponseDto.getSelectReviewResponseDto().setStoreImageName(fileUtils.getFullPath(
+                reviewResponseDto.getSelectReviewResponseDto().getStoreImageDomainName(),
+                reviewResponseDto.getSelectReviewResponseDto().getStoreImageName()));
+            for (SelectReviewImageResponseDto dto : reviewResponseDto.getSelectReviewResponseDto().getImageResponseDtos()) {
                 if (Objects.nonNull(dto.getLocationType())) {
                     FileUtils reviewFileUtils = fileUtilResolver.getFileService(dto.getLocationType());
                     dto.setSavedName(reviewFileUtils.getFullPath(dto.getDomainName(), dto.getSavedName()));

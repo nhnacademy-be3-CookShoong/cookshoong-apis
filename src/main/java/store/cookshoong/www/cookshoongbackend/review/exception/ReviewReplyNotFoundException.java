@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.address.exception;
+package store.cookshoong.www.cookshoongbackend.review.exception;
 
 import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException;
 
@@ -8,11 +8,11 @@ import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException
  * @author jeongjewan
  * @since 2023.07.05
  */
-public class AccountAddressNotFoundException extends NotFoundException {
+public class ReviewReplyNotFoundException extends NotFoundException {
 
-    private static final String MESSAGE = "주소";
+    private static final String MESSAGE = "리뷰 답글";
 
-    public AccountAddressNotFoundException() {
+    public ReviewReplyNotFoundException() {
         super(MESSAGE);
     }
 }

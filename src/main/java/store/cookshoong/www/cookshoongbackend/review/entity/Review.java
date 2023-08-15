@@ -38,7 +38,7 @@ public class Review {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "order_code", nullable = false)
-    private Order orderCode;
+    private Order order;
 
     @OneToMany(mappedBy = "review", cascade = CascadeType.PERSIST)
     private final Set<ReviewHasImage> reviewHasImages = new HashSet<>();
@@ -59,11 +59,11 @@ public class Review {
     /**
      * 리뷰 등록시 사용되는 생성자.
      *
-     * @param orderCode  the order code
+     * @param order  the order code
      * @param requestDto the request dto
      */
-    public Review(Order orderCode, CreateReviewRequestDto requestDto) {
-        this.orderCode = orderCode;
+    public Review(Order order, CreateReviewRequestDto requestDto) {
+        this.order = order;
         this.contents = requestDto.getContents();
         this.rating = requestDto.getRating();
         this.writtenAt = LocalDateTime.now();

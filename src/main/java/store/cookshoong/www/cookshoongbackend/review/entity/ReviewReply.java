@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.cookshoong.www.cookshoongbackend.review.model.request.ModifyBusinessReviewRequestDto;
 
 /**
  * 리뷰 답변에 대한 엔티티.
@@ -41,4 +42,21 @@ public class ReviewReply {
     @Column(name = "written_at", nullable = false)
     private LocalDateTime writtenAt;
 
+    /**
+     * 리뷰 답글을 생성하는 생성자.
+     *
+     * @param review        the review
+     * @param contents      답글 내용
+     */
+    public ReviewReply(Review review, String contents) {
+
+        this.review = review;
+        this.contents = contents;
+        this.writtenAt = LocalDateTime.now();
+    }
+
+    public void updateReviewReplyContent(ModifyBusinessReviewRequestDto requestDto) {
+        this.contents = requestDto.getContents();
+        this.writtenAt = LocalDateTime.now();
+    }
 }
