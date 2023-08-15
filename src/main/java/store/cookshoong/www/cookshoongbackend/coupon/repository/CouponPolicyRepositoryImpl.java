@@ -16,15 +16,14 @@ import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.QSelectPolicyResponseDto;
-import store.cookshoong.www.cookshoongbackend.coupon.model.response.QSelectProvableStoreCouponPolicyResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.QSelectProvableCouponPolicyResponseDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicyResponseDto;
-import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableStoreCouponPolicyResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableCouponPolicyResponseDto;
 
 /**
  * QueryDSL CouponPolicyRepository.
@@ -153,9 +152,29 @@ public class CouponPolicyRepositoryImpl implements CouponPolicyRepositoryCustom 
      * {@inheritDoc}
      */
     @Override
-    public List<SelectProvableStoreCouponPolicyResponseDto> lookupProvableStoreCouponPolicies(Long storeId) {
+    public List<SelectProvableCouponPolicyResponseDto> lookupProvableStoreCouponPolicies(Long storeId) {
+        return getProvableCouponPolicies(couponUsage.id.eq(getCouponUsageStoreId(storeId)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<SelectProvableCouponPolicyResponseDto> lookupProvableMerchantCouponPolicies(Long merchantId) {
+        return getProvableCouponPolicies(couponUsage.id.eq(getCouponUsageMerchantId(merchantId)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<SelectProvableCouponPolicyResponseDto> lookupProvableUsageAllCouponPolicies() {
+        return getProvableCouponPolicies(couponUsage.id.eq(getCouponUsageAllId()));
+    }
+
+    private List<SelectProvableCouponPolicyResponseDto> getProvableCouponPolicies(BooleanExpression filter) {
         return queryFactory
-            .select(new QSelectProvableStoreCouponPolicyResponseDto(
+            .select(new QSelectProvableCouponPolicyResponseDto(
                 couponPolicy.id,
                 couponType,
                 couponPolicy.usagePeriod
@@ -165,9 +184,9 @@ public class CouponPolicyRepositoryImpl implements CouponPolicyRepositoryCustom 
             .innerJoin(couponPolicy.couponType, couponType)
 
             .innerJoin(couponPolicy.couponUsage, couponUsage)
-            .on(couponUsage.id.eq(getCouponUsageStoreId(storeId)))
+            .on(filter)
 
-            .where(couponPolicy.deleted.isFalse(), existReceivableIssueCoupon())
+            .where(couponPolicy.deleted.isFalse(), couponPolicy.hidden.isFalse(), existReceivableIssueCoupon())
             .fetch();
     }
 
