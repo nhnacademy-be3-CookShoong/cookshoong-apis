@@ -19,7 +19,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.model.request.AbstractCoupo
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateCashCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreatePercentCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicyResponseDto;
-import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableStoreCouponPolicyResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableCouponPolicyResponseDto;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponTypeCashRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponTypePercentRepository;
@@ -220,7 +220,7 @@ public class CouponPolicyService {
      * @param storeId the store id
      * @return the provable store coupon policies
      */
-    public List<SelectProvableStoreCouponPolicyResponseDto> getProvableStoreCouponPolicies(Long storeId) {
+    public List<SelectProvableCouponPolicyResponseDto> getProvableStoreCouponPolicies(Long storeId) {
         return couponPolicyRepository.lookupProvableStoreCouponPolicies(storeId);
     }
 
