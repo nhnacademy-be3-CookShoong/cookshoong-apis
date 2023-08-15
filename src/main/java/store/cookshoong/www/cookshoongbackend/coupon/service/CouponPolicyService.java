@@ -224,8 +224,24 @@ public class CouponPolicyService {
         return couponPolicyRepository.lookupProvableStoreCouponPolicies(storeId);
     }
 
+    /**
+     * 해당 매장에 제공중인 쿠폰이 있는지 확인.
+     *
+     * @param storeId the store id
+     * @return the boolean
+     */
     @Transactional(readOnly = true)
     public boolean isOfferCouponInStore(Long storeId) {
         return couponPolicyRepository.isOfferCouponInStore(storeId);
+    }
+
+    /**
+     * 쿠폰 정책 숨김.
+     *
+     * @param policyId the policy id
+     */
+    public void patchHidePolicy(Long policyId) {
+        couponPolicyRepository.findById(policyId)
+            .ifPresent(CouponPolicy::hide);
     }
 }
