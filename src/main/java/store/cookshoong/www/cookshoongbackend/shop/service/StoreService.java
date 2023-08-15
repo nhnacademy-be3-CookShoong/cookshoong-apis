@@ -300,10 +300,12 @@ public class StoreService {
 
     private Image updateImage(Long storeImageId, MultipartFile storeImage, Image storeMainImage) throws IOException {
         FileUtils fileUtils = fileUtilResolver.getFileService(storeMainImage.getLocationType());
-        if (storeImageId == BASIC_IMAGE) {
-            return fileUtils.updateFile(storeImage, storeMainImage);
+        if (storeImageId.equals(BASIC_IMAGE)) {
+            return fileUtils.storeFile(storeImage, storeMainImage.getDomainName(), true);
         }
-        return fileUtils.storeFile(storeImage, FileDomain.STORE_IMAGE.getVariable(), true);
+        fileUtils.deleteFile(storeMainImage);
+        imageRepository.deleteById(storeImageId);
+        return fileUtils.storeFile(storeImage, storeMainImage.getDomainName(), true);
     }
 
     /**
