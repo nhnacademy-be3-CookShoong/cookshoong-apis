@@ -52,7 +52,7 @@ public class ReviewController {
                                            @PathVariable("orderCode") UUID orderCode,
                                            @RequestPart("requestDto") @Valid CreateReviewRequestDto requestDto,
                                            BindingResult bindingResult,
-                                           @RequestPart(value = "reviewImages", required = false) List<MultipartFile> images,
+                                           @RequestPart(value = "reviewImage", required = false) List<MultipartFile> images,
                                            @RequestParam("storedAt") String storedAt) throws IOException {
         if (bindingResult.hasErrors()) {
             throw new ReviewValidException(bindingResult);

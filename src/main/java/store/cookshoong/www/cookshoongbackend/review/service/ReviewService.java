@@ -1,8 +1,10 @@
 package store.cookshoong.www.cookshoongbackend.review.service;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,6 +22,7 @@ import store.cookshoong.www.cookshoongbackend.order.exception.OrderNotFoundExcep
 import store.cookshoong.www.cookshoongbackend.order.repository.OrderRepository;
 import store.cookshoong.www.cookshoongbackend.review.entity.Review;
 import store.cookshoong.www.cookshoongbackend.review.entity.ReviewHasImage;
+import store.cookshoong.www.cookshoongbackend.review.model.ReviewStatusManager;
 import store.cookshoong.www.cookshoongbackend.review.model.request.CreateReviewRequestDto;
 import store.cookshoong.www.cookshoongbackend.review.model.response.SelectReviewImageResponseDto;
 import store.cookshoong.www.cookshoongbackend.review.model.response.SelectReviewResponseDto;
@@ -40,6 +43,7 @@ public class ReviewService {
     private final OrderRepository orderRepository;
     private final FileUtilResolver fileUtilResolver;
     private final ReviewRepository reviewRepository;
+    private final ReviewStatusManager reviewStatusManager;
 
     /**
      * 사용자가 주문내역을 통해 리뷰를 등록함.
@@ -58,9 +62,10 @@ public class ReviewService {
                              CreateReviewRequestDto requestDto,
                              List<MultipartFile> images,
                              String storedAt) throws IOException {
-        Order order = orderRepository.findById(orderCode).orElseThrow(OrderNotFoundException::new);
-        if (!(order.getAccount().getId().equals(accountId))
-            || !(order.getOrderStatus().getCode().equals(OrderStatus.StatusCode.COMPLETE.name()))) {
+        Order order = orderRepository.findById(orderCode)
+            .orElseThrow(OrderNotFoundException::new);
+
+        if (!(order.getAccount().getId().equals(accountId)) || !reviewStatusManager.isReviewWritableStatus(order.getOrderStatus().getCode())) {
             throw new UserAccessDeniedException("접근 권한이 없습니다.");
         }
         Review review = new Review(order, requestDto);
