@@ -19,7 +19,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.model.request.AbstractCoupo
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateCashCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreatePercentCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicyResponseDto;
-import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableStoreCouponPolicyResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableCouponPolicyResponseDto;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponTypeCashRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponTypePercentRepository;
@@ -215,13 +215,32 @@ public class CouponPolicyService {
     }
 
     /**
-     * 제공 가능한 쿠폰 정책 목록 전달.
+     * 매장에서 제공 가능한 쿠폰 정책 목록 전달.
      *
      * @param storeId the store id
      * @return the provable store coupon policies
      */
-    public List<SelectProvableStoreCouponPolicyResponseDto> getProvableStoreCouponPolicies(Long storeId) {
+    public List<SelectProvableCouponPolicyResponseDto> getProvableStoreCouponPolicies(Long storeId) {
         return couponPolicyRepository.lookupProvableStoreCouponPolicies(storeId);
+    }
+
+    /**
+     * 가맹점에서 제공 가능한 쿠폰 정책 목록 전달.
+     *
+     * @param merchantId the merchant id
+     * @return the provable store coupon policies
+     */
+    public List<SelectProvableCouponPolicyResponseDto> getProvableMerchantCouponPolicies(Long merchantId) {
+        return couponPolicyRepository.lookupProvableMerchantCouponPolicies(merchantId);
+    }
+
+    /**
+     * 모든 사용처 제공 가능한 쿠폰 정책 목록 전달.
+     *
+     * @return the provable store coupon policies
+     */
+    public List<SelectProvableCouponPolicyResponseDto> getProvableUsageAllCouponPolicies() {
+        return couponPolicyRepository.lookupProvableUsageAllCouponPolicies();
     }
 
     /**
