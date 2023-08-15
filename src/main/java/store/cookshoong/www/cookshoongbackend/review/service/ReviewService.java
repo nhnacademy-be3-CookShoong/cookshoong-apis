@@ -60,7 +60,8 @@ public class ReviewService {
         Order order = orderRepository.findById(UUID.fromString(requestDto.getOrderCode()))
             .orElseThrow(OrderNotFoundException::new);
 
-        if (!(order.getAccount().getId().equals(accountId)) || !reviewStatusManager.isReviewWritableStatus(order.getOrderStatus().getCode())) {
+        if (!(order.getAccount().getId().equals(accountId))
+            || !reviewStatusManager.isReviewWritableStatus(order.getOrderStatus().getCode())) {
             throw new UserAccessDeniedException("접근 권한이 없습니다.");
         }
 
@@ -70,7 +71,8 @@ public class ReviewService {
             FileUtils fileUtils = fileUtilResolver.getFileService(storedAt);
             for (MultipartFile file : images) {
                 Image image = fileUtils.storeFile(file, FileDomain.REVIEW.getVariable(), true);
-                review.getReviewHasImages().add(new ReviewHasImage(new ReviewHasImage.Pk(review.getId(), image.getId()), review, image));
+                review.getReviewHasImages().add(
+                    new ReviewHasImage(new ReviewHasImage.Pk(review.getId(), image.getId()), review, image));
             }
         }
         reviewRepository.save(review);
@@ -85,20 +87,22 @@ public class ReviewService {
      */
     @Transactional(readOnly = true)
     public Page<SelectReviewResponseDto> selectReviewByAccount(Long accountId, Pageable pageable) {
-        Page<SelectReviewResponseDto> responseDtos = reviewRepository.lookupReviewByAccount(accountId, pageable);
+        Page<SelectReviewResponseDto> responses = reviewRepository.lookupReviewByAccount(accountId, pageable);
 
-        for (SelectReviewResponseDto reviewResponseDto : responseDtos) {
-            FileUtils fileUtils = fileUtilResolver.getFileService(reviewResponseDto.getStoreImageLocationType());
-            reviewResponseDto.setStoreImageName(fileUtils.getFullPath(reviewResponseDto.getStoreImageDomainName(), reviewResponseDto.getStoreImageName()));
+        for (SelectReviewResponseDto reviewResponse : responses) {
+            FileUtils fileUtils = fileUtilResolver.getFileService(reviewResponse.getStoreImageLocationType());
+            reviewResponse.setStoreImageName(
+                fileUtils.getFullPath(reviewResponse.getStoreImageDomainName(), reviewResponse.getStoreImageName()));
 
-            for (SelectReviewImageResponseDto dto : reviewResponseDto.getImageResponseDtos()) {
-                if (Objects.nonNull(dto.getLocationType())) {
-                    FileUtils reviewFileUtils = fileUtilResolver.getFileService(dto.getLocationType());
-                    dto.setSavedName(reviewFileUtils.getFullPath(dto.getDomainName(), dto.getSavedName()));
+            for (SelectReviewImageResponseDto response : reviewResponse.getImageResponses()) {
+                if (Objects.nonNull(response.getLocationType())) {
+                    FileUtils reviewFileUtils = fileUtilResolver.getFileService(response.getLocationType());
+                    response.setSavedName(
+                        reviewFileUtils.getFullPath(response.getDomainName(), response.getSavedName()));
                 }
             }
         }
-        return responseDtos;
+        return responses;
     }
 
     /**
@@ -111,21 +115,21 @@ public class ReviewService {
     @Transactional(readOnly = true)
     public Page<SelectReviewStoreResponseDto> selectReviewByStore(Long storeId, Pageable pageable) {
 
-        Page<SelectReviewStoreResponseDto> responseDtos = reviewRepository.lookupReviewByStore(storeId, pageable);
+        Page<SelectReviewStoreResponseDto> responses = reviewRepository.lookupReviewByStore(storeId, pageable);
 
-        for (SelectReviewStoreResponseDto reviewResponseDto : responseDtos) {
+        for (SelectReviewStoreResponseDto reviewResponse : responses) {
             FileUtils fileUtils = fileUtilResolver.getFileService(
-                reviewResponseDto.getSelectReviewResponseDto().getStoreImageLocationType());
-            reviewResponseDto.getSelectReviewResponseDto().setStoreImageName(fileUtils.getFullPath(
-                reviewResponseDto.getSelectReviewResponseDto().getStoreImageDomainName(),
-                reviewResponseDto.getSelectReviewResponseDto().getStoreImageName()));
-            for (SelectReviewImageResponseDto dto : reviewResponseDto.getSelectReviewResponseDto().getImageResponseDtos()) {
+                reviewResponse.getSelectReviewResponse().getStoreImageLocationType());
+            reviewResponse.getSelectReviewResponse().setStoreImageName(fileUtils.getFullPath(
+                reviewResponse.getSelectReviewResponse().getStoreImageDomainName(),
+                reviewResponse.getSelectReviewResponse().getStoreImageName()));
+            for (SelectReviewImageResponseDto dto : reviewResponse.getSelectReviewResponse().getImageResponses()) {
                 if (Objects.nonNull(dto.getLocationType())) {
                     FileUtils reviewFileUtils = fileUtilResolver.getFileService(dto.getLocationType());
                     dto.setSavedName(reviewFileUtils.getFullPath(dto.getDomainName(), dto.getSavedName()));
                 }
             }
         }
-        return responseDtos;
+        return responses;
     }
 }
