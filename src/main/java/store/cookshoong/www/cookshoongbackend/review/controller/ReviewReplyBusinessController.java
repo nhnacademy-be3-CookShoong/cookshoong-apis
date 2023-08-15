@@ -84,7 +84,7 @@ public class ReviewReplyBusinessController {
      * @param pageable      페이지 처리
      * @return              상태코드 200(Ok)와 함께 응답을 반환 & 매장에 대한 모든 리뷰를 반환
      */
-    @GetMapping("/review/{storeId}")
+    @GetMapping("/{storeId}")
     private ResponseEntity<Page<SelectReviewStoreResponseDto>> getBusinessReviewByStore(@PathVariable Long storeId,
                                                                                 Pageable pageable) {
 
