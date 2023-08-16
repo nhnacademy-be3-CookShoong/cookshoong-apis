@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -48,6 +47,18 @@ public class StoreDocumentController {
         Pageable pageable) {
         Page<StoreDocumentResponseDto> storeResponses
             = storeDocumentService.searchByDistance(addressId, pageable);
+
+        updateStoreInfo(storeResponses);
+
+        return ResponseEntity.ok(storeResponses);
+    }
+
+    @GetMapping("/stores/search/rating")
+    public ResponseEntity<Page<StoreDocumentResponseDto>> searchByRating(
+        @RequestParam("addressId") Long addressId,
+        Pageable pageable) {
+        Page<StoreDocumentResponseDto> storeResponses
+            = storeDocumentService.searchByRating(addressId, pageable);
 
         updateStoreInfo(storeResponses);
 
