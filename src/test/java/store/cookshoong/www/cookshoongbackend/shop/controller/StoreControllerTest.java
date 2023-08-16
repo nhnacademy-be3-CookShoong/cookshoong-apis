@@ -26,7 +26,7 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
-import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableStoreCouponPolicyResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableCouponPolicyResponseDto;
 import store.cookshoong.www.cookshoongbackend.coupon.service.CouponPolicyService;
 import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
 import store.cookshoong.www.cookshoongbackend.shop.entity.StoreStatus;
@@ -63,10 +63,10 @@ class StoreControllerTest {
     @DisplayName("사용자 : 매장에 대한 정보 조회")
     void getStoreInformation() throws Exception {
 
-        SelectProvableStoreCouponPolicyResponseDto storeCoupon = new SelectProvableStoreCouponPolicyResponseDto(1L, testEntity.getCouponTypeCash_1000_10000(), 1);
-        SelectProvableStoreCouponPolicyResponseDto storeCoupon2 = new SelectProvableStoreCouponPolicyResponseDto(2L, testEntity.getCouponTypePercent_3_1000_10000(), 2);
+        SelectProvableCouponPolicyResponseDto storeCoupon = new SelectProvableCouponPolicyResponseDto(1L, testEntity.getCouponTypeCash_1000_10000(), 1);
+        SelectProvableCouponPolicyResponseDto storeCoupon2 = new SelectProvableCouponPolicyResponseDto(2L, testEntity.getCouponTypePercent_3_1000_10000(), 2);
 
-        List<SelectProvableStoreCouponPolicyResponseDto> couponPolicyResponseDtos = List.of(storeCoupon, storeCoupon2);
+        List<SelectProvableCouponPolicyResponseDto> couponPolicyResponseDtos = List.of(storeCoupon, storeCoupon2);
 
         SelectStoreForUserResponseDto responseDto =
             new SelectStoreForUserResponseDto("8910290128", "김사장",

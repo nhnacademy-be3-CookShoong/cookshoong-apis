@@ -22,7 +22,6 @@ import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponPolicy;
-import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponType;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypePercent;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageAll;
@@ -31,7 +30,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponUsageStore;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponPolicyNotFoundException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicyResponseDto;
-import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableStoreCouponPolicyResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableCouponPolicyResponseDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeCashVo;
 import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypePercentVo;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
@@ -329,7 +328,7 @@ class CouponPolicyRepositoryImplTest {
     @Test
     @DisplayName("제공 가능한 쿠폰 정책 확인 - 없음")
     void lookupProvableStoreCouponPoliciesEmptyTest() throws Exception {
-        List<SelectProvableStoreCouponPolicyResponseDto> selectProvableStoreCouponPolicyResponses =
+        List<SelectProvableCouponPolicyResponseDto> selectProvableStoreCouponPolicyResponses =
             couponPolicyRepository.lookupProvableStoreCouponPolicies(store.getId());
 
         assertThat(selectProvableStoreCouponPolicyResponses).isEmpty();
@@ -348,7 +347,7 @@ class CouponPolicyRepositoryImplTest {
             .orElseThrow(CouponPolicyNotFoundException::new)
             .delete();
 
-        List<SelectProvableStoreCouponPolicyResponseDto> selectProvableStoreCouponPolicyResponses =
+        List<SelectProvableCouponPolicyResponseDto> selectProvableStoreCouponPolicyResponses =
             couponPolicyRepository.lookupProvableStoreCouponPolicies(store.getId());
 
         assertThat(selectProvableStoreCouponPolicyResponses).isEmpty();
@@ -360,7 +359,7 @@ class CouponPolicyRepositoryImplTest {
         em.persist(new IssueCoupon(storeCashCouponPolicy));
         em.persist(new IssueCoupon(storePercentCouponPolicy));
 
-        List<SelectProvableStoreCouponPolicyResponseDto> selectProvableStoreCouponPolicyResponses =
+        List<SelectProvableCouponPolicyResponseDto> selectProvableStoreCouponPolicyResponses =
             couponPolicyRepository.lookupProvableStoreCouponPolicies(store.getId());
 
         assertThat(selectProvableStoreCouponPolicyResponses).hasSize(2);

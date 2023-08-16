@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableStoreCouponPolicyResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableCouponPolicyResponseDto;
 
 /**
  * 일반 고객이 볼 수 있는 매장 정보 조회.
@@ -30,7 +30,7 @@ public class SelectStoreForUserResponseDto {
     @Setter
     private String savedName;
     @Setter
-    private List<SelectProvableStoreCouponPolicyResponseDto> provableCouponPolicies;
+    private List<SelectProvableCouponPolicyResponseDto> provableCouponPolicies;
     private final String storeStatus;
     @Setter
     private Integer distance;

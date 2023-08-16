@@ -1,10 +1,8 @@
 package store.cookshoong.www.cookshoongbackend.review.service;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,7 +15,6 @@ import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
 import store.cookshoong.www.cookshoongbackend.file.service.FileUtilResolver;
 import store.cookshoong.www.cookshoongbackend.file.service.FileUtils;
 import store.cookshoong.www.cookshoongbackend.order.entity.Order;
-import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus;
 import store.cookshoong.www.cookshoongbackend.order.exception.OrderNotFoundException;
 import store.cookshoong.www.cookshoongbackend.order.repository.OrderRepository;
 import store.cookshoong.www.cookshoongbackend.review.entity.Review;
@@ -51,23 +48,22 @@ public class ReviewService {
      * 이미지가 여러개 등록될 수 있으며 이미지가 있을 경우에만 저장시키는 작업을 진행하고, 이미지가 없다면 바로 review를 저장시킴.
      *
      * @param accountId  the account id
-     * @param orderCode  the order code
      * @param requestDto the request dto
      * @param images     the images
      * @param storedAt   the stored at
      * @throws IOException the io exception
      */
     public void createReview(Long accountId,
-                             UUID orderCode,
                              CreateReviewRequestDto requestDto,
                              List<MultipartFile> images,
                              String storedAt) throws IOException {
-        Order order = orderRepository.findById(orderCode)
+        Order order = orderRepository.findById(UUID.fromString(requestDto.getOrderCode()))
             .orElseThrow(OrderNotFoundException::new);
 
         if (!(order.getAccount().getId().equals(accountId)) || !reviewStatusManager.isReviewWritableStatus(order.getOrderStatus().getCode())) {
             throw new UserAccessDeniedException("접근 권한이 없습니다.");
         }
+
         Review review = new Review(order, requestDto);
 
         if (Objects.nonNull(images)) {
@@ -94,6 +90,7 @@ public class ReviewService {
         for (SelectReviewResponseDto reviewResponseDto : responseDtos) {
             FileUtils fileUtils = fileUtilResolver.getFileService(reviewResponseDto.getStoreImageLocationType());
             reviewResponseDto.setStoreImageName(fileUtils.getFullPath(reviewResponseDto.getStoreImageDomainName(), reviewResponseDto.getStoreImageName()));
+
             for (SelectReviewImageResponseDto dto : reviewResponseDto.getImageResponseDtos()) {
                 if (Objects.nonNull(dto.getLocationType())) {
                     FileUtils reviewFileUtils = fileUtilResolver.getFileService(dto.getLocationType());

@@ -70,6 +70,9 @@ public class CouponPolicy {
     @Column(name = "is_deleted", nullable = false)
     private boolean deleted;
 
+    @Column(name = "is_hidden", nullable = false)
+    private boolean hidden;
+
     /**
      * 사용 기간 획득 시 개발자의 관점에 맞추기 위해 1을 감소하여 반환하도록 함.
      *
@@ -84,5 +87,9 @@ public class CouponPolicy {
      */
     public void delete() {
         this.deleted = true;
+    }
+
+    public void hide() {
+        this.hidden = true;
     }
 }
