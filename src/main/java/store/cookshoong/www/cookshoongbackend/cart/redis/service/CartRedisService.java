@@ -243,7 +243,7 @@ public class CartRedisService {
     public Long selectCartCount(String redisKey) {
 
         if (!cartRedisRepository.existKeyInCartRedis(redisKey)) {
-            throw new NotFoundCartRedisKey();
+            return 0L;
         }
 
         return cartRedisRepository.cartRedisSize(redisKey);
