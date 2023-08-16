@@ -1,6 +1,5 @@
 package store.cookshoong.www.cookshoongbackend.search.model;
 
-import java.time.LocalTime;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,10 +23,8 @@ public class StoreDocumentResponseDto {
     private String storeStatus;
     private Integer minimumOrderPrice;
     private Integer minimumCookingTime;
-    @Setter
-    private Float avgRateScore;
-    @Setter
     private Integer countReview;
+    private Float avgRating;
     @Setter
     private Boolean isEventOngoing;
     @Setter
@@ -38,7 +35,7 @@ public class StoreDocumentResponseDto {
 
     public StoreDocumentResponseDto(Long id, String name, String description, String savedName,
                                     String locationType, String domainName, String storeStatus,
-                                    Integer minimumOrderPrice, Integer minimumCookingTime) {
+                                    Integer minimumOrderPrice, Integer minimumCookingTime, Integer countReview, Float avgRating) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -48,6 +45,8 @@ public class StoreDocumentResponseDto {
         this.storeStatus = storeStatus;
         this.minimumOrderPrice = minimumOrderPrice;
         this.minimumCookingTime = minimumCookingTime;
+        this.countReview = countReview;
+        this.avgRating = avgRating;
     }
 
     public static StoreDocumentResponseDto from(StoreDocument storeDocument) {
@@ -60,6 +59,8 @@ public class StoreDocumentResponseDto {
             storeDocument.getDomainName(),
             storeDocument.getStoreStatus(),
             storeDocument.getMinimumOrderPrice(),
-            storeDocument.getMinimumCookingTime());
+            storeDocument.getMinimumCookingTime(),
+            storeDocument.getCountReview(),
+            storeDocument.getAvgRating());
     }
 }
