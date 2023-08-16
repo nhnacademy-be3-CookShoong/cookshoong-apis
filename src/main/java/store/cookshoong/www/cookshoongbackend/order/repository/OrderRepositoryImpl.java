@@ -12,6 +12,7 @@ import static store.cookshoong.www.cookshoongbackend.payment.entity.QCharge.char
 import static store.cookshoong.www.cookshoongbackend.point.entity.QPointLog.pointLog;
 import static store.cookshoong.www.cookshoongbackend.point.entity.QPointReasonOrder.pointReasonOrder;
 
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
+import store.cookshoong.www.cookshoongbackend.order.entity.Order;
 import store.cookshoong.www.cookshoongbackend.order.model.response.LookupAccountOrderInStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderDetailMenuOptionResponseDto;
 import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderDetailMenuResponseDto;
@@ -55,6 +57,19 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         return orderInStatus;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<LookupOrderInStatusResponseDto> lookupOrderInStatus(Store store, Set<String> orderStatusCode,
+                                                                    Pageable pageable) {
+        List<LookupOrderInStatusResponseDto> orderInStatus =
+            getOrderInStatus(store, orderStatusCode, pageable);
+        updateOrderMenuOption(orderInStatus);
+        Long totalSize = getOrderInStatusSize(store, orderStatusCode);
+        return new PageImpl<>(orderInStatus, pageable, totalSize);
+    }
+
     private List<LookupAccountOrderInStatusResponseDto> lookupOrderInStatus(Account account,
                                                                             Set<String> orderStatusCode) {
         List<LookupAccountOrderInStatusResponseDto> orderInStatus = getOrderInStatus(account, orderStatusCode);
@@ -65,18 +80,6 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
         updateOrderMenuOption(lookupOrderInStatusResponses);
         orderInStatus.forEach(LookupAccountOrderInStatusResponseDto::updateTotalOrderPrice);
         return orderInStatus;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Page<LookupOrderInStatusResponseDto> lookupOrderInStatus(Store store, Set<String> orderStatusCode,
-                                                                    Pageable pageable) {
-        List<LookupOrderInStatusResponseDto> lookupOrderInStatusResponses = lookupOrderInStatus(store, orderStatusCode);
-
-        Long totalSize = getOrderInStatusSize(store, orderStatusCode);
-        return new PageImpl<>(lookupOrderInStatusResponses, pageable, totalSize);
     }
 
     /**
@@ -124,6 +127,43 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
             .where(order.store.eq(store), orderStatus.code.in(orderStatusCode))
             .orderBy(order.orderedAt.asc())
+
+            .transform(
+                groupBy(order)
+                    .list(new QLookupOrderInStatusResponseDto(
+                        order.code,
+                        orderStatus.description,
+                        list(new QLookupOrderDetailMenuResponseDto(
+                            orderDetail.id, orderDetail.nowName, menu.cookingTime, orderDetail.count,
+                            orderDetail.nowCost)),
+                        order.memo,
+                        charge.code,
+                        charge.chargedAmount,
+                        charge.paymentKey,
+                        order.orderedAt,
+                        order.deliveryAddress))
+            );
+    }
+
+    private List<LookupOrderInStatusResponseDto> getOrderInStatus(Store store, Set<String> orderStatusCode,
+                                                                  Pageable pageable) {
+        return jpaQueryFactory
+            .selectFrom(order)
+            .innerJoin(order.orderStatus, orderStatus)
+
+            .innerJoin(orderDetail)
+            .on(orderDetail.order.eq(order))
+
+            .innerJoin(orderDetail.menu, menu)
+
+            .innerJoin(charge)
+            .on(charge.order.eq(order))
+
+            .where(order.store.eq(store), orderStatus.code.in(orderStatusCode))
+            .orderBy(order.orderedAt.asc())
+
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
 
             .transform(
                 groupBy(order)
@@ -208,7 +248,7 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
 
     private Long getOrderInStatusSize(Store store, Set<String> orderStatusCode) {
         return jpaQueryFactory
-            .select(order.code.count())
+            .select(order.code.countDistinct())
             .from(order)
             .innerJoin(order.orderStatus, orderStatus)
 
