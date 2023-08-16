@@ -335,7 +335,7 @@ public class StoreService {
     public void updateStoreStatus(Long accountId, Long storeId, String option) {
         Store store = getStoreById(storeId);
         accessDeniedException(accountId, store);
-        if (store.getStoreStatus().equals(StoreStatus.StoreStatusCode.OUTED)) {
+        if (StoreStatus.StoreStatusCode.OUTED.name().equals(store.getStoreStatus().getCode())) {
             throw new UserAccessDeniedException("해당 매장 상태 변경을 할 수 있는 권한이 없습니다.");
         }
         StoreStatus storeStatus = getStoreStatusByCode(option);
@@ -353,7 +353,7 @@ public class StoreService {
         Store store = getStoreById(storeId);
         accessDeniedException(accountId, store);
 
-        if (store.getStoreImage().getId() == BASIC_IMAGE) {
+        if (store.getStoreImage().getId().equals(BASIC_IMAGE)) {
             throw new UserAccessDeniedException("삭제할 수 있는 권한이 없습니다.");
         }
 
