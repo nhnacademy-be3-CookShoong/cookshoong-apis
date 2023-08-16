@@ -26,8 +26,6 @@ public class StoreDocumentResponseDto {
     private Integer countReview;
     private Float avgRating;
     @Setter
-    private Boolean isEventOngoing;
-    @Setter
     private List<String> categories;
     @Setter
     private boolean offerCoupon;

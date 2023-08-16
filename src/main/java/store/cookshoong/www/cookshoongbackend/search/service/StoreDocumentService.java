@@ -30,4 +30,9 @@ public class StoreDocumentService {
         Page<StoreDocument> storeDocuments = storeSearchRepository.searchByDistance(addressId, pageable);
         return storeDocuments.map(StoreDocumentResponseDto::from);
     }
+
+    public Page<StoreDocumentResponseDto> searchByRating(Long addressId, Pageable pageable) {
+        Page<StoreDocument> storeDocuments = storeSearchRepository.searchByRating(addressId, pageable);
+        return storeDocuments.map(StoreDocumentResponseDto::from);
+    }
 }
