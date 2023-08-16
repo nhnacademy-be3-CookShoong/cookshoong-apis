@@ -424,4 +424,37 @@ class CouponPolicyRepositoryImplTest {
         assertThat(couponPolicyRepository.isOfferCouponInStore(store.getId()))
             .isTrue();
     }
+
+    @Test
+    @DisplayName("매장 이벤트 유효한지 확인 - 유효 쿠폰 유저가 받아감")
+    void isOfferCouponInStoreAlreadyProvideAccountTest() throws Exception {
+        IssueCoupon issueCoupon = te.getIssueCoupon(storeCashCouponPolicy);
+        issueCoupon.provideToAccount(customer);
+
+        assertThat(couponPolicyRepository.isOfferCouponInStore(store.getId()))
+            .isFalse();
+    }
+
+    @Test
+    @DisplayName("매장 이벤트 유효한지 확인 - 정책 삭제됨")
+    void isOfferCouponInStoreDeletedTest() throws Exception {
+        te.getIssueCoupon(storeCashCouponPolicy);
+        storeCashCouponPolicy.delete();
+        em.merge(storeCashCouponPolicy);
+
+        assertThat(couponPolicyRepository.isOfferCouponInStore(store.getId()))
+            .isFalse();
+    }
+
+    @Test
+    @DisplayName("매장 이벤트 유효한지 확인 - 정책 숨겨짐")
+    void isOfferCouponInStoreHiddenTest() throws Exception {
+        te.getIssueCoupon(storeCashCouponPolicy);
+        storeCashCouponPolicy.hide();
+        em.merge(storeCashCouponPolicy);
+
+        assertThat(couponPolicyRepository.isOfferCouponInStore(store.getId()))
+            .isFalse();
+    }
 }
+
