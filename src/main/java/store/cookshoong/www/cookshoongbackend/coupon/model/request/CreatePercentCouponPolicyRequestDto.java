@@ -24,11 +24,11 @@ public class CreatePercentCouponPolicyRequestDto extends AbstractCouponPolicyReq
 
     @NotNull
     @Min(value = 0)
-    @Max(value = 20_000)
+    @Max(value = 50_000)
     private Integer minimumOrderPrice;
 
     @NotNull
-    @Min(value = 5_000)
+    @Min(value = 1_000)
     @Max(value = 50_000)
     private Integer maximumDiscountAmount;
 
