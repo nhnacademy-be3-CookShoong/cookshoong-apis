@@ -55,6 +55,7 @@ import store.cookshoong.www.cookshoongbackend.order.repository.OrderRepository;
 import store.cookshoong.www.cookshoongbackend.order.repository.OrderStatusRepository;
 import store.cookshoong.www.cookshoongbackend.point.model.event.PointOrderCompleteEvent;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
+import store.cookshoong.www.cookshoongbackend.shop.entity.StoreStatus;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreNotOpenException;
 import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreRepository;
@@ -237,13 +238,18 @@ public class OrderService {
             stringJoiner.add("주문할 수 없는 거리입니다.");
         }
 
-        Integer minimumOrderPrice = storeRepository.findById(storeId)
-            .orElseThrow(StoreNotFoundException::new)
-            .getMinimumOrderPrice();
+        Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
+
+        Integer minimumOrderPrice = store.getMinimumOrderPrice();
 
         if (totalPrice < minimumOrderPrice) {
             response = false;
             stringJoiner.add("총 금액이 최소 주문 금액 미만입니다.");
+        }
+
+        if (!store.getStoreStatus().getCode().equals(StoreStatus.StoreStatusCode.OPEN.name())) {
+            response = false;
+            stringJoiner.add("영업중인 매장이 아닙니다.");
         }
 
         return new SelectOrderPossibleResponseDto(response, stringJoiner.toString());
