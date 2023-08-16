@@ -11,8 +11,8 @@ import static store.cookshoong.www.cookshoongbackend.order.entity.QOrderStatus.o
 import static store.cookshoong.www.cookshoongbackend.payment.entity.QCharge.charge;
 import static store.cookshoong.www.cookshoongbackend.point.entity.QPointLog.pointLog;
 import static store.cookshoong.www.cookshoongbackend.point.entity.QPointReasonOrder.pointReasonOrder;
+import static store.cookshoong.www.cookshoongbackend.review.entity.QReview.review;
 
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.Collections;
 import java.util.List;
@@ -24,7 +24,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
-import store.cookshoong.www.cookshoongbackend.order.entity.Order;
 import store.cookshoong.www.cookshoongbackend.order.model.response.LookupAccountOrderInStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderDetailMenuOptionResponseDto;
 import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderDetailMenuResponseDto;
@@ -206,6 +205,9 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
             .leftJoin(pointLog)
             .on(pointLog.pointReason.id.eq(pointReasonOrder.id), pointLog.pointMovement.gt(0))
 
+            .leftJoin(review)
+            .on(review.order.eq(order))
+
             .where(order.account.eq(account), orderStatus.code.in(orderStatusCode))
             .orderBy(order.orderedAt.desc())
 
@@ -227,7 +229,8 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
                         store.name,
                         couponLog.discountAmount,
                         pointLog.pointMovement,
-                        order.deliveryCost))
+                        order.deliveryCost,
+                        review.id))
             );
     }
 
