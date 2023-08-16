@@ -10,8 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import store.cookshoong.www.cookshoongbackend.review.exception.ReviewValidException;
 import store.cookshoong.www.cookshoongbackend.review.model.request.CreateReviewRequestDto;
+import store.cookshoong.www.cookshoongbackend.review.model.request.UpdateReviewResponseDto;
 import store.cookshoong.www.cookshoongbackend.review.model.response.SelectReviewResponseDto;
 import store.cookshoong.www.cookshoongbackend.review.service.ReviewService;
 
@@ -74,6 +77,26 @@ public class ReviewController {
             .ok(reviewService.selectReviewByAccount(accountId, pageable));
     }
 
-
-
+    /**
+     * 사용자 : 리뷰 수정을 위한 Controller.
+     *
+     * @param accountId               the account id
+     * @param reviewId                the review id
+     * @param updateReviewResponseDto the update review response dto
+     * @param bindingResult           the binding result
+     * @return the response entity
+     */
+    @PatchMapping("/{reviewId}")
+    public ResponseEntity<Void> patchAccountReview(@PathVariable("accountId") Long accountId,
+                                                   @PathVariable("reviewId") Long reviewId,
+                                                   @RequestBody @Valid UpdateReviewResponseDto updateReviewResponseDto,
+                                                   BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new ReviewValidException(bindingResult);
+        }
+        reviewService.updateReview(reviewId, updateReviewResponseDto);
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .build();
+    }
 }
