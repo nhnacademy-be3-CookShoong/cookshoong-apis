@@ -43,6 +43,7 @@ import store.cookshoong.www.cookshoongbackend.order.entity.Order;
 import store.cookshoong.www.cookshoongbackend.order.entity.OrderDetail;
 import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus;
 import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus.StatusCode;
+import store.cookshoong.www.cookshoongbackend.order.exception.OrderNotFoundException;
 import store.cookshoong.www.cookshoongbackend.order.exception.OrderStatusNotFoundException;
 import store.cookshoong.www.cookshoongbackend.order.exception.PriceIncreaseException;
 import store.cookshoong.www.cookshoongbackend.order.model.request.CreateOrderRequestDto;
@@ -168,14 +169,14 @@ public class OrderService {
      */
     public void changeStatus(@Valid UUID orderCode, StatusCode statusCode) {
         Order order = orderRepository.findById(orderCode)
-            .orElseThrow(StoreNotFoundException::new);
+            .orElseThrow(OrderNotFoundException::new);
 
         OrderStatus orderStatus = orderStatusRepository.findByOrderStatusCode(statusCode)
             .orElseThrow(OrderStatusNotFoundException::new);
 
         order.updateOrderStatus(orderStatus);
-        statusCodeConsumer.getOrDefault(statusCode, ignore -> {
-            })
+
+        statusCodeConsumer.getOrDefault(statusCode, ignore -> {})
             .accept(orderCode);
     }
 
