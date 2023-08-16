@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -42,6 +44,7 @@ import store.cookshoong.www.cookshoongbackend.order.entity.Order;
 import store.cookshoong.www.cookshoongbackend.order.entity.OrderDetail;
 import store.cookshoong.www.cookshoongbackend.order.entity.OrderDetailMenuOption;
 import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus;
+import store.cookshoong.www.cookshoongbackend.order.exception.OrderNotFoundException;
 import store.cookshoong.www.cookshoongbackend.order.exception.OrderStatusNotFoundException;
 import store.cookshoong.www.cookshoongbackend.order.exception.PriceIncreaseException;
 import store.cookshoong.www.cookshoongbackend.order.model.request.CreateOrderRequestDto;
@@ -404,4 +407,27 @@ class OrderServiceTest {
         verify(orderDetailMenuOptionRepository).save(any(OrderDetailMenuOption.class));
     }
 
+    @Test
+    @DisplayName("주문 상태 변경 실패 - 주문 없음")
+    void changeStatusOrderNotFoundTest() throws Exception {
+        when(orderRepository.findById(any(UUID.class)))
+            .thenReturn(Optional.empty());
+
+        assertThrowsExactly(OrderNotFoundException.class, () ->
+            orderService.changeStatus(UUID.randomUUID(), OrderStatus.StatusCode.COMPLETE));
+    }
+
+    @Test
+    @DisplayName("주문 상태 변경 실패 - 주문 상태 없음")
+    void changeStatusOrderStatusNotFoundTest() throws Exception {
+        Order order = mock(Order.class);
+        when(orderRepository.findById(any(UUID.class)))
+            .thenReturn(Optional.of(order));
+
+        when(orderStatusRepository.findByOrderStatusCode(any(OrderStatus.StatusCode.class)))
+            .thenReturn(Optional.empty());
+
+        assertThrowsExactly(OrderStatusNotFoundException.class, () ->
+            orderService.changeStatus(UUID.randomUUID(), OrderStatus.StatusCode.COMPLETE));
+    }
 }

@@ -112,7 +112,7 @@ public class PaymentService {
             couponLogRepository.findTopByIssueCouponOrderByIdDesc(issueCoupon)
                 .ifPresent(this::validCouponLog);
 
-            CouponLogType couponLogType = couponLogTypeRepository.findById(CouponLogType.Code.USE.toString())
+            CouponLogType couponLogType = couponLogTypeRepository.findByCouponLogTypeCode(CouponLogType.Code.USE)
                 .orElseThrow(CouponLogTypeNotFoundException::new);
             couponLogRepository.saveAndFlush(new CouponLog(issueCoupon, couponLogType, order,
                 createPaymentDto.getDiscountAmount()));

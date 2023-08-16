@@ -5,9 +5,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -544,5 +547,47 @@ class CouponPolicyServiceTest {
 
         assertThat(couponPolicyService.getProvableStoreCouponPolicies(Long.MIN_VALUE))
             .hasSize(2);
+    }
+
+    @Test
+    @DisplayName("가맹점 쿠폰 정책 목록 전달 테스트")
+    void getProvableMerchantCouponPoliciesTest() throws Exception {
+        when(couponPolicyRepository.lookupProvableMerchantCouponPolicies(anyLong()))
+            .thenReturn(Collections.emptyList());
+
+        assertThat(couponPolicyService.getProvableMerchantCouponPolicies(Long.MAX_VALUE))
+            .isEmpty();
+    }
+
+    @Test
+    @DisplayName("모든 사용처 쿠폰 정책 목록 전달 테스트")
+    void getProvableUsageAllCouponPoliciesTest() throws Exception {
+        when(couponPolicyRepository.lookupProvableUsageAllCouponPolicies())
+            .thenReturn(Collections.emptyList());
+
+        assertThat(couponPolicyService.getProvableUsageAllCouponPolicies())
+            .isEmpty();
+    }
+
+    @Test
+    @DisplayName("제공 쿠폰 유무 확인 테스트")
+    void isOfferCouponInStoreTest() throws Exception {
+        when(couponPolicyRepository.isOfferCouponInStore(anyLong()))
+            .thenReturn(true);
+
+        assertThat(couponPolicyService.isOfferCouponInStore(Long.MAX_VALUE))
+            .isTrue();
+    }
+
+    @Test
+    @DisplayName("쿠폰 정책 숨김 테스트")
+    void patchHidePolicyTest() throws Exception {
+        CouponPolicy couponPolicy = mock(CouponPolicy.class);
+        when(couponPolicyRepository.findById(anyLong()))
+            .thenReturn(Optional.of(couponPolicy));
+
+        couponPolicyService.patchHidePolicy(Long.MAX_VALUE);
+
+        verify(couponPolicy).hide();
     }
 }

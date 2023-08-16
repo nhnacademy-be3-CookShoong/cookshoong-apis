@@ -203,10 +203,11 @@ public class CouponPolicyRepositoryImpl implements CouponPolicyRepositoryCustom 
             .selectFrom(couponUsageStore)
 
             .innerJoin(couponPolicy)
-            .on(couponPolicy.couponUsage.id.eq(couponUsageStore.id))
+            .on(couponPolicy.couponUsage.id.eq(couponUsageStore.id), couponPolicy.deleted.isFalse(),
+                couponPolicy.hidden.isFalse())
 
             .innerJoin(issueCoupon)
-            .on(issueCoupon.couponPolicy.id.eq(couponPolicy.id))
+            .on(issueCoupon.couponPolicy.eq(couponPolicy), issueCoupon.account.isNull())
 
             .where(couponUsageStore.store.id.eq(storeId))
             .fetchFirst();
