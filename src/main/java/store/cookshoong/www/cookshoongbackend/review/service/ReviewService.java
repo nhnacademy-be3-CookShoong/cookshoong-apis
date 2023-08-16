@@ -1,6 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.review.service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -19,8 +20,10 @@ import store.cookshoong.www.cookshoongbackend.order.exception.OrderNotFoundExcep
 import store.cookshoong.www.cookshoongbackend.order.repository.OrderRepository;
 import store.cookshoong.www.cookshoongbackend.review.entity.Review;
 import store.cookshoong.www.cookshoongbackend.review.entity.ReviewHasImage;
+import store.cookshoong.www.cookshoongbackend.review.exception.ReviewNotFoundException;
 import store.cookshoong.www.cookshoongbackend.review.model.ReviewStatusManager;
 import store.cookshoong.www.cookshoongbackend.review.model.request.CreateReviewRequestDto;
+import store.cookshoong.www.cookshoongbackend.review.model.request.UpdateReviewResponseDto;
 import store.cookshoong.www.cookshoongbackend.review.model.response.SelectReviewImageResponseDto;
 import store.cookshoong.www.cookshoongbackend.review.model.response.SelectReviewResponseDto;
 import store.cookshoong.www.cookshoongbackend.review.model.response.SelectReviewStoreResponseDto;
@@ -106,10 +109,21 @@ public class ReviewService {
     }
 
     /**
+     * 사용자 : 리뷰 수정 - 별점, 사진 제외하고 contents 만 수정 가능.
+     *
+     * @param reviewId                the review id
+     * @param updateReviewResponseDto the update review response dto
+     */
+    public void updateReview(Long reviewId, UpdateReviewResponseDto updateReviewResponseDto) {
+        Review review = reviewRepository.findById(reviewId).orElseThrow(ReviewNotFoundException::new);
+        review.updateReview(updateReviewResponseDto.getContents(), LocalDateTime.now());
+    }
+
+    /**
      * 사장님 매장 리뷰 목록 페이지로 조회.
      *
-     * @param storeId   the store id
-     * @param pageable  the pageable
+     * @param storeId  the store id
+     * @param pageable the pageable
      * @return the page
      */
     @Transactional(readOnly = true)

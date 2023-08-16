@@ -6,14 +6,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 사장님이 회원리뷰에 답글을 수정할 때 필요한 dto.
+ * 리뷰 수정시 필요한 dto.
  *
  * @author seungyeon
- * @since 2023.08.13
+ * @since 2023.08.16
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ModifyBusinessReviewRequestDto {
+public class UpdateReviewResponseDto {
     @NotBlank
-    private String replyContents;
+    private String contents;
 }

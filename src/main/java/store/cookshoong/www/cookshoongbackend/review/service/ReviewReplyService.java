@@ -2,6 +2,7 @@ package store.cookshoong.www.cookshoongbackend.review.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.review.entity.Review;
 import store.cookshoong.www.cookshoongbackend.review.entity.ReviewReply;
 import store.cookshoong.www.cookshoongbackend.review.exception.ReviewNotFoundException;
@@ -19,6 +20,7 @@ import store.cookshoong.www.cookshoongbackend.review.repository.ReviewRepository
  */
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ReviewReplyService {
 
     private final ReviewReplyRepository reviewReplyRepository;

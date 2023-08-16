@@ -56,7 +56,7 @@ public class ReviewReply {
     }
 
     public void updateReviewReplyContent(ModifyBusinessReviewRequestDto requestDto) {
-        this.contents = requestDto.getContents();
+        this.contents = requestDto.getReplyContents();
         this.writtenAt = LocalDateTime.now();
     }
 }
