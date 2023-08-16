@@ -232,7 +232,7 @@ public class ProvideCouponService {
     }
 
     /**
-     * Gets discount price.
+     * 할인된 금액 획득.
      *
      * @param issueCouponCode the issue coupon code
      * @param totalPrice      the total price
