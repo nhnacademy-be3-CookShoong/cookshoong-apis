@@ -59,7 +59,7 @@ public class Review {
     /**
      * 리뷰 등록시 사용되는 생성자.
      *
-     * @param order  the order code
+     * @param order      the order code
      * @param requestDto the request dto
      */
     public Review(Order order, CreateReviewRequestDto requestDto) {
@@ -67,6 +67,11 @@ public class Review {
         this.contents = requestDto.getContents();
         this.rating = requestDto.getRating();
         this.writtenAt = LocalDateTime.now();
+    }
+
+    public void updateReview(String contents, LocalDateTime updatedAt) {
+        this.contents = contents;
+        this.updatedAt = updatedAt;
     }
 
 }
