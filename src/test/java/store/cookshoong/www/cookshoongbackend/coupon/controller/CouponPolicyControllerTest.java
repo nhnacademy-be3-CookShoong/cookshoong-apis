@@ -1,6 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.coupon.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -43,6 +44,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponUsageNotFou
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateCashCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreatePercentCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicyResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableCouponPolicyResponseDto;
 import store.cookshoong.www.cookshoongbackend.coupon.service.CouponPolicyService;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
 import store.cookshoong.www.cookshoongbackend.util.TestEntityAspect;
@@ -133,6 +135,10 @@ class CouponPolicyControllerTest {
             .andDo(MockMvcRestDocumentationWrapper.document("getStorePolicy",
                 ResourceSnippetParameters.builder()
                     .pathParameters(parameterWithName("storeId").description("매장 id"))
+                    .requestParameters(
+                        parameterWithName("page").optional().description("페이지 번호"),
+                        parameterWithName("size").optional().description("한 페이지에 몇 개의 데이터를 불러올 것인지"),
+                        parameterWithName("sort").optional().description("페이징 정렬조건"))
                     .responseSchema(Schema.schema("getStorePolicy.Response")),
                 responseFields(
                     fieldWithPath("content[].id").description("정책 id"),
@@ -200,6 +206,10 @@ class CouponPolicyControllerTest {
             .andDo(MockMvcRestDocumentationWrapper.document("getMerchantPolicy",
                 ResourceSnippetParameters.builder()
                     .pathParameters(parameterWithName("merchantId").description("가맹점 id"))
+                    .requestParameters(
+                        parameterWithName("page").optional().description("페이지 번호"),
+                        parameterWithName("size").optional().description("한 페이지에 몇 개의 데이터를 불러올 것인지"),
+                        parameterWithName("sort").optional().description("페이징 정렬조건"))
                     .responseSchema(Schema.schema("getMerchantPolicy.Response")),
                 responseFields(
                     fieldWithPath("content[].id").description("정책 id"),
@@ -266,6 +276,10 @@ class CouponPolicyControllerTest {
             .andExpect(jsonPath("$.content[1].couponTypeResponse.minimumOrderPrice").value(10_000))
             .andDo(MockMvcRestDocumentationWrapper.document("getUsageAllPolicy",
                 ResourceSnippetParameters.builder()
+                    .requestParameters(
+                        parameterWithName("page").optional().description("페이지 번호"),
+                        parameterWithName("size").optional().description("한 페이지에 몇 개의 데이터를 불러올 것인지"),
+                        parameterWithName("sort").optional().description("페이징 정렬조건"))
                     .responseSchema(Schema.schema("getUsageAllPolicy.Response")),
                 responseFields(
                     fieldWithPath("content[].id").description("정책 id"),
@@ -632,5 +646,95 @@ class CouponPolicyControllerTest {
 
         verify(couponPolicyService, Mockito.times(1))
             .deletePolicy(any(Long.class));
+    }
+
+    @Test
+    @DisplayName("쿠폰 정책 숨김 성공")
+    void patchHidePolicyTest() throws Exception {
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .patch("/api/coupon/policies/{policyId}", Long.MIN_VALUE);
+
+        mockMvc.perform(request)
+            .andDo(print())
+            .andExpect(status().isNoContent())
+            .andDo(MockMvcRestDocumentationWrapper.document("patchHidePolicy",
+                ResourceSnippetParameters.builder()
+                    .pathParameters(parameterWithName("policyId").description("쿠폰 정책 id"))
+            ));
+
+        verify(couponPolicyService, Mockito.times(1))
+            .patchHidePolicy(anyLong());
+    }
+
+    @Test
+    @DisplayName("모든 사용처 이벤트 쿠폰 획득 테스트")
+    void getProvableUsageAllCouponPolicyTest() throws Exception {
+        List<SelectProvableCouponPolicyResponseDto> responses = List.of(
+            new SelectProvableCouponPolicyResponseDto(1L,
+                new CouponTypeCash(1_000, 10_000), 30),
+            new SelectProvableCouponPolicyResponseDto(2L,
+                new CouponTypePercent(20, 20_000, 10_000), 14));
+
+        when(couponPolicyService.getProvableUsageAllCouponPolicies())
+            .thenReturn(responses);
+
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .get("/api/coupon/policies/event");
+
+        mockMvc.perform(request)
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andDo(MockMvcRestDocumentationWrapper.document("getProvableUsageAllCouponPolicy",
+                ResourceSnippetParameters.builder()
+                    .responseSchema(Schema.schema("getProvableUsageAllCouponPolicy.Response")),
+                responseFields(
+                    fieldWithPath("[].couponPolicyId").description("정책 id"),
+                    fieldWithPath("[].couponTypeResponse.type").description("쿠폰 타입 설명"),
+                    fieldWithPath("[].couponTypeResponse.discountAmount").optional().description("할인금"),
+                    fieldWithPath("[].couponTypeResponse.rate").optional().description("할인율"),
+                    fieldWithPath("[].couponTypeResponse.minimumOrderPrice").optional().description("최소주문금액"),
+                    fieldWithPath("[].couponTypeResponse.maximumDiscountAmount").optional().description("최대할인금액"),
+                    fieldWithPath("[].usagePeriod").description("사용 기간")
+                )
+            ));
+
+        verify(couponPolicyService, Mockito.times(1))
+            .getProvableUsageAllCouponPolicies();
+    }
+
+    @Test
+    @DisplayName("가맹점 이벤트 쿠폰 획득 테스트")
+    void getProvableMerchantCouponPolicyTest() throws Exception {
+        List<SelectProvableCouponPolicyResponseDto> responses = List.of(
+            new SelectProvableCouponPolicyResponseDto(1L,
+                new CouponTypeCash(1_000, 10_000), 30),
+            new SelectProvableCouponPolicyResponseDto(2L,
+                new CouponTypePercent(20, 20_000, 10_000), 14));
+
+        when(couponPolicyService.getProvableMerchantCouponPolicies(anyLong()))
+            .thenReturn(responses);
+
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .get("/api/coupon/policies/event/merchants/{merchantId}", Long.MAX_VALUE);
+
+        mockMvc.perform(request)
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andDo(MockMvcRestDocumentationWrapper.document("getProvableMerchantCouponPolicy",
+                ResourceSnippetParameters.builder()
+                    .responseSchema(Schema.schema("getProvableMerchantCouponPolicy.Response")),
+                responseFields(
+                    fieldWithPath("[].couponPolicyId").description("정책 id"),
+                    fieldWithPath("[].couponTypeResponse.type").description("쿠폰 타입 설명"),
+                    fieldWithPath("[].couponTypeResponse.discountAmount").optional().description("할인금"),
+                    fieldWithPath("[].couponTypeResponse.rate").optional().description("할인율"),
+                    fieldWithPath("[].couponTypeResponse.minimumOrderPrice").optional().description("최소주문금액"),
+                    fieldWithPath("[].couponTypeResponse.maximumDiscountAmount").optional().description("최대할인금액"),
+                    fieldWithPath("[].usagePeriod").description("사용 기간")
+                )
+            ));
+
+        verify(couponPolicyService, Mockito.times(1))
+            .getProvableMerchantCouponPolicies(anyLong());
     }
 }
