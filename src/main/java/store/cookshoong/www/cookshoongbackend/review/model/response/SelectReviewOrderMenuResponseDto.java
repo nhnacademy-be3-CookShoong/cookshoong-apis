@@ -12,7 +12,7 @@ import lombok.Getter;
  * @since 2023.08.13
  */
 @Getter
-public class SelectReviewOrderMenuResponseDto implements Comparable<SelectReviewOrderMenuResponseDto>, Remove {
+public class SelectReviewOrderMenuResponseDto implements NullAwareComparable<SelectReviewOrderMenuResponseDto> {
     private final Long menuId;
     private final String menuName;
 

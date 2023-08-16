@@ -6,6 +6,7 @@ package store.cookshoong.www.cookshoongbackend.review.model.response;
  * @author eora21 (김주호)
  * @since 2023.08.15
  */
-public interface Remove {
+public interface NullAwareComparable<T> extends Comparable<T> {
+
     boolean isNull();
 }

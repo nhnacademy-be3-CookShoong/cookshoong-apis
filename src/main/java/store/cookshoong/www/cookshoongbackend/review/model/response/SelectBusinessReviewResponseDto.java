@@ -13,7 +13,7 @@ import lombok.Getter;
  * @since 2023.08.13
  */
 @Getter
-public class SelectBusinessReviewResponseDto implements Comparable<SelectBusinessReviewResponseDto>, Remove {
+public class SelectBusinessReviewResponseDto implements NullAwareComparable<SelectBusinessReviewResponseDto> {
     private final Long reviewReplyId;
     private final String contents;
     private final LocalDateTime writtenAt;

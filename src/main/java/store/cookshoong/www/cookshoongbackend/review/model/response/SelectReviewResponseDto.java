@@ -69,7 +69,7 @@ public class SelectReviewResponseDto {
         this.replyResponses = validSortedSet(replyResponses);
     }
 
-    private <T extends Remove> SortedSet<T> validSortedSet(Set<T> responses) {
+    private <T extends NullAwareComparable<T>> SortedSet<T> validSortedSet(Set<T> responses) {
         responses.removeIf(T::isNull);
         return new TreeSet<>(responses);
     }

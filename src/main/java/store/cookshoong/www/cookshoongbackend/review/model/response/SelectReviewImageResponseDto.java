@@ -13,7 +13,7 @@ import lombok.Setter;
  * @since 2023.08.13
  */
 @Getter
-public class SelectReviewImageResponseDto implements Comparable<SelectReviewImageResponseDto>, Remove {
+public class SelectReviewImageResponseDto implements NullAwareComparable<SelectReviewImageResponseDto> {
     @Setter
     private String savedName;
     private final String locationType;
