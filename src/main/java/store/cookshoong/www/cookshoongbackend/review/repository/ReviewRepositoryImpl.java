@@ -1,7 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.review.repository;
 
 import static com.querydsl.core.group.GroupBy.groupBy;
-import static com.querydsl.core.group.GroupBy.list;
+import static com.querydsl.core.group.GroupBy.set;
 import static store.cookshoong.www.cookshoongbackend.account.entity.QAccount.account;
 import static store.cookshoong.www.cookshoongbackend.file.entity.QImage.image;
 import static store.cookshoong.www.cookshoongbackend.order.entity.QOrder.order;
@@ -109,10 +109,10 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
         return new QSelectReviewResponseDto(store.id, store.name,
             store.storeImage.savedName, store.storeImage.locationType,
             store.storeImage.domainName, review.id, review.contents, review.rating, review.writtenAt, review.updatedAt,
-            list(new QSelectReviewImageResponseDto(
+            set(new QSelectReviewImageResponseDto(
                 reviewHasImage.image.savedName, reviewHasImage.image.locationType, reviewHasImage.image.domainName)),
-            list(new QSelectReviewOrderMenuResponseDto(orderDetail.menu.id, orderDetail.nowName)),
-            list(new QSelectBusinessReviewResponseDto(reviewReply.id, reviewReply.contents, reviewReply.writtenAt)));
+            set(new QSelectReviewOrderMenuResponseDto(orderDetail.menu.id, orderDetail.nowName)),
+            set(new QSelectBusinessReviewResponseDto(reviewReply.id, reviewReply.contents, reviewReply.writtenAt)));
     }
 
     private Long lookupTotal(BooleanExpression filter) {
