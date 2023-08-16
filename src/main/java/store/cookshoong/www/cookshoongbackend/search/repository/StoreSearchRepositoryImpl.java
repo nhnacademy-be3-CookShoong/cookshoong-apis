@@ -37,6 +37,42 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepositoryCustom {
     private final AddressService addressService;
 
     @Override
+    public Page<StoreDocument> searchByDistance(Long addressId, Pageable pageable) {
+        double lat = addressService.selectAccountChoiceAddress(addressId).getLatitude().doubleValue();
+        double lon = addressService.selectAccountChoiceAddress(addressId).getLongitude().doubleValue();
+
+        GeoDistanceQueryBuilder geoDistanceQueryBuilder = QueryBuilders
+            .geoDistanceQuery("location")
+            .point(lat, lon)
+            .distance(15, DistanceUnit.KILOMETERS);
+
+        GeoDistanceSortBuilder distanceSortBuilder = SortBuilders.geoDistanceSort("location", lat, lon)
+            .order(SortOrder.ASC)
+            .unit(DistanceUnit.KILOMETERS);
+
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders
+            .boolQuery()
+            .mustNot(QueryBuilders.termQuery("store_status_code", "OUTED"))
+            .must(geoDistanceQueryBuilder);
+
+        FieldSortBuilder sortBuilder = SortBuilders.fieldSort("store_status_code")
+            .order(SortOrder.DESC);
+
+        FieldSortBuilder sortBuilderById = SortBuilders.fieldSort("store_id")
+            .order(SortOrder.ASC);
+
+        NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
+            .withQuery(boolQueryBuilder)
+            .withPageable(pageable)
+            .withSorts(sortBuilder, sortBuilderById, distanceSortBuilder)
+            .build();
+
+        SearchHits<StoreDocument> searchHits = elasticsearchOperations.search(searchQuery, StoreDocument.class);
+        List<StoreDocument> storeDocuments = searchHits.get().map(SearchHit::getContent).collect(Collectors.toList());
+        return new PageImpl<>(storeDocuments, pageable, searchHits.getTotalHits());
+    }
+
+    @Override
     public Page<StoreDocument> searchByKeywordText(String keywordText, Long addressId, Pageable pageable) {
 
         MatchQueryBuilder matchQueryBuilder = QueryBuilders
@@ -64,11 +100,14 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepositoryCustom {
         FieldSortBuilder sortBuilder = SortBuilders.fieldSort("store_status_code")
             .order(SortOrder.DESC);
 
+        FieldSortBuilder sortBuilderById = SortBuilders.fieldSort("store_id")
+            .order(SortOrder.ASC);
+
         NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
             .withQuery(boolQueryBuilder)
             .withMinScore(0.6f)
             .withPageable(pageable)
-            .withSorts(sortBuilder, distanceSortBuilder)
+            .withSorts(sortBuilder, sortBuilderById, distanceSortBuilder)
             .build();
 
         SearchHits<StoreDocument> searchHits = elasticsearchOperations.search(searchQuery, StoreDocument.class);
@@ -76,36 +115,4 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepositoryCustom {
         return new PageImpl<>(storeDocuments, pageable, searchHits.getTotalHits());
     }
 
-    @Override
-    public Page<StoreDocument> searchByDistance(Long addressId, Pageable pageable) {
-        double lat = addressService.selectAccountChoiceAddress(addressId).getLatitude().doubleValue();
-        double lon = addressService.selectAccountChoiceAddress(addressId).getLongitude().doubleValue();
-
-        GeoDistanceQueryBuilder geoDistanceQueryBuilder = QueryBuilders
-            .geoDistanceQuery("location")
-            .point(lat, lon)
-            .distance(15, DistanceUnit.KILOMETERS);
-
-        GeoDistanceSortBuilder distanceSortBuilder = SortBuilders.geoDistanceSort("location", lat, lon)
-            .order(SortOrder.ASC)
-            .unit(DistanceUnit.KILOMETERS);
-
-        BoolQueryBuilder boolQueryBuilder = QueryBuilders
-            .boolQuery()
-            .mustNot(QueryBuilders.termQuery("store_status_code", "OUTED"))
-            .must(geoDistanceQueryBuilder);
-
-        FieldSortBuilder sortBuilder = SortBuilders.fieldSort("store_status_code")
-            .order(SortOrder.DESC);
-
-        NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
-            .withQuery(boolQueryBuilder)
-            .withPageable(pageable)
-            .withSorts(sortBuilder, distanceSortBuilder)
-            .build();
-
-        SearchHits<StoreDocument> searchHits = elasticsearchOperations.search(searchQuery, StoreDocument.class);
-        List<StoreDocument> storeDocuments = searchHits.get().map(SearchHit::getContent).collect(Collectors.toList());
-        return new PageImpl<>(storeDocuments, pageable, searchHits.getTotalHits());
-    }
 }
