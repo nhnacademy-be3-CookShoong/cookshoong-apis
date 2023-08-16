@@ -15,5 +15,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ModifyBusinessReviewRequestDto {
     @NotBlank
-    private String contents;
+    private String replyContents;
 }

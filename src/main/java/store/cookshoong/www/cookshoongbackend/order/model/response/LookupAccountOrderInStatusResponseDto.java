@@ -1,7 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.order.model.response;
 
 import com.querydsl.core.annotations.QueryProjection;
-import java.util.List;
 import lombok.Getter;
 
 /**
