@@ -19,4 +19,6 @@ public class StoreDocumentRequestDto {
     private String storeStatus;
     private Integer minimumOrderPrice;
     private Integer minimumCookingTime;
+    private Integer countReview;
+    private Float avgRating;
 }

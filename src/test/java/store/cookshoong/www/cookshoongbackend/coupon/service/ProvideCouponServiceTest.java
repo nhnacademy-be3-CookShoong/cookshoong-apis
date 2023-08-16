@@ -1,12 +1,15 @@
 package store.cookshoong.www.cookshoongbackend.coupon.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -32,6 +35,8 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponLog;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponLogType;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponPolicy;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponType;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypeCash;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponTypePercent;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.AlreadyHasCouponWithinSamePolicyException;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.AlreadyUsedCouponException;
@@ -259,6 +264,37 @@ class ProvideCouponServiceTest {
     }
 
     @Test
+    @DisplayName("쿠폰 이벤트 발급 실패 - 이미 발급된 쿠폰")
+    void provideCouponToAccountByEventAlreadyIssueCouponFailTest() throws Exception {
+        CouponPolicy couponPolicy = te.persist(
+            te.getCouponPolicy(te.getCouponTypeCash_1000_10000(), te.getCouponUsageStore(tpe.getOpenStore())));
+
+        when(couponPolicyRepository.findById(anyLong()))
+            .thenReturn(Optional.of(couponPolicy));
+
+        BoundSetOperations<String, Object> mockSet = mock(BoundSetOperations.class);
+
+        when(couponRedisRepository.getRedisSet(anyString()))
+            .thenReturn(mockSet);
+
+        UUID randomUUID = UUID.randomUUID();
+        when(mockSet.pop())
+            .thenReturn(randomUUID.toString());
+
+        IssueCoupon issueCoupon = mock(IssueCoupon.class);
+
+        when(issueCouponRepository.findById(randomUUID))
+            .thenReturn(Optional.of(issueCoupon));
+
+        Account account = mock(Account.class);
+        when(issueCoupon.getAccount())
+            .thenReturn(account);
+
+        assertThrowsExactly(ProvideIssueCouponFailureException.class,
+            () -> provideCouponService.provideCouponToAccountByEvent(updateProvideCouponRequestDto));
+    }
+
+    @Test
     @DisplayName("쿠폰 이벤트 발급 성공")
     void provideCouponToAccountByEventSuccessTest() throws Exception {
         CouponPolicy couponPolicy = te.persist(
@@ -471,5 +507,55 @@ class ProvideCouponServiceTest {
 
         assertDoesNotThrow(() ->
             provideCouponService.validExpirationDateTime(UUID.randomUUID()));
+    }
+
+    @Test
+    @DisplayName("할인 금액 획득 실패 - 발행 쿠폰 없음")
+    void getDiscountPriceIssueCouponNotFoundFailTest() throws Exception {
+        when(issueCouponRepository.findById(any(UUID.class)))
+            .thenReturn(Optional.empty());
+
+        assertThrowsExactly(IssueCouponNotFoundException.class, () ->
+            provideCouponService.getDiscountPrice(UUID.randomUUID(), 10_000));
+    }
+
+    @Test
+    @DisplayName("고정 할인 금액 획득 성공")
+    void getDiscountPriceIssueCouponCashSuccessTest() throws Exception {
+        IssueCoupon issueCoupon = mock(IssueCoupon.class);
+        when(issueCouponRepository.findById(any(UUID.class)))
+            .thenReturn(Optional.of(issueCoupon));
+
+        CouponPolicy couponPolicy = mock(CouponPolicy.class);
+        when(issueCoupon.getCouponPolicy())
+            .thenReturn(couponPolicy);
+
+        CouponTypeCash couponTypeCash = new CouponTypeCash(1_000, 0);
+        when(couponPolicy.getCouponType())
+            .thenReturn(couponTypeCash);
+
+        assertThat(provideCouponService.getDiscountPrice(UUID.randomUUID(), 10_000))
+            .isEqualTo(9_000);
+    }
+
+    @Test
+    @DisplayName("퍼센트 할인 금액 획득 성공")
+    void getDiscountPriceIssueCouponPercentSuccessTest() throws Exception {
+        IssueCoupon issueCoupon = mock(IssueCoupon.class);
+        when(issueCouponRepository.findById(any(UUID.class)))
+            .thenReturn(Optional.of(issueCoupon));
+
+        CouponPolicy couponPolicy = mock(CouponPolicy.class);
+        when(issueCoupon.getCouponPolicy())
+            .thenReturn(couponPolicy);
+
+        CouponTypePercent couponTypePercent =
+            new CouponTypePercent(10, 10_000, 0);
+
+        when(couponPolicy.getCouponType())
+            .thenReturn(couponTypePercent);
+
+        assertThat(provideCouponService.getDiscountPrice(UUID.randomUUID(), 10_000))
+            .isEqualTo(9_000);
     }
 }

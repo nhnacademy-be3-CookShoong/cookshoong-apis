@@ -50,7 +50,7 @@ public class CouponLogService {
         CouponLog couponLog = couponLogRepository.findTopByIssueCouponOrderByIdDesc(issueCoupon)
             .orElseThrow(CouponLogNotFoundException::new);
 
-        CouponLogType couponLogType = couponLogTypeRepository.findById(couponLogTypeCode.toString())
+        CouponLogType couponLogType = couponLogTypeRepository.findByCouponLogTypeCode(couponLogTypeCode)
             .orElseThrow(CouponLogTypeNotFoundException::new);
 
         couponLog.updateCouponLogType(couponLogType);

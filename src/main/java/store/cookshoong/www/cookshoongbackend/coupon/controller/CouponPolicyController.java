@@ -224,11 +224,22 @@ public class CouponPolicyController {
         }
     }
 
+    /**
+     * 모든 사용처 이벤트 쿠폰 획득 엔드포인트.
+     *
+     * @return the provable usage all coupon policy
+     */
     @GetMapping("/event")
     public List<SelectProvableCouponPolicyResponseDto> getProvableUsageAllCouponPolicy() {
         return couponPolicyService.getProvableUsageAllCouponPolicies();
     }
 
+    /**
+     * 가맹점 이벤트 쿠폰 획득 엔드포인트.
+     *
+     * @param merchantId the merchant id
+     * @return the provable merchant coupon policy
+     */
     @GetMapping("/event/merchants/{merchantId}")
     public List<SelectProvableCouponPolicyResponseDto> getProvableMerchantCouponPolicy(@PathVariable Long merchantId) {
         return couponPolicyService.getProvableMerchantCouponPolicies(merchantId);

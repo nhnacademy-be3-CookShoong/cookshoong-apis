@@ -44,7 +44,7 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepositoryCustom {
         GeoDistanceQueryBuilder geoDistanceQueryBuilder = QueryBuilders
             .geoDistanceQuery("location")
             .point(lat, lon)
-            .distance(15, DistanceUnit.KILOMETERS);
+            .distance(3, DistanceUnit.KILOMETERS);
 
         GeoDistanceSortBuilder distanceSortBuilder = SortBuilders.geoDistanceSort("location", lat, lon)
             .order(SortOrder.ASC)
@@ -65,6 +65,39 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepositoryCustom {
             .withQuery(boolQueryBuilder)
             .withPageable(pageable)
             .withSorts(sortBuilder, sortBuilderById, distanceSortBuilder)
+            .build();
+
+        SearchHits<StoreDocument> searchHits = elasticsearchOperations.search(searchQuery, StoreDocument.class);
+        List<StoreDocument> storeDocuments = searchHits.get().map(SearchHit::getContent).collect(Collectors.toList());
+        return new PageImpl<>(storeDocuments, pageable, searchHits.getTotalHits());
+    }
+
+    @Override
+    public Page<StoreDocument> searchByRating(Long addressId, Pageable pageable) {
+        double lat = addressService.selectAccountChoiceAddress(addressId).getLatitude().doubleValue();
+        double lon = addressService.selectAccountChoiceAddress(addressId).getLongitude().doubleValue();
+
+        GeoDistanceQueryBuilder geoDistanceQueryBuilder = QueryBuilders
+            .geoDistanceQuery("location")
+            .point(lat, lon)
+            .distance(3, DistanceUnit.KILOMETERS);
+
+        GeoDistanceSortBuilder distanceSortBuilder = SortBuilders.geoDistanceSort("location", lat, lon)
+            .order(SortOrder.ASC)
+            .unit(DistanceUnit.KILOMETERS);
+
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders
+            .boolQuery()
+            .mustNot(QueryBuilders.termQuery("store_status_code", "OUTED"))
+            .must(geoDistanceQueryBuilder);
+
+        FieldSortBuilder sortBuilderById = SortBuilders.fieldSort("count_rating")
+            .order(SortOrder.ASC);
+
+        NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
+            .withQuery(boolQueryBuilder)
+            .withPageable(pageable)
+            .withSorts(sortBuilderById, distanceSortBuilder)
             .build();
 
         SearchHits<StoreDocument> searchHits = elasticsearchOperations.search(searchQuery, StoreDocument.class);

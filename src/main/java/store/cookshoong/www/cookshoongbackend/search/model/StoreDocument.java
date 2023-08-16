@@ -39,6 +39,10 @@ public class StoreDocument {
     private Integer minimumOrderPrice;
     @Field("minimum_cooking_time")
     private Integer minimumCookingTime;
+    @Field("count_review")
+    private Integer countReview;
+    @Field("count_rating")
+    private Float avgRating;
 
     public static StoreDocument from(StoreDocumentRequestDto storeDocumentRequestDto) {
         return StoreDocument.builder()
@@ -51,6 +55,8 @@ public class StoreDocument {
             .storeStatus(storeDocumentRequestDto.getStoreStatus())
             .minimumOrderPrice(storeDocumentRequestDto.getMinimumOrderPrice())
             .minimumCookingTime(storeDocumentRequestDto.getMinimumCookingTime())
+            .countReview(storeDocumentRequestDto.getCountReview())
+            .avgRating(storeDocumentRequestDto.getAvgRating())
             .build();
     }
 }
