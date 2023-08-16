@@ -1,6 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.order.model.response;
 
 import com.querydsl.core.annotations.QueryProjection;
+import java.util.Objects;
 import lombok.Getter;
 
 /**
@@ -16,6 +17,7 @@ public class LookupAccountOrderInStatusResponseDto {
     private final Integer couponDiscountAmount;
     private final Integer pointDiscountAmount;
     private final Integer deliveryCost;
+    private final boolean writableReview;
     private int totalOrderPrice;
 
     /**
@@ -30,12 +32,14 @@ public class LookupAccountOrderInStatusResponseDto {
     @QueryProjection
     public LookupAccountOrderInStatusResponseDto(LookupOrderInStatusResponseDto lookupOrderInStatusResponseDto,
                                                  String storeName, Integer couponDiscountAmount,
-                                                 Integer pointDiscountAmount, Integer deliveryCost) {
+                                                 Integer pointDiscountAmount, Integer deliveryCost,
+                                                 Long reviewId) {
         this.lookupOrderInStatusResponseDto = lookupOrderInStatusResponseDto;
         this.storeName = storeName;
         this.couponDiscountAmount = couponDiscountAmount;
         this.pointDiscountAmount = pointDiscountAmount;
         this.deliveryCost = deliveryCost;
+        this.writableReview = validWritable(reviewId);
     }
 
     /**
@@ -46,5 +50,9 @@ public class LookupAccountOrderInStatusResponseDto {
             .stream()
             .mapToInt(LookupOrderDetailMenuResponseDto::getTotalCost)
             .sum();
+    }
+
+    private boolean validWritable(Long reviewId) {
+        return Objects.isNull(reviewId);
     }
 }

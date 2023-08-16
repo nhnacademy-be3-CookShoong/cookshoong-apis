@@ -580,10 +580,7 @@ class CartRedisServiceTest {
 
         when(cartRedisRepository.existKeyInCartRedis(redisKey)).thenReturn(false);
 
-        assertThrows(NotFoundCartRedisKey.class,
-            () -> cartRedisService.selectCartCount(redisKey));
-
-        verify(cartRedisRepository, times(1)).existKeyInCartRedis(redisKey);
+        assertEquals(cartRedisService.selectCartCount(redisKey), 0L);
     }
 
     @Test
