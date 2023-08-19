@@ -17,6 +17,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.order.entity.Order;
 import store.cookshoong.www.cookshoongbackend.review.model.request.CreateReviewRequestDto;
 
@@ -72,6 +73,10 @@ public class Review {
     public void updateReview(String contents, LocalDateTime updatedAt) {
         this.contents = contents;
         this.updatedAt = updatedAt;
+    }
+
+    public Account getAccount() {
+        return order.getAccount();
     }
 
 }

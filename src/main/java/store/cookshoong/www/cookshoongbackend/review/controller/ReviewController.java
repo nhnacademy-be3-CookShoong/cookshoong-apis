@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import store.cookshoong.www.cookshoongbackend.point.model.event.PointOrderCompleteEvent;
 import store.cookshoong.www.cookshoongbackend.review.exception.ReviewValidException;
+import store.cookshoong.www.cookshoongbackend.review.model.event.ReviewEvent;
 import store.cookshoong.www.cookshoongbackend.review.model.request.CreateReviewRequestDto;
 import store.cookshoong.www.cookshoongbackend.review.model.request.UpdateReviewResponseDto;
 import store.cookshoong.www.cookshoongbackend.review.model.response.SelectReviewResponseDto;
@@ -36,6 +39,7 @@ import store.cookshoong.www.cookshoongbackend.review.service.ReviewService;
 @RequestMapping("/api/accounts/{accountId}/review")
 public class ReviewController {
     private final ReviewService reviewService;
+    private final ApplicationEventPublisher publisher;
 
     /**
      * 리뷰 등록에 대한 컨트롤러.
@@ -57,7 +61,11 @@ public class ReviewController {
         if (bindingResult.hasErrors()) {
             throw new ReviewValidException(bindingResult);
         }
-        reviewService.createReview(accountId, requestDto, images, storedAt);
+
+        Long reviewId = reviewService.createReview(accountId, requestDto, images, storedAt);
+
+        publisher.publishEvent(new ReviewEvent(this, reviewId));
+
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .build();
