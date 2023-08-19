@@ -11,20 +11,16 @@
 
     <!-- LogNCrashHttpAppender 선언 -->
     <appender name="logNCrashHttp" class="com.toast.java.logncrash.logback.LogNCrashHttpAppender">
-        <appKey value="${LOG_N_CRASH_APP_KEY}"/>
-        <logSource value="운영"/>
-        <version value="1.0.0"/>
-        <logType value="감사 로그"/>
-        <debug value="true"/>
-        <category value="로그 서비스"/>
-        <errorCodeType value="action"/>
+        <param name="appKey" value="${LOG_N_CRASH_APP_KEY}"/>
+        <param name="logSource" value="${spring.profiles.active}"/>
+        <param name="logType" value="cookshoong"/>
     </appender>
 
     <!-- LogNCrashHttpAppender를 포함한 AsyncAppender 선언 -->
     <appender name="LNCS-APPENDER" class="ch.qos.logback.classic.AsyncAppender">
         <!-- Logback의 AsyncAppender 옵션 -->
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>INFO</level>
+            <level>ERROR</level>
         </filter>
         <includeCallerData value="false"/>
         <queueSize value="2048"/>
@@ -33,16 +29,8 @@
         <appender-ref ref="logNCrashHttp"/>
     </appender>
 
-    <logger name="user-logger" additivity="false">
+    <root level="error">
+        <appender-ref ref="FileAppender"/>
         <appender-ref ref="LNCS-APPENDER"/>
-    </logger>
-
-
-    <logger name="user-logger" additivity="false" level="INFO">
-        <appender-ref ref="FileAppender"/>
-    </logger>
-
-    <root level="debug">
-        <appender-ref ref="FileAppender"/>
     </root>
 </configuration>
