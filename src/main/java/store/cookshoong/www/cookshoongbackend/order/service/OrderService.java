@@ -191,9 +191,9 @@ public class OrderService {
         Store store = storeRepository.findById(storeId)
             .orElseThrow(StoreNotFoundException::new);
 
-        Set<String> statusCodeString = getStatusCodeString(Set.of(PAY, COOKING));
+        Set<String> statusCodes = getStatusCodeString(Set.of(PAY, COOKING));
 
-        return orderRepository.lookupOrderInStatus(store, statusCodeString);
+        return orderRepository.lookupOrderInStatus(store, statusCodes);
     }
 
     /**
@@ -239,7 +239,8 @@ public class OrderService {
             stringJoiner.add("주문할 수 없는 거리입니다.");
         }
 
-        Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
+        Store store = storeRepository.findById(storeId)
+            .orElseThrow(StoreNotFoundException::new);
 
         Integer minimumOrderPrice = store.getMinimumOrderPrice();
 
