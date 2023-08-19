@@ -23,6 +23,9 @@ import lombok.NoArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
+import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateStoreRequestDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreInfoRequestDto;
+import store.cookshoong.www.cookshoongbackend.shop.model.request.UpdateStoreManagerRequestDto;
 
 /**
  * 매장 엔티티.
@@ -59,9 +62,9 @@ public class Store {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "store_status_code", nullable = false)
-    private StoreStatus storeStatusCode;
+    private StoreStatus storeStatus;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "business_license_image_id", nullable = false)
     private Image businessLicense;
 
@@ -80,18 +83,24 @@ public class Store {
     @Column(name = "phone_number", nullable = false, length = 12)
     private String phoneNumber;
 
-    @Column(name = "default_earning_rate", nullable = false, precision = 4, scale = 1)
+    @Column(name = "default_earning_rate", nullable = false, precision = 2, scale = 1)
     private BigDecimal defaultEarningRate;
 
     @Lob
     private String description;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_image_id", nullable = false)
+    @JoinColumn(name = "store_image_id")
     private Image storeImage;
 
     @Column(name = "bank_account_number", nullable = false, length = 20)
     private String bankAccountNumber;
+
+    @Column(name = "minimum_order_price", nullable = false)
+    private Integer minimumOrderPrice;
+
+    @Column(name = "delivery_cost")
+    private Integer deliveryCost;
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.PERSIST)
     private final Set<StoresHasCategory> storesHasCategories = new HashSet<>();
@@ -103,33 +112,28 @@ public class Store {
      * @param account               회원
      * @param bankTypeCode          은행타입
      * @param storeStatus           가게 상태
-     * @param businessLicenseNumber 사업자등록번호
-     * @param representativeName    대표자 이름
-     * @param openingDate           개업일자
-     * @param name                  상호명
-     * @param phoneNumber           가게 번호
-     * @param defaultEarningRate    매장 별 기본 적립률
-     * @param description           매장 설명
-     * @param bankAccountNumber     은행 계좌 번호
+     * @param businessLicense       the business license
+     * @param createStoreRequestDto the create store request dto
+     * @param storeImage            the store image
      */
     public Store(Merchant merchant, Account account, BankType bankTypeCode, StoreStatus storeStatus,
-                 Image businessLicense, String businessLicenseNumber, String representativeName,
-                 LocalDate openingDate, String name, String phoneNumber, BigDecimal defaultEarningRate,
-                 String description, Image storeImage, String bankAccountNumber) {
+                 Image businessLicense, CreateStoreRequestDto createStoreRequestDto, Image storeImage) {
         this.merchant = merchant;
         this.account = account;
         this.bankTypeCode = bankTypeCode;
-        this.storeStatusCode = storeStatus;
+        this.storeStatus = storeStatus;
         this.businessLicense = businessLicense;
-        this.businessLicenseNumber = businessLicenseNumber;
-        this.representativeName = representativeName;
-        this.openingDate = openingDate;
-        this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.defaultEarningRate = defaultEarningRate;
-        this.description = description;
+        this.businessLicenseNumber = createStoreRequestDto.getBusinessLicenseNumber();
+        this.representativeName = createStoreRequestDto.getRepresentativeName();
+        this.openingDate = createStoreRequestDto.getOpeningDate();
+        this.name = createStoreRequestDto.getStoreName();
+        this.phoneNumber = createStoreRequestDto.getPhoneNumber();
+        this.defaultEarningRate = createStoreRequestDto.getEarningRate();
+        this.minimumOrderPrice = createStoreRequestDto.getMinimumOrderPrice();
+        this.description = createStoreRequestDto.getDescription();
         this.storeImage = storeImage;
-        this.bankAccountNumber = bankAccountNumber;
+        this.bankAccountNumber = createStoreRequestDto.getBankAccount();
+        this.deliveryCost = createStoreRequestDto.getDeliveryCost();
     }
 
     /**
@@ -144,36 +148,39 @@ public class Store {
     /**
      * 매장 정보 수정.
      *
-     * @param merchant              the merchant
-     * @param account               the account
-     * @param bankTypeCode          the bank type code
-     * @param storeStatus           the store status
-     * @param businessLicenseNumber the business license number
-     * @param representativeName    the representative name
-     * @param openingDate           the opening date
-     * @param name                  the name
-     * @param phoneNumber           the phone number
-     * @param defaultEarningRate    the default earning rate
-     * @param description           the description
-     * @param storeImage            the store image
-     * @param bankAccountNumber     the bank account number
+     * @param bankTypeCode the bank type code
+     * @param requestDto   the request dto
      */
-    public void modifyStoreInfo(Account account, BankType bankTypeCode, StoreStatus storeStatus,
-                                String businessLicenseNumber, String representativeName,
-                                LocalDate openingDate, String name, String phoneNumber, BigDecimal defaultEarningRate,
-                                String description, Image storeImage, String bankAccountNumber) {
-        this.account = account;
+    public void modifyStore(BankType bankTypeCode,
+                            UpdateStoreManagerRequestDto requestDto) {
         this.bankTypeCode = bankTypeCode;
-        this.storeStatusCode = storeStatus;
-        this.businessLicenseNumber = businessLicenseNumber;
-        this.representativeName = representativeName;
-        this.openingDate = openingDate;
-        this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.defaultEarningRate = defaultEarningRate;
-        this.description = description;
+        this.bankAccountNumber = requestDto.getBankAccount();
+        this.representativeName = requestDto.getRepresentativeName();
+
+    }
+
+    /**
+     * Modify store info.
+     *
+     * @param requestDto the request dto
+     */
+    public void modifyStoreInformation(UpdateStoreInfoRequestDto requestDto) {
+        this.openingDate = requestDto.getOpeningDate();
+        this.name = requestDto.getStoreName();
+        this.phoneNumber = requestDto.getPhoneNumber();
+        this.minimumOrderPrice = requestDto.getMinimumOrderPrice();
+        this.defaultEarningRate = requestDto.getEarningRate();
+        this.description = requestDto.getDescription();
+        this.deliveryCost = requestDto.getDeliveryCost();
+    }
+
+    /**
+     * 매장 이미지 수정
+     *
+     * @param storeImage the store image
+     */
+    public void modifyStoreImage(Image storeImage) {
         this.storeImage = storeImage;
-        this.bankAccountNumber = bankAccountNumber;
     }
 
     /**
@@ -189,9 +196,9 @@ public class Store {
     /**
      * 매장의 상태코드 변경.
      *
-     * @param storeStatusCode 매장 상태 코드(OPEN, CLOSE, OUTED)
+     * @param storeStatus 매장 상태 코드(OPEN, CLOSE, OUTED, BREAK_TIME)
      */
-    public void modifyStoreStatus(StoreStatus storeStatusCode) {
-        this.storeStatusCode = storeStatusCode;
+    public void modifyStoreStatus(StoreStatus storeStatus) {
+        this.storeStatus = storeStatus;
     }
 }

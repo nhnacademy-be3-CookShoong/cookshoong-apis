@@ -43,9 +43,9 @@ class StoreStatusRepositoryTest {
         //Then
         assertEquals(3, result.size());
 
-        assertEquals("OPEN", result.get(0).getStoreStatusCode());
-        assertEquals("CLOSE", result.get(1).getStoreStatusCode());
-        assertEquals("OUTED", result.get(2).getStoreStatusCode());
+        assertEquals("OPEN", result.get(0).getCode());
+        assertEquals("CLOSE", result.get(1).getCode());
+        assertEquals("OUTED", result.get(2).getCode());
 
         assertEquals("영업중", result.get(0).getDescription());
         assertEquals("휴식중", result.get(1).getDescription());

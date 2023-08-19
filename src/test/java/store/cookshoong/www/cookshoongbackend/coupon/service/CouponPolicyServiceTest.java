@@ -5,9 +5,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +37,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponUsageNotFou
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateCashCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreatePercentCouponPolicyRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicyResponseDto;
-import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableStoreCouponPolicyResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableCouponPolicyResponseDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypeCashVo;
 import store.cookshoong.www.cookshoongbackend.coupon.model.vo.CouponTypePercentVo;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;
@@ -45,6 +48,8 @@ import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponUsageMerch
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponUsageStoreRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.util.CouponTypeConverter;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
+import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
+import store.cookshoong.www.cookshoongbackend.file.model.LocationType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.shop.repository.merchant.MerchantRepository;
@@ -222,8 +227,8 @@ class CouponPolicyServiceTest {
             .thenAnswer(invocation -> Optional.of(
                 new CouponTypeCash(invocation.getArgument(0), invocation.getArgument(1))));
 
-        Image businessImage = te.getImage("사업자등록증.jpg", false);
-        Image storeImage = te.getImage("우리 매장 대표사진.jpg", true);
+        Image businessImage = te.getImage(LocationType.OBJECT_S.getVariable(), FileDomain.BUSINESS_INFO_IMAGE.getVariable(), "사업자등록증.png", false);
+        Image storeImage = te.getImage(LocationType.OBJECT_S.getVariable(), FileDomain.STORE_IMAGE.getVariable(), "매장사진.png", true);
         Store store = te.getStore(te.getMerchant(), account, te.getBankTypeKb(), te.getStoreStatusOpen(), businessImage, storeImage);
 
         when(couponUsageStoreRepository.findByStoreId(anyLong()))
@@ -253,8 +258,8 @@ class CouponPolicyServiceTest {
 
         when(couponUsageStoreRepository.findByStoreId(anyLong()))
             .thenReturn(Optional.empty());
-        Image businessImage = te.getImage("사업자등록증.jpg", false);
-        Image storeImage = te.getImage("우리 매장 대표사진.jpg", true);
+        Image businessImage = te.getImage(LocationType.OBJECT_S.getVariable(), FileDomain.BUSINESS_INFO_IMAGE.getVariable(), "사업자등록증.png", false);
+        Image storeImage = te.getImage(LocationType.OBJECT_S.getVariable(), FileDomain.STORE_IMAGE.getVariable(), "매장사진.png", true);
         Store store = te.getStore(te.getMerchant(), account, te.getBankTypeKb(), te.getStoreStatusOpen(), businessImage, storeImage);
 
         when(storeRepository.getReferenceById(any(Long.class)))
@@ -284,8 +289,8 @@ class CouponPolicyServiceTest {
             .thenAnswer(invocation -> Optional.of(new CouponTypePercent(
                 invocation.getArgument(0), invocation.getArgument(1), invocation.getArgument(2))));
 
-        Image businessImage = te.getImage("사업자등록증.png", false);
-        Image storeImage = te.getImage("매장대표사진.png", true);
+        Image businessImage = te.getImage(LocationType.OBJECT_S.getVariable(), FileDomain.BUSINESS_INFO_IMAGE.getVariable(), "사업자등록증.png", false);
+        Image storeImage = te.getImage(LocationType.OBJECT_S.getVariable(), FileDomain.STORE_IMAGE.getVariable(), "매장사진.png", true);
 
         Store store = te.getStore(te.getMerchant(), account, te.getBankTypeKb(), te.getStoreStatusOpen(), businessImage, storeImage);
 
@@ -529,11 +534,11 @@ class CouponPolicyServiceTest {
     @Test
     @DisplayName("쿠폰 정책 목록 확인 테스트")
     void getProvableStoreCouponPolicies() throws Exception {
-        List<SelectProvableStoreCouponPolicyResponseDto> selectProvableStoreCouponPolicyResponses =
+        List<SelectProvableCouponPolicyResponseDto> selectProvableStoreCouponPolicyResponses =
             List.of(
-                new SelectProvableStoreCouponPolicyResponseDto(
+                new SelectProvableCouponPolicyResponseDto(
                     1L, te.getCouponTypeCash_1000_10000(), 1),
-                new SelectProvableStoreCouponPolicyResponseDto(
+                new SelectProvableCouponPolicyResponseDto(
                     2L, te.getCouponTypePercent_3_1000_10000(), 2)
             );
 
@@ -542,5 +547,47 @@ class CouponPolicyServiceTest {
 
         assertThat(couponPolicyService.getProvableStoreCouponPolicies(Long.MIN_VALUE))
             .hasSize(2);
+    }
+
+    @Test
+    @DisplayName("가맹점 쿠폰 정책 목록 전달 테스트")
+    void getProvableMerchantCouponPoliciesTest() throws Exception {
+        when(couponPolicyRepository.lookupProvableMerchantCouponPolicies(anyLong()))
+            .thenReturn(Collections.emptyList());
+
+        assertThat(couponPolicyService.getProvableMerchantCouponPolicies(Long.MAX_VALUE))
+            .isEmpty();
+    }
+
+    @Test
+    @DisplayName("모든 사용처 쿠폰 정책 목록 전달 테스트")
+    void getProvableUsageAllCouponPoliciesTest() throws Exception {
+        when(couponPolicyRepository.lookupProvableUsageAllCouponPolicies())
+            .thenReturn(Collections.emptyList());
+
+        assertThat(couponPolicyService.getProvableUsageAllCouponPolicies())
+            .isEmpty();
+    }
+
+    @Test
+    @DisplayName("제공 쿠폰 유무 확인 테스트")
+    void isOfferCouponInStoreTest() throws Exception {
+        when(couponPolicyRepository.isOfferCouponInStore(anyLong()))
+            .thenReturn(true);
+
+        assertThat(couponPolicyService.isOfferCouponInStore(Long.MAX_VALUE))
+            .isTrue();
+    }
+
+    @Test
+    @DisplayName("쿠폰 정책 숨김 테스트")
+    void patchHidePolicyTest() throws Exception {
+        CouponPolicy couponPolicy = mock(CouponPolicy.class);
+        when(couponPolicyRepository.findById(anyLong()))
+            .thenReturn(Optional.of(couponPolicy));
+
+        couponPolicyService.patchHidePolicy(Long.MAX_VALUE);
+
+        verify(couponPolicy).hide();
     }
 }

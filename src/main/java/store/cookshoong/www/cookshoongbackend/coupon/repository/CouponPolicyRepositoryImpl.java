@@ -15,14 +15,15 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.QSelectPolicyResponseDto;
-import store.cookshoong.www.cookshoongbackend.coupon.model.response.QSelectProvableStoreCouponPolicyResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.QSelectProvableCouponPolicyResponseDto;
 import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectPolicyResponseDto;
-import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableStoreCouponPolicyResponseDto;
+import store.cookshoong.www.cookshoongbackend.coupon.model.response.SelectProvableCouponPolicyResponseDto;
 
 /**
  * QueryDSL CouponPolicyRepository.
@@ -95,7 +96,7 @@ public class CouponPolicyRepositoryImpl implements CouponPolicyRepositoryCustom 
             .innerJoin(couponPolicy.couponUsage, couponUsage)
             .on(couponUsage.id.eq(couponUsageId))
 
-            .where(couponPolicy.deleted.isFalse())
+            .where(couponPolicy.deleted.isFalse(), couponPolicy.hidden.isFalse())
 
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
@@ -151,9 +152,29 @@ public class CouponPolicyRepositoryImpl implements CouponPolicyRepositoryCustom 
      * {@inheritDoc}
      */
     @Override
-    public List<SelectProvableStoreCouponPolicyResponseDto> lookupProvableStoreCouponPolicies(Long storeId) {
+    public List<SelectProvableCouponPolicyResponseDto> lookupProvableStoreCouponPolicies(Long storeId) {
+        return getProvableCouponPolicies(couponUsage.id.eq(getCouponUsageStoreId(storeId)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<SelectProvableCouponPolicyResponseDto> lookupProvableMerchantCouponPolicies(Long merchantId) {
+        return getProvableCouponPolicies(couponUsage.id.eq(getCouponUsageMerchantId(merchantId)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<SelectProvableCouponPolicyResponseDto> lookupProvableUsageAllCouponPolicies() {
+        return getProvableCouponPolicies(couponUsage.id.eq(getCouponUsageAllId()));
+    }
+
+    private List<SelectProvableCouponPolicyResponseDto> getProvableCouponPolicies(BooleanExpression filter) {
         return queryFactory
-            .select(new QSelectProvableStoreCouponPolicyResponseDto(
+            .select(new QSelectProvableCouponPolicyResponseDto(
                 couponPolicy.id,
                 couponType,
                 couponPolicy.usagePeriod
@@ -163,9 +184,9 @@ public class CouponPolicyRepositoryImpl implements CouponPolicyRepositoryCustom 
             .innerJoin(couponPolicy.couponType, couponType)
 
             .innerJoin(couponPolicy.couponUsage, couponUsage)
-            .on(couponUsage.id.eq(getCouponUsageStoreId(storeId)))
+            .on(filter)
 
-            .where(couponPolicy.deleted.isFalse(), existReceivableIssueCoupon())
+            .where(couponPolicy.deleted.isFalse(), couponPolicy.hidden.isFalse(), existReceivableIssueCoupon())
             .fetch();
     }
 
@@ -174,5 +195,23 @@ public class CouponPolicyRepositoryImpl implements CouponPolicyRepositoryCustom 
             .selectFrom(issueCoupon)
             .where(issueCoupon.couponPolicy.eq(couponPolicy), isUnclaimedCouponCount(true))
             .exists();
+    }
+
+    @Override
+    public boolean isOfferCouponInStore(Long storeId) {
+        Object uuid = queryFactory
+            .selectFrom(couponUsageStore)
+
+            .innerJoin(couponPolicy)
+            .on(couponPolicy.couponUsage.id.eq(couponUsageStore.id), couponPolicy.deleted.isFalse(),
+                couponPolicy.hidden.isFalse())
+
+            .innerJoin(issueCoupon)
+            .on(issueCoupon.couponPolicy.eq(couponPolicy), issueCoupon.account.isNull())
+
+            .where(couponUsageStore.store.id.eq(storeId))
+            .fetchFirst();
+
+        return Objects.nonNull(uuid);
     }
 }

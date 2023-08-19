@@ -7,12 +7,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllBanksResponseDto;
-import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllCategoriesResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllMerchantsResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.service.BankTypeService;
 import store.cookshoong.www.cookshoongbackend.shop.service.MerchantService;
-import store.cookshoong.www.cookshoongbackend.shop.service.StoreCategoryService;
 import store.cookshoong.www.cookshoongbackend.shop.service.StoreStatusService;
 
 /**
@@ -28,7 +26,6 @@ public class BusinessSelectController {
 
     private final BankTypeService bankTypeService;
     private final MerchantService merchantService;
-    private final StoreCategoryService storeCategoryService;
     private final StoreStatusService storeStatusService;
 
     /**
@@ -51,17 +48,6 @@ public class BusinessSelectController {
     public ResponseEntity<List<SelectAllMerchantsResponseDto>> getMerchantsForUser() {
         return ResponseEntity
             .ok(merchantService.selectAllMerchantsForUser());
-    }
-
-    /**
-     * 사업자 등록 : 카테고리 리스트 조회.
-     *
-     * @return 매장 키테고리 리스트
-     */
-    @GetMapping("/categories")
-    public ResponseEntity<List<SelectAllCategoriesResponseDto>> getCategoriesForUser() {
-        return ResponseEntity
-            .ok(storeCategoryService.selectAllCategoriesForUser());
     }
 
     @GetMapping("/store-status")

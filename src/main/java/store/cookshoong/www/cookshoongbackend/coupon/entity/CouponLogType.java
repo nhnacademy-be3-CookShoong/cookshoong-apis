@@ -27,4 +27,12 @@ public class CouponLogType {
     @Column(name = "description", nullable = false)
     private String description;
 
+    /**
+     * The enum Code.
+     */
+    public enum Code {
+        USE,
+        CANCEL
+    }
+
 }

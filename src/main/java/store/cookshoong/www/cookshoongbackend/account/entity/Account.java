@@ -15,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
+import store.cookshoong.www.cookshoongbackend.account.model.request.UpdateAccountInfoRequestDto;
 
 /**
  * 회원 엔티티.
@@ -125,5 +126,20 @@ public class Account {
 
     public void updateAuthority(Authority authority) {
         this.authority = authority;
+    }
+
+    public void updateLastLoginAt() {
+        this.lastLoginAt = LocalDateTime.now();
+    }
+
+    /**
+     * 변경될 수 있는 회원정보를 변경하는 메서드.
+     *
+     * @param updateAccountInfoRequestDto the update account info request dto
+     */
+    public void updateMutableInfo(UpdateAccountInfoRequestDto updateAccountInfoRequestDto) {
+        this.email = updateAccountInfoRequestDto.getEmail();
+        this.nickname = updateAccountInfoRequestDto.getNickname();
+        this.phoneNumber = updateAccountInfoRequestDto.getPhoneNumber();
     }
 }

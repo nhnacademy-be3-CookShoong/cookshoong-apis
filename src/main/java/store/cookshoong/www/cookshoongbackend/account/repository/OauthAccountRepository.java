@@ -9,5 +9,5 @@ import store.cookshoong.www.cookshoongbackend.account.entity.OauthAccount;
  * @author koesnam
  * @since 2023.07.04
  */
-public interface OauthAccountRepository extends JpaRepository<OauthAccount, Long> {
+public interface OauthAccountRepository extends JpaRepository<OauthAccount, OauthAccount.Pk> {
 }

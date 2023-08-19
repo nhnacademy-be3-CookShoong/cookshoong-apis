@@ -1,7 +1,10 @@
 package store.cookshoong.www.cookshoongbackend.cart.redis.repository;
 
+import static store.cookshoong.www.cookshoongbackend.cart.utils.CartConstant.PHANTOM;
+
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -17,12 +20,11 @@ import org.springframework.stereotype.Component;
 public class CartRedisRepository {
 
     private final RedisTemplate<String, Object> redisTemplate;
-    private static final String CART = "cart_account:";
 
     /**
-     * 메뉴를 장바구니에 담으면 Redis 에 저장되는 메서드.
-     * key, hashKey, object -> key 에다가 hashKey 에 object 가 저장
-     * key -> (hashKey = object)
+     * 메뉴를 장바구니에 담으면 Redis 에 저장되는 메서드.  <br>
+     * key, hashKey, object -> key 에다가 hashKey 에 object 가 저장  <br>
+     * key -> (hashKey = object)  <br>
      *
      * @param redisKey       redis key
      * @param hashKey        redis hashKey
@@ -30,9 +32,22 @@ public class CartRedisRepository {
      */
     public void cartRedisSave(String redisKey, String hashKey, Object cartRequest) {
 
-        String cartKey = CART + redisKey;
+        redisTemplate.opsForHash().put(redisKey, hashKey, cartRequest);
+        redisTemplate.opsForHash().put(redisKey + PHANTOM, hashKey, "");
+        redisTemplate.expire(redisKey + PHANTOM, 120, TimeUnit.MINUTES);
+        redisTemplate.expire(redisKey, 125, TimeUnit.MINUTES);
+    }
 
-        redisTemplate.opsForHash().put(cartKey, hashKey, cartRequest);
+    /**
+     * Lock 을 구분할 수 있는 redis Key 를 생성.
+     *
+     * @param lockKey       lock redis key
+     * @param hashKey       lock redis hashKey
+     */
+    public void createLockRedis(String lockKey, String hashKey) {
+
+        redisTemplate.opsForHash().put(lockKey, hashKey, "lock");
+        redisTemplate.expire(lockKey, 20, TimeUnit.SECONDS);
     }
 
     /**
@@ -44,9 +59,8 @@ public class CartRedisRepository {
      */
     public void cartMenuRedisModify(String redisKey, String hashKey, Object cartRequest) {
 
-        String cartKey = CART + redisKey;
 
-        redisTemplate.opsForHash().put(cartKey, hashKey, cartRequest);
+        redisTemplate.opsForHash().put(redisKey, hashKey, cartRequest);
     }
 
     /**
@@ -57,9 +71,8 @@ public class CartRedisRepository {
      */
     public List<Object> findByCartAll(String redisKey) {
 
-        String cartKey = CART + redisKey;
 
-        return redisTemplate.opsForHash().values(cartKey);
+        return redisTemplate.opsForHash().values(redisKey);
     }
 
     /**
@@ -71,9 +84,8 @@ public class CartRedisRepository {
      */
     public Object findByCartMenu(String redisKey, String hashKey) {
 
-        String cartKey = CART + redisKey;
 
-        return redisTemplate.opsForHash().get(cartKey, hashKey);
+        return redisTemplate.opsForHash().get(redisKey, hashKey);
     }
 
     /**
@@ -84,9 +96,8 @@ public class CartRedisRepository {
      */
     public Long cartRedisSize(String redisKey) {
 
-        String cartKey = CART + redisKey;
 
-        return redisTemplate.opsForHash().size(cartKey);
+        return redisTemplate.opsForHash().size(redisKey);
     }
 
     /**
@@ -97,9 +108,9 @@ public class CartRedisRepository {
      */
     public void deleteCartMenu(String redisKey, String hashKey) {
 
-        String cartKey = CART + redisKey;
 
-        redisTemplate.opsForHash().delete(cartKey, hashKey);
+        redisTemplate.opsForHash().delete(redisKey + PHANTOM, hashKey);
+        redisTemplate.opsForHash().delete(redisKey, hashKey);
     }
 
     /**
@@ -109,9 +120,9 @@ public class CartRedisRepository {
      */
     public void deleteCartAll(String redisKey) {
 
-        String cartKey = CART + redisKey;
 
-        redisTemplate.delete(cartKey);
+        redisTemplate.delete(redisKey + PHANTOM);
+        redisTemplate.delete(redisKey);
     }
 
     /**
@@ -123,9 +134,8 @@ public class CartRedisRepository {
      */
     public boolean existMenuInCartRedis(String redisKey, String hashKey) {
 
-        String cartKey = CART + redisKey;
 
-        return redisTemplate.opsForHash().hasKey(cartKey, hashKey);
+        return redisTemplate.opsForHash().hasKey(redisKey, hashKey);
     }
 
     /**
@@ -136,9 +146,8 @@ public class CartRedisRepository {
      */
     public boolean existKeyInCartRedis(String redisKey) {
 
-        String cartKey = CART + redisKey;
 
-        return Boolean.TRUE.equals(redisTemplate.hasKey(cartKey));
+        return Boolean.TRUE.equals(redisTemplate.hasKey(redisKey));
     }
 
     /**
@@ -149,8 +158,7 @@ public class CartRedisRepository {
      */
     public Set<Object> cartKeyInHashKey(String redisKey) {
 
-        String cartKey = CART + redisKey;
 
-        return redisTemplate.opsForHash().keys(cartKey);
+        return redisTemplate.opsForHash().keys(redisKey);
     }
 }

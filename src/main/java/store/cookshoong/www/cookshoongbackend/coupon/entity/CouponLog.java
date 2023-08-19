@@ -13,7 +13,7 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import store.cookshoong.www.cookshoongbackend.menu_order.entity.order.Order;
+import store.cookshoong.www.cookshoongbackend.order.entity.Order;
 
 /**
  * 쿠폰 내역 entity.
@@ -47,18 +47,25 @@ public class CouponLog {
     @Column(name = "record_at", nullable = false)
     private LocalDateTime recordAt;
 
+    @Column(name = "discount_amount", nullable = false)
+    private Integer discountAmount;
+
     /**
      * 쿠폰 내역 생성자.
      *
      * @param issueCoupon   the issue coupon
      * @param couponLogType the coupon log type
      * @param order         the order
-     * @param recordAt    the record date
      */
-    public CouponLog(IssueCoupon issueCoupon, CouponLogType couponLogType, Order order, LocalDateTime recordAt) {
+    public CouponLog(IssueCoupon issueCoupon, CouponLogType couponLogType, Order order, int discountAmount) {
         this.issueCoupon = issueCoupon;
         this.couponLogType = couponLogType;
         this.order = order;
-        this.recordAt = recordAt;
+        this.recordAt = LocalDateTime.now();
+        this.discountAmount = discountAmount;
+    }
+
+    public void updateCouponLogType(CouponLogType couponLogType) {
+        this.couponLogType = couponLogType;
     }
 }

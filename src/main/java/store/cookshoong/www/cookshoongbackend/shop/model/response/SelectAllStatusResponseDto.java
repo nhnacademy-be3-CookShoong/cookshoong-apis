@@ -12,6 +12,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class SelectAllStatusResponseDto {
-    private String storeStatusCode;
+    private String code;
     private String description;
 }

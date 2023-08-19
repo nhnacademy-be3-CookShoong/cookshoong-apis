@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.coupon.repository;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponLogType;
 
@@ -9,6 +10,8 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponLogType;
  * @author eora21
  * @since 2023.07.04
  */
-public interface CouponLogTypeRepository extends JpaRepository<CouponLogType, Integer> {
-
+public interface CouponLogTypeRepository extends JpaRepository<CouponLogType, String> {
+    default Optional<CouponLogType> findByCouponLogTypeCode(CouponLogType.Code couponLogTypeCode) {
+        return findById(couponLogTypeCode.name());
+    }
 }

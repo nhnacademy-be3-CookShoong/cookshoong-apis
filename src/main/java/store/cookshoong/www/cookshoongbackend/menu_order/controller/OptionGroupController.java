@@ -63,6 +63,12 @@ public class OptionGroupController {
         List<SelectOptionGroupResponseDto> optionGroups = optionGroupService.selectOptionGroups(storeId);
         return ResponseEntity.ok(optionGroups);
     }
+    @GetMapping("/stores/{storeId}/menu/{menuId}/option-group")
+    public ResponseEntity<List<SelectOptionGroupResponseDto>> getOptionGroupsByMenu(@PathVariable("storeId") Long storeId,
+                                                                                    @PathVariable("menuId") Long menuId) {
+        List<SelectOptionGroupResponseDto> optionGroups = optionGroupService.selectOptionGroupsByMenu(storeId, menuId);
+        return ResponseEntity.ok(optionGroups);
+    }
 
     /**
      * 옵션 그룹 조회 컨트롤러.

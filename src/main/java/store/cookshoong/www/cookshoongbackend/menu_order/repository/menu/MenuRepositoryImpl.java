@@ -6,13 +6,15 @@ import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.file.entity.QImage;
-import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.MenuStatus;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.QMenu;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.QMenuStatus;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menugroup.QMenuHasMenuGroup;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.optiongroup.QMenuHasOptionGroup;
+import store.cookshoong.www.cookshoongbackend.menu_order.entity.optiongroup.QOptionGroup;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.response.QSelectMenuResponseDto;
+import store.cookshoong.www.cookshoongbackend.menu_order.model.response.QSelectOptionGroupResponseDto;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectMenuResponseDto;
+import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectOptionGroupResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QStore;
 
 /**
@@ -42,13 +44,13 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
 
         SelectMenuResponseDto selectMenuResponseDto = jpaQueryFactory
             .select(new QSelectMenuResponseDto(
-                menu.id, menuStatus.menuStatusCode, store.id,
+                menu.id, menuStatus.code, store.id,
                 menu.name, menu.price, menu.description,
-                menu.image.savedName, menu.cookingTime, menu.earningRate))
+                menu.image.savedName, menu.cookingTime, menu.earningRate, menu.image.locationType, menu.image.domainName))
             .from(menu)
-            .innerJoin(menu.menuStatusCode, menuStatus)
+            .innerJoin(menu.menuStatus, menuStatus)
             .innerJoin(menu.store, store)
-            .innerJoin(menu.image, image)
+            .leftJoin(menu.image, image)
             .where(menu.id.eq(menuId))
             .fetchOne();
 
@@ -85,21 +87,16 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
         QMenuHasMenuGroup menuHasMenuGroup = QMenuHasMenuGroup.menuHasMenuGroup;
         QMenuHasOptionGroup menuHasOptionGroup = QMenuHasOptionGroup.menuHasOptionGroup;
 
-        MenuStatus outedStatus = jpaQueryFactory
-            .selectFrom(menuStatus)
-            .where(menuStatus.menuStatusCode.eq("OUTED"))
-            .fetchOne();
-
         List<SelectMenuResponseDto> selectMenuResponseDtoList = jpaQueryFactory
             .select(new QSelectMenuResponseDto(
-                menu.id, menuStatus.menuStatusCode, store.id,
+                menu.id, menuStatus.code, store.id,
                 menu.name, menu.price, menu.description,
-                menu.image.savedName, menu.cookingTime, menu.earningRate))
+                menu.image.savedName, menu.cookingTime, menu.earningRate, menu.image.locationType, menu.image.domainName))
             .from(menu)
-            .innerJoin(menu.menuStatusCode, menuStatus)
+            .innerJoin(menu.menuStatus, menuStatus)
             .innerJoin(menu.store, store)
-            .innerJoin(menu.image, image)
-            .where(store.id.eq(storeId), menu.menuStatusCode.ne(outedStatus))
+            .leftJoin(menu.image, image)
+            .where(store.id.eq(storeId), menu.menuStatus.code.ne("OUTED"))
             .fetch();
 
         for (SelectMenuResponseDto selectMenuResponseDto : selectMenuResponseDtoList) {
@@ -122,5 +119,27 @@ public class MenuRepositoryImpl implements MenuRepositoryCustom {
         }
 
         return selectMenuResponseDtoList;
+    }
+
+    @Override
+    public List<SelectOptionGroupResponseDto> lookupOptionGroupByMenu(Long storeId, Long menuId) {
+        QOptionGroup optionGroup = QOptionGroup.optionGroup;
+        QStore store = QStore.store;
+        QMenuHasOptionGroup menuHasOptionGroup = QMenuHasOptionGroup.menuHasOptionGroup;
+        QMenu menu = QMenu.menu;
+
+        return jpaQueryFactory
+            .select(new QSelectOptionGroupResponseDto(
+                menuHasOptionGroup.optionGroup.id, store.id, menuHasOptionGroup.optionGroup.name,
+                menuHasOptionGroup.optionGroup.minSelectCount, menuHasOptionGroup.optionGroup.maxSelectCount,
+                menuHasOptionGroup.optionGroup.isDeleted
+            ))
+            .from(menu)
+            .innerJoin(menu.menuHasOptionGroups, menuHasOptionGroup)
+            .innerJoin(menuHasOptionGroup.optionGroup, optionGroup)
+            .innerJoin(menu.store, store)
+            .where(optionGroup.isDeleted.isFalse(),
+                menu.id.eq(menuId), menu.store.id.eq(storeId))
+            .fetch();
     }
 }

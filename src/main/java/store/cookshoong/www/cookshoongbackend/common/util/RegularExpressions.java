@@ -5,6 +5,7 @@ package store.cookshoong.www.cookshoongbackend.common.util;
  *
  * @author koesnam
  * @since 2023.07.05
+ * @contributor seongyeon, jewan (유승연, 정제완)
  */
 public class RegularExpressions {
     private RegularExpressions() {
@@ -20,11 +21,15 @@ public class RegularExpressions {
     // 문자(한글 + 영어)만 (띄어쓰기 허용) + 숫자 + @NotBlank 사용하셔야 공백을 막을 수 있습니다.
     public static final String LETTER_WITH_NUMBER_AND_BLANK = "^[가-힇A-Za-z0-9 ]+$";
     // 문자(한글 + 영어)만 (띄어쓰기 허용) + 숫자 + 특별문자  + @NotBlank 사용하셔야 공백을 막을 수 있습니다.
-    public static final String MAIN_DETAIL_ADDRESS = "^[가-힇0-9\\w\\-\\, ]+$";
+    public static final String MAIN_DETAIL_ADDRESS = "^[가-힇0-9\\w\\-\\,\\(\\), ]+$";
     // 숫자만 (1개 이상)
     public static final String NUMBER_ONLY = "^\\d+$";
     // 숫자가 아닌 모든 문자(한글, 영어, 특수문자) (1개 이상)
     public static final String NOT_NUMBER = "(?=^\\D+$)(?=^\\S+$).*";
+
+    // 문자(영어_대문자)만 허용 (공백X)
+    public static final String ENGLISH_UPPER_ONLY = "^[A-Z]+$";
+
 }
 
 

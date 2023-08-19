@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.repository.NoRepositoryBean;
 import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectMenuResponseDto;
+import store.cookshoong.www.cookshoongbackend.menu_order.model.response.SelectOptionGroupResponseDto;
 
 /**
  * 메뉴 커스텀 레포지토리 인터페이스.
@@ -29,4 +30,5 @@ public interface MenuRepositoryCustom {
      * @return 매장의 메뉴 리스트
      */
     List<SelectMenuResponseDto> lookupMenus(Long storeId);
+    List<SelectOptionGroupResponseDto> lookupOptionGroupByMenu(Long storeId, Long menuId);
 }

@@ -9,9 +9,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import store.cookshoong.www.cookshoongbackend.file.ImageNotFoundException;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
-import store.cookshoong.www.cookshoongbackend.file.service.ObjectStorageService;
+import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
+import store.cookshoong.www.cookshoongbackend.file.service.FileUtilResolver;
+import store.cookshoong.www.cookshoongbackend.file.service.FileUtils;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.MenuStatus;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menugroup.MenuGroup;
@@ -49,49 +52,73 @@ public class MenuService {
     private final StoreRepository storeRepository;
     private final MenuRepository menuRepository;
     private final MenuStatusRepository menuStatusRepository;
+    private final ImageRepository imageRepository;
     private final MenuHasMenuGroupRepository menuHasMenuGroupRepository;
     private final MenuGroupRepository menuGroupRepository;
     private final MenuHasOptionGroupRepository menuHasOptionGroupRepository;
     private final OptionGroupRepository optionGroupRepository;
-    private final ObjectStorageService objectStorageService;
+    private final FileUtilResolver fileUtilResolver;
     private final EntityManager entityManager;
 
-    /**
-     * 메뉴 등록 및 수정 서비스.
-     *
-     * @param storeId        매장 아이디
-     * @param createMenuRequestDto 메뉴 등록 Dto
-     */
-    public void updateMenu(Long storeId, CreateMenuRequestDto createMenuRequestDto, MultipartFile file)
-        throws IOException {
+    private Image getImage(String storedAt, MultipartFile file, FileDomain fileDomain) throws IOException {
+        if (Objects.nonNull(file)) {
+            FileUtils fileUtils = fileUtilResolver.getFileService(storedAt);
+            return fileUtils.storeFile(file, fileDomain.getVariable(), true);
+        }
+        return null;
+    }
+
+    public void createMenu(Long storeId, CreateMenuRequestDto createMenuRequestDto,
+                           String storedAt, MultipartFile file) throws IOException {
         Store store = storeRepository.findById(storeId)
             .orElseThrow(StoreNotFoundException::new);
         MenuStatus menuStatus = menuStatusRepository.findById(StoreStatus.StoreStatusCode.OPEN.name())
             .orElseThrow(MenuStatusNotFoundException::new);
-        Image image = objectStorageService.storeFile(file, FileDomain.MENU_IMAGE.getVariable(), true);
-        if (Objects.isNull(createMenuRequestDto.getTargetMenuId())) {
-            Menu menu = new Menu(
-                menuStatus,
-                store,
-                createMenuRequestDto.getName(),
-                createMenuRequestDto.getPrice(),
-                createMenuRequestDto.getDescription(),
-                image,
-                createMenuRequestDto.getCookingTime(),
-                createMenuRequestDto.getEarningRate());
-            menuRepository.save(menu);
-            addMenuGroup(createMenuRequestDto.getMenuGroups(), menu.getId());
-            addOptionGroup(createMenuRequestDto.getOptionGroups(), menu.getId());
+
+        Menu menu = new Menu(
+            menuStatus,
+            store,
+            createMenuRequestDto.getName(),
+            createMenuRequestDto.getPrice(),
+            createMenuRequestDto.getDescription(),
+            getImage(storedAt, file, FileDomain.MENU_IMAGE),
+            createMenuRequestDto.getCookingTime(),
+            createMenuRequestDto.getEarningRate());
+        menuRepository.save(menu);
+        addMenuGroup(createMenuRequestDto.getMenuGroups(), menu.getId());
+        addOptionGroup(createMenuRequestDto.getOptionGroups(), menu.getId());
+    }
+
+    /**
+     * 메뉴 등록 및 수정 서비스.
+     *
+     * @param storeId              매장 아이디
+     * @param createMenuRequestDto 메뉴 등록 Dto
+     */
+    public void updateMenu(CreateMenuRequestDto createMenuRequestDto,
+                           String storedAt, MultipartFile file)
+        throws IOException {
+        Menu menu = menuRepository.findById(createMenuRequestDto.getTargetMenuId())
+            .orElseThrow(MenuNotFoundException::new);
+
+        Image newImage = getImage(storedAt, file, FileDomain.MENU_IMAGE);
+        if (Objects.nonNull(menu.getImage())) {
+            Image oldImage = imageRepository.findById(menu.getImage().getId()).orElseThrow(ImageNotFoundException::new);
+            FileUtils fileUtils = fileUtilResolver.getFileService(oldImage.getLocationType());
+
+            if (Objects.nonNull(newImage)) {
+                fileUtils.deleteFile(oldImage);
+                menu.modifyImage(newImage);
+            }
         } else {
-            Menu menu = menuRepository.findById(createMenuRequestDto.getTargetMenuId())
-                .orElseThrow(MenuNotFoundException::new);
-            menu.modifyMenu(createMenuRequestDto);
-            clearMenuGroup(menu.getId());
-            clearOptionGroup(menu.getId());
-            entityManager.flush();
-            addMenuGroup(createMenuRequestDto.getMenuGroups(), menu.getId());
-            addOptionGroup(createMenuRequestDto.getOptionGroups(), menu.getId());
+            menu.modifyImage(newImage);
         }
+        menu.modifyMenu(createMenuRequestDto);
+        clearMenuGroup(menu.getId());
+        clearOptionGroup(menu.getId());
+        entityManager.flush();
+        addMenuGroup(createMenuRequestDto.getMenuGroups(), menu.getId());
+        addOptionGroup(createMenuRequestDto.getOptionGroups(), menu.getId());
     }
 
     /**
@@ -102,9 +129,12 @@ public class MenuService {
      */
     public List<SelectMenuResponseDto> selectMenus(Long storeId) {
         List<SelectMenuResponseDto> responseDtos = menuRepository.lookupMenus(storeId);
-        responseDtos.forEach(selectMenuResponseDto ->
-            selectMenuResponseDto.setSavedName(objectStorageService.getFullPath(FileDomain.MENU_IMAGE.getVariable(),
-                selectMenuResponseDto.getSavedName())));
+        for (SelectMenuResponseDto dto : responseDtos) {
+            if (Objects.nonNull(dto.getSavedName())) {
+                FileUtils fileUtils = fileUtilResolver.getFileService(dto.getLocationType());
+                dto.setSavedName(fileUtils.getFullPath(dto.getDomainName(), dto.getSavedName()));
+            }
+        }
         return responseDtos;
     }
 
@@ -117,8 +147,10 @@ public class MenuService {
     public SelectMenuResponseDto selectMenu(Long menuId) {
         SelectMenuResponseDto responseDto = menuRepository.lookupMenu(menuId)
             .orElseThrow(MenuNotFoundException::new);
-
-        responseDto.setSavedName(objectStorageService.getFullPath(FileDomain.MENU_IMAGE.getVariable(), responseDto.getSavedName()));
+        if (Objects.nonNull(responseDto.getSavedName())) {
+            FileUtils fileUtils = fileUtilResolver.getFileService(responseDto.getLocationType());
+            responseDto.setSavedName(fileUtils.getFullPath(responseDto.getDomainName(), responseDto.getSavedName()));
+        }
         return responseDto;
     }
 
@@ -128,12 +160,16 @@ public class MenuService {
      * @param storeId 매장 아이디
      * @param menuId  메뉴 아이디
      */
-    public void deleteMenu(Long storeId, Long menuId) {
+    public void deleteMenu(Long storeId, Long menuId) throws IOException {
         Menu menu = menuRepository.findById(menuId)
             .orElseThrow(MenuNotFoundException::new);
         MenuStatus menuStatus = menuStatusRepository.findById("OUTED")
             .orElseThrow(MenuStatusNotFoundException::new);
         menu.modifyMenuStatus(menuStatus);
+        if (Objects.nonNull(menu.getImage())) {
+            FileUtils fileUtils = fileUtilResolver.getFileService(menu.getImage().getLocationType());
+            fileUtils.deleteFile(menu.getImage());
+        }
     }
 
     /**

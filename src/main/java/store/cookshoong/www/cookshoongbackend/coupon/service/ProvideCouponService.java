@@ -1,33 +1,37 @@
 package store.cookshoong.www.cookshoongbackend.coupon.service;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.BoundSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponLog;
+import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponLogType;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponPolicy;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.AlreadyHasCouponWithinSamePolicyException;
+import store.cookshoong.www.cookshoongbackend.coupon.exception.AlreadyUsedCouponException;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponExhaustionException;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponPolicyNotFoundException;
+import store.cookshoong.www.cookshoongbackend.coupon.exception.ExpiredCouponException;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.IssueCouponNotFoundException;
+import store.cookshoong.www.cookshoongbackend.coupon.exception.NonIssuedCouponProperlyException;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.ProvideIssueCouponFailureException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.UpdateProvideCouponRequestDto;
+import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponLogRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponRedisRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.IssueCouponRepository;
-import store.cookshoong.www.cookshoongbackend.rabbitmq.exception.LockInterruptedException;
-import store.cookshoong.www.cookshoongbackend.rabbitmq.exception.LockOverWaitTimeException;
+import store.cookshoong.www.cookshoongbackend.lock.LockProcessor;
+import store.cookshoong.www.cookshoongbackend.menu_order.exception.menu.BelowMinimumOrderPriceException;
 
 /**
  * 쿠폰 발급 서비스.
@@ -39,16 +43,14 @@ import store.cookshoong.www.cookshoongbackend.rabbitmq.exception.LockOverWaitTim
 @Transactional
 @RequiredArgsConstructor
 public class ProvideCouponService {
-    private static final String EXPLAIN = "couponPolicyId -";
-    private static final String NOT_MATCH_LOCK = "- IsNotMatch";
-    private static final int WAIT_TIME = 60;
-    private static final int LEASE_TIME = 5;
+    private static final int SPARE_MINUTE = 30;
 
     private final IssueCouponRepository issueCouponRepository;
     private final CouponPolicyRepository couponPolicyRepository;
     private final AccountRepository accountRepository;
-    private final RedissonClient redissonClient;
     private final CouponRedisRepository couponRedisRepository;
+    private final CouponLogRepository couponLogRepository;
+    private final LockProcessor lockProcessor;
 
     /**
      * 사용자가 쿠폰 발급을 요청했을 때, 해당 쿠폰 정책과 일치하는 쿠폰 중 하나를 발급해준다.
@@ -60,7 +62,7 @@ public class ProvideCouponService {
         Long accountId = updateProvideCouponRequestDto.getAccountId();
 
         CouponPolicy couponPolicy = couponPolicyRepository.findById(updateProvideCouponRequestDto.getCouponPolicyId())
-                .orElseThrow(CouponPolicyNotFoundException::new);
+            .orElseThrow(CouponPolicyNotFoundException::new);
 
         validBeforeProvide(accountId, couponPolicy);
 
@@ -118,7 +120,7 @@ public class ProvideCouponService {
         String key = couponPolicyId.toString();
 
         CouponPolicy couponPolicy = couponPolicyRepository.findById(couponPolicyId)
-                .orElseThrow(CouponPolicyNotFoundException::new);
+            .orElseThrow(CouponPolicyNotFoundException::new);
 
         Long accountId = updateProvideCouponRequestDto.getAccountId();
         validBeforeProvide(accountId, couponPolicy);
@@ -133,7 +135,7 @@ public class ProvideCouponService {
         }
 
         IssueCoupon issueCoupon = issueCouponRepository.findById(UUID.fromString(couponId))
-                .orElseThrow(IssueCouponNotFoundException::new);
+            .orElseThrow(IssueCouponNotFoundException::new);
 
         if (Objects.nonNull(issueCoupon.getAccount())) {
             throw new ProvideIssueCouponFailureException();
@@ -158,26 +160,7 @@ public class ProvideCouponService {
             throw new CouponExhaustionException();
         }
 
-        lock(key, this::updateRedisCouponState);
-    }
-
-    private void lock(String key, Consumer<String> consumer) {
-        RLock lock = redissonClient.getLock(EXPLAIN + key + NOT_MATCH_LOCK);
-
-        try {
-            boolean lockSuccess = lock.tryLock(WAIT_TIME, LEASE_TIME, TimeUnit.SECONDS);
-            if (!lockSuccess) {
-                throw new LockOverWaitTimeException();
-            }
-
-            consumer.accept(key);
-
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new LockInterruptedException();
-        } finally {
-            lock.unlock();
-        }
+        lockProcessor.lock(key, this::updateRedisCouponState);
     }
 
     private void updateRedisCouponState(String key) {
@@ -185,5 +168,82 @@ public class ProvideCouponService {
             Set<UUID> couponCodes = issueCouponRepository.lookupUnclaimedCouponCodes();
             couponRedisRepository.bulkInsertCouponCode(couponCodes, key);
         }
+    }
+
+    /**
+     * 발급 쿠폰 검증 메서드.
+     *
+     * @param issueCouponCode the issue coupon
+     * @param accountId       the account id
+     */
+    public void validProvideCoupon(UUID issueCouponCode, Long accountId) {
+        IssueCoupon issueCoupon = issueCouponRepository.findById(issueCouponCode)
+            .orElseThrow(IssueCouponNotFoundException::new);
+
+        couponLogRepository.findTopByIssueCouponOrderByIdDesc(issueCoupon)
+            .ifPresent(this::validRecentCouponLog);
+
+        Account account = issueCoupon.getAccount();
+
+        if (Objects.isNull(account) || !account.getId().equals(accountId)) {
+            throw new NonIssuedCouponProperlyException();
+        }
+    }
+
+    private void validRecentCouponLog(CouponLog couponLog) {
+        if (couponLog.getCouponLogType().getCode().equals(CouponLogType.Code.USE.toString())) {
+            throw new AlreadyUsedCouponException();
+        }
+    }
+
+    /**
+     * 주문 최소 금액 검증 메서드.
+     *
+     * @param issueCouponCode the issue coupon code
+     * @param totalPrice      the total price
+     */
+    public void validMinimumOrderPrice(UUID issueCouponCode, int totalPrice) {
+        IssueCoupon issueCoupon = issueCouponRepository.findById(issueCouponCode)
+            .orElseThrow(IssueCouponNotFoundException::new);
+
+        Integer minimumOrderPrice = issueCoupon.getCouponPolicy()
+            .getCouponType()
+            .getMinimumOrderPrice();
+
+        if (totalPrice < minimumOrderPrice) {
+            throw new BelowMinimumOrderPriceException();
+        }
+    }
+
+    /**
+     * 만료 시간 검증 메서드.
+     * 30분의 추가 시간을 제공.
+     *
+     * @param issueCouponCode the issue coupon code
+     */
+    public void validExpirationDateTime(UUID issueCouponCode) {
+        IssueCoupon issueCoupon = issueCouponRepository.findById(issueCouponCode)
+            .orElseThrow(IssueCouponNotFoundException::new);
+
+        LocalDateTime expirationDateTime = issueCoupon.getExpirationDate().atTime(LocalTime.MAX);
+        if (LocalDateTime.now().isAfter(expirationDateTime.plusMinutes(SPARE_MINUTE))) {
+            throw new ExpiredCouponException();
+        }
+    }
+
+    /**
+     * 할인된 금액 획득.
+     *
+     * @param issueCouponCode the issue coupon code
+     * @param totalPrice      the total price
+     * @return the discount price
+     */
+    public int getDiscountPrice(UUID issueCouponCode, int totalPrice) {
+        IssueCoupon issueCoupon = issueCouponRepository.findById(issueCouponCode)
+            .orElseThrow(IssueCouponNotFoundException::new);
+
+        return issueCoupon.getCouponPolicy()
+            .getCouponType()
+            .getDiscountPrice(totalPrice);
     }
 }

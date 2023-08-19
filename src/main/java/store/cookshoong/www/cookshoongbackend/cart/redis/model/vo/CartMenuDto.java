@@ -6,7 +6,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 /**
  * 메뉴를 담는 Dto.
@@ -15,7 +14,6 @@ import lombok.ToString;
  * @since 2023.07.20
  */
 @Getter
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CartMenuDto {
@@ -24,8 +22,7 @@ public class CartMenuDto {
     private Long menuId;
     @NotBlank
     private String menuName;
-    @NotBlank
     private String menuImage;
     @NotNull
-    private int menuPrice;
+    private Integer menuPrice;
 }

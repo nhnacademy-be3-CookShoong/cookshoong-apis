@@ -1,20 +1,20 @@
 package store.cookshoong.www.cookshoongbackend.shop.repository.businesshour;
 
-import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QBusinessHour;
+import store.cookshoong.www.cookshoongbackend.shop.entity.QDayType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QStore;
+import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectBusinessHourResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectBusinessHourResponseDto;
 
 /**
  * 영업시간 커스텀 레포지토리 구현.
  *
  * @author papel (윤동현)
+ * @contributor seungyeon (유승연)
  * @since 2023.07.10
  */
 @RequiredArgsConstructor
@@ -22,54 +22,51 @@ public class BusinessHourRepositoryImpl implements BusinessHourRepositoryCustom 
 
     private final JPAQueryFactory jpaQueryFactory;
 
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Page<SelectBusinessHourResponseDto> lookupBusinessHourPage(Long storeId, Pageable pageable) {
-        List<SelectBusinessHourResponseDto> responseDtos = getBusinessHours(storeId, pageable);
-        long total = getTotal(storeId);
-        return new PageImpl<>(responseDtos, pageable, total);
-    }
-
     /**
      * 매장의 영업시간 리스트.
      *
      * @param storeId 매장 아이디
-     * @param pageable  페이지 정보
      * @return 각 페이지에 해당하는 영업시간 리스트
      */
-    public List<SelectBusinessHourResponseDto> getBusinessHours(Long storeId, Pageable pageable) {
+    @Override
+    public List<SelectBusinessHourResponseDto> lookupBusinessHours(Long storeId) {
         QBusinessHour businessHour = QBusinessHour.businessHour;
+        QDayType dayType = QDayType.dayType;
         QStore store = QStore.store;
 
         return jpaQueryFactory
-            .select(Projections.constructor(SelectBusinessHourResponseDto.class,
-                businessHour.id, store.id, businessHour.dayCode, businessHour.openHour, businessHour.closeHour))
+            .select(new QSelectBusinessHourResponseDto(
+                businessHour.id, dayType.description, businessHour.openHour, businessHour.closeHour))
             .from(businessHour)
             .innerJoin(businessHour.store, store)
+            .innerJoin(businessHour.dayCode, dayType)
             .where(businessHour.store.id.eq(storeId))
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize())
             .fetch();
     }
 
     /**
-     * 매장의 영업시간 리스트의 총 개수.
+     * {@inheritDoc}
      *
-     * @param storeId 매장 아이디
-     * @return 매장이 등록한 영업시간의 총 개수
+     * @param storeId the store id
+     * @param dayCode 요일 코드
+     * @param nowTime 현재 시간
+     * @return 영업시간 해당 여부
      */
-    private Long getTotal(Long storeId) {
+    @Override
+    public boolean lookupBusinessHourByDayCode(Long storeId, String dayCode, LocalTime nowTime) {
         QBusinessHour businessHour = QBusinessHour.businessHour;
+        QDayType dayType = QDayType.dayType;
         QStore store = QStore.store;
 
         return jpaQueryFactory
-            .select(businessHour.count())
+            .select(businessHour.id)
             .from(businessHour)
             .innerJoin(businessHour.store, store)
-            .where(businessHour.store.id.eq(storeId))
-            .fetchOne();
+            .innerJoin(businessHour.dayCode, dayType)
+            .where(businessHour.store.id.eq(storeId)
+                .and(businessHour.dayCode.dayCode.eq(dayCode))
+                .and((businessHour.openHour.loe(nowTime))
+                .and(businessHour.closeHour.goe(nowTime))))
+            .fetchFirst() != null;
     }
 }

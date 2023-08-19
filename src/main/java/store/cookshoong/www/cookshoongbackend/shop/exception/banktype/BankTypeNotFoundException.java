@@ -10,7 +10,7 @@ import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException
  */
 public class BankTypeNotFoundException extends NotFoundException {
     public BankTypeNotFoundException() {
-        super("해당 은행은 서비스 제공되지 않습니다.");
+        super("은행");
 
     }
 }

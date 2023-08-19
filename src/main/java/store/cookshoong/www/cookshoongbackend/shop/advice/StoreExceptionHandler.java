@@ -11,6 +11,7 @@ import store.cookshoong.www.cookshoongbackend.common.exception.ValidationFailure
 import store.cookshoong.www.cookshoongbackend.shop.exception.banktype.BankTypeNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.banktype.DuplicatedBankException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.businesshour.BusinessHourValidationException;
+import store.cookshoong.www.cookshoongbackend.shop.exception.businesshour.DayTypeNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.category.DuplicatedStoreCategoryException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.category.StoreCategoryNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.category.StoreCategoryValidException;
@@ -21,6 +22,7 @@ import store.cookshoong.www.cookshoongbackend.shop.exception.merchant.MerchantNo
 import store.cookshoong.www.cookshoongbackend.shop.exception.merchant.MerchantValidException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.DuplicatedBusinessLicenseException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreNotFoundException;
+import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreStatusNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreValidException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.UserAccessDeniedException;
 
@@ -40,7 +42,8 @@ public class StoreExceptionHandler {
      * @return 404
      */
     @ExceptionHandler(value = {StoreNotFoundException.class, BankTypeNotFoundException.class,
-        StoreCategoryNotFoundException.class, MerchantNotFoundException.class, HolidayNotFoundException.class})
+        StoreCategoryNotFoundException.class, MerchantNotFoundException.class, HolidayNotFoundException.class,
+        StoreStatusNotFoundException.class, DayTypeNotFoundException.class})
     public ResponseEntity<String> somethingNotFoundError(NotFoundException e) {
         return ResponseEntity
             .status(HttpStatus.NOT_FOUND)
