@@ -403,7 +403,7 @@ class CartRedisControllerTest {
 
 
     @Test
-    @DisplayName("장바구니에 메뉴 조회 실패 - 장바구니 키가 존재하지 않을 ")
+    @DisplayName("장바구니에 메뉴 조회 실패 - 장바구니 키가 존재하지 않을 떄")
     void getSelectCartMenu_NotFoundRedisKey() throws Exception {
 
         NotFoundCartRedisKey exception = new NotFoundCartRedisKey();
