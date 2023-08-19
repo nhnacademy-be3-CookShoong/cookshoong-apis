@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,6 +36,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -52,6 +55,8 @@ import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundExce
 import store.cookshoong.www.cookshoongbackend.account.model.request.OAuth2SignUpRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountAuthResponseDto;
+import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountInfoResponseDto;
+import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.UpdateAccountStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountAuthDto;
@@ -659,5 +664,124 @@ class AccountControllerTest {
         inOrder.verify(accountService, calls(1)).createAccount(any(), any());
         inOrder.verify(addressService, calls(1)).createAccountAddress(any(), any());
         inOrder.verify(accountService, calls(1)).createOAuth2Account(any(), any(), any());
+    }
+
+
+    @Test
+    @DisplayName("가입된 OAuth2 유저 조회 - 회원식별번호와 OAuth2 공급자 기준으로 조회")
+    void getAccountInfoForOAuth() throws Exception {
+        String expectProvider = "payco";
+        String expectAccountCode = "f32klsdjf923-fdsf32fs-dsf3q2ad-fsfwe";
+        SelectAccountInfoResponseDto expectDto = new SelectAccountInfoResponseDto(1L, "Test1", "CUSTOMER", "ACTIVE");
+
+        when(accountService.selectAccountInfoForOAuth(expectProvider, expectAccountCode)).thenReturn(expectDto);
+
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .get("/api/accounts/oauth2")
+            .param("provider", expectProvider)
+            .param("accountCode", expectAccountCode);
+
+        mockMvc.perform(request)
+            .andExpect(status().isOk())
+            .andDo(MockMvcRestDocumentationWrapper.document("getAccountInfoForOAuth",
+                ResourceSnippetParameters.builder()
+                    .requestSchema(Schema.schema("getAccountInfoForOAuth.Request"))
+                    .requestParameters(
+                        parameterWithName("provider").description("OAuth2 공급자"),
+                        parameterWithName("accountCode").description("OAuth2 공급자로부터 부여된 회원식별자")
+                    )
+                    .responseSchema(Schema.schema("getAccountInfoForOAuth.Response"))
+                    .responseFields(
+                        fieldWithPath("accountId").description("회원 시퀀스"),
+                        fieldWithPath("loginId").description("회원 아이디"),
+                        fieldWithPath("authority").description("회원 종류 (일반 회원, 사업자 회원)"),
+                        fieldWithPath("status").description("회원 상태 (활성, 탈퇴, 휴면)")
+                    )
+                )
+            );
+    }
+
+
+    @Test
+    @DisplayName("회원 정보 조회 - 회원 시퀀스 기준으로 회원의 모든 정보 조회")
+    void getAccount() throws Exception {
+        SelectAccountResponseDto expectDto = new SelectAccountResponseDto(1L, "ACTIVE", "CUSTOMER",
+            "마스터", "Test1", "테스트맨", "테스트좋아", "test@lover.dev",
+            LocalDate.of(1998, 9, 20), "01012245221", LocalDateTime.now());
+
+        when(accountService.selectAccount(expectDto.getId())).thenReturn(expectDto);
+
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .get("/api/accounts/{accountId}", expectDto.getId());
+
+        mockMvc.perform(request)
+            .andExpect(status().isOk())
+            .andDo(MockMvcRestDocumentationWrapper.document("getAccountInfoForOAuth",
+                    ResourceSnippetParameters.builder()
+                        .requestSchema(Schema.schema("getAccount.Request"))
+                        .pathParameters(
+                            parameterWithName("accountId").description("회원 시퀀스")
+                        )
+                        .responseSchema(Schema.schema("getAccount.Response"))
+                        .responseFields(
+                            fieldWithPath("id").description("Cookshoong 회원 시퀀스"),
+                            fieldWithPath("status").description("회원 상태 (활성, 탈퇴, 휴면)"),
+                            fieldWithPath("authority").description("회원 종류 (일반 회원, 사업자 회원)"),
+                            fieldWithPath("rank").description("회원 등급"),
+                            fieldWithPath("loginId").description("로그인 때 사용되는 id"),
+                            fieldWithPath("name").description("이름"),
+                            fieldWithPath("nickname").description("별명"),
+                            fieldWithPath("email").description("이메일"),
+                            fieldWithPath("birthday").description("생일"),
+                            fieldWithPath("phoneNumber").description("핸드폰 번호"),
+                            fieldWithPath("lastLoginAt").description("마지막 로그인 날짜")
+                        )
+                )
+            );
+    }
+
+    @Test
+    @DisplayName("회원 정보 조회 - 회원 시퀀스 기준으로 없는 회원을 조회하는 경우 404 에러 응답")
+    void getAccount_2() throws Exception {
+        when(accountService.selectAccount(anyLong())).thenThrow(UserNotFoundException.class);
+
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .get("/api/accounts/{accountId}", Long.MAX_VALUE);
+
+        mockMvc.perform(request)
+            .andExpect(status().isNotFound())
+            .andDo(print());
+    }
+
+    @Test
+    @DisplayName("아이디 존재여부 확인 - 존재하는 아이디로 조회")
+    void getAccountExists() throws Exception {
+        when(accountService.selectAccountExists(anyString())).thenReturn(HttpStatus.OK);
+
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .get("/api/accounts/login-id-exists/{loginId}", "유저1");
+
+        mockMvc.perform(request)
+            .andExpect(status().isOk())
+            .andDo(MockMvcRestDocumentationWrapper.document("getAccountExists",
+                    ResourceSnippetParameters.builder()
+                        .requestSchema(Schema.schema("getAccountExists.Request"))
+                        .pathParameters(
+                            parameterWithName("loginId").description("로그인 때 사용되는 id")
+                        )
+                )
+            );
+    }
+
+    @Test
+    @DisplayName("아이디 존재여부 확인 - 존재하지 않는 아이디로 조회")
+    void getAccountExists_2() throws Exception {
+        when(accountService.selectAccountExists(anyString())).thenReturn(HttpStatus.NOT_FOUND);
+
+        RequestBuilder request = RestDocumentationRequestBuilders
+            .get("/api/accounts/login-id-exists/{loginId}", "Anonymous");
+
+        mockMvc.perform(request)
+            .andExpect(status().isNotFound());
     }
 }
