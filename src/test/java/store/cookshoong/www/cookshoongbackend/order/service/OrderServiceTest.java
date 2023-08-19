@@ -1,15 +1,20 @@
 package store.cookshoong.www.cookshoongbackend.order.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -17,10 +22,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
@@ -48,10 +59,14 @@ import store.cookshoong.www.cookshoongbackend.order.exception.OrderNotFoundExcep
 import store.cookshoong.www.cookshoongbackend.order.exception.OrderStatusNotFoundException;
 import store.cookshoong.www.cookshoongbackend.order.exception.PriceIncreaseException;
 import store.cookshoong.www.cookshoongbackend.order.model.request.CreateOrderRequestDto;
+import store.cookshoong.www.cookshoongbackend.order.model.response.LookupAccountOrderInStatusResponseDto;
+import store.cookshoong.www.cookshoongbackend.order.model.response.LookupOrderInStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.order.repository.OrderDetailMenuOptionRepository;
 import store.cookshoong.www.cookshoongbackend.order.repository.OrderDetailRepository;
 import store.cookshoong.www.cookshoongbackend.order.repository.OrderRepository;
 import store.cookshoong.www.cookshoongbackend.order.repository.OrderStatusRepository;
+import store.cookshoong.www.cookshoongbackend.point.model.event.PointOrderCompleteEvent;
+import store.cookshoong.www.cookshoongbackend.point.service.PointEventService;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.shop.entity.StoreStatus;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreNotFoundException;
@@ -81,6 +96,8 @@ class OrderServiceTest {
     MenuRepository menuRepository;
     @Mock
     OptionRepository optionRepository;
+    @Spy
+    ApplicationEventPublisher publisher;
     @Spy
     TestEntity te;
     @InjectMocks
@@ -429,5 +446,229 @@ class OrderServiceTest {
 
         assertThrowsExactly(OrderStatusNotFoundException.class, () ->
             orderService.changeStatus(UUID.randomUUID(), OrderStatus.StatusCode.COMPLETE));
+    }
+
+    @ParameterizedTest
+    @EnumSource(OrderStatus.StatusCode.class)
+    @DisplayName("주문 상태 변경 성공")
+    void changeStatusSuccessTest(OrderStatus.StatusCode statusCode) throws Exception {
+        Order order = mock(Order.class);
+        when(orderRepository.findById(any(UUID.class)))
+            .thenReturn(Optional.of(order));
+
+        OrderStatus orderStatus = mock(OrderStatus.class);
+        when(orderStatusRepository.findByOrderStatusCode(statusCode))
+            .thenReturn(Optional.of(orderStatus));
+
+        UUID uuid = UUID.randomUUID();
+
+        if (statusCode.equals(OrderStatus.StatusCode.COMPLETE)) {
+            doNothing().when(publisher)
+                .publishEvent(any(PointOrderCompleteEvent.class));
+        }
+
+        assertDoesNotThrow(() ->
+            orderService.changeStatus(uuid, statusCode));
+
+        verify(order).updateOrderStatus(orderStatus);
+    }
+
+    @Test
+    @DisplayName("진행중인 주문 확인 실패 - 매장 없음")
+    void lookupOrderInProgressStoreNotFoundFailTest() throws Exception {
+        Long storeId = Long.MIN_VALUE;
+
+        when(storeRepository.findById(storeId))
+            .thenReturn(Optional.empty());
+
+        assertThrowsExactly(StoreNotFoundException.class, () ->
+            orderService.lookupOrderInProgress(storeId));
+    }
+
+    @Test
+    @DisplayName("진행중인 주문 확인 성공")
+    void lookupOrderInProgressStoreSuccessTest() throws Exception {
+        Long storeId = Long.MIN_VALUE;
+
+        Store store = mock(Store.class);
+        when(storeRepository.findById(storeId))
+            .thenReturn(Optional.of(store));
+
+        List<LookupOrderInStatusResponseDto> responses = new ArrayList<>();
+        when(orderRepository.lookupOrderInStatus(any(Store.class), anySet()))
+            .thenReturn(responses);
+
+        assertThat(orderService.lookupOrderInProgress(storeId))
+            .isEqualTo(responses);
+    }
+
+    @Test
+    @DisplayName("완료된 주문 확인 실패 - 매장 없음")
+    void lookupOrderInCompleteStoreNotFoundFailTest() throws Exception {
+        Long storeId = Long.MIN_VALUE;
+
+        when(storeRepository.findById(storeId))
+            .thenReturn(Optional.empty());
+
+        assertThrowsExactly(StoreNotFoundException.class, () ->
+            orderService.lookupOrderInComplete(storeId, Pageable.ofSize(10)));
+    }
+
+    @Test
+    @DisplayName("완료된 주문 확인 성공")
+    void lookupOrderInCompleteStoreSuccessTest() throws Exception {
+        Long storeId = Long.MIN_VALUE;
+
+        Store store = mock(Store.class);
+        when(storeRepository.findById(storeId))
+            .thenReturn(Optional.of(store));
+
+        Pageable pageable = Pageable.ofSize(10);
+
+        Page<LookupOrderInStatusResponseDto> responses = new PageImpl<>(Collections.emptyList(), pageable, 0);
+        when(orderRepository.lookupOrderInStatus(any(Store.class), anySet(), any(Pageable.class)))
+            .thenReturn(responses);
+
+        assertThat(orderService.lookupOrderInComplete(storeId, pageable))
+            .isEqualTo(responses);
+    }
+
+    @Test
+    @DisplayName("주문 가능 여부 반환 실패 - 매장 없음")
+    void selectOrderPossibleStoreNotFoundTest() throws Exception {
+        Long storeId = Long.MIN_VALUE;
+
+        when(storeRepository.findById(storeId))
+            .thenReturn(Optional.empty());
+
+        assertThrowsExactly(StoreNotFoundException.class, () ->
+            orderService.selectOrderPossible(true, storeId, 0));
+    }
+
+    @Test
+    @DisplayName("주문 가능 여부 반환 - 주문할 수 없는 거리")
+    void selectOrderPossibleOverDistanceTest() throws Exception {
+        Long storeId = Long.MIN_VALUE;
+
+        Store store = mock(Store.class);
+        when(storeRepository.findById(storeId))
+            .thenReturn(Optional.of(store));
+
+        when(store.getMinimumOrderPrice())
+            .thenReturn(0);
+
+        StoreStatus storeStatus = mock(StoreStatus.class);
+        when(store.getStoreStatus())
+            .thenReturn(storeStatus);
+
+        when(storeStatus.getCode())
+            .thenReturn("OPEN");
+
+        assertThat(orderService.selectOrderPossible(false, storeId, 10_000)
+            .isOrderPossible())
+            .isFalse();
+    }
+
+    @Test
+    @DisplayName("주문 가능 여부 반환 - 최소 주문 금액 미충족")
+    void selectOrderPossibleUnderMinimumOrderPriceTest() throws Exception {
+        Long storeId = Long.MIN_VALUE;
+
+        Store store = mock(Store.class);
+        when(storeRepository.findById(storeId))
+            .thenReturn(Optional.of(store));
+
+        when(store.getMinimumOrderPrice())
+            .thenReturn(10_000);
+
+        StoreStatus storeStatus = mock(StoreStatus.class);
+        when(store.getStoreStatus())
+            .thenReturn(storeStatus);
+
+        when(storeStatus.getCode())
+            .thenReturn("OPEN");
+
+        assertThat(orderService.selectOrderPossible(true, storeId, 0)
+            .isOrderPossible())
+            .isFalse();
+    }
+
+    @Test
+    @DisplayName("주문 가능 여부 반환 - 매장 문 닫음")
+    void selectOrderPossibleStoreStatusCloseTest() throws Exception {
+        Long storeId = Long.MIN_VALUE;
+
+        Store store = mock(Store.class);
+        when(storeRepository.findById(storeId))
+            .thenReturn(Optional.of(store));
+
+        when(store.getMinimumOrderPrice())
+            .thenReturn(0);
+
+        StoreStatus storeStatus = mock(StoreStatus.class);
+        when(store.getStoreStatus())
+            .thenReturn(storeStatus);
+
+        when(storeStatus.getCode())
+            .thenReturn("Close");
+
+        assertThat(orderService.selectOrderPossible(true, storeId, 10_000)
+            .isOrderPossible())
+            .isFalse();
+    }
+
+    @Test
+    @DisplayName("주문 가능 여부 반환 - 가능")
+    void selectOrderPossibleOkTest() throws Exception {
+        Long storeId = Long.MIN_VALUE;
+
+        Store store = mock(Store.class);
+        when(storeRepository.findById(storeId))
+            .thenReturn(Optional.of(store));
+
+        when(store.getMinimumOrderPrice())
+            .thenReturn(0);
+
+        StoreStatus storeStatus = mock(StoreStatus.class);
+        when(store.getStoreStatus())
+            .thenReturn(storeStatus);
+
+        when(storeStatus.getCode())
+            .thenReturn("OPEN");
+
+        assertThat(orderService.selectOrderPossible(true, storeId, 10_000)
+            .isOrderPossible())
+            .isTrue();
+    }
+
+    @Test
+    @DisplayName("사용자 주문 페이지 확인 실패 - 사용자 찾지 못 함")
+    void lookupAccountOrdersAccountNotFoundTest() throws Exception {
+        Long accountId = Long.MIN_VALUE;
+        when(accountRepository.findById(accountId))
+            .thenReturn(Optional.empty());
+
+        assertThrowsExactly(UserNotFoundException.class, () ->
+            orderService.lookupAccountOrders(accountId, Pageable.ofSize(10)));
+    }
+
+    @Test
+    @DisplayName("사용자 주문 페이지 확인 성공")
+    void lookupAccountOrdersSuccessTest() throws Exception {
+        Long accountId = Long.MIN_VALUE;
+
+        Account account = mock(Account.class);
+        when(accountRepository.findById(accountId))
+            .thenReturn(Optional.of(account));
+
+        Pageable pageable = Pageable.ofSize(10);
+        Page<LookupAccountOrderInStatusResponseDto> responses = new PageImpl<>(new ArrayList<>(), pageable, 0);
+
+        when(orderRepository.lookupOrderInStatus(any(Account.class), anySet(), any(Pageable.class)))
+            .thenReturn(responses);
+
+
+        assertThat(orderService.lookupAccountOrders(accountId, pageable))
+            .isEqualTo(responses);
     }
 }
