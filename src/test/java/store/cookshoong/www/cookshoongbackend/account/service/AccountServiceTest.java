@@ -25,6 +25,7 @@ import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.entity.AccountStatus;
@@ -35,6 +36,7 @@ import store.cookshoong.www.cookshoongbackend.account.exception.DuplicatedUserEx
 import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundException;
 import store.cookshoong.www.cookshoongbackend.account.model.request.SignUpRequestDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountAuthResponseDto;
+import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountInfoResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.SelectAccountResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.response.UpdateAccountStatusResponseDto;
 import store.cookshoong.www.cookshoongbackend.account.model.vo.SelectAccountAuthDto;
@@ -308,6 +310,76 @@ class AccountServiceTest {
         assertThatThrownBy(() ->
             accountService.updateLastLoginDate(Long.MAX_VALUE))
             .isInstanceOf(UserNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("OAuth2 회원정보 조회 - 없는 공급자에 대한 조회")
+    void selectAccountInfoForOAuth() {
+        String unknownProvider = "facebook";
+        String knownAccountCode = "temp-account-code";
+        when(accountRepository.lookupAccountInfoForOAuth(unknownProvider, knownAccountCode))
+            .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() ->
+            accountService.selectAccountInfoForOAuth(unknownProvider, knownAccountCode))
+            .isInstanceOf(UserNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("OAuth2 회원정보 조회 - 없는 회원 식별자에 대한 조회")
+    void selectAccountInfoForOAuth_2() {
+        String knownProvider = "payco";
+        String unknownAccountCode = "unknown-account-code";
+        when(accountRepository.lookupAccountInfoForOAuth(knownProvider, unknownAccountCode))
+            .thenReturn(Optional.empty());
+
+        assertThatThrownBy(() ->
+            accountService.selectAccountInfoForOAuth(knownProvider, unknownAccountCode))
+            .isInstanceOf(UserNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("OAuth2 회원정보 조회 - 기존 회원을 회원 식별자로 조회")
+    void selectAccountInfoForOAuth_3() {
+        String knownProvider = "payco";
+        String knownAccountCode = "known-account-code";
+        SelectAccountInfoResponseDto expectDto = new SelectAccountInfoResponseDto(1L, "Test1", "CUSTOMER", "ACTIVE");
+
+        when(accountRepository.lookupAccountInfoForOAuth(knownProvider, knownAccountCode))
+            .thenReturn(Optional.of(expectDto));
+
+        SelectAccountInfoResponseDto actual = accountService.selectAccountInfoForOAuth(knownProvider, knownAccountCode);
+
+        assertAll(
+            () -> assertThat(actual.getAccountId()).isEqualTo(expectDto.getAccountId()),
+            () -> assertThat(actual.getLoginId()).isEqualTo(expectDto.getLoginId()),
+            () -> assertThat(actual.getStatus()).isEqualTo(expectDto.getStatus()),
+            () -> assertThat(actual.getAuthority()).isEqualTo(expectDto.getAuthority())
+        );
+    }
+
+    @Test
+    @DisplayName("회원 아이디 존재여부 조회 - 없는 아이디 조회")
+    void selectAccountExists() {
+        String unknownLoginId = "anonymous";
+        HttpStatus expect = HttpStatus.NOT_FOUND;
+        when(accountRepository.existsByLoginId(unknownLoginId)).thenReturn(false);
+
+        HttpStatus actual = accountService.selectAccountExists(unknownLoginId);
+
+        assertThat(actual).isEqualTo(expect);
+    }
+
+    @Test
+    @DisplayName("회원 아이디 존재여부 조회 - 있는 아이디 조회")
+    void selectAccountExists_2() {
+        String knownLoginId = "user1";
+        HttpStatus expect = HttpStatus.OK;
+
+        when(accountRepository.existsByLoginId(knownLoginId)).thenReturn(true);
+
+        HttpStatus actual = accountService.selectAccountExists(knownLoginId);
+        assertThat(actual).isEqualTo(expect);
     }
 }
 
