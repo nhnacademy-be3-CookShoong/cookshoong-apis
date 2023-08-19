@@ -36,6 +36,7 @@ import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartMenuDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartOptionDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartRedisDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.repository.CartRedisRepository;
+import store.cookshoong.www.cookshoongbackend.cart.utils.CartConstant;
 import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
 import store.cookshoong.www.cookshoongbackend.file.model.LocationType;
 import store.cookshoong.www.cookshoongbackend.file.service.FileUtilResolver;
@@ -702,5 +703,34 @@ class CartRedisServiceTest {
             () -> cartRedisService.removeCartMenuAll(redisKey));
 
         verify(cartRedisRepository, times(1)).existKeyInCartRedis(redisKey);
+    }
+
+    @Test
+    @DisplayName("장바구니에 담긴 메뉴들의 총 가격을 계산")
+    void getTotalPrice() {
+        CartConstant cartConstant = new CartConstant();
+
+        CartRedisDto cartRedisDto =
+            ReflectionUtils.newInstance(CartRedisDto.class);
+
+        ReflectionTestUtils.setField(cartRedisDto, "accountId", accountId);
+        ReflectionTestUtils.setField(cartRedisDto, "storeId", storeId);
+        ReflectionTestUtils.setField(cartRedisDto, "storeName", storeName);
+        ReflectionTestUtils.setField(cartRedisDto, "deliveryCost", deliveryCost);
+        ReflectionTestUtils.setField(cartRedisDto, "minimumOrderPrice", minimumOrderPrice);
+        ReflectionTestUtils.setField(cartRedisDto, "menu", cartMenuDto);
+        ReflectionTestUtils.setField(cartRedisDto, "options", cartOptionDtos);
+        ReflectionTestUtils.setField(cartRedisDto, "createTimeMillis", System.currentTimeMillis());
+        ReflectionTestUtils.setField(cartRedisDto, "hashKey", hashKey);
+        ReflectionTestUtils.setField(cartRedisDto, "count", count);
+        ReflectionTestUtils.setField(cartRedisDto, "menuOptName", cartRedisDto.generateMenuOptionName());
+        ReflectionTestUtils.setField(cartRedisDto, "totalMenuPrice", cartRedisDto.generateTotalMenuPrice());
+
+        List<CartRedisDto> cartRedisDtoList = new ArrayList<>();
+        cartRedisDtoList.add(cartRedisDto);
+
+        int totalPrice = cartRedisService.getTotalPrice(cartRedisDtoList);
+
+        assertEquals(3003, totalPrice);
     }
 }
