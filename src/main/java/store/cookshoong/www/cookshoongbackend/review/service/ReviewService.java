@@ -56,7 +56,7 @@ public class ReviewService {
      * @param storedAt   the stored at
      * @throws IOException the io exception
      */
-    public void createReview(Long accountId,
+    public Long createReview(Long accountId,
                              CreateReviewRequestDto requestDto,
                              List<MultipartFile> images,
                              String storedAt) throws IOException {
@@ -78,7 +78,8 @@ public class ReviewService {
                     new ReviewHasImage(new ReviewHasImage.Pk(review.getId(), image.getId()), review, image));
             }
         }
-        reviewRepository.save(review);
+        return reviewRepository.save(review)
+            .getId();
     }
 
     /**
