@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.config;
+package store.cookshoong.www.cookshoongbackend.common.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Qualifier;

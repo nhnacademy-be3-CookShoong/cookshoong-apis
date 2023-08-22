@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
-import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
+import store.cookshoong.www.cookshoongbackend.common.config.QueryDslConfig;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BusinessHour;
 import store.cookshoong.www.cookshoongbackend.shop.entity.DayType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;

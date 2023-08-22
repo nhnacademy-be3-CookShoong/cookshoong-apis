@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
+import store.cookshoong.www.cookshoongbackend.common.config.QueryDslConfig;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllMerchantsResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.repository.merchant.MerchantRepository;

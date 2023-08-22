@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -27,7 +26,7 @@ import store.cookshoong.www.cookshoongbackend.cart.db.entity.Cart;
 import store.cookshoong.www.cookshoongbackend.cart.db.entity.CartDetail;
 import store.cookshoong.www.cookshoongbackend.cart.db.entity.CartDetailMenuOption;
 import store.cookshoong.www.cookshoongbackend.cart.db.model.response.CartResponseDto;
-import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
+import store.cookshoong.www.cookshoongbackend.common.config.QueryDslConfig;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
 import store.cookshoong.www.cookshoongbackend.file.model.LocationType;
