@@ -1,10 +1,12 @@
 package store.cookshoong.www.cookshoongbackend.common.aop;
 
+import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.stereotype.Component;
+import org.aspectj.lang.annotation.Before;
+import store.cookshoong.www.cookshoongbackend.common.util.IpResolver;
 
 /**
  * 서버에서 처리된 예외들을 로깅하기 위한 Aspect.
@@ -14,22 +16,23 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Aspect
-@Component
 public class ErrorLoggingAspect {
+    private static final String CLIENT_IP_LOG = "Client ip : {}";
 
     /**
      * 에러를 로깅하기 위한 어드바이스.
      *
-     * @param proceedingJoinPoint the proceeding join point
-     * @return the object
-     * @throws Throwable the throwable
+     * @param joinPoint the join point
      */
-    @Around("@within(org.springframework.web.bind.annotation.RestControllerAdvice)")
-    public Object logError(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-        if (proceedingJoinPoint.getArgs()[0] instanceof Exception) {
-            Exception exception = (Exception) proceedingJoinPoint.getArgs()[0];
-            log.error("발생한 예외 :", exception.getCause());
+    @Before("@within(org.springframework.web.bind.annotation.RestControllerAdvice)")
+    public void logError(JoinPoint joinPoint) {
+        if (joinPoint.getArgs()[0] instanceof Exception) {
+            Exception exception = (Exception) joinPoint.getArgs()[0];
+            log.error("발생한 예외 : {} \n --> {}", exception.getClass(), ExceptionUtils.getStackTrace(exception));
         }
-        return proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
+
+        if (joinPoint.getArgs().length >= 2 && joinPoint.getArgs()[1] instanceof HttpServletRequest) {
+            log.error(CLIENT_IP_LOG, IpResolver.getClientIp((HttpServletRequest) joinPoint.getArgs()[1]));
+        }
     }
 }

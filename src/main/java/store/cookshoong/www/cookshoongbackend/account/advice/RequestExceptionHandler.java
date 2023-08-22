@@ -27,7 +27,6 @@ import store.cookshoong.www.cookshoongbackend.common.util.IpResolver;
 @Slf4j
 @RestControllerAdvice(basePackages = "store.cookshoong.www.cookshoongbackend.account")
 public class RequestExceptionHandler {
-    private static final String CLIENT_IP_LOG = "Client ip : {}";
 
     /**
      * (400) 검증 실패에 대한 응답.
@@ -38,7 +37,6 @@ public class RequestExceptionHandler {
     @ExceptionHandler({SignUpValidationException.class, UpdateAccountInfoValidationException.class})
     public ResponseEntity<Map<String, String>> handleValidationFailure(ValidationFailureException e,
                                                                        HttpServletRequest request) {
-        log.error(CLIENT_IP_LOG, IpResolver.getClientIp(request));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(e.getErrors());
     }
@@ -53,7 +51,6 @@ public class RequestExceptionHandler {
         AccountStatusNotFoundException.class})
     public ResponseEntity<ErrorMessage> handleNotFound(NotFoundException e,
                                                                 HttpServletRequest request) {
-        log.error(CLIENT_IP_LOG, IpResolver.getClientIp(request));
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(new ErrorMessage(e));
     }
@@ -66,7 +63,6 @@ public class RequestExceptionHandler {
      */
     @ExceptionHandler({DuplicatedUserException.class})
     public ResponseEntity<ErrorMessage> handleConflictStatus(Exception e, HttpServletRequest request) {
-        log.error(CLIENT_IP_LOG, IpResolver.getClientIp(request));
         return ResponseEntity.status(HttpStatus.CONFLICT)
             .body(new ErrorMessage(e));
     }
