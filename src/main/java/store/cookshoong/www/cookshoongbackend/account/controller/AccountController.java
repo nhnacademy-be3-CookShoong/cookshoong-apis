@@ -148,7 +148,7 @@ public class AccountController {
      * @return the response entity
      */
     @PutMapping("/{accountId}/auth-success")
-    public ResponseEntity<Void> putloginLogging(@PathVariable Long accountId) {
+    public ResponseEntity<Void> putLoginLogging(@PathVariable Long accountId) {
         accountService.updateLastLoginDate(accountId);
         return ResponseEntity.status(HttpStatus.OK)
             .build();
