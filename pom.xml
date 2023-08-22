@@ -177,6 +177,28 @@
         </dependency>
 
 
+        <!-- log & crash require dependency -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20171018</version>
+        </dependency>
+
+        <!-- logback -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+
+        <!-- log & crash -->
+        <dependency>
+            <groupId>nhn.logncrash</groupId>
+            <artifactId>logncrash</artifactId>
+            <version>3.0.5</version>
+            <scope>system</scope>
+            <systemPath>${pom.basedir}/src/main/resources/libs/toast-logncrash-logback-sdk-3.0.5.jar</systemPath>
+        </dependency>
     </dependencies>
 
     <!-- restdocs + swaggerUI -->
@@ -243,6 +265,9 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+
+                    <!-- 로컬 jar 파일 추가 설정 -->
+                    <includeSystemScope>true</includeSystemScope>
                 </configuration>
             </plugin>
 
