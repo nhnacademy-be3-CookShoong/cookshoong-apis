@@ -1,11 +1,15 @@
 package store.cookshoong.www.cookshoongbackend.file.service;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 import java.util.UUID;
+import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
+import net.coobird.thumbnailator.Thumbnails;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -19,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import store.cookshoong.www.cookshoongbackend.common.property.ObjectStorageProperties;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.file.model.LocationType;
+import store.cookshoong.www.cookshoongbackend.file.model.ThumbnailManager;
 import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
 
 /**
@@ -34,6 +39,7 @@ public class ObjectStorageService implements FileUtils {
     private final ObjectStorageProperties objectStorageProperties;
     private final ImageRepository imageRepository;
     private final RestTemplate restTemplate;
+    private final ThumbnailManager thumbnailManager;
 
     @Override
     public String getStorageType() {
@@ -68,6 +74,17 @@ public class ObjectStorageService implements FileUtils {
     private String extractExt(String originalFilename) {
         int pos = originalFilename.lastIndexOf(".");
         return originalFilename.substring(pos + 1);
+    }
+
+    private InputStream resizeImage(byte[] originalImageBytes, int targetWidth, int targetHeight, String type) throws IOException {
+        BufferedImage resizedImage = Thumbnails.of(new ByteArrayInputStream(originalImageBytes))
+            .size(targetWidth, targetHeight)
+            .asBufferedImage();
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ImageIO.write(resizedImage, type, outputStream);
+
+        return new ByteArrayInputStream(outputStream.toByteArray());
     }
 
     /**
@@ -108,6 +125,13 @@ public class ObjectStorageService implements FileUtils {
         }
         String savedName = UUID.randomUUID() + "." + extractExt(originFileName); // 저장된 이름
 
+        if (thumbnailManager.isImageContainsThumb(domainName)) {
+            String thumbUrl = getSavedPath(thumbnailManager.getThumbnailDomain(domainName), savedName);
+            InputStream thumbnailInputStream =
+                resizeImage(multipartFile.getBytes(), 300, 300, extractExt(originFileName));
+            uploadObject(thumbnailInputStream, thumbUrl, token);
+        }
+
         String url = getSavedPath(domainName, savedName);
         InputStream inputStream = new ByteArrayInputStream(multipartFile.getBytes());
 
@@ -122,9 +146,9 @@ public class ObjectStorageService implements FileUtils {
             return null;
         }
 
-        String token = objectStorageAuth.requestToken(); // 토큰 가져오기
+        String token = objectStorageAuth.requestToken();
 
-        String originFileName = multipartFile.getOriginalFilename(); // 파일 업로드시 이름
+        String originFileName = multipartFile.getOriginalFilename();
         if (Objects.isNull(originFileName)) {
             throw new NullPointerException();
         }
@@ -132,10 +156,9 @@ public class ObjectStorageService implements FileUtils {
         String url = getSavedPath(image.getDomainName(), image.getSavedName());
         InputStream inputStream = new ByteArrayInputStream(multipartFile.getBytes());
 
-        uploadObject(inputStream, url, token); // 업로드(파일교체)
+        uploadObject(inputStream, url, token);
 
         image.updateImageInfo(originFileName);
-
 
         return image;
     }
@@ -143,10 +166,12 @@ public class ObjectStorageService implements FileUtils {
     @Override
     public void deleteFile(Image image) throws IOException {
         String token = objectStorageAuth.requestToken(); // 토큰 가져오기
-
+        if (thumbnailManager.isImageContainsThumb(image.getDomainName())) {
+            String thumbUrl = getSavedPath(thumbnailManager.getThumbnailDomain(image.getDomainName()), image.getSavedName());
+            deleteObject(thumbUrl, token);
+        }
         String url = getSavedPath(image.getDomainName(), image.getSavedName());
         deleteObject(url, token);
-
     }
 
     private void deleteObject(String url, String token) {

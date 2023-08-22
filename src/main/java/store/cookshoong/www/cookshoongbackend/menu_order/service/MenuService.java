@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import store.cookshoong.www.cookshoongbackend.file.ImageNotFoundException;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
+import store.cookshoong.www.cookshoongbackend.file.model.ThumbnailManager;
 import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
 import store.cookshoong.www.cookshoongbackend.file.service.FileUtilResolver;
 import store.cookshoong.www.cookshoongbackend.file.service.FileUtils;
@@ -59,6 +60,7 @@ public class MenuService {
     private final OptionGroupRepository optionGroupRepository;
     private final FileUtilResolver fileUtilResolver;
     private final EntityManager entityManager;
+    private final ThumbnailManager thumbnailManager;
 
     private Image getImage(String storedAt, MultipartFile file, FileDomain fileDomain) throws IOException {
         if (Objects.nonNull(file)) {
@@ -108,6 +110,8 @@ public class MenuService {
 
             if (Objects.nonNull(newImage)) {
                 fileUtils.deleteFile(oldImage);
+                imageRepository.deleteById(oldImage.getId());
+
                 menu.modifyImage(newImage);
             }
         } else {
@@ -132,7 +136,7 @@ public class MenuService {
         for (SelectMenuResponseDto dto : responseDtos) {
             if (Objects.nonNull(dto.getSavedName())) {
                 FileUtils fileUtils = fileUtilResolver.getFileService(dto.getLocationType());
-                dto.setSavedName(fileUtils.getFullPath(dto.getDomainName(), dto.getSavedName()));
+                dto.setSavedName(fileUtils.getFullPath(thumbnailManager.getThumbnailDomain(dto.getDomainName()), dto.getSavedName()));
             }
         }
         return responseDtos;
@@ -169,7 +173,9 @@ public class MenuService {
         if (Objects.nonNull(menu.getImage())) {
             FileUtils fileUtils = fileUtilResolver.getFileService(menu.getImage().getLocationType());
             fileUtils.deleteFile(menu.getImage());
+            imageRepository.deleteById(menu.getImage().getId());
         }
+        menu.modifyImage(null);
     }
 
     /**

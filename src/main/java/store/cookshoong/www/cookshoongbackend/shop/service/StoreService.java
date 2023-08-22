@@ -24,6 +24,7 @@ import store.cookshoong.www.cookshoongbackend.address.service.AddressService;
 import store.cookshoong.www.cookshoongbackend.file.ImageNotFoundException;
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
+import store.cookshoong.www.cookshoongbackend.file.model.ThumbnailManager;
 import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
 import store.cookshoong.www.cookshoongbackend.file.service.FileUtilResolver;
 import store.cookshoong.www.cookshoongbackend.file.service.FileUtils;
@@ -78,6 +79,7 @@ public class StoreService {
     private final FileUtilResolver fileUtilResolver;
     private final ImageRepository imageRepository;
     private final AddressService addressService;
+    private final ThumbnailManager thumbnailManager;
     private final StoresHasCategoryRepository storesHasCategoryRepository;
 
     private static final Long BASIC_IMAGE = 1L;
@@ -163,8 +165,13 @@ public class StoreService {
             .orElseThrow(StoreNotFoundException::new);
         List<SelectStoreCategoriesDto> categories = storeRepository.lookupStoreCategories(storeId);
         responseDto.setStoreCategories(categories);
+        String domainName = responseDto.getDomainName();
+        long storeImageId = store.getStoreImage().getId();
+        if (BASIC_IMAGE == storeImageId) {
+            domainName = thumbnailManager.getThumbnailDomain(responseDto.getDomainName());
+        }
         FileUtils fileUtils = fileUtilResolver.getFileService(responseDto.getLocationType());
-        responseDto.setPathName(fileUtils.getFullPath(responseDto.getDomainName(), responseDto.getPathName()));
+        responseDto.setPathName(fileUtils.getFullPath(domainName, responseDto.getPathName()));
         return responseDto;
     }
 
@@ -301,11 +308,11 @@ public class StoreService {
     private Image updateImage(Long storeImageId, MultipartFile storeImage, Image storeMainImage) throws IOException {
         FileUtils fileUtils = fileUtilResolver.getFileService(storeMainImage.getLocationType());
         if (storeImageId.equals(BASIC_IMAGE)) {
-            return fileUtils.storeFile(storeImage, storeMainImage.getDomainName(), true);
+            return fileUtils.storeFile(storeImage, FileDomain.STORE_IMAGE.getVariable(), true);
         }
         fileUtils.deleteFile(storeMainImage);
         imageRepository.deleteById(storeImageId);
-        return fileUtils.storeFile(storeImage, storeMainImage.getDomainName(), true);
+        return fileUtils.storeFile(storeImage, FileDomain.STORE_IMAGE.getVariable(), true);
     }
 
     /**

@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import store.cookshoong.www.cookshoongbackend.common.property.ObjectStorageProperties;
 import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
 import store.cookshoong.www.cookshoongbackend.file.model.LocationType;
+import store.cookshoong.www.cookshoongbackend.file.model.ThumbnailManager;
 import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
 import store.cookshoong.www.cookshoongbackend.file.service.FileUtilResolver;
 import store.cookshoong.www.cookshoongbackend.file.service.FileUtils;
@@ -38,6 +39,8 @@ class MenuServiceTest {
     private FileUtils fileUtils;
     @InjectMocks
     private MenuService menuService;
+    @Mock
+    private ThumbnailManager thumbnailManager;
 
     @Test
     @DisplayName("메뉴 목록 조회 - 성공")
