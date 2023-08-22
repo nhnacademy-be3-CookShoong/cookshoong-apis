@@ -3,6 +3,7 @@ package store.cookshoong.www.cookshoongbackend.common.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.Profile;
 import store.cookshoong.www.cookshoongbackend.common.aop.ErrorLoggingAspect;
 
 /**
@@ -15,6 +16,7 @@ import store.cookshoong.www.cookshoongbackend.common.aop.ErrorLoggingAspect;
 @EnableAspectJAutoProxy
 public class AopConfig {
     @Bean
+    @Profile("prod | prod2")
     public ErrorLoggingAspect errorLoggingAspect() {
         return new ErrorLoggingAspect();
     }
