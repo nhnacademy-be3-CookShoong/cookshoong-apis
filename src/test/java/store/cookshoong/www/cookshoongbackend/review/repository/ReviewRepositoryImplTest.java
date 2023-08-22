@@ -1,6 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.review.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -42,6 +43,7 @@ import store.cookshoong.www.cookshoongbackend.review.entity.ReviewHasImage;
 import store.cookshoong.www.cookshoongbackend.review.entity.ReviewReply;
 import store.cookshoong.www.cookshoongbackend.review.model.request.CreateReviewRequestDto;
 import store.cookshoong.www.cookshoongbackend.review.model.response.SelectReviewResponseDto;
+import store.cookshoong.www.cookshoongbackend.review.model.response.SelectReviewStoreResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
@@ -194,16 +196,19 @@ class ReviewRepositoryImplTest {
 
     @Test
     void lookupReviewByAccount() {
-        log.info("AC: {}", account);
-        log.info("OR: {}", order);
-        log.info("RE: {}", review);
+
         Page<SelectReviewResponseDto> accountReviews =
             reviewRepository.lookupReviewByAccount(account.getId(), Pageable.ofSize(10));
 
-        log.info("ACCOUNT REVIEWS: {}", accountReviews.getContent());
+        assertNotNull(accountReviews);
     }
 
     @Test
     void lookupReviewByStore() {
+
+        Page<SelectReviewStoreResponseDto> accountReviews =
+            reviewRepository.lookupReviewByStore(store.getId(), Pageable.ofSize(10));
+
+        assertNotNull(accountReviews);
     }
 }
