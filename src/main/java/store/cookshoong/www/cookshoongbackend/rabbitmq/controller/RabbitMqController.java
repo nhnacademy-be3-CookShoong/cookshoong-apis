@@ -1,7 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.rabbitmq.controller;
 
-import static store.cookshoong.www.cookshoongbackend.config.RabbitMqConfig.DEAD_LETTER_QUEUE_NAME;
-import static store.cookshoong.www.cookshoongbackend.config.RabbitMqConfig.QUEUE_NAME;
+import static store.cookshoong.www.cookshoongbackend.common.config.RabbitMqConfig.DEAD_LETTER_QUEUE_NAME;
+import static store.cookshoong.www.cookshoongbackend.common.config.RabbitMqConfig.QUEUE_NAME;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

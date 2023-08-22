@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.config;
+package store.cookshoong.www.cookshoongbackend.common.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import javax.persistence.EntityManager;

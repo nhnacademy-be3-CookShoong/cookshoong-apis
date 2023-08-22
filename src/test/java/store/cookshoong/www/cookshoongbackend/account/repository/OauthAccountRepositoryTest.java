@@ -15,7 +15,7 @@ import org.springframework.orm.jpa.JpaSystemException;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.entity.OauthAccount;
 import store.cookshoong.www.cookshoongbackend.account.entity.OauthType;
-import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
+import store.cookshoong.www.cookshoongbackend.common.config.QueryDslConfig;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
 import store.cookshoong.www.cookshoongbackend.util.TestPersistEntity;
 
