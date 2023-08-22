@@ -50,18 +50,24 @@ public class BusinessHourService {
     /**
      * 영업시간 생성을 위한 서비스 구현.
      *
-     * @param storeId                      매장 아이디
-     * @param createBusinessHourRequestDto 영업시간 정보
+     * @param storeId    매장 아이디
+     * @param requestDto the request dto
      */
-    public void createBusinessHour(Long storeId, CreateBusinessHourRequestDto createBusinessHourRequestDto) {
+    public void createBusinessHour(Long storeId, CreateBusinessHourRequestDto requestDto) {
         Store store = storeRepository.findById(storeId)
             .orElseThrow(StoreNotFoundException::new);
-        DayType dayType = dayTypeRepository.findByDescription(createBusinessHourRequestDto.getDayCodeName())
+        DayType dayType = dayTypeRepository.findByDescription(requestDto.getDayCodeName())
             .orElseThrow(DayTypeNotFoundException::new);
+
+        if (businessHourRepository.lookupBusinessHourByDayCode(storeId, dayType.getDayCode(), requestDto.getOpenHour())
+            || businessHourRepository.lookupBusinessHourByDayCode(storeId, dayType.getDayCode(), requestDto.getCloseHour())) {
+            throw new BusinessHourDuplicationException();
+        }
+
         BusinessHour businessHour = new BusinessHour(store,
             dayType,
-            createBusinessHourRequestDto.getOpenHour(),
-            createBusinessHourRequestDto.getCloseHour());
+            requestDto.getOpenHour(),
+            requestDto.getCloseHour());
         businessHourRepository.save(businessHour);
     }
 
