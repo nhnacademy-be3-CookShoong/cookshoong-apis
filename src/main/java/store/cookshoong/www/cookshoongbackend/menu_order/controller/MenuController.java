@@ -51,10 +51,7 @@ public class MenuController {
         if (bindingResult.hasErrors()) {
             throw new MenuValidationException(bindingResult);
         }
-
         menuService.createMenu(storeId, createMenuRequestDto, storedAt, image);
-
-
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .build();
@@ -69,10 +66,7 @@ public class MenuController {
         if (bindingResult.hasErrors()) {
             throw new MenuValidationException(bindingResult);
         }
-
         menuService.updateMenu(createMenuRequestDto, storedAt, image);
-
-
         return ResponseEntity
             .status(HttpStatus.OK)
             .build();
