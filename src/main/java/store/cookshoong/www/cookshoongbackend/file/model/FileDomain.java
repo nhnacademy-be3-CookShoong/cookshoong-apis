@@ -18,15 +18,18 @@ public enum FileDomain {
      * 매장 이미지를 관리하는 폴더명.
      */
     STORE_IMAGE("storeImage"),
+    STORE_IMAGE_THUMB("thumb/storeImage"),
     /**
      * 메뉴 이미지를 관리하는 폴더명.
      */
     MENU_IMAGE("menuImage"),
+    MENU_IMAGE_THUMB("thumb/menuImage"),
     /**
      * 로컬에서 파일 관리하는 폴더명.
      */
     FILES("files"),
-    REVIEW("reviewImage");
+    REVIEW("reviewImage"),
+    REVIEW_THUMB("thumb/reviewImage");
     private final String variable;
 
     /**
