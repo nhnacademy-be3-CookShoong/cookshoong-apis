@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import store.cookshoong.www.cookshoongbackend.coupon.service.CouponPolicyService;
+import store.cookshoong.www.cookshoongbackend.file.model.ThumbnailManager;
 import store.cookshoong.www.cookshoongbackend.file.service.FileUtilResolver;
 import store.cookshoong.www.cookshoongbackend.file.service.FileUtils;
 import store.cookshoong.www.cookshoongbackend.search.model.StoreDocumentResponseDto;
@@ -33,6 +34,7 @@ public class StoreDocumentController {
     private final FileUtilResolver fileUtilResolver;
     private final CouponPolicyService couponPolicyService;
     private final BusinessHourService businessHourService;
+    private final ThumbnailManager thumbnailManager;
 
     /**
      * 사용자로부터 3Km 내에 존재하는 매장들을 들고오는 컨트롤러.
@@ -93,7 +95,11 @@ public class StoreDocumentController {
                 s.setStoreStatus(newStore.getStoreStatus().getCode());
             }
             FileUtils fileUtils = fileUtilResolver.getFileService(s.getLocationType());
-            s.setSavedName(fileUtils.getFullPath(s.getDomainName(), s.getSavedName()));
+            String domainName = s.getDomainName();
+            if (thumbnailManager.isImageContainsThumb(s.getDomainName())) {
+                domainName = thumbnailManager.getThumbnailDomain(domainName);
+            }
+            s.setSavedName(fileUtils.getFullPath(domainName, s.getSavedName()));
             s.setOfferCoupon(couponPolicyService.isOfferCouponInStore(s.getId()));
         }
 
