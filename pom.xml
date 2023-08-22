@@ -285,7 +285,7 @@
                         <configuration>
                             <specification>OPENAPI_V3</specification>
                             <format>JSON</format>
-                            <host>localhost:8080</host>
+                            <host>cookshoong.store</host>
                             <outputDirectory>${project.build.directory}/classes/static/swagger-ui/.</outputDirectory>
                         </configuration>
                     </execution>
