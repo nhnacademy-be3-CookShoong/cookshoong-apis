@@ -40,6 +40,11 @@
             <id>jcenter</id>
             <url>https://jcenter.bintray.com</url>
         </repository>
+
+        <repository>
+            <id>logncrash</id>
+            <url>file://${project.basedir}/src/main/resources/libs</url>
+        </repository>
     </repositories>
 
     <!-- spring cloud for eureka -->
@@ -194,10 +199,8 @@
         <!-- log & crash -->
         <dependency>
             <groupId>nhn.logncrash</groupId>
-            <artifactId>logncrash</artifactId>
+            <artifactId>toast-logncrash-logback-sdk</artifactId>
             <version>3.0.5</version>
-            <scope>system</scope>
-            <systemPath>${pom.basedir}/src/main/resources/libs/toast-logncrash-logback-sdk-3.0.5.jar</systemPath>
         </dependency>
     </dependencies>
 
