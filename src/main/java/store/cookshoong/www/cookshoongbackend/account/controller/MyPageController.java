@@ -1,6 +1,5 @@
 package store.cookshoong.www.cookshoongbackend.account.controller;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

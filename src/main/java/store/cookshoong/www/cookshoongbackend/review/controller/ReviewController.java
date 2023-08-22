@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import store.cookshoong.www.cookshoongbackend.point.model.event.PointOrderCompleteEvent;
 import store.cookshoong.www.cookshoongbackend.review.exception.ReviewValidException;
 import store.cookshoong.www.cookshoongbackend.review.model.event.ReviewEvent;
 import store.cookshoong.www.cookshoongbackend.review.model.request.CreateReviewRequestDto;
