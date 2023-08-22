@@ -146,9 +146,9 @@ public class ObjectStorageService implements FileUtils {
             return null;
         }
 
-        String token = objectStorageAuth.requestToken(); // 토큰 가져오기
+        String token = objectStorageAuth.requestToken();
 
-        String originFileName = multipartFile.getOriginalFilename(); // 파일 업로드시 이름
+        String originFileName = multipartFile.getOriginalFilename();
         if (Objects.isNull(originFileName)) {
             throw new NullPointerException();
         }
@@ -156,7 +156,7 @@ public class ObjectStorageService implements FileUtils {
         String url = getSavedPath(image.getDomainName(), image.getSavedName());
         InputStream inputStream = new ByteArrayInputStream(multipartFile.getBytes());
 
-        uploadObject(inputStream, url, token); // 업로드(파일교체)
+        uploadObject(inputStream, url, token);
 
         image.updateImageInfo(originFileName);
 
@@ -166,13 +166,10 @@ public class ObjectStorageService implements FileUtils {
     @Override
     public void deleteFile(Image image) throws IOException {
         String token = objectStorageAuth.requestToken(); // 토큰 가져오기
-        //썸네일로 저장된 파일이라면 썸네일 폴더에서 삭제먼저 한 후
         if (thumbnailManager.isImageContainsThumb(image.getDomainName())) {
             String thumbUrl = getSavedPath(thumbnailManager.getThumbnailDomain(image.getDomainName()), image.getSavedName());
             deleteObject(thumbUrl, token);
         }
-
-        //원본 사진 삭제
         String url = getSavedPath(image.getDomainName(), image.getSavedName());
         deleteObject(url, token);
     }
