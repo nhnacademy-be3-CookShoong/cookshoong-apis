@@ -166,7 +166,8 @@ public class StoreService {
         List<SelectStoreCategoriesDto> categories = storeRepository.lookupStoreCategories(storeId);
         responseDto.setStoreCategories(categories);
         String domainName = responseDto.getDomainName();
-        if (store.getStoreImage().getId().equals(BASIC_IMAGE)){
+        long storeImageId = store.getStoreImage().getId();
+        if (BASIC_IMAGE == storeImageId) {
             domainName = thumbnailManager.getThumbnailDomain(responseDto.getDomainName());
         }
         FileUtils fileUtils = fileUtilResolver.getFileService(responseDto.getLocationType());
