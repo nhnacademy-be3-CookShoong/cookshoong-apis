@@ -42,7 +42,8 @@ public class CartRedisService {
 
     /**
      * 장바구니에 담는 메뉴를 Redis 에 저장하는 메서드. <br>
-     * 빈 장바구니 hashKey 가 존재하면 삭제하고 Redis 장바구니 생성 <br>
+     * 빈 장바구니 hashKey 가 존재하면 삭제하고 Redis 장바구니 생성, <br>
+     * 삭제를 해줘야 redisKey 조회시 필요없는 정보가 같이 조회되는 일이 없어진다 <br>
      * 하나의 매장에서만 담을 수 있도록 제한 <br>
      * 같은 메뉴가 들어오면 redis 에 저장되어 있는 값을 불러와서 수량과 합계를 변경해서 저장
      *
@@ -96,9 +97,9 @@ public class CartRedisService {
 
     /**
      * 장바구니에 담아져 있는 메뉴에 대해 수정되는 메서드.    <br>
-     * 옵션에 대한 수정을 할 때 hashKey 가 달라지면 추가를 해버리는 문제가 발생.   <br>
-     * 이때 변경하기전에 대한 메뉴 hashKey 를 가져오기때문에 그 key 를 가지고 삭제를 한후 <br>
-     * 변경된 메뉴에 대해서 새로운 hashKey 를 만들고 그 키를 가지고 Redis 장바구니에 담는다.  <br>
+     * 먼저 장바구니에 대한 key 존재여부를 확인 후 key 에 해당되는 메뉴 또한 존재하는지 확인 <br>
+     * 메뉴가 존재하면 그 메뉴에 대해서 삭제 후 생성, 그 이유는 옵션 변경시 장바구니 put 되는 방식으로 삭제가 없으면 변경이 아닌 추가가 발생<br>
+     * 변경된 메뉴에 대해서 필요한 값을 생성 후, 동일한 메뉴를 추가하게 되면 수량을 증가시킨다. <br>
      *
      * @param redisKey redis key
      * @param hashKey  redis hashKey
@@ -124,9 +125,9 @@ public class CartRedisService {
     }
 
     /**
-     * 장바구니에 담아져 있는 메뉴에 수량을 늘리는 메서드.    <br>
-     * Front 에서 플러스 버튼을 누르면 <br>
-     * Gateway 를 타고 Back Api 로 와서 수량을 늘려준다. <br>
+     * 장바구니에 담아져 있는 메뉴에 수량을 늘리는 메서드. <br>
+     * 장바구니에 대한 key 와 그에 해당되는 메뉴에 대해 존재여부를 먼저 확인 <br>
+     * 그 이후 해당 메뉴를 가지고 와서 수량을 늘리고, 메뉴에 대한 금액을 변경해준다 <br>
      *
      * @param redisKey redis key
      * @param hashKey  redis hashKey
@@ -150,8 +151,8 @@ public class CartRedisService {
 
     /**
      * 장바구니에 담아져 있는 메뉴에 수량을 줄이는 메서드.    <br>
-     * Front 에서 플러스 버튼을 누르면 <br>
-     * Gateway 를 타고 Back Api 로 와서 수량을 줄여준다. <br>
+     * 장바구니에 대한 key 와 그에 해당되는 메뉴에 대해 존재여부를 먼저 확인 <br>
+     * 그 이후 해당 메뉴를 가지고 와서 수량을 줄이고, 메뉴에 대한 금액을 변경해준다 <br>
      *
      * @param redisKey redis key
      * @param hashKey  redis hashKey
@@ -174,10 +175,9 @@ public class CartRedisService {
 
     /**
      * Redis 에 해당 key 에 저장되어 있는 모든 메뉴들을 List 형태로 전달하는 메서드. <br>
-     * 장바구니를 클릭하면 hashKey 가 "NOMENU" 인지 먼지 확인한다 -> 있으면 빈 장바구니를 반환 <br>
-     * 없으면 Redis Key 가 존재한지 확인하다 -> 없으면 무조건 DB 에 있다  <br>
-     * -> 왜냐하면 NOMENU 상태가 Redis, DB 둘다 장바구니가 존재하지 않을 때 들어가는 key 이기 때문이다. <br>
-     * 그렇게 없으면 DB 에 있는 장바구니 정보를 가지고 와서 Redis 장바구니로 저장.
+     * 먼저, Redis 에 해당 key 에 대한 데이터가 있는지 확인한다. <br>
+     * 만약 없으면 DB 장바구니에 해당 회원에 대한 데이터가 있는지 확인하고 있으면 그 데이터를 불러와서 Redis에 저장시킨다. <br>
+     * 만약 Redis, DB 둘 다 존재하지 않을 시에는 빈 장바구니를 생성해주도록 한다. -> 그 이유는 장바구니 조회 시 DB 접근을 최소화하기 위해서이다.
      *
      * @param redisKey redis key
      * @return 해당 key 모든 메뉴들을 반환
@@ -250,7 +250,8 @@ public class CartRedisService {
     }
 
     /**
-     * Redis 장바구니에서 해당 메뉴를 삭제하는 메서드.
+     * Redis 장바구니에서 해당 메뉴를 삭제하는 메서드. <br>
+     * 만약 장바구니에 하나 남은 메뉴에 대해서 삭제가 되면 빈 장바구니를 생성해주도록 한다.
      *
      * @param redisKey redis key
      * @param hashKey  메뉴 아이디
@@ -274,7 +275,7 @@ public class CartRedisService {
 
     /**
      * Redis 장바구니에 모든 메뉴를 삭제.   <br>
-     * key 를 삭제하는 것이기 때문에 다시 Cookie 로 생성해줘야 한다. <br>
+     * 모두 삭제 시 빈 장바구니를 생성해주도록 한다.
      *
      * @param redisKey redis key
      */
@@ -285,7 +286,7 @@ public class CartRedisService {
         }
 
         cartRedisRepository.deleteCartAll(redisKey);
-        cartRedisRepository.cartRedisSave(redisKey, NO_MENU, null);
+        createCartEmpty(redisKey, NO_MENU);
     }
 
     /**
