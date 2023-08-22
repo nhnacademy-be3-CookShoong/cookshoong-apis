@@ -2,7 +2,9 @@ package store.cookshoong.www.cookshoongbackend.shop.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +13,7 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.DayType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Holiday;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.shop.entity.StoreStatus;
+import store.cookshoong.www.cookshoongbackend.shop.exception.businesshour.BusinessHourDuplicationException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.businesshour.DayTypeNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateBusinessHourRequestDto;
@@ -85,7 +88,15 @@ public class BusinessHourService {
      */
     @Transactional(readOnly = true)
     public List<SelectBusinessHourResponseDto> selectBusinessHours(Long storeId) {
-        return businessHourRepository.lookupBusinessHours(storeId);
+        List<SelectBusinessHourResponseDto> responseDto = businessHourRepository.lookupBusinessHours(storeId);
+
+        Comparator<SelectBusinessHourResponseDto> dayOrderComparator =
+            Comparator.comparing(SelectBusinessHourResponseDto::getDayCode,
+                Comparator.comparingInt(code -> DayType.Code.valueOf(code).getDayOrder()));
+
+        return responseDto.stream()
+            .sorted(dayOrderComparator)
+            .collect(Collectors.toList());
     }
 
     /**
