@@ -5,6 +5,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -41,6 +42,7 @@ import store.cookshoong.www.cookshoongbackend.common.property.ObjectStoragePrope
 import store.cookshoong.www.cookshoongbackend.file.entity.Image;
 import store.cookshoong.www.cookshoongbackend.file.model.FileDomain;
 import store.cookshoong.www.cookshoongbackend.file.model.LocationType;
+import store.cookshoong.www.cookshoongbackend.file.model.ThumbnailManager;
 import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
 import store.cookshoong.www.cookshoongbackend.file.service.FileUtilResolver;
 import store.cookshoong.www.cookshoongbackend.file.service.FileUtils;
@@ -108,6 +110,8 @@ class StoreServiceTest {
     private LocalFileService localFileService;
     @Mock
     private AddressService addressService;
+    @Mock
+    private ThumbnailManager thumbnailManager;
     @InjectMocks
     private StoreService storeService;
 
@@ -155,6 +159,7 @@ class StoreServiceTest {
     @DisplayName("사장님 해당 매장 조회 - 성공")
     void selectStore() {
         Store store = tpe.getOpenStoreByOneAccount(account);
+        ReflectionTestUtils.setField(store.getStoreImage(), "id", 1L);
         ReflectionTestUtils.setField(store, "id", 1L);
         store.modifyAddress(new Address("광주 지산동", "조선대 정문", BigDecimal.ONE, BigDecimal.ONE));
 
@@ -178,10 +183,8 @@ class StoreServiceTest {
             store.getDeliveryCost(),
             store.getStoreStatus().getDescription());
         when(storeRepository.findById(store.getId())).thenReturn(Optional.of(store));
-        when(fileUtilResolver.getFileService(store.getStoreImage().getLocationType())).thenReturn(objectStorageService);
         when(storeRepository.lookupStore(account.getId(), store.getId())).thenReturn(Optional.of(selectStore));
-        when(fileUtilResolver.getFileService(store.getStoreImage().getLocationType()))
-            .thenReturn(objectStorageService);
+        doReturn(objectStorageService).when(fileUtilResolver).getFileService(store.getStoreImage().getLocationType());
 
         SelectStoreResponseDto result = storeService.selectStore(account.getId(), store.getId());
 
