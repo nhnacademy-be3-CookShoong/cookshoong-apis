@@ -64,7 +64,6 @@ public class ProvideCouponController {
         }
 
         rabbitTemplate.convertAndSend(requestDto);
-        // TODO: 클라이언트에게 메시지를 전달할 수 있는 일회성 경로 준비 -> 어떻게?
 
         return ResponseEntity
             .ok()

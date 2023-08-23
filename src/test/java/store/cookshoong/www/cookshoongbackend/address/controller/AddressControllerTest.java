@@ -32,6 +32,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
+import store.cookshoong.www.cookshoongbackend.account.service.AccountService;
+import store.cookshoong.www.cookshoongbackend.address.exception.AccountAddressNotFoundException;
 import store.cookshoong.www.cookshoongbackend.address.model.request.CreateAccountAddressRequestDto;
 import store.cookshoong.www.cookshoongbackend.address.model.request.ModifyAccountAddressRequestDto;
 import store.cookshoong.www.cookshoongbackend.address.model.response.AccountAddressResponseDto;
@@ -56,6 +58,10 @@ class AddressControllerTest {
 
     @MockBean
     private AddressService addressService;
+
+    @MockBean
+    private AccountService accountService;
+
     static CreateAccountAddressRequestDto createAccountAddressRequestDto;
 
     @BeforeEach
@@ -204,6 +210,19 @@ class AddressControllerTest {
                     fieldWithPath("latitude").description("위도"),
                     fieldWithPath("longitude").description("경도")
                 )));
+    }
+
+    @Test
+    @DisplayName("회원이 선택한 주소에 대해 갱신 날짜를 업데이트 - 회원에 대한 주소가 존재하지 않을 때")
+    void patchSelectAccountAddressRenewalAt_AccountAddressNotFount() throws Exception {
+
+        AddressResponseDto responseDto = new AddressResponseDto(1L, "경기도 성남시 분당구 대왕판교로645번길 16", "NHN 플레이뮤지엄",
+            new BigDecimal("37.40096549041187"), new BigDecimal("127.1040493631922"));
+
+        when(addressService.selectAccountAddressRenewalAt(1L)).thenThrow(AccountAddressNotFoundException.class);
+
+        mockMvc.perform(get("/api/addresses/{accountId}/renewal-at",  1L))
+            .andExpect(status().isNotFound());
     }
 
     @Test

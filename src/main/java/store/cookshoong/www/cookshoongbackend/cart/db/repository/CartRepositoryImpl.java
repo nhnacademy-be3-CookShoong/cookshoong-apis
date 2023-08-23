@@ -35,7 +35,7 @@ public class CartRepositoryImpl implements CartRepositoryCustom {
      * {@inheritDoc}
      */
     @Override
-    public Boolean hasCartByAccountId(Long accountId) {
+    public boolean hasCartByAccountId(Long accountId) {
         QCart cart = QCart.cart;
 
         UUID cartId = jpaQueryFactory

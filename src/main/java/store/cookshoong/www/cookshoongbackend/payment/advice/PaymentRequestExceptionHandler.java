@@ -5,9 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException;
 import store.cookshoong.www.cookshoongbackend.common.exception.ValidationFailureException;
 import store.cookshoong.www.cookshoongbackend.payment.exception.ChargeTypeNotFoundException;
 import store.cookshoong.www.cookshoongbackend.payment.exception.ChargeValidationException;
+import store.cookshoong.www.cookshoongbackend.payment.exception.RefundTypeNotFoundException;
 import store.cookshoong.www.cookshoongbackend.payment.exception.RefundValidationException;
 import store.cookshoong.www.cookshoongbackend.payment.exception.TypeValidationException;
 
@@ -26,8 +28,8 @@ public class PaymentRequestExceptionHandler {
         return ResponseEntity.badRequest().body(e.getErrors());
     }
 
-    @ExceptionHandler({ChargeTypeNotFoundException.class})
-    public ResponseEntity<String> chargeTypeNotFoundException(ChargeTypeNotFoundException e) {
+    @ExceptionHandler({ChargeTypeNotFoundException.class, RefundTypeNotFoundException.class})
+    public ResponseEntity<String> chargeTypeNotFoundException(NotFoundException e) {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }

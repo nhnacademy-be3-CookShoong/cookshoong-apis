@@ -27,9 +27,10 @@ public class CouponRedisRepository {
      * @param couponCodes    the coupon codes
      * @param couponPolicyId the coupon policy id
      */
+    @SuppressWarnings("unchecked")
     public void bulkInsertCouponCode(Set<UUID> couponCodes, String couponPolicyId) {
         RedisSerializer<String> keySerializer = couponRedisTemplate.getStringSerializer();
-        RedisSerializer valueSerializer = couponRedisTemplate.getValueSerializer();
+        RedisSerializer<UUID> valueSerializer = (RedisSerializer<UUID>) couponRedisTemplate.getValueSerializer();
 
         couponRedisTemplate.executePipelined((RedisCallback<Object>) redisConnection -> {
             couponCodes.forEach(couponCode ->
@@ -49,7 +50,7 @@ public class CouponRedisRepository {
      */
     public boolean hasKey(String key) {
         Boolean hasKey = couponRedisTemplate.hasKey(key);
-        return Objects.nonNull(hasKey) && Boolean.TRUE.equals(hasKey);
+        return Boolean.TRUE.equals(hasKey);
     }
 
     /**

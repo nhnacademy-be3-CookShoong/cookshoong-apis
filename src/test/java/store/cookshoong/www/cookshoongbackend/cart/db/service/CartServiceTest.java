@@ -173,6 +173,16 @@ class CartServiceTest {
     }
 
     @Test
+    @DisplayName("DB 장바구니에 저장하기 - Redis 장바구니 존재하지 않을 때")
+    void createCartDb_Cart_NotFound() {
+        redisKey = "cartKey=1";
+
+        assertDoesNotThrow(() -> cartService.createCartDb(accountId, cartRedisDtoList));
+
+        verify(cartRedisRepository).createLockRedis(LOCK + accountId, LOCK);
+    }
+
+    @Test
     @DisplayName("DB 장바구니 삭제하기")
     void deleteCartDb() {
 
