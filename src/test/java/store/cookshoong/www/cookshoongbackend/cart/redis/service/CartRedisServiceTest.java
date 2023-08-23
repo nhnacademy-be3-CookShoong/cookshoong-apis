@@ -192,7 +192,7 @@ class CartRedisServiceTest {
 
         cartRedisService.createCartEmpty(redisKey, NO_MENU);
 
-        verify(cartRedisRepository).cartRedisSave(redisKey, NO_MENU, "");
+        verify(cartRedisRepository).cartRedisSave(redisKey, NO_MENU, null);
 
     }
 
@@ -318,14 +318,12 @@ class CartRedisServiceTest {
         ReflectionTestUtils.setField(cartRedisDto, "totalMenuPrice", cartRedisDto.generateTotalMenuPrice());
 
         when(cartRedisRepository.existKeyInCartRedis(redisKey)).thenReturn(true);
-        when(cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)).thenReturn(true);
         when(cartRedisRepository.findByCartMenu(redisKey, hashKey)).thenReturn(cartRedisDto);
         doNothing().when(cartRedisRepository).cartMenuRedisModify(redisKey, hashKey, cartRedisDto);
 
         cartRedisService.modifyCartMenuIncrementCount(redisKey, hashKey);
 
         verify(cartRedisRepository, times(1)).existKeyInCartRedis(redisKey);
-        verify(cartRedisRepository, times(1)).existMenuInCartRedis(redisKey, hashKey);
         verify(cartRedisRepository, times(1)).findByCartMenu(redisKey, hashKey);
         verify(cartRedisRepository, times(1)).cartMenuRedisModify(redisKey, hashKey, cartRedisDto);
 
@@ -366,14 +364,12 @@ class CartRedisServiceTest {
         ReflectionTestUtils.setField(cartRedisDto, "totalMenuPrice", cartRedisDto.generateTotalMenuPrice());
 
         when(cartRedisRepository.existKeyInCartRedis(redisKey)).thenReturn(true);
-        when(cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)).thenReturn(true);
         when(cartRedisRepository.findByCartMenu(redisKey, hashKey)).thenReturn(cartRedisDto);
         doNothing().when(cartRedisRepository).cartMenuRedisModify(redisKey, hashKey, cartRedisDto);
 
         cartRedisService.modifyCartMenuDecrementCount(redisKey, hashKey);
 
         verify(cartRedisRepository, times(1)).existKeyInCartRedis(redisKey);
-        verify(cartRedisRepository, times(1)).existMenuInCartRedis(redisKey, hashKey);
         verify(cartRedisRepository, times(1)).findByCartMenu(redisKey, hashKey);
         verify(cartRedisRepository, times(1)).cartMenuRedisModify(redisKey, hashKey, cartRedisDto);
 
