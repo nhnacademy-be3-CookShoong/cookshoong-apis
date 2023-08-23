@@ -81,8 +81,4 @@ public class Order {
     public void updateOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
     }
-
-    public void updateEstimatedTimeOfArrival(LocalDateTime estimatedTimeOfArrival) {
-        this.estimatedTimeOfArrival = estimatedTimeOfArrival;
-    }
 }
