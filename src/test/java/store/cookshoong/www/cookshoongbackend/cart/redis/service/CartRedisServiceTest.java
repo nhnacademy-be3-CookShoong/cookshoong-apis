@@ -192,7 +192,7 @@ class CartRedisServiceTest {
 
         cartRedisService.createCartEmpty(redisKey, NO_MENU);
 
-        verify(cartRedisRepository).cartRedisSave(redisKey, NO_MENU, null);
+        verify(cartRedisRepository).cartRedisSave(redisKey, NO_MENU, "");
 
     }
 
