@@ -30,7 +30,7 @@ import store.cookshoong.www.cookshoongbackend.util.TestPersistEntity;
     TestEntity.class,
     TestEntityManager.class,
     TestPersistEntity.class})
-public class BusinessHourRepositoryTest {
+class BusinessHourRepositoryTest {
     @Autowired
     JPAQueryFactory jpaQueryFactory;
 

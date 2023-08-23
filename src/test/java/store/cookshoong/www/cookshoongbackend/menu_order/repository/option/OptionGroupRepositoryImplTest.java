@@ -1,6 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.menu_order.repository.option;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
@@ -72,7 +72,7 @@ class OptionGroupRepositoryImplTest {
             optionGroupRepository.save(optionGroup);
         }
 
-        List<SelectOptionGroupResponseDto> actuals = optionGroupRepository.lookupOptionGroups(store.getId());
-        assertThat(actuals.size()).isEqualTo(10);
+        List<SelectOptionGroupResponseDto> actual = optionGroupRepository.lookupOptionGroups(store.getId());
+        assertThat(actual).hasSize(10);
     }
 }

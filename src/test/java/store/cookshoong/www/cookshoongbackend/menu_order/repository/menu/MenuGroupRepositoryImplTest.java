@@ -1,6 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.menu_order.repository.menu;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
@@ -71,7 +71,7 @@ class MenuGroupRepositoryImplTest {
             menuGroupRepository.save(menuGroup);
         }
 
-        List<SelectMenuGroupResponseDto> actuals = menuGroupRepository.lookupMenuGroups(store.getId());
-        assertThat(actuals.size()).isEqualTo(10);
+        List<SelectMenuGroupResponseDto> actual = menuGroupRepository.lookupMenuGroups(store.getId());
+        assertThat(actual).hasSize(10);
     }
 }

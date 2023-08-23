@@ -16,7 +16,6 @@ import store.cookshoong.www.cookshoongbackend.account.exception.UserNotFoundExce
 import store.cookshoong.www.cookshoongbackend.common.exception.ErrorMessage;
 import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException;
 import store.cookshoong.www.cookshoongbackend.common.exception.ValidationFailureException;
-import store.cookshoong.www.cookshoongbackend.common.util.IpResolver;
 
 /**
  * account 패키지 아래에서 RestController 내에서 일어나는 모든 예외들을 처리한다.

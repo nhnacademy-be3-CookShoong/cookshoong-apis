@@ -183,17 +183,4 @@ class IssueCouponServiceTest {
         verify(issueCouponRepository).saveAllAndFlush(any());
         verify(couponRedisRepository).bulkInsertCouponCode(any(), anyString());
     }
-
-    @Test
-    @DisplayName("전체 이벤트 쿠폰 벌크 발행 - 빈 메서드 체크용")
-    void createIssueCouponAllAccountsTest() throws Exception {
-        CouponPolicy couponPolicy = te.persist(
-            te.getCouponPolicy(te.getCouponTypeCash_1000_10000(), te.getCouponUsageAll()));
-
-        when(couponPolicyRepository.findById(any(Long.class)))
-            .thenReturn(Optional.of(couponPolicy));
-
-        ReflectionTestUtils.setField(createIssueCouponRequestDto, "issueMethod", IssueMethod.BULK);
-        assertDoesNotThrow(() -> issueCouponService.createIssueCoupon(createIssueCouponRequestDto));
-    }
 }

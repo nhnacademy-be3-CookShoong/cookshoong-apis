@@ -21,6 +21,9 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -76,39 +79,13 @@ class ChargeTypeControllerTest {
                 )));
     }
 
-    @Test
-    @DisplayName("POST 결제 타입 등록 실패: null 값이 들어갈 때 오류 테스트")
-    void postCreateChargeTypeNotBlank_isNull() throws Exception {
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"", "1234"})
+    @DisplayName("POST 결제 타입 등록 실패: null, 빈 값, 숫자 값이 들어갈 때 오류 테스트")
+    void postCreateChargeTypeNotBlank_isNull(String name) throws Exception {
         CreateTypeRequestDto requestDto = ReflectionUtils.newInstance(CreateTypeRequestDto.class);
-        ReflectionTestUtils.setField(requestDto, "name", null);
-
-        String requestBody = objectMapper.writeValueAsString(requestDto);
-
-        mockMvc.perform(post("/api/payments/charges/charge-type")
-                .contentType(APPLICATION_JSON)
-                .content(requestBody))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("POST 결제 타입 등록 실패: 빈 값이 들어갈 때 오류 테스트")
-    void postCreateChargeTypeNotBlank_isEmpty() throws Exception {
-        CreateTypeRequestDto requestDto = ReflectionUtils.newInstance(CreateTypeRequestDto.class);
-        ReflectionTestUtils.setField(requestDto, "name", "");
-
-        String requestBody = objectMapper.writeValueAsString(requestDto);
-
-        mockMvc.perform(post("/api/payments/charges/charge-type")
-                .contentType(APPLICATION_JSON)
-                .content(requestBody))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("POST 결제 타입 등록 실패: 숫자 값이 들어갈 때 오류 테스트")
-    void postCreateChargeTypeNotNumber() throws Exception {
-        CreateTypeRequestDto requestDto = ReflectionUtils.newInstance(CreateTypeRequestDto.class);
-        ReflectionTestUtils.setField(requestDto, "name", "1234");
+        ReflectionTestUtils.setField(requestDto, "name", name);
 
         String requestBody = objectMapper.writeValueAsString(requestDto);
 
@@ -135,43 +112,13 @@ class ChargeTypeControllerTest {
             .andExpect(jsonPath("$.name").value(requestDto.getName()));
     }
 
-    @Test
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"", "1234"})
     @DisplayName("PUT 결제 타입 수정 실패: null 값이 들어갈 때 오류 테스트")
-    void putModifyChargeTypeNotBlank_1() throws Exception {
+    void putModifyChargeType(String name) throws Exception {
         ModifyTypeRequestDto requestDto = ReflectionUtils.newInstance(ModifyTypeRequestDto.class);
-        ReflectionTestUtils.setField(requestDto, "name", null);
-
-        String requestBody = objectMapper.writeValueAsString(requestDto);
-
-        Long chargeTypeId = 1L;
-
-        mockMvc.perform(put("/api/payments/charges/charge-type/{chargeTypeId}", chargeTypeId)
-                .contentType(APPLICATION_JSON)
-                .content(requestBody))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("PUT 결제 타입 수정 살퍄: 빈 값이 들어갈 때 오류 테스트")
-    void putModifyChargeTypeNotBlank_2() throws Exception {
-        ModifyTypeRequestDto requestDto = ReflectionUtils.newInstance(ModifyTypeRequestDto.class);
-        ReflectionTestUtils.setField(requestDto, "name", "");
-
-        String requestBody = objectMapper.writeValueAsString(requestDto);
-
-        Long chargeTypeId = 1L;
-
-        mockMvc.perform(put("/api/payments/charges/charge-type/{chargeTypeId}", chargeTypeId)
-                .contentType(APPLICATION_JSON)
-                .content(requestBody))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("PUT 결제 타입 수정 실패: 숫자 값이 들어갈 때 오류 테스트")
-    void putModifyChargeTypeNotNumber() throws Exception {
-        ModifyTypeRequestDto requestDto = ReflectionUtils.newInstance(ModifyTypeRequestDto.class);
-        ReflectionTestUtils.setField(requestDto, "name", "1234");
+        ReflectionTestUtils.setField(requestDto, "name", name);
 
         String requestBody = objectMapper.writeValueAsString(requestDto);
 
