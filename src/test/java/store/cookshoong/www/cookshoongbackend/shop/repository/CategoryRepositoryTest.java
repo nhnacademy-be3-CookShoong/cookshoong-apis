@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
+import store.cookshoong.www.cookshoongbackend.common.config.QueryDslConfig;
 import store.cookshoong.www.cookshoongbackend.shop.entity.StoreCategory;
 import store.cookshoong.www.cookshoongbackend.shop.exception.category.StoreCategoryNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectAllCategoriesResponseDto;

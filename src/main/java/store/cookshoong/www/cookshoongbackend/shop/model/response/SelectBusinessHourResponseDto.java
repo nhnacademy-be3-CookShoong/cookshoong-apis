@@ -13,6 +13,7 @@ import lombok.Getter;
 @Getter
 public class SelectBusinessHourResponseDto {
     private final Long id;
+    private final String dayCode;
     private final String dayCodeName;
     private final LocalTime openHour;
     private final LocalTime closeHour;
@@ -25,8 +26,9 @@ public class SelectBusinessHourResponseDto {
      * @param closeHour   영업 종료 시간
      */
     @QueryProjection
-    public SelectBusinessHourResponseDto(Long id, String dayCodeName, LocalTime openHour, LocalTime closeHour) {
+    public SelectBusinessHourResponseDto(Long id, String dayCode, String dayCodeName, LocalTime openHour, LocalTime closeHour) {
         this.id = id;
+        this.dayCode = dayCode;
         this.dayCodeName = dayCodeName;
         this.openHour = openHour;
         this.closeHour = closeHour;

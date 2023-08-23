@@ -10,13 +10,14 @@ import store.cookshoong.www.cookshoongbackend.common.exception.NotFoundException
 import store.cookshoong.www.cookshoongbackend.common.exception.ValidationFailureException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.banktype.BankTypeNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.banktype.DuplicatedBankException;
+import store.cookshoong.www.cookshoongbackend.shop.exception.businesshour.BusinessHourDuplicationException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.businesshour.BusinessHourValidationException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.businesshour.DayTypeNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.category.DuplicatedStoreCategoryException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.category.StoreCategoryNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.category.StoreCategoryValidException;
-import store.cookshoong.www.cookshoongbackend.shop.exception.holiday.HolidayValidationException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.holiday.HolidayNotFoundException;
+import store.cookshoong.www.cookshoongbackend.shop.exception.holiday.HolidayValidationException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.merchant.DuplicatedMerchantException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.merchant.MerchantNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.merchant.MerchantValidException;
@@ -72,11 +73,11 @@ public class StoreExceptionHandler {
      * @return 409
      */
     @ExceptionHandler(value = {DuplicatedBusinessLicenseException.class, DuplicatedMerchantException.class,
-        DuplicatedStoreCategoryException.class, DuplicatedBankException.class})
-    public ResponseEntity<String> alreadySomethingExistsError(Exception e) {
+        DuplicatedStoreCategoryException.class, DuplicatedBankException.class, BusinessHourDuplicationException.class})
+    public ResponseEntity<Void> alreadySomethingExistsError(Exception e) {
         return ResponseEntity
             .status(HttpStatus.CONFLICT)
-            .body(e.getMessage());
+            .build();
     }
 
     /**

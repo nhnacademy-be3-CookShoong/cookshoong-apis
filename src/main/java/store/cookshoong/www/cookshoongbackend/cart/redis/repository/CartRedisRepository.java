@@ -23,8 +23,8 @@ public class CartRedisRepository {
 
     /**
      * 메뉴를 장바구니에 담으면 Redis 에 저장되는 메서드.  <br>
-     * key, hashKey, object -> key 에다가 hashKey 에 object 가 저장  <br>
-     * key -> (hashKey = object)  <br>
+     * 장바구니 생성 시 두 개 key 를 생성해준다 <br>
+     * redis 에서 장바구니가 사라질 때 Listener 로 잡을 Phantom Key 와 기존 장바구니 키를 생성 <br>
      *
      * @param redisKey       redis key
      * @param hashKey        redis hashKey
@@ -39,7 +39,9 @@ public class CartRedisRepository {
     }
 
     /**
-     * Lock 을 구분할 수 있는 redis Key 를 생성.
+     * Lock 을 구분할 수 있는 redis Key 를 생성. <br>
+     * 동시성 문제로 인해 먼저 들어온 장바구니에 대해서 처리를 진행한뒤 Lock 에 대한 key 생성해서 <br>
+     * 다음번에 들어오는 장바구니에 대해서는 이 Lock 존재시 다음 작업 수행하지 못하도록 진행
      *
      * @param lockKey       lock redis key
      * @param hashKey       lock redis hashKey

@@ -1,7 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.coupon.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +11,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
-import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
+import store.cookshoong.www.cookshoongbackend.common.config.QueryDslConfig;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponPolicy;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;

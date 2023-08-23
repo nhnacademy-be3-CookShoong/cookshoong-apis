@@ -2,13 +2,10 @@ package store.cookshoong.www.cookshoongbackend.shop.repository.businesshour;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
-import java.time.Period;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QHoliday;
 import store.cookshoong.www.cookshoongbackend.shop.entity.QStore;
-import store.cookshoong.www.cookshoongbackend.shop.entity.QStoreStatus;
-import store.cookshoong.www.cookshoongbackend.shop.entity.StoreStatus;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.QSelectHolidayResponseDto;
 import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectHolidayResponseDto;
 
@@ -16,6 +13,7 @@ import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectHolidayR
  * 휴업일 커스텀 레포지토리 구현.
  *
  * @author papel (윤동현)
+ * @contributor seongyeon(유승연)
  * @since 2023.07.07
  */
 @RequiredArgsConstructor

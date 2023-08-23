@@ -7,6 +7,7 @@ import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 요일 타입 엔티티.
@@ -34,7 +35,15 @@ public class DayType {
     /**
      * 요일 코드들을 상수로 관리하기 위한 Enum.
      */
+    @RequiredArgsConstructor
     public enum Code {
-        MON, TUE, WED, THU, FRI, SAT, SUN;
+        MON(0), TUE(1), WED(2), THU(3),
+        FRI(4), SAT(5), SUN(6);
+
+        private final int dayOrder;
+
+        public int getDayOrder() {
+            return dayOrder;
+        }
     }
 }
