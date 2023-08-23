@@ -1,6 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.menu_order.repository.menu;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.math.BigDecimal;
@@ -86,7 +86,7 @@ class MenuRepositoryImplTest {
             menuRepository.save(menu);
         }
 
-        List<SelectMenuResponseDto> actuals = menuRepository.lookupMenus(store.getId());
-        assertThat(actuals.size()).isEqualTo(10);
+        List<SelectMenuResponseDto> actual = menuRepository.lookupMenus(store.getId());
+        assertThat(actual).hasSize(10);
     }
 }
