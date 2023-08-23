@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponPolicy;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponPolicyNotFoundException;
-import store.cookshoong.www.cookshoongbackend.coupon.exception.IssueCouponNotFoundException;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.IssueCouponOverCountException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateIssueCouponRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;
@@ -41,7 +40,6 @@ public class IssueCouponService {
 
     private Map<IssueMethod, BiConsumer<CouponPolicy, Long>> createIssueConsumer() {
         Map<IssueMethod, BiConsumer<CouponPolicy, Long>> enumMap = new EnumMap<>(IssueMethod.class);
-        enumMap.put(IssueMethod.BULK, this::createIssueCouponAllAccounts);
         enumMap.put(IssueMethod.EVENT, this::createIssueCouponFirstComeFirstServe);
         enumMap.put(IssueMethod.NORMAL, this::createIssueCouponInLimitCount);
 
@@ -65,10 +63,6 @@ public class IssueCouponService {
 
         issueMethodConsumer.get(issueMethod)
             .accept(couponPolicy, createIssueCouponRequestDto.getIssueQuantity());
-    }
-
-    private void createIssueCouponAllAccounts(CouponPolicy couponPolicy, Long issueQuantity) {
-        // TODO: Spring Batch 적용 이후 이용해볼 것
     }
 
     private void createIssueCouponFirstComeFirstServe(CouponPolicy couponPolicy, Long issueQuantity) {

@@ -3,7 +3,6 @@ package store.cookshoong.www.cookshoongbackend.cart.db.repository;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.repository.NoRepositoryBean;
-import store.cookshoong.www.cookshoongbackend.cart.db.entity.Cart;
 import store.cookshoong.www.cookshoongbackend.cart.db.model.response.CartResponseDto;
 
 /**
