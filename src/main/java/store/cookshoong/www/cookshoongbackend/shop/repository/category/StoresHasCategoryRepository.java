@@ -11,6 +11,6 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.StoresHasCategory;
  * @since 2023.07.04
  */
 public interface StoresHasCategoryRepository extends JpaRepository<StoresHasCategory, StoresHasCategory.Pk> {
-    void deleteAllByPk_StoreId(Long storeId);
-    List<StoresHasCategory> findAllByPk_StoreId(Long storeId);
+    void deleteAllByPkStoreId(Long storeId);
+    List<StoresHasCategory> findAllByPkStoreId(Long storeId);
 }

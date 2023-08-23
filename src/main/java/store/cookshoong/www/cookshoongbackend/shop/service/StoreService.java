@@ -326,7 +326,7 @@ public class StoreService {
         Store store = getStoreById(storeId);
         accessDeniedException(accountId, store);
 
-        storesHasCategoryRepository.deleteAllByPk_StoreId(storeId);
+        storesHasCategoryRepository.deleteAllByPkStoreId(storeId);
         store.initStoreCategories();
         entityManager.flush();
         addStoreCategory(requestDto.getUpdateStoreCategories(), store);
