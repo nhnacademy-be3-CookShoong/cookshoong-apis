@@ -48,7 +48,7 @@ public class MenuGroup {
     @Column(name = "menu_group_sequence", nullable = false)
     private Integer menuGroupSequence;
 
-    @OneToMany(mappedBy = "menuGroup", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "menuGroup", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private final Set<MenuHasMenuGroup> menuHasMenuGroups = new HashSet<>();
 
     /**
