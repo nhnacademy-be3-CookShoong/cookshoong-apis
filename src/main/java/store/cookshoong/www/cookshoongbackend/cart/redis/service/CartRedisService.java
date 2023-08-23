@@ -53,7 +53,6 @@ public class CartRedisService {
      */
     public void createCartMenu(String redisKey, String hashKey, CartRedisDto cart) {
         List<Object> cartRedis = cartRedisRepository.findByCartAll(redisKey);
-        Long storeId = null;
 
         validateBeforeSavingToRedis(redisKey, cart, cartRedis);
 
