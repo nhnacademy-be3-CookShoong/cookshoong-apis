@@ -3,6 +3,7 @@ package store.cookshoong.www.cookshoongbackend.cart.db.service;
 import static store.cookshoong.www.cookshoongbackend.cart.utils.CartConstant.LOCK;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,11 +63,15 @@ public class CartService {
      */
     public void createCartDb(Long accountId, List<CartRedisDto> cartRedisDtoList) {
         if (!cartRedisRepository.existKeyInCartRedis(LOCK + accountId)) {
-            if (cartRepository.hasCartByAccountId(accountId)) {
-                deleteCartDb(accountId);
-            }
-            saveDataOnRedisToDatabase(accountId, cartRedisDtoList);
+            validateCartInfoExistsForAccount(accountId, cartRedisDtoList);
         }
+    }
+
+    private void validateCartInfoExistsForAccount(Long accountId, List<CartRedisDto> cartRedisDtoList) {
+        if (cartRepository.hasCartByAccountId(accountId)) {
+            deleteCartDb(accountId);
+        }
+        saveDataOnRedisToDatabase(accountId, cartRedisDtoList);
     }
 
     private void saveDataOnRedisToDatabase(Long accountId, List<CartRedisDto> cartRedisList) {
@@ -74,11 +79,14 @@ public class CartService {
             cartRedisRepository.createLockRedis(LOCK + accountId, LOCK);
             return;
         }
-        if (!cartRepository.hasCartByAccountId(accountId)) {
-            Cart cart = cartSave(cartRedisList);
-            cartMenuSave(cartRedisList, cart);
-            cartRedisRepository.createLockRedis(LOCK + accountId, LOCK);
+
+        if (cartRepository.hasCartByAccountId(accountId)) {
+            return;
         }
+
+        Cart cart = cartSave(cartRedisList);
+        cartMenuSave(cartRedisList, cart);
+        cartRedisRepository.createLockRedis(LOCK + accountId, LOCK);
     }
 
     private Cart cartSave(List<CartRedisDto> cartRedisList) {
@@ -105,14 +113,15 @@ public class CartService {
 
     private void cartDetailOptionSave(CartRedisDto cartRedisDto, CartDetail cartDetail) {
         List<CartOptionDto> optionDtos = cartRedisDto.getOptions();
-        if (optionDtos != null) {
-            for (CartOptionDto optionDto : optionDtos) {
-                Option option =
-                    optionRepository.findById(optionDto.getOptionId()).orElseThrow(OptionNotFoundException::new);
-                CartDetailMenuOption.Pk pk = new CartDetailMenuOption.Pk(cartDetail.getId(), option.getId());
-                CartDetailMenuOption cartDetailMenuOption = new CartDetailMenuOption(pk, cartDetail, option);
-                cartDetailMenuOptionRepository.save(cartDetailMenuOption);
-            }
+        if (Objects.isNull(optionDtos)) {
+            return;
+        }
+        for (CartOptionDto optionDto : optionDtos) {
+            Option option =
+                optionRepository.findById(optionDto.getOptionId()).orElseThrow(OptionNotFoundException::new);
+            CartDetailMenuOption.Pk pk = new CartDetailMenuOption.Pk(cartDetail.getId(), option.getId());
+            CartDetailMenuOption cartDetailMenuOption = new CartDetailMenuOption(pk, cartDetail, option);
+            cartDetailMenuOptionRepository.save(cartDetailMenuOption);
         }
     }
 
