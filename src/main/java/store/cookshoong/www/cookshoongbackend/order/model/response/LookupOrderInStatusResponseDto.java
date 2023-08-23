@@ -16,7 +16,7 @@ import lombok.Getter;
 public class LookupOrderInStatusResponseDto {
     private final UUID orderCode;
     private final String orderStatusDescription;
-    private final List<LookupOrderDetailMenuResponseDto> selectOrderDetails;
+    private List<LookupOrderDetailMenuResponseDto> selectOrderDetails;
     private final String memo;
     private final UUID chargeCode;
     private final int chargedAmount;
@@ -27,15 +27,15 @@ public class LookupOrderInStatusResponseDto {
     /**
      * Instantiates a new Select order in progress dto.
      *
-     * @param orderCode          the order code
+     * @param orderCode              the order code
      * @param orderStatusDescription the order status explain
-     * @param selectOrderDetails the select order details
-     * @param memo               the memo
-     * @param chargeCode         the charge id
-     * @param chargedAmount      the charged amount
-     * @param paymentKey         the payment key
-     * @param orderedAt          the ordered at
-     * @param deliveryAddress    the delivery address
+     * @param selectOrderDetails     the select order details
+     * @param memo                   the memo
+     * @param chargeCode             the charge id
+     * @param chargedAmount          the charged amount
+     * @param paymentKey             the payment key
+     * @param orderedAt              the ordered at
+     * @param deliveryAddress        the delivery address
      */
     @QueryProjection
     public LookupOrderInStatusResponseDto(UUID orderCode, String orderStatusDescription,
@@ -51,5 +51,35 @@ public class LookupOrderInStatusResponseDto {
         this.paymentKey = paymentKey;
         this.orderedAt = orderedAt;
         this.deliveryAddress = deliveryAddress;
+    }
+
+    /**
+     * Instantiates a new Lookup order in status response dto.
+     *
+     * @param orderCode              the order code
+     * @param orderStatusDescription the order status description
+     * @param memo                   the memo
+     * @param chargeCode             the charge code
+     * @param chargedAmount          the charged amount
+     * @param paymentKey             the payment key
+     * @param orderedAt              the ordered at
+     * @param deliveryAddress        the delivery address
+     */
+    @QueryProjection
+    public LookupOrderInStatusResponseDto(UUID orderCode, String orderStatusDescription, String memo, UUID chargeCode,
+                                          int chargedAmount, String paymentKey, LocalDateTime orderedAt,
+                                          String deliveryAddress) {
+        this.orderCode = orderCode;
+        this.orderStatusDescription = orderStatusDescription;
+        this.memo = memo;
+        this.chargeCode = chargeCode;
+        this.chargedAmount = chargedAmount;
+        this.paymentKey = paymentKey;
+        this.orderedAt = orderedAt;
+        this.deliveryAddress = deliveryAddress;
+    }
+
+    public void updateSelectOrderDetails(List<LookupOrderDetailMenuResponseDto> selectOrderDetails) {
+        this.selectOrderDetails = selectOrderDetails;
     }
 }

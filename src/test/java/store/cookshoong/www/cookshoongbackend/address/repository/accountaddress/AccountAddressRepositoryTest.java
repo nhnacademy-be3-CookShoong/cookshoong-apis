@@ -22,7 +22,7 @@ import store.cookshoong.www.cookshoongbackend.address.entity.AccountAddress;
 import store.cookshoong.www.cookshoongbackend.address.entity.Address;
 import store.cookshoong.www.cookshoongbackend.address.model.response.AccountAddressResponseDto;
 import store.cookshoong.www.cookshoongbackend.address.model.response.AddressResponseDto;
-import store.cookshoong.www.cookshoongbackend.config.QueryDslConfig;
+import store.cookshoong.www.cookshoongbackend.common.config.QueryDslConfig;
 
 /**
  * AccountAddressRepository 에 대한 Test Code.
