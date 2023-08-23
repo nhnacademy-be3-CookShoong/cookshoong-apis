@@ -44,7 +44,7 @@ public class LookupOrderDetailMenuResponseDto {
      *
      * @param options the options
      */
-    public void setSelectOrderDetailMenuOptions(List<LookupOrderDetailMenuOptionResponseDto> options) {
+    public void updateSelectOrderDetailMenuOptions(List<LookupOrderDetailMenuOptionResponseDto> options) {
         this.selectOrderDetailMenuOptions = options;
 
         int optionPrice = options.stream()

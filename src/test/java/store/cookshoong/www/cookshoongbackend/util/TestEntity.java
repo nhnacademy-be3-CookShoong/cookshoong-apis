@@ -185,11 +185,11 @@ public class TestEntity {
     }
 
     public OrderDetail getOrderDetail(Order order, Menu menu, int count) {
-        return new OrderDetail(order, menu, count, "현재메뉴이름", 2_000);
+        return new OrderDetail(order, menu, count, menu.getName(), menu.getPrice());
     }
 
     public OrderDetailMenuOption getOrderDetailMenuOption(Option option, OrderDetail orderDetail) {
-        return new OrderDetailMenuOption(option, orderDetail, "현재옵션이름", 500);
+        return new OrderDetailMenuOption(option, orderDetail, option.getName(), option.getPrice());
     }
 
     public CreateStoreRequestDto getCreateStoreRequestDto(Merchant merchant, BankType bankType){
