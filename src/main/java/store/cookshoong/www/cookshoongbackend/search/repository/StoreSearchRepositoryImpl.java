@@ -35,27 +35,38 @@ import store.cookshoong.www.cookshoongbackend.search.model.StoreDocument;
 public class StoreSearchRepositoryImpl implements StoreSearchRepositoryCustom {
     private final ElasticsearchOperations elasticsearchOperations;
     private final AddressService addressService;
+    private static final String STORE_STATUS_CODE = "store_status_code";
+    private static final String OUTED = "OUTED";
+    private static final String LOCATION = "location";
 
-    @Override
-    public Page<StoreDocument> searchByDistance(Long addressId, Pageable pageable) {
+    private GeoDistanceQueryBuilder buildGeoDistanceQuery(Long addressId) {
         double lat = addressService.selectAccountChoiceAddress(addressId).getLatitude().doubleValue();
         double lon = addressService.selectAccountChoiceAddress(addressId).getLongitude().doubleValue();
 
-        GeoDistanceQueryBuilder geoDistanceQueryBuilder = QueryBuilders
-            .geoDistanceQuery("location")
+        return QueryBuilders
+            .geoDistanceQuery(LOCATION)
             .point(lat, lon)
             .distance(3, DistanceUnit.KILOMETERS);
+    }
 
-        GeoDistanceSortBuilder distanceSortBuilder = SortBuilders.geoDistanceSort("location", lat, lon)
+    private GeoDistanceSortBuilder buildGeoDistanceSort(Long addressId) {
+        double lat = addressService.selectAccountChoiceAddress(addressId).getLatitude().doubleValue();
+        double lon = addressService.selectAccountChoiceAddress(addressId).getLongitude().doubleValue();
+
+        return SortBuilders.geoDistanceSort(LOCATION, lat, lon)
             .order(SortOrder.ASC)
             .unit(DistanceUnit.KILOMETERS);
+    }
+
+    @Override
+    public Page<StoreDocument> searchByDistance(Long addressId, Pageable pageable) {
 
         BoolQueryBuilder boolQueryBuilder = QueryBuilders
             .boolQuery()
-            .mustNot(QueryBuilders.termQuery("store_status_code", "OUTED"))
-            .must(geoDistanceQueryBuilder);
+            .mustNot(QueryBuilders.termQuery(STORE_STATUS_CODE, OUTED))
+            .must(buildGeoDistanceQuery(addressId));
 
-        FieldSortBuilder sortBuilder = SortBuilders.fieldSort("store_status_code")
+        FieldSortBuilder sortBuilder = SortBuilders.fieldSort(STORE_STATUS_CODE)
             .order(SortOrder.DESC);
 
         FieldSortBuilder sortBuilderById = SortBuilders.fieldSort("store_id")
@@ -64,7 +75,7 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepositoryCustom {
         NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
             .withQuery(boolQueryBuilder)
             .withPageable(pageable)
-            .withSorts(sortBuilder, sortBuilderById, distanceSortBuilder)
+            .withSorts(sortBuilder, sortBuilderById, buildGeoDistanceSort(addressId))
             .build();
 
         SearchHits<StoreDocument> searchHits = elasticsearchOperations.search(searchQuery, StoreDocument.class);
@@ -74,22 +85,11 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepositoryCustom {
 
     @Override
     public Page<StoreDocument> searchByRating(Long addressId, Pageable pageable) {
-        double lat = addressService.selectAccountChoiceAddress(addressId).getLatitude().doubleValue();
-        double lon = addressService.selectAccountChoiceAddress(addressId).getLongitude().doubleValue();
-
-        GeoDistanceQueryBuilder geoDistanceQueryBuilder = QueryBuilders
-            .geoDistanceQuery("location")
-            .point(lat, lon)
-            .distance(3, DistanceUnit.KILOMETERS);
-
-        GeoDistanceSortBuilder distanceSortBuilder = SortBuilders.geoDistanceSort("location", lat, lon)
-            .order(SortOrder.ASC)
-            .unit(DistanceUnit.KILOMETERS);
 
         BoolQueryBuilder boolQueryBuilder = QueryBuilders
             .boolQuery()
-            .mustNot(QueryBuilders.termQuery("store_status_code", "OUTED"))
-            .must(geoDistanceQueryBuilder);
+            .mustNot(QueryBuilders.termQuery(STORE_STATUS_CODE, OUTED))
+            .must(buildGeoDistanceQuery(addressId));
 
         FieldSortBuilder sortBuilderById = SortBuilders.fieldSort("count_rating")
             .order(SortOrder.ASC);
@@ -97,7 +97,7 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepositoryCustom {
         NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
             .withQuery(boolQueryBuilder)
             .withPageable(pageable)
-            .withSorts(sortBuilderById, distanceSortBuilder)
+            .withSorts(sortBuilderById, buildGeoDistanceSort(addressId))
             .build();
 
         SearchHits<StoreDocument> searchHits = elasticsearchOperations.search(searchQuery, StoreDocument.class);
@@ -112,25 +112,13 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepositoryCustom {
             .matchQuery("keywordText", keywordText)
             .fuzziness("AUTO");
 
-        double lat = addressService.selectAccountChoiceAddress(addressId).getLatitude().doubleValue();
-        double lon = addressService.selectAccountChoiceAddress(addressId).getLongitude().doubleValue();
-
-        GeoDistanceQueryBuilder geoDistanceQueryBuilder = QueryBuilders
-            .geoDistanceQuery("location")
-            .point(lat, lon)
-            .distance(3, DistanceUnit.KILOMETERS);
-
-        GeoDistanceSortBuilder distanceSortBuilder = SortBuilders.geoDistanceSort("location", lat, lon)
-            .order(SortOrder.ASC)
-            .unit(DistanceUnit.KILOMETERS);
-
         BoolQueryBuilder boolQueryBuilder = QueryBuilders
             .boolQuery()
-            .mustNot(QueryBuilders.termQuery("store_status_code", "OUTED"))
+            .mustNot(QueryBuilders.termQuery(STORE_STATUS_CODE, OUTED))
             .must(matchQueryBuilder)
-            .filter(geoDistanceQueryBuilder);
+            .filter(buildGeoDistanceQuery(addressId));
 
-        FieldSortBuilder sortBuilder = SortBuilders.fieldSort("store_status_code")
+        FieldSortBuilder sortBuilder = SortBuilders.fieldSort(STORE_STATUS_CODE)
             .order(SortOrder.DESC);
 
         FieldSortBuilder sortBuilderById = SortBuilders.fieldSort("store_id")
@@ -140,7 +128,7 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepositoryCustom {
             .withQuery(boolQueryBuilder)
             .withMinScore(0.6f)
             .withPageable(pageable)
-            .withSorts(sortBuilder, sortBuilderById, distanceSortBuilder)
+            .withSorts(sortBuilder, sortBuilderById, buildGeoDistanceSort(addressId))
             .build();
 
         SearchHits<StoreDocument> searchHits = elasticsearchOperations.search(searchQuery, StoreDocument.class);
