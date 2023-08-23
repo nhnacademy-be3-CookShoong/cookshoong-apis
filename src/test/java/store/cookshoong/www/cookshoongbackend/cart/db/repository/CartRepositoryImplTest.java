@@ -171,7 +171,7 @@ class CartRepositoryImplTest {
         assertEquals(carts.get(0).getCartMenuResponseDto().getSavedName(), menuImage.getSavedName());
         assertEquals(carts.get(0).getCartMenuResponseDto().getCreateTimeMillis(), cartDetail.getCreatedTimeMillis());
         assertEquals(carts.get(0).getCartMenuResponseDto().getCount(), cartDetail.getCount());
-        assertEquals(carts.get(0).getCartOptionResponseDto().size(), 3);
+        assertEquals(3, carts.get(0).getCartOptionResponseDto().size());
     }
 
     @Test

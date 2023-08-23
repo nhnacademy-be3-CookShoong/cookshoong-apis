@@ -65,7 +65,7 @@ public class PaymentController {
 
         cartRedisService.removeCartMenuAll(createPaymentDto.getCartKey());
 
-        String id = createPaymentDto.getCartKey().replaceAll(CART, "");
+        String id = createPaymentDto.getCartKey().replace(CART, "");
         cartService.deleteCartDb(Long.valueOf(id));
 
         return ResponseEntity.status(HttpStatus.CREATED).build();

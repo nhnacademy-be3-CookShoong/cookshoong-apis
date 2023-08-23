@@ -39,13 +39,15 @@ public class ReviewReplyBusinessController {
     /**
      * 회원 리뷰에 답글을 다는 메서드.
      *
-     * @param requestDto        회원 리뷰 답글 내용
-     * @return                  상태코드 201(CREATED)와 함께 응답을 반환
+     * @param reviewId      리뷰 id
+     * @param requestDto    회원 리뷰 답글 내용
+     * @param bindingResult the binding result
+     * @return 상태코드 201(CREATED)와 함께 응답을 반환
      */
     @PostMapping("{reviewId}/review-reply")
-    private ResponseEntity<Void> postCreateReviewReply(@PathVariable Long reviewId,
-                                                       @RequestBody @Valid CreateBusinessReviewRequestDto requestDto,
-                                                       BindingResult bindingResult) {
+    public ResponseEntity<Void> postCreateReviewReply(@PathVariable Long reviewId,
+                                                      @RequestBody @Valid CreateBusinessReviewRequestDto requestDto,
+                                                      BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new ReviewReplyValidException(bindingResult);
@@ -59,14 +61,15 @@ public class ReviewReplyBusinessController {
     /**
      * 회원 리뷰에 답글을 수정하는 메서드.
      *
-     * @param reviewReplyId     리뷰 답글 아이디
-     * @param requestDto        리뷰 답글 내용
-     * @return                  상태코드 200(Ok)와 함께 응답을 반환
+     * @param reviewReplyId 리뷰 답글 아이디
+     * @param requestDto    리뷰 답글 내용
+     * @param bindingResult the binding result
+     * @return 상태코드 200(Ok)와 함께 응답을 반환
      */
     @PatchMapping("/review-reply/{reviewReplyId}")
     public ResponseEntity<Void> patchModifyReviewReply(@PathVariable Long reviewReplyId,
-                                                        @RequestBody @Valid ModifyBusinessReviewRequestDto requestDto,
-                                                        BindingResult bindingResult) {
+                                                       @RequestBody @Valid ModifyBusinessReviewRequestDto requestDto,
+                                                       BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             throw new ReviewReplyValidException(bindingResult);
@@ -80,14 +83,13 @@ public class ReviewReplyBusinessController {
     /**
      * 사장님 리뷰를 조회하는 메서드.
      *
-     * @param storeId       매장 아이디
-     * @param pageable      페이지 처리
-     * @return              상태코드 200(Ok)와 함께 응답을 반환 & 매장에 대한 모든 리뷰를 반환
+     * @param storeId  매장 아이디
+     * @param pageable 페이지 처리
+     * @return 상태코드 200(Ok)와 함께 응답을 반환 & 매장에 대한 모든 리뷰를 반환
      */
     @GetMapping("/{storeId}")
-    private ResponseEntity<Page<SelectReviewStoreResponseDto>> getBusinessReviewByStore(@PathVariable Long storeId,
-                                                                                Pageable pageable) {
-
+    public ResponseEntity<Page<SelectReviewStoreResponseDto>> getBusinessReviewByStore(@PathVariable Long storeId,
+                                                                                       Pageable pageable) {
 
         return ResponseEntity.ok(reviewService.selectReviewByStore(storeId, pageable));
     }
@@ -95,8 +97,8 @@ public class ReviewReplyBusinessController {
     /**
      * 사장님이 회원 리뷰에 답글을 삭제하는 메서드.
      *
-     * @param reviewReplyId     리뷰 답글 아이디
-     * @return                  상태코드 200(Ok)와 함께 응답을 반환
+     * @param reviewReplyId 리뷰 답글 아이디
+     * @return 상태코드 200(Ok)와 함께 응답을 반환
      */
     @DeleteMapping("/review-reply/{reviewReplyId}")
     public ResponseEntity<Void> deleteReviewReply(@PathVariable Long reviewReplyId) {

@@ -2,7 +2,6 @@ package store.cookshoong.www.cookshoongbackend.coupon.entity;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.OptionalInt;
 import java.util.Set;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;

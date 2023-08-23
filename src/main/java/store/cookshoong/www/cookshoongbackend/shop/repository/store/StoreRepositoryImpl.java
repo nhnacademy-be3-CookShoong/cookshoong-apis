@@ -60,26 +60,6 @@ public class StoreRepositoryImpl implements StoreRepositoryCustom {
     }
 
     /**
-     * 회원이 가지고 있는 매장 리스트의 총 개수.
-     *
-     * @param accountId 회원 아이디
-     * @return 회원이 가지고 있는 매장의 총 개수
-     */
-    private Long lookupTotal(Long accountId) {
-        QStore store = QStore.store;
-        QStoreStatus storeStatus = QStoreStatus.storeStatus;
-        QAddress address = QAddress.address;
-
-        return jpaQueryFactory
-            .select(store.count())
-            .from(store)
-            .innerJoin(store.storeStatus, storeStatus)
-            .innerJoin(store.address, address)
-            .where(store.account.id.eq(accountId))
-            .fetchOne();
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override

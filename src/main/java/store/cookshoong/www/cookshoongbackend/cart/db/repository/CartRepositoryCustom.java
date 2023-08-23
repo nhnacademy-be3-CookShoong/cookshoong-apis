@@ -3,7 +3,6 @@ package store.cookshoong.www.cookshoongbackend.cart.db.repository;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.repository.NoRepositoryBean;
-import store.cookshoong.www.cookshoongbackend.cart.db.entity.Cart;
 import store.cookshoong.www.cookshoongbackend.cart.db.model.response.CartResponseDto;
 
 /**
@@ -21,7 +20,7 @@ public interface CartRepositoryCustom {
      * @param accountId     회원 아이디
      * @return              회원에 대해 장바구니가 존재하면 TRUE, 없으면 False
      */
-    Boolean hasCartByAccountId(Long accountId);
+    boolean hasCartByAccountId(Long accountId);
 
     /**
      * 회원 아이디를 통해 DB 장바구니 가져오기.

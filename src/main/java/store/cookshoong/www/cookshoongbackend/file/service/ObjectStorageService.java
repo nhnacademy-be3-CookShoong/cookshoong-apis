@@ -102,12 +102,12 @@ public class ObjectStorageService implements FileUtils {
 
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setBufferRequestBody(false);
-        RestTemplate restTemplate = new RestTemplate(requestFactory);
+        RestTemplate template = new RestTemplate(requestFactory);
 
         HttpMessageConverterExtractor<String> responseExtractor
-            = new HttpMessageConverterExtractor<>(String.class, restTemplate.getMessageConverters());
+            = new HttpMessageConverterExtractor<>(String.class, template.getMessageConverters());
 
-        restTemplate.execute(url, HttpMethod.PUT, requestCallback, responseExtractor);
+        template.execute(url, HttpMethod.PUT, requestCallback, responseExtractor);
     }
 
 

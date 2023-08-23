@@ -17,6 +17,9 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.platform.commons.util.ReflectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -64,39 +67,13 @@ class RefundTypeControllerTest {
             .andExpect(jsonPath("$.name").value(requestDto.getName()));
     }
 
-    @Test
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"", "1234"})
     @DisplayName("POST 환불 타입 등록 실패: null 값이 들어갈 때 오류 테스트")
-    void postCreateRefundTypeNotBlank_isNull() throws Exception {
+    void postCreateRefundTypeNotBlank_isNull(String name) throws Exception {
         CreateTypeRequestDto requestDto = ReflectionUtils.newInstance(CreateTypeRequestDto.class);
-        ReflectionTestUtils.setField(requestDto, "name", null);
-
-        String requestBody = objectMapper.writeValueAsString(requestDto);
-
-        mockMvc.perform(post("/api/payments/refunds/refund-type")
-                .contentType(APPLICATION_JSON)
-                .content(requestBody))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("POST 결제 타입 등록 실패: 빈 값이 들어갈 때 오류 테스트")
-    void postCreateRefundTypeNotBlank_isEmpty() throws Exception {
-        CreateTypeRequestDto requestDto = ReflectionUtils.newInstance(CreateTypeRequestDto.class);
-        ReflectionTestUtils.setField(requestDto, "name", "");
-
-        String requestBody = objectMapper.writeValueAsString(requestDto);
-
-        mockMvc.perform(post("/api/payments/refunds/refund-type")
-                .contentType(APPLICATION_JSON)
-                .content(requestBody))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("POST 결제 타입 등록 실패: 숫자 값이 들어갈 때 오류 테스트")
-    void postCreateRefundTypeNotNumber() throws Exception {
-        CreateTypeRequestDto requestDto = ReflectionUtils.newInstance(CreateTypeRequestDto.class);
-        ReflectionTestUtils.setField(requestDto, "name", "1234");
+        ReflectionTestUtils.setField(requestDto, "name", name);
 
         String requestBody = objectMapper.writeValueAsString(requestDto);
 

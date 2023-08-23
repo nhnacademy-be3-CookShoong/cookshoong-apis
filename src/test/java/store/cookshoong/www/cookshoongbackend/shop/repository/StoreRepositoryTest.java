@@ -1,6 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.shop.repository;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.math.BigDecimal;
@@ -141,7 +141,7 @@ class StoreRepositoryTest {
         List<SelectAllStoresResponseDto> selectAllStores =
             storeRepository.lookupStores(expectAccount.getId());
 
-        assertThat(selectAllStores.size()).isEqualTo(3);
+        assertThat(selectAllStores).hasSize(3);
         for (int i = 0; i < 3; i++) {
             assertThat(selectAllStores.get(i).getStoreId()).isEqualTo(expect.get(i).getId());
             assertThat(selectAllStores.get(i).getStoreName()).isEqualTo(expect.get(i).getName());
