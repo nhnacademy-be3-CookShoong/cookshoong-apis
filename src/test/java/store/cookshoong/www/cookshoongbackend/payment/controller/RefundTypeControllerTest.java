@@ -26,6 +26,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
+import store.cookshoong.www.cookshoongbackend.payment.exception.RefundTypeNotFoundException;
 import store.cookshoong.www.cookshoongbackend.payment.model.request.CreateTypeRequestDto;
 import store.cookshoong.www.cookshoongbackend.payment.model.request.ModifyTypeRequestDto;
 import store.cookshoong.www.cookshoongbackend.payment.model.response.TypeResponseDto;
@@ -102,7 +103,7 @@ class RefundTypeControllerTest {
     @ParameterizedTest
     @NullSource
     @ValueSource(strings = {"", "1234"})
-    @DisplayName("PUT 환불 타입 수정 실패: null 값이 들어갈 때 오류 테스트")
+    @DisplayName("PUT 환불 타입 수정 실패: null, 빈 값, 숫자값이 들어갈 때 오류 테스트")
     void putModifyRefundTypeFail(String name) throws Exception {
         ModifyTypeRequestDto requestDto = ReflectionUtils.newInstance(ModifyTypeRequestDto.class);
         ReflectionTestUtils.setField(requestDto, "name", name);
@@ -130,6 +131,18 @@ class RefundTypeControllerTest {
             .andExpect(jsonPath("$.name").value(responseDto.getName()));
 
         verify(refundTypeService, times(1)).selectRefundType(refundTypeId);
+    }
+
+    @Test
+    @DisplayName("GET 해당 아이디에 대한 환불 타입 조회 실패 - 환불 타입이 존재하지 않을 때")
+    void getRefundType_NotFound() throws Exception {
+        String refundTypeId = "INPERSON";
+        TypeResponseDto responseDto = new TypeResponseDto("INPERSON", "개인 변심으로 인한 환불");
+
+        when(refundTypeService.selectRefundType(refundTypeId)).thenThrow(RefundTypeNotFoundException.class);
+
+        mockMvc.perform(get("/api/payments/refunds/refund-type/{refundTypeId}", refundTypeId))
+            .andExpect(status().isNotFound());
     }
 
     @Test

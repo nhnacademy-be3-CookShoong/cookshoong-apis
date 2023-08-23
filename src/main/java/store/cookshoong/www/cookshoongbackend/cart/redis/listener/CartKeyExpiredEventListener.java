@@ -57,6 +57,10 @@ public class CartKeyExpiredEventListener extends KeyExpirationEventMessageListen
             return;
         }
 
+        if (!expiredRedisKey.endsWith(CART)) {
+            return;
+        }
+
         String redisKey = expiredRedisKey.replaceAll(PHANTOM, "");
 
         List<CartRedisDto> finalCartRedisList = cartRedisService.selectCartMenuAll(redisKey);

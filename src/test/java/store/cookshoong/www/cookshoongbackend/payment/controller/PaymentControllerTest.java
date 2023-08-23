@@ -158,7 +158,23 @@ class PaymentControllerTest {
     }
 
     @Test
-    @DisplayName("주문에 대해서 환불되는 정보를 DB 에 저장")
+    @DisplayName("주문에 대해서 환불되는 정보를 DB 에 저장 실패 - 결제 코드가 null 인 경우")
+    void postCreateRefund_Validation_Exception() throws Exception {
+
+        CreateRefundDto createRefundDto = ReflectionUtils.newInstance(CreateRefundDto.class);
+        ReflectionTestUtils.setField(createRefundDto, "chargeCode", null);
+        ReflectionTestUtils.setField(createRefundDto, "refundAt", "2023-08-03T14:30:00+00:00");
+        ReflectionTestUtils.setField(createRefundDto, "refundAmount", 20000);
+        ReflectionTestUtils.setField(createRefundDto, "refundType", "partial");
+
+        mockMvc.perform(post("/api/payments/refunds")
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createRefundDto)))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("주문에 대해서 부분 환불되는 정보를 DB 에 저장")
     void postCreateRefundPartial() throws Exception {
 
 
@@ -189,16 +205,18 @@ class PaymentControllerTest {
     }
 
     @Test
-    @DisplayName("주문에 대해서 환불되는 정보를 DB 에 저장 실패 - 결제 코드가 null 인 경우")
-    void postCreateRefund_Validation_Exception() throws Exception {
+    @DisplayName("주문에 대해서 부분 환불되는 정보를 DB 에 저장")
+    void postCreateRefundPartial_Validation_Exception() throws Exception {
+
 
         CreateRefundDto createRefundDto = ReflectionUtils.newInstance(CreateRefundDto.class);
-        ReflectionTestUtils.setField(createRefundDto, "chargeCode", null);
+        ReflectionTestUtils.setField(createRefundDto, "orderCode", null);
+        ReflectionTestUtils.setField(createRefundDto, "chargeCode", uuidCharge);
         ReflectionTestUtils.setField(createRefundDto, "refundAt", "2023-08-03T14:30:00+00:00");
         ReflectionTestUtils.setField(createRefundDto, "refundAmount", 20000);
         ReflectionTestUtils.setField(createRefundDto, "refundType", "partial");
 
-        mockMvc.perform(post("/api/payments/refunds")
+        mockMvc.perform(post("/api/payments/refunds/partial")
                 .contentType(APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createRefundDto)))
             .andExpect(status().isBadRequest());
