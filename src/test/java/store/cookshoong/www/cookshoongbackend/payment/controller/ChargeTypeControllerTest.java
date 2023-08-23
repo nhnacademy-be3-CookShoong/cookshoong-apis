@@ -112,43 +112,13 @@ class ChargeTypeControllerTest {
             .andExpect(jsonPath("$.name").value(requestDto.getName()));
     }
 
-    @Test
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"", "1234"})
     @DisplayName("PUT 결제 타입 수정 실패: null 값이 들어갈 때 오류 테스트")
-    void putModifyChargeTypeNotBlank_1() throws Exception {
+    void putModifyChargeType(String name) throws Exception {
         ModifyTypeRequestDto requestDto = ReflectionUtils.newInstance(ModifyTypeRequestDto.class);
-        ReflectionTestUtils.setField(requestDto, "name", null);
-
-        String requestBody = objectMapper.writeValueAsString(requestDto);
-
-        Long chargeTypeId = 1L;
-
-        mockMvc.perform(put("/api/payments/charges/charge-type/{chargeTypeId}", chargeTypeId)
-                .contentType(APPLICATION_JSON)
-                .content(requestBody))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("PUT 결제 타입 수정 살퍄: 빈 값이 들어갈 때 오류 테스트")
-    void putModifyChargeTypeNotBlank_2() throws Exception {
-        ModifyTypeRequestDto requestDto = ReflectionUtils.newInstance(ModifyTypeRequestDto.class);
-        ReflectionTestUtils.setField(requestDto, "name", "");
-
-        String requestBody = objectMapper.writeValueAsString(requestDto);
-
-        Long chargeTypeId = 1L;
-
-        mockMvc.perform(put("/api/payments/charges/charge-type/{chargeTypeId}", chargeTypeId)
-                .contentType(APPLICATION_JSON)
-                .content(requestBody))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("PUT 결제 타입 수정 실패: 숫자 값이 들어갈 때 오류 테스트")
-    void putModifyChargeTypeNotNumber() throws Exception {
-        ModifyTypeRequestDto requestDto = ReflectionUtils.newInstance(ModifyTypeRequestDto.class);
-        ReflectionTestUtils.setField(requestDto, "name", "1234");
+        ReflectionTestUtils.setField(requestDto, "name", name);
 
         String requestBody = objectMapper.writeValueAsString(requestDto);
 
