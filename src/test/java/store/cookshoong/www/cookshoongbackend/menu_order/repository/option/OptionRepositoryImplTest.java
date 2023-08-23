@@ -1,6 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.menu_order.repository.option;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -72,7 +73,7 @@ class OptionRepositoryImplTest {
             optionRepository.save(option);
         }
 
-        List<SelectOptionResponseDto> actuals = optionRepository.lookupOptions(store.getId());
-        assertThat(actuals.size()).isEqualTo(10);
+        List<SelectOptionResponseDto> actual = optionRepository.lookupOptions(store.getId());
+        assertThat(actual).hasSize(10);
     }
 }
