@@ -20,7 +20,7 @@ public interface CartRepositoryCustom {
      * @param accountId     회원 아이디
      * @return              회원에 대해 장바구니가 존재하면 TRUE, 없으면 False
      */
-    Boolean hasCartByAccountId(Long accountId);
+    boolean hasCartByAccountId(Long accountId);
 
     /**
      * 회원 아이디를 통해 DB 장바구니 가져오기.
