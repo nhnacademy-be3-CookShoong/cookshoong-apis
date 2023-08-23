@@ -13,6 +13,7 @@ import store.cookshoong.www.cookshoongbackend.shop.model.response.SelectHolidayR
  * 휴업일 커스텀 레포지토리 구현.
  *
  * @author papel (윤동현)
+ * @contributor seongyeon(유승연)
  * @since 2023.07.07
  */
 @RequiredArgsConstructor

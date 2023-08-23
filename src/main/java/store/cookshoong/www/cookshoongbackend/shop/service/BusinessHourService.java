@@ -2,7 +2,9 @@ package store.cookshoong.www.cookshoongbackend.shop.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +13,7 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.DayType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Holiday;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.shop.entity.StoreStatus;
+import store.cookshoong.www.cookshoongbackend.shop.exception.businesshour.BusinessHourDuplicationException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.businesshour.DayTypeNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.exception.store.StoreNotFoundException;
 import store.cookshoong.www.cookshoongbackend.shop.model.request.CreateBusinessHourRequestDto;
@@ -47,18 +50,24 @@ public class BusinessHourService {
     /**
      * 영업시간 생성을 위한 서비스 구현.
      *
-     * @param storeId                      매장 아이디
-     * @param createBusinessHourRequestDto 영업시간 정보
+     * @param storeId    매장 아이디
+     * @param requestDto the request dto
      */
-    public void createBusinessHour(Long storeId, CreateBusinessHourRequestDto createBusinessHourRequestDto) {
+    public void createBusinessHour(Long storeId, CreateBusinessHourRequestDto requestDto) {
         Store store = storeRepository.findById(storeId)
             .orElseThrow(StoreNotFoundException::new);
-        DayType dayType = dayTypeRepository.findByDescription(createBusinessHourRequestDto.getDayCodeName())
+        DayType dayType = dayTypeRepository.findByDescription(requestDto.getDayCodeName())
             .orElseThrow(DayTypeNotFoundException::new);
+
+        if (businessHourRepository.lookupBusinessHourByDayCode(storeId, dayType.getDayCode(), requestDto.getOpenHour())
+            || businessHourRepository.lookupBusinessHourByDayCode(storeId, dayType.getDayCode(), requestDto.getCloseHour())) {
+            throw new BusinessHourDuplicationException();
+        }
+
         BusinessHour businessHour = new BusinessHour(store,
             dayType,
-            createBusinessHourRequestDto.getOpenHour(),
-            createBusinessHourRequestDto.getCloseHour());
+            requestDto.getOpenHour(),
+            requestDto.getCloseHour());
         businessHourRepository.save(businessHour);
     }
 
@@ -85,7 +94,15 @@ public class BusinessHourService {
      */
     @Transactional(readOnly = true)
     public List<SelectBusinessHourResponseDto> selectBusinessHours(Long storeId) {
-        return businessHourRepository.lookupBusinessHours(storeId);
+        List<SelectBusinessHourResponseDto> responseDto = businessHourRepository.lookupBusinessHours(storeId);
+
+        Comparator<SelectBusinessHourResponseDto> dayOrderComparator =
+            Comparator.comparing(SelectBusinessHourResponseDto::getDayCode,
+                Comparator.comparingInt(code -> DayType.Code.valueOf(code).getDayOrder()));
+
+        return responseDto.stream()
+            .sorted(dayOrderComparator)
+            .collect(Collectors.toList());
     }
 
     /**

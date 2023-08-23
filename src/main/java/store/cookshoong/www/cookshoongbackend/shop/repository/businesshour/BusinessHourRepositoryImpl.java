@@ -36,11 +36,12 @@ public class BusinessHourRepositoryImpl implements BusinessHourRepositoryCustom 
 
         return jpaQueryFactory
             .select(new QSelectBusinessHourResponseDto(
-                businessHour.id, dayType.description, businessHour.openHour, businessHour.closeHour))
+                businessHour.id, dayType.dayCode, dayType.description, businessHour.openHour, businessHour.closeHour))
             .from(businessHour)
             .innerJoin(businessHour.store, store)
             .innerJoin(businessHour.dayCode, dayType)
             .where(businessHour.store.id.eq(storeId))
+            .orderBy(businessHour.openHour.asc())
             .fetch();
     }
 
