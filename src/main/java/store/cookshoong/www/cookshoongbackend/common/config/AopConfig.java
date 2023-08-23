@@ -16,7 +16,6 @@ import store.cookshoong.www.cookshoongbackend.common.aop.ErrorLoggingAspect;
 @EnableAspectJAutoProxy
 public class AopConfig {
     @Bean
-    @Profile("prod | prod2")
     public ErrorLoggingAspect errorLoggingAspect() {
         return new ErrorLoggingAspect();
     }
