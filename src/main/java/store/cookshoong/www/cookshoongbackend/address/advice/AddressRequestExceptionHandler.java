@@ -1,4 +1,4 @@
-package store.cookshoong.www.cookshoongbackend.address.address;
+package store.cookshoong.www.cookshoongbackend.address.advice;
 
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;

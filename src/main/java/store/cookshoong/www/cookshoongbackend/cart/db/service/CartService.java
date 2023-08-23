@@ -61,58 +61,58 @@ public class CartService {
      * @param cartRedisDtoList      해당 key 장바구니 내역
      */
     public void createCartDb(Long accountId, List<CartRedisDto> cartRedisDtoList) {
-
         if (!cartRedisRepository.existKeyInCartRedis(LOCK + accountId)) {
-
             if (cartRepository.hasCartByAccountId(accountId)) {
                 deleteCartDb(accountId);
             }
-            updateRedisCartKey(accountId, cartRedisDtoList);
+            saveDataOnRedisToDatabase(accountId, cartRedisDtoList);
         }
     }
 
-    private void updateRedisCartKey(Long accountId, List<CartRedisDto> cartRedisList) {
-
+    private void saveDataOnRedisToDatabase(Long accountId, List<CartRedisDto> cartRedisList) {
         if (cartRedisList == null || cartRedisList.isEmpty()) {
-
             cartRedisRepository.createLockRedis(LOCK + accountId, LOCK);
             return;
         }
-
         if (!cartRepository.hasCartByAccountId(accountId)) {
-
-            Account account =
-                accountRepository.findById(cartRedisList.get(0).getAccountId()).orElseThrow(UserNotFoundException::new);
-            Store store =
-                storeRepository.findById(cartRedisList.get(0).getStoreId()).orElseThrow(StoreNotFoundException::new);
-
-            Cart cart = new Cart(account, store);
-            cartRepository.save(cart);
-
-            for (CartRedisDto cartRedisDto : cartRedisList) {
-
-                Menu menu =
-                    menuRepository.findById(cartRedisDto.getMenu().getMenuId()).orElseThrow(MenuNotFoundException::new);
-
-                CartDetail cartDetail =
-                    new CartDetail(cart, menu, cartRedisDto.getCount(), cartRedisDto.getCreateTimeMillis());
-
-                cartDetailRepository.save(cartDetail);
-                List<CartOptionDto> optionDtos = cartRedisDto.getOptions();
-
-                if (optionDtos != null) {
-                    for (CartOptionDto optionDto : optionDtos) {
-                        Option option =
-                            optionRepository.findById(optionDto.getOptionId()).orElseThrow(OptionNotFoundException::new);
-
-                        CartDetailMenuOption.Pk pk = new CartDetailMenuOption.Pk(cartDetail.getId(), option.getId());
-                        CartDetailMenuOption cartDetailMenuOption = new CartDetailMenuOption(pk, cartDetail, option);
-                        cartDetailMenuOptionRepository.save(cartDetailMenuOption);
-                    }
-                }
-            }
-
+            Cart cart = cartSave(cartRedisList);
+            cartMenuSave(cartRedisList, cart);
             cartRedisRepository.createLockRedis(LOCK + accountId, LOCK);
+        }
+    }
+
+    private Cart cartSave(List<CartRedisDto> cartRedisList) {
+        Account account =
+            accountRepository.findById(cartRedisList.get(0).getAccountId()).orElseThrow(UserNotFoundException::new);
+        Store store =
+            storeRepository.findById(cartRedisList.get(0).getStoreId()).orElseThrow(StoreNotFoundException::new);
+
+        Cart cart = new Cart(account, store);
+        cartRepository.save(cart);
+        return cart;
+    }
+
+    private void cartMenuSave(List<CartRedisDto> cartRedisList, Cart cart) {
+        for (CartRedisDto cartRedisDto : cartRedisList) {
+            Menu menu =
+                menuRepository.findById(cartRedisDto.getMenu().getMenuId()).orElseThrow(MenuNotFoundException::new);
+            CartDetail cartDetail =
+                new CartDetail(cart, menu, cartRedisDto.getCount(), cartRedisDto.getCreateTimeMillis());
+            cartDetailRepository.save(cartDetail);
+            cartDetailOptionSave(cartRedisDto, cartDetail);
+        }
+    }
+
+    private void cartDetailOptionSave(CartRedisDto cartRedisDto, CartDetail cartDetail) {
+        List<CartOptionDto> optionDtos = cartRedisDto.getOptions();
+        if (optionDtos != null) {
+            for (CartOptionDto optionDto : optionDtos) {
+                Option option =
+                    optionRepository.findById(optionDto.getOptionId()).orElseThrow(OptionNotFoundException::new);
+                CartDetailMenuOption.Pk pk = new CartDetailMenuOption.Pk(cartDetail.getId(), option.getId());
+                CartDetailMenuOption cartDetailMenuOption = new CartDetailMenuOption(pk, cartDetail, option);
+                cartDetailMenuOptionRepository.save(cartDetailMenuOption);
+            }
         }
     }
 
@@ -123,13 +123,10 @@ public class CartService {
      * @param accountId         회원아이디
      */
     public void deleteCartDb(Long accountId) {
-
         UUID cartId = cartRepository.findCartId(accountId);
-
         if (cartId == null) {
             return;
         }
-
         cartRepository.deleteById(cartId);
     }
 
@@ -141,7 +138,6 @@ public class CartService {
      * @return                  있으면 true, 없으면 false 반환
      */
     public boolean hasCartByAccountId(Long accountId) {
-
         return cartRepository.hasCartByAccountId(accountId);
     }
 

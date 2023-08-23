@@ -52,20 +52,10 @@ public class CartRedisService {
      * @param cart     장바구니에 담기는 메뉴 Dto
      */
     public void createCartMenu(String redisKey, String hashKey, CartRedisDto cart) {
-
         List<Object> cartRedis = cartRedisRepository.findByCartAll(redisKey);
         Long storeId = null;
 
-        if (cartRedisRepository.existMenuInCartRedis(redisKey, NO_MENU)) {
-            cartRedisRepository.deleteCartMenu(redisKey, NO_MENU);
-        } else if (cartRedis != null && !cartRedis.isEmpty()) {
-            CartRedisDto cartValue = (CartRedisDto) cartRedis.get(0);
-            storeId = cartValue.getStoreId();
-
-            if (!storeId.equals(cart.getStoreId())) {
-                throw new InvalidStoreException();
-            }
-        }
+        validateBeforeSavingToRedis(redisKey, cart, cartRedis);
 
         if (cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)) {
             CartRedisDto redisCart = (CartRedisDto) cartRedisRepository.findByCartMenu(redisKey, hashKey);
@@ -75,12 +65,26 @@ public class CartRedisService {
             return;
         }
 
-        cart.createTimeMillis();
-        cart.setHashKey(cart.generateUniqueHashKey());
-        cart.setMenuOptName(cart.generateMenuOptionName());
-        cart.setTotalMenuPrice(cart.generateTotalMenuPrice());
-
+        createPrepareCartDataForRedis(cart);
         cartRedisRepository.cartRedisSave(redisKey, hashKey, cart);
+    }
+
+    private void validateBeforeSavingToRedis(String redisKey, CartRedisDto cart, List<Object> cartRedis) {
+        Long storeId;
+        if (cartRedisRepository.existMenuInCartRedis(redisKey, NO_MENU)) {
+            cartRedisRepository.deleteCartMenu(redisKey, NO_MENU);
+        } else if (cartRedis != null && !cartRedis.isEmpty()) {
+            CartRedisDto cartValue = (CartRedisDto) cartRedis.get(0);
+            storeId = cartValue.getStoreId();
+            if (!storeId.equals(cart.getStoreId())) {
+                throw new InvalidStoreException();
+            }
+        }
+    }
+
+    private static void createPrepareCartDataForRedis(CartRedisDto cart) {
+        cart.createTimeMillis();
+        prepareCartDataForRedis(cart);
     }
 
     /**
@@ -92,7 +96,7 @@ public class CartRedisService {
      */
     public void createCartEmpty(String cartKey, String noKey) {
 
-        cartRedisRepository.cartRedisSave(cartKey, noKey, null);
+        cartRedisRepository.cartRedisSave(cartKey, noKey, "");
     }
 
     /**
@@ -106,21 +110,17 @@ public class CartRedisService {
      * @param cart     장바구니에서 수정되는 Dto
      */
     public void modifyCartMenuRedis(String redisKey, String hashKey, CartRedisDto cart) {
-
         if (!cartRedisRepository.existKeyInCartRedis(redisKey)) {
             throw new NotFoundCartRedisKey();
         } else if (cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)) {
             cartRedisRepository.deleteCartMenu(redisKey, hashKey);
         }
 
-        cart.setHashKey(cart.generateUniqueHashKey());
-        cart.setMenuOptName(cart.generateMenuOptionName());
-        cart.setTotalMenuPrice(cart.generateTotalMenuPrice());
+        prepareCartDataForRedis(cart);
 
         if (hashKey.equals(cart.getHashKey())) {
             cart.incrementCount();
         }
-
         cartRedisRepository.cartMenuRedisModify(redisKey, cart.getHashKey(), cart);
     }
 
@@ -133,19 +133,16 @@ public class CartRedisService {
      * @param hashKey  redis hashKey
      */
     public void modifyCartMenuIncrementCount(String redisKey, String hashKey) {
-
         CartRedisDto cart = null;
         if (!cartRedisRepository.existKeyInCartRedis(redisKey)) {
             throw new NotFoundCartRedisKey();
         } else if (cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)) {
-
             cart = (CartRedisDto) cartRedisRepository.findByCartMenu(redisKey, hashKey);
             cart.incrementCount();
         }
 
         assert cart != null;
         cart.setTotalMenuPrice(cart.generateTotalMenuPrice());
-
         cartRedisRepository.cartMenuRedisModify(redisKey, hashKey, cart);
     }
 
@@ -169,7 +166,6 @@ public class CartRedisService {
 
         assert cart != null;
         cart.setTotalMenuPrice(cart.generateTotalMenuPrice());
-
         cartRedisRepository.cartMenuRedisModify(redisKey, hashKey, cart);
     }
 
@@ -183,33 +179,25 @@ public class CartRedisService {
      * @return 해당 key 모든 메뉴들을 반환
      */
     public List<CartRedisDto> selectCartMenuAll(String redisKey) {
-
-
         List<CartRedisDto> carts = new ArrayList<>();
         String userId = redisKey.replaceAll(CART, "");
-
 
         if (!cartRedisRepository.existKeyInCartRedis(redisKey)) {
             if (cartRepository.hasCartByAccountId(Long.valueOf(userId))) {
                 // DB 장바구니 데이터를 가지고 와서 Redis 장바구니에 저장.
                 createAllCartFromDbToRedis(redisKey, cartRepository.lookupCartDbList(Long.valueOf(userId)));
             } else {
-                cartRedisRepository.cartRedisSave(redisKey, NO_MENU, null);
+                cartRedisRepository.cartRedisSave(redisKey, NO_MENU, "");
                 CartRedisDto cartRedisDto = (CartRedisDto) cartRedisRepository.findByCartMenu(redisKey, NO_MENU);
                 carts.add(cartRedisDto);
-
                 return carts;
             }
         }
 
-
         List<Object> cartRedis = cartRedisRepository.findByCartAll(redisKey);
-
         for (Object cart : cartRedis) {
             carts.add((CartRedisDto) cart);
         }
-
-        // 장바구니에 등록된 순서대로 정렬
         Comparator<CartRedisDto> sortCarts = Comparator.comparing(CartRedisDto::getCreateTimeMillis);
         carts = carts.stream().sorted(sortCarts).collect(Collectors.toList());
 
@@ -224,12 +212,7 @@ public class CartRedisService {
      * @return key 에 해당되는 메뉴 아이디를 통해 메뉴를 반환.
      */
     public CartRedisDto selectCartMenu(String redisKey, String hashKey) {
-
-        if (!cartRedisRepository.existKeyInCartRedis(redisKey)) {
-            throw new NotFoundCartRedisKey();
-        } else if (!cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)) {
-            throw new NotFoundMenuRedisHashKey();
-        }
+        checkCartExistence(redisKey, hashKey);
 
         return (CartRedisDto) cartRedisRepository.findByCartMenu(redisKey, hashKey);
     }
@@ -241,7 +224,6 @@ public class CartRedisService {
      * @return 장바구니 개수를 반환
      */
     public Long selectCartCount(String redisKey) {
-
         if (!cartRedisRepository.existKeyInCartRedis(redisKey)) {
             return 0L;
         }
@@ -257,20 +239,22 @@ public class CartRedisService {
      * @param hashKey  메뉴 아이디
      */
     public void removeCartMenu(String redisKey, String hashKey) {
-
-        if (!cartRedisRepository.existKeyInCartRedis(redisKey)) {
-            throw new NotFoundCartRedisKey();
-        } else if (!cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)) {
-            throw new NotFoundMenuRedisHashKey();
-        }
+        checkCartExistence(redisKey, hashKey);
 
         if (cartRedisRepository.cartRedisSize(redisKey) == 1) {
             cartRedisRepository.deleteCartMenu(redisKey, hashKey);
             createCartEmpty(redisKey, NO_MENU);
             return;
         }
-
         cartRedisRepository.deleteCartMenu(redisKey, hashKey);
+    }
+
+    private void checkCartExistence(String redisKey, String hashKey) {
+        if (!cartRedisRepository.existKeyInCartRedis(redisKey)) {
+            throw new NotFoundCartRedisKey();
+        } else if (!cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)) {
+            throw new NotFoundMenuRedisHashKey();
+        }
     }
 
     /**
@@ -280,11 +264,9 @@ public class CartRedisService {
      * @param redisKey redis key
      */
     public void removeCartMenuAll(String redisKey) {
-
         if (!cartRedisRepository.existKeyInCartRedis(redisKey)) {
             throw new NotFoundCartRedisKey();
         }
-
         cartRedisRepository.deleteCartAll(redisKey);
         createCartEmpty(redisKey, NO_MENU);
     }
@@ -313,13 +295,31 @@ public class CartRedisService {
     }
 
     /**
-     * Db 장바구니 정보를 Redis 로 저장하는 메서드.
+     * Db 장바구니 정보를 Redis 로 저장하는 메서드. <br>
+     * Db 에서 가져온 옵션, 메뉴, 매장에 대한 정보를 Redis Dto 에 맞게 변환 후 저장
      *
-     * @param accountId 회원 아이디
+     * @param redisKey      redis key
+     * @param accountId     회원 아이디
      */
     public void createDbCartUploadRedis(String redisKey, Long accountId) {
 
         createAllCartFromDbToRedis(redisKey, cartRepository.lookupCartDbList(accountId));
+    }
+
+    private void createAllCartFromDbToRedis(String redisKey, List<CartResponseDto> cartResponseDtos) {
+        for (CartResponseDto cartResponseDto : cartResponseDtos) {
+            CartMenuResponseDto cartMenuResponseDto = cartResponseDto.getCartMenuResponseDto();
+            CartMenuDto cartMenuRedisDto =
+                new CartMenuDto(cartMenuResponseDto.getMenuId(), cartMenuResponseDto.getName(),
+                    makeFullPath(cartResponseDto), cartMenuResponseDto.getPrice());
+
+            List<CartOptionDto> cartOptionRedisDtos = cartDatabaseOptionsToDtoList(cartResponseDto);
+
+            CartRedisDto cartRedisDto =
+                saveDatabaseInfoToRedisAsCartDto(cartResponseDto, cartMenuResponseDto,
+                    cartMenuRedisDto, cartOptionRedisDtos);
+            cartRedisRepository.cartRedisSave(redisKey, cartRedisDto.getHashKey(), cartRedisDto);
+        }
     }
 
     private String makeFullPath(CartResponseDto cartResponseDto) {
@@ -329,48 +329,45 @@ public class CartRedisService {
             return fileUtils.getFullPath(cartResponseDto.getCartMenuResponseDto().getDomainName(),
                 cartResponseDto.getCartMenuResponseDto().getSavedName());
         }
+
         return null;
     }
 
-    /**
-     * DB 장바구니에서 가져온 정보를 Redis 장바구니에 저장하는 메서드.
-     *
-     * @param cartResponseDtos DB 장바구니 정보
-     */
-    private void createAllCartFromDbToRedis(String redisKey, List<CartResponseDto> cartResponseDtos) {
-
-        for (CartResponseDto cartResponseDto : cartResponseDtos) {
-            CartMenuResponseDto cartMenuResponseDto = cartResponseDto.getCartMenuResponseDto();
-            CartMenuDto cartMenuRedisDto =
-                new CartMenuDto(cartMenuResponseDto.getMenuId(), cartMenuResponseDto.getName(),
-                    makeFullPath(cartResponseDto), cartMenuResponseDto.getPrice());
-
-            List<CartOptionDto> cartOptionRedisDtos = new ArrayList<>();
-            if (!(cartResponseDto.getCartOptionResponseDto().size() == 1
-                && cartResponseDto.getCartOptionResponseDto().get(0).getOptionId() == null)) {
-                List<CartOptionResponseDto> cartOptionResponseDtos = cartResponseDto.getCartOptionResponseDto();
-
-                for (CartOptionResponseDto cartOptionResponseDto : cartOptionResponseDtos) {
-                    CartOptionDto cartOptionRedisDto =
-                        new CartOptionDto(cartOptionResponseDto.getOptionId(),
-                            cartOptionResponseDto.getName(), cartOptionResponseDto.getPrice());
-                    cartOptionRedisDtos.add(cartOptionRedisDto);
-                }
+    private static List<CartOptionDto> cartDatabaseOptionsToDtoList(CartResponseDto cartResponseDto) {
+        List<CartOptionDto> cartOptionRedisDtos = new ArrayList<>();
+        if (!(cartResponseDto.getCartOptionResponseDto().size() == 1
+            && cartResponseDto.getCartOptionResponseDto().get(0).getOptionId() == null)) {
+            List<CartOptionResponseDto> cartOptionResponseDtos = cartResponseDto.getCartOptionResponseDto();
+            for (CartOptionResponseDto cartOptionResponseDto : cartOptionResponseDtos) {
+                CartOptionDto cartOptionRedisDto =
+                    new CartOptionDto(cartOptionResponseDto.getOptionId(),
+                        cartOptionResponseDto.getName(), cartOptionResponseDto.getPrice());
+                cartOptionRedisDtos.add(cartOptionRedisDto);
             }
-
-            CartRedisDto cartRedisDto =
-                new CartRedisDto(cartResponseDto.getAccountId(), cartResponseDto.getStoreId(),
-                    cartResponseDto.getName(), cartResponseDto.getDeliveryCost(),
-                    cartResponseDto.getMinimumOrderPrice(), cartMenuRedisDto, cartOptionRedisDtos,
-                    cartMenuResponseDto.getCreateTimeMillis(), null,
-                    cartMenuResponseDto.getCount(), null, null);
-
-            cartRedisDto.setHashKey(cartRedisDto.generateUniqueHashKey());
-            cartRedisDto.setMenuOptName(cartRedisDto.generateMenuOptionName());
-            cartRedisDto.setTotalMenuPrice(cartRedisDto.generateTotalMenuPrice());
-
-            cartRedisRepository.cartRedisSave(redisKey, cartRedisDto.getHashKey(), cartRedisDto);
         }
+
+        return cartOptionRedisDtos;
+    }
+
+    private static CartRedisDto saveDatabaseInfoToRedisAsCartDto(CartResponseDto cartResponseDto,
+                                                                 CartMenuResponseDto cartMenuResponseDto,
+                                                                 CartMenuDto cartMenuRedisDto,
+                                                                 List<CartOptionDto> cartOptionRedisDtos) {
+        CartRedisDto cartRedisDto =
+            new CartRedisDto(cartResponseDto.getAccountId(), cartResponseDto.getStoreId(),
+                cartResponseDto.getName(), cartResponseDto.getDeliveryCost(),
+                cartResponseDto.getMinimumOrderPrice(), cartMenuRedisDto, cartOptionRedisDtos,
+                cartMenuResponseDto.getCreateTimeMillis(), null,
+                cartMenuResponseDto.getCount(), null, null);
+
+        prepareCartDataForRedis(cartRedisDto);
+        return cartRedisDto;
+    }
+
+    private static void prepareCartDataForRedis(CartRedisDto cart) {
+        cart.setHashKey(cart.generateUniqueHashKey());
+        cart.setMenuOptName(cart.generateMenuOptionName());
+        cart.setTotalMenuPrice(cart.generateTotalMenuPrice());
     }
 
     /**
