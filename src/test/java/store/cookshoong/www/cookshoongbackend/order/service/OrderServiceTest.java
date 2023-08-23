@@ -452,7 +452,7 @@ class OrderServiceTest {
     @EnumSource(OrderStatus.StatusCode.class)
     @DisplayName("주문 상태 변경 성공")
     void changeStatusSuccessTest(OrderStatus.StatusCode statusCode) throws Exception {
-        Order order = mock(Order.class);
+        Order order = spy(Order.class);
         when(orderRepository.findById(any(UUID.class)))
             .thenReturn(Optional.of(order));
 
