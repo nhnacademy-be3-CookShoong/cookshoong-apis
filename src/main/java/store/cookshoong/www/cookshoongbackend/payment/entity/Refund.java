@@ -1,7 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.payment.entity;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
