@@ -329,7 +329,7 @@ class CartRedisServiceTest {
         verify(cartRedisRepository, times(1)).findByCartMenu(redisKey, hashKey);
         verify(cartRedisRepository, times(1)).cartMenuRedisModify(redisKey, hashKey, cartRedisDto);
 
-        assertEquals(cartRedisDto.getCount(), 2);
+        assertEquals(2, cartRedisDto.getCount());
     }
 
     @Test
@@ -377,7 +377,7 @@ class CartRedisServiceTest {
         verify(cartRedisRepository, times(1)).findByCartMenu(redisKey, hashKey);
         verify(cartRedisRepository, times(1)).cartMenuRedisModify(redisKey, hashKey, cartRedisDto);
 
-        assertEquals(cartRedisDto.getCount(), 1);
+        assertEquals(1, cartRedisDto.getCount());
     }
 
     @Test
@@ -581,7 +581,7 @@ class CartRedisServiceTest {
 
         when(cartRedisRepository.existKeyInCartRedis(redisKey)).thenReturn(false);
 
-        assertEquals(cartRedisService.selectCartCount(redisKey), 0L);
+        assertEquals(0L, cartRedisService.selectCartCount(redisKey));
     }
 
     @Test
@@ -708,8 +708,6 @@ class CartRedisServiceTest {
     @Test
     @DisplayName("장바구니에 담긴 메뉴들의 총 가격을 계산")
     void getTotalPrice() {
-        CartConstant cartConstant = new CartConstant();
-
         CartRedisDto cartRedisDto =
             ReflectionUtils.newInstance(CartRedisDto.class);
 
