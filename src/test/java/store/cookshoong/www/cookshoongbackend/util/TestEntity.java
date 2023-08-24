@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import org.aspectj.weaver.ast.Or;
+import org.springframework.amqp.utils.test.TestUtils;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -42,6 +43,8 @@ import store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus;
 import store.cookshoong.www.cookshoongbackend.payment.entity.Charge;
 import store.cookshoong.www.cookshoongbackend.payment.entity.ChargeType;
 import store.cookshoong.www.cookshoongbackend.order.entity.Order;
+import store.cookshoong.www.cookshoongbackend.review.entity.Review;
+import store.cookshoong.www.cookshoongbackend.review.model.request.CreateReviewRequestDto;
 import store.cookshoong.www.cookshoongbackend.shop.entity.BankType;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Merchant;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
@@ -211,6 +214,14 @@ public class TestEntity {
 
     public Charge getCharge(ChargeType chargeType, Order order) {
         return new Charge(chargeType, order, LocalDateTime.now(), 10_000, "paymentKey");
+    }
+
+    public Review getReview(Order order) {
+        CreateReviewRequestDto request = createUsingDeclared(CreateReviewRequestDto.class);
+        ReflectionTestUtils.setField(request, "orderCode", order.getCode().toString());
+        ReflectionTestUtils.setField(request, "rating", 5);
+        ReflectionTestUtils.setField(request, "contents", "테스트 리뷰입니다.");
+        return new Review(order, request);
     }
 
     private CreateStoreRequestDto createStoreRequestDto(Merchant merchant, BankType bankType) {
