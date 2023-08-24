@@ -13,7 +13,7 @@ import lombok.Getter;
 @Getter
 public class SendDeliveryRequestDto {
     private static final String COOKSHOONG = "cookshoong_";
-    
+
     private final LocalDateTime prepDatetime = LocalDateTime.now();
 
     private final String deliveryAddress;
