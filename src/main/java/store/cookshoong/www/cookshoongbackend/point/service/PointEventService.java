@@ -1,10 +1,10 @@
 package store.cookshoong.www.cookshoongbackend.point.service;
 
+import com.querydsl.core.NonUniqueResultException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -49,7 +49,7 @@ public class PointEventService {
     private static final String REVIEW_IMAGE_POINT_EXPLAIN = "리뷰 작성(사진 첨부)로 인한 포인트 적립";
     private static final String ORDER_COMPLETE_POINT_EXPLAIN = "주문 완료로 인한 포인트 적립";
     private static final String ORDER_ABORT_POINT_EXPLAIN = "주문 취소로 인한 사용 포인트 환불";
-    private static final String ORDER_POINT_LOG_EMPTY = "주문코드: `{}`에 대한 포인트 적립이 검색되지 않음.";
+    private static final String ORDER_POINT_LOG_DUPLICATE = "주문코드: `{}`에 대한 중복 포인트 사용이 감지됨.";
 
     private final AccountRepository accountRepository;
     private final PointReasonRepository pointReasonRepository;
@@ -131,21 +131,21 @@ public class PointEventService {
         Order order = orderRepository.findById(orderCode)
             .orElseThrow(OrderNotFoundException::new);
 
-        List<PointLog> pointLogs = pointLogRepository.lookupPointCompleteAmount(order)
-            .stream()
-            .filter(pointLog -> pointLog.getPointMovement() < 0)
-            .collect(Collectors.toList());
+        try {
+            refundOrderPoint(order);
+        } catch (NonUniqueResultException e) {
+            log.error(ORDER_POINT_LOG_DUPLICATE, orderCode);
+            throw new OrderPointLogDuplicateException();
+        }
+    }
 
-        if (pointLogs.isEmpty()) {
-            log.warn(ORDER_POINT_LOG_EMPTY, orderCode);
+    private void refundOrderPoint(Order order) {
+        PointLog pointLog = pointLogRepository.lookupUsePoint(order);
+
+        if (Objects.isNull(pointLog)) {
             return;
         }
 
-        if (pointLogs.size() > 1) {
-            throw new OrderPointLogDuplicateException();
-        }
-
-        PointLog pointLog = pointLogs.get(0);
         Account account = pointLog.getAccount();
         int pointMovement = Math.abs(pointLog.getPointMovement());
 
