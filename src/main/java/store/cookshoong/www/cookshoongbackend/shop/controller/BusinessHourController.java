@@ -49,7 +49,12 @@ public class BusinessHourController {
             throw new BusinessHourValidationException(bindingResult);
         }
 
-        businessHourService.createBusinessHour(storeId, createBusinessHourRequestDto);
+        if (createBusinessHourRequestDto.getDayCodeName().equals("ALL")) {
+            businessHourService.createBusinessHourAll(storeId, createBusinessHourRequestDto);
+        } else {
+            businessHourService.createBusinessHour(storeId, createBusinessHourRequestDto);
+        }
+
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .build();

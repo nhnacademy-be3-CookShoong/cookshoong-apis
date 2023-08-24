@@ -1,5 +1,6 @@
 package store.cookshoong.www.cookshoongbackend.shop.service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Comparator;
@@ -69,6 +70,30 @@ public class BusinessHourService {
             requestDto.getOpenHour(),
             requestDto.getCloseHour());
         businessHourRepository.save(businessHour);
+    }
+
+    /**
+     * 영업시간이 모두 해당될 때.
+     *
+     * @param storeId    the store id
+     * @param requestDto the request dto
+     */
+    public void createBusinessHourAll(Long storeId, CreateBusinessHourRequestDto requestDto) {
+        Store store = storeRepository.findById(storeId).orElseThrow(StoreNotFoundException::new);
+
+        for (DayOfWeek day : DayOfWeek.values()) {
+            if (businessHourRepository.lookupBusinessHourByDayCode(storeId, day.name().substring(0, 3), requestDto.getOpenHour())
+                || businessHourRepository.lookupBusinessHourByDayCode(storeId, day.name().substring(0, 3), requestDto.getCloseHour())) {
+                continue;
+            }
+            DayType dayType = dayTypeRepository.findById(day.name().substring(0, 3))
+                .orElseThrow(DayTypeNotFoundException::new);
+            BusinessHour businessHour = new BusinessHour(store,
+                dayType,
+                requestDto.getOpenHour(),
+                requestDto.getCloseHour());
+            businessHourRepository.save(businessHour);
+        }
     }
 
     /**
