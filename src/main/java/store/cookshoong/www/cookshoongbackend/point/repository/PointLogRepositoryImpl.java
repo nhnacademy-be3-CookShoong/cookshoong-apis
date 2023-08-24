@@ -82,7 +82,7 @@ public class PointLogRepositoryImpl implements PointLogRepositoryCustom {
      * {@inheritDoc}
      */
     @Override
-    public List<PointLog> lookupPointCompleteAmount(Order order) {
+    public PointLog lookupUsePoint(Order order) {
         return queryFactory
             .select(pointLog)
             .from(pointReasonOrder)
@@ -93,6 +93,8 @@ public class PointLogRepositoryImpl implements PointLogRepositoryCustom {
             .innerJoin(pointLog)
             .on(pointLog.pointReason.id.eq(pointReasonOrder.id))
 
-            .fetch();
+            .where(pointLog.pointMovement.lt(0))
+
+            .fetchOne();
     }
 }
