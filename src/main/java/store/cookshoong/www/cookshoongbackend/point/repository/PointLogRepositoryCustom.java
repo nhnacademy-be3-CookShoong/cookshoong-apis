@@ -1,6 +1,5 @@
 package store.cookshoong.www.cookshoongbackend.point.repository;
 
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;
@@ -22,5 +21,5 @@ public interface PointLogRepositoryCustom {
 
     Page<PointLogResponseDto> lookupMyPointLog(Account account, Pageable pageable);
 
-    List<PointLog> lookupPointCompleteAmount(Order order);
+    PointLog lookupUsePoint(Order order);
 }

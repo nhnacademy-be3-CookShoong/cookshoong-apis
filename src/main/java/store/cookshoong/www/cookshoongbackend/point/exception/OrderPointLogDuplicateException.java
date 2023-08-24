@@ -8,6 +8,6 @@ package store.cookshoong.www.cookshoongbackend.point.exception;
  */
 public class OrderPointLogDuplicateException extends RuntimeException {
     public OrderPointLogDuplicateException() {
-        super("해당 주문으로 획득한 포인트가 정상 검색되지 않았습니다. 관리자에게 문의해주세요.");
+        super("해당 주문으로 사용한 포인트가 정상 검색되지 않았습니다. 관리자에게 문의해주세요.");
     }
 }

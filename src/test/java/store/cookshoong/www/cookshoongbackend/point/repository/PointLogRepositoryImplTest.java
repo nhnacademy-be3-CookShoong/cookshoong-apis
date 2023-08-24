@@ -1,7 +1,10 @@
 package store.cookshoong.www.cookshoongbackend.point.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
+import com.querydsl.core.NonUniqueResultException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -20,9 +23,11 @@ import store.cookshoong.www.cookshoongbackend.common.config.QueryDslConfig;
 import store.cookshoong.www.cookshoongbackend.order.entity.Order;
 import store.cookshoong.www.cookshoongbackend.point.entity.PointLog;
 import store.cookshoong.www.cookshoongbackend.point.entity.PointReasonOrder;
+import store.cookshoong.www.cookshoongbackend.point.entity.PointReasonReview;
 import store.cookshoong.www.cookshoongbackend.point.entity.PointReasonSignup;
 import store.cookshoong.www.cookshoongbackend.point.model.response.PointLogResponseDto;
 import store.cookshoong.www.cookshoongbackend.point.model.response.PointResponseDto;
+import store.cookshoong.www.cookshoongbackend.review.entity.Review;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
 import store.cookshoong.www.cookshoongbackend.util.TestPersistEntity;
 
@@ -44,12 +49,14 @@ class PointLogRepositoryImplTest {
 
     List<PointLog> pointLogs;
 
+    Order order;
+
     @BeforeEach
     void beforeEach() {
         nonLogAccount = tpe.getLevelOneActiveCustomer();
 
         account = tpe.getLevelOneActiveCustomer();
-        Order order = te.getOrder(account, tpe.getOpenStore(), te.getOrderStatus("CREATE", "생성"));
+        order = te.getOrder(account, tpe.getOpenStore(), te.getOrderStatus("CREATE", "생성"));
 
         PointReasonSignup pointReasonSignup = em.persist(new PointReasonSignup(account));
         PointReasonOrder pointReasonOrderMinus = em.persist(new PointReasonOrder(order, "주문 시 포인트 사용"));
@@ -105,5 +112,35 @@ class PointLogRepositoryImplTest {
     void lookupMyPointZeroIfLogNullTest() throws Exception {
         PointResponseDto pointResponseDto = pointLogRepository.lookupMyPoint(nonLogAccount);
         assertThat(pointResponseDto.getPoint()).isZero();
+    }
+
+    @Test
+    @DisplayName("사용 포인트 확인")
+    void lookupUsePointTest() throws Exception {
+        PointLog pointLog = pointLogRepository.lookupUsePoint(order);
+
+        assertThat(pointLog.getPointMovement()).isEqualTo(-4_000);
+    }
+
+    @Test
+    @DisplayName("사용 포인트 확인 - 해당 주문에 사용한 포인트 없음")
+    void lookupUsePointNullTest() throws Exception {
+        Order otherOrder = te.getOrder(account, tpe.getOpenStore(), te.getOrderStatus("TEST", "TEST용"));
+        PointLog pointLog = pointLogRepository.lookupUsePoint(otherOrder);
+
+        assertThat(pointLog).isNull();
+    }
+
+    @Test
+    @DisplayName("사용 포인트 확인 - 중복 사용 포인트 기록이 있음")
+    void lookupUsePointDuplicateTest() throws Exception {
+        PointReasonOrder reasonOrder = em.persist(new PointReasonOrder(order, "주문 시 포인트 사용"));
+        PointLog duplicateUsePointLog = new PointLog(account, reasonOrder, -4_000);
+        pointLogRepository.save(duplicateUsePointLog);
+        em.flush();
+        em.clear();
+
+        assertThrowsExactly(NonUniqueResultException.class, () ->
+            pointLogRepository.lookupUsePoint(order));
     }
 }
