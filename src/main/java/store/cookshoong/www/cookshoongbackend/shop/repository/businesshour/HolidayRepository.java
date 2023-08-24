@@ -11,5 +11,5 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.Holiday;
  * @since 2023.07.04
  */
 public interface HolidayRepository extends JpaRepository<Holiday, Long>, HolidayRepositoryCustom {
-    List<Holiday> findByStore_Id(Long storeId);
+    List<Holiday> findByStoreId(Long storeId);
 }

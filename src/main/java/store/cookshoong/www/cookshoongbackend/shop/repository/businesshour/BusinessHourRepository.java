@@ -12,5 +12,5 @@ import store.cookshoong.www.cookshoongbackend.shop.entity.BusinessHour;
  */
 public interface BusinessHourRepository extends JpaRepository<BusinessHour, Long>, BusinessHourRepositoryCustom {
 
-    List<BusinessHour> findByStore_Id(Long storeId);
+    List<BusinessHour> findByStoreId(Long storeId);
 }

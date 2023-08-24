@@ -265,7 +265,8 @@ class CartRedisControllerTest {
         // Act & Assert
         mockMvc.perform(put("/api/carts/{cartKey}/modify-menu/{menuKey}", redisKey, hashKey)
             .contentType(APPLICATION_JSON)
-            .content(om.writeValueAsString(cartRedisDto)));
+            .content(om.writeValueAsString(cartRedisDto)))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
