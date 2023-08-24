@@ -1,6 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.point.repository;
 
 import java.util.List;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import store.cookshoong.www.cookshoongbackend.order.entity.Order;
 import store.cookshoong.www.cookshoongbackend.point.entity.PointReasonOrder;
@@ -13,4 +14,6 @@ import store.cookshoong.www.cookshoongbackend.point.entity.PointReasonOrder;
  */
 public interface PointReasonOrderRepository extends JpaRepository<PointReasonOrder, Long> {
     List<PointReasonOrder> findAllByOrder(Order order);
+
+    boolean existsByOrderCode(UUID orderCode);
 }

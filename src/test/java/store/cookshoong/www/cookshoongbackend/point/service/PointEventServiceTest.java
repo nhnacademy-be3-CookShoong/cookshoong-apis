@@ -31,7 +31,9 @@ import store.cookshoong.www.cookshoongbackend.order.repository.OrderRepository;
 import store.cookshoong.www.cookshoongbackend.payment.entity.Charge;
 import store.cookshoong.www.cookshoongbackend.payment.repository.charge.ChargeRepository;
 import store.cookshoong.www.cookshoongbackend.point.entity.PointLog;
+import store.cookshoong.www.cookshoongbackend.point.entity.PointReasonOrder;
 import store.cookshoong.www.cookshoongbackend.point.repository.PointLogRepository;
+import store.cookshoong.www.cookshoongbackend.point.repository.PointReasonOrderRepository;
 import store.cookshoong.www.cookshoongbackend.point.repository.PointReasonRepository;
 import store.cookshoong.www.cookshoongbackend.shop.entity.Store;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
@@ -52,6 +54,8 @@ class PointEventServiceTest {
     OrderDetailRepository orderDetailRepository;
     @Mock
     ChargeRepository chargeRepository;
+    @Mock
+    PointReasonOrderRepository pointReasonOrderRepository;
     @Spy
     TestEntity te;
 

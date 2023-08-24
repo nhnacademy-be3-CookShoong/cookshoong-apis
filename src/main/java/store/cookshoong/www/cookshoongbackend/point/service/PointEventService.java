@@ -25,6 +25,7 @@ import store.cookshoong.www.cookshoongbackend.point.entity.PointReasonReview;
 import store.cookshoong.www.cookshoongbackend.point.entity.PointReasonSignup;
 import store.cookshoong.www.cookshoongbackend.point.exception.OrderPointLogDuplicateException;
 import store.cookshoong.www.cookshoongbackend.point.repository.PointLogRepository;
+import store.cookshoong.www.cookshoongbackend.point.repository.PointReasonOrderRepository;
 import store.cookshoong.www.cookshoongbackend.point.repository.PointReasonRepository;
 import store.cookshoong.www.cookshoongbackend.review.entity.Review;
 import store.cookshoong.www.cookshoongbackend.review.exception.ReviewNotFoundException;
@@ -52,6 +53,7 @@ public class PointEventService {
 
     private final AccountRepository accountRepository;
     private final PointReasonRepository pointReasonRepository;
+    private final PointReasonOrderRepository pointReasonOrderRepository;
     private final PointLogRepository pointLogRepository;
     private final OrderRepository orderRepository;
     private final OrderDetailRepository orderDetailRepository;
@@ -75,6 +77,10 @@ public class PointEventService {
      * @param orderCode the order code
      */
     public void createPaymentPoint(UUID orderCode) {
+        if (pointReasonOrderRepository.existsByOrderCode(orderCode)) {
+            return;
+        }
+
         Order order = orderRepository.findById(orderCode)
             .orElseThrow(OrderNotFoundException::new);
 

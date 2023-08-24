@@ -31,6 +31,7 @@ import store.cookshoong.www.cookshoongbackend.account.repository.AccountReposito
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartMenuDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartOptionDto;
 import store.cookshoong.www.cookshoongbackend.cart.redis.model.vo.CartRedisDto;
+import store.cookshoong.www.cookshoongbackend.delivery.model.event.DeliveryEvent;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.menu.Menu;
 import store.cookshoong.www.cookshoongbackend.menu_order.entity.option.Option;
 import store.cookshoong.www.cookshoongbackend.menu_order.exception.menu.MenuNotFoundException;
@@ -217,7 +218,7 @@ public class OrderService {
     }
 
     private void startDeliverEvent(UUID orderCode) {
-        // TODO: 배송 API 연결할 것
+        publisher.publishEvent(new DeliveryEvent(this, orderCode));
     }
 
     /**
