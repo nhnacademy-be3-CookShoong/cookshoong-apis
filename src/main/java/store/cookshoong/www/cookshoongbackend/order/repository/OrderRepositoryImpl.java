@@ -195,11 +195,6 @@ public class OrderRepositoryImpl implements OrderRepositoryCustom {
             .from(order)
             .innerJoin(order.orderStatus, orderStatus)
 
-            .innerJoin(orderDetail)
-            .on(orderDetail.order.eq(order))
-
-            .innerJoin(orderDetail.menu, menu)
-
             .innerJoin(charge)
             .on(charge.order.eq(order))
 
