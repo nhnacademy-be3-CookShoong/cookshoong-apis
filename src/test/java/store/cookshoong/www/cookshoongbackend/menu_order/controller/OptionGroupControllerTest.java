@@ -127,7 +127,7 @@ class OptionGroupControllerTest {
             .andExpect(jsonPath("$.[3].isDeleted").value(false))
             .andDo(MockMvcRestDocumentationWrapper.document("selectOptionGroups",
                 ResourceSnippetParameters.builder()
-                    .responseSchema(Schema.schema("selectOPtionGroups.Response")),
+                    .responseSchema(Schema.schema("selectOptionGroups.Response")),
                 responseFields(
                     fieldWithPath("[].id").description("옵션그룹 아이디"),
                     fieldWithPath("[].storeId").description("매장 아이디"),
@@ -174,7 +174,7 @@ class OptionGroupControllerTest {
 
     @Test
     @DisplayName("옵션 그룹 삭제")
-    void deleteMenuGroup() throws Exception {
+    void deleteOptionGroup() throws Exception {
         RequestBuilder requestBuilder = RestDocumentationRequestBuilders
             .delete("/api/stores/{storeId}/option-group/{optionGroupId}", 1L, 1L)
             .contentType(MediaType.APPLICATION_JSON);
