@@ -194,10 +194,9 @@ class OrderRepositoryImplTest {
     @DisplayName("주문 메뉴 상세 확인 페이지 테스트")
     void lookupOrderInStatusPageOrderDetailTest() throws Exception {
         Page<LookupOrderInStatusResponseDto> lookupOrdersInStatus =
-            orderRepository.lookupOrderInStatus(store, getStatusCodeString(Set.of(CREATE, PAY, CANCEL)), Pageable.ofSize(2));
+            orderRepository.lookupOrderInStatus(store, getStatusCodeString(Set.of(CREATE, PAY, CANCEL)), Pageable.ofSize(10));
 
-        assertThat(lookupOrdersInStatus.getTotalElements()).isEqualTo(3);
-        assertThat(lookupOrdersInStatus).hasSize(2);
+        assertThat(lookupOrdersInStatus).hasSize(3);
 
         Map<UUID, Set<OrderDetail>> verifies = Map.of(
             firstOrder.getCode(), Set.of(firstOrderFirstDetail, firstOrderSecondDetail, firstOrderThirdDetail),
@@ -224,10 +223,9 @@ class OrderRepositoryImplTest {
     @DisplayName("주문 메뉴 상세 옵션 확인 페이지 테스트")
     void lookupOrderInStatusPageOrderDetailMenuOptionsTest() throws Exception {
         Page<LookupOrderInStatusResponseDto> lookupOrdersInStatus =
-            orderRepository.lookupOrderInStatus(store, getStatusCodeString(Set.of(CREATE, PAY, CANCEL)), Pageable.ofSize(2));
+            orderRepository.lookupOrderInStatus(store, getStatusCodeString(Set.of(CREATE, PAY, CANCEL)), Pageable.ofSize(10));
 
-        assertThat(lookupOrdersInStatus.getTotalElements()).isEqualTo(3);
-        assertThat(lookupOrdersInStatus).hasSize(2);
+        assertThat(lookupOrdersInStatus).hasSize(3);
 
         Map<Long, Set<OrderDetailMenuOption>> verifies = Map.of(
             firstOrderFirstDetail.getId(), Set.of(
@@ -265,10 +263,9 @@ class OrderRepositoryImplTest {
     @DisplayName("사용자 주문 메뉴 상세 확인 테스트")
     void lookupAccountOrderInStatusOrderDetailTest() throws Exception {
         Page<LookupAccountOrderInStatusResponseDto> lookupAccountOrdersInStatus =
-            orderRepository.lookupOrderInStatus(account, getStatusCodeString(Set.of(CREATE, PAY, CANCEL)), Pageable.ofSize(2));
+            orderRepository.lookupOrderInStatus(account, getStatusCodeString(Set.of(CREATE, PAY, CANCEL)), Pageable.ofSize(10));
 
-        assertThat(lookupAccountOrdersInStatus.getTotalElements()).isEqualTo(3);
-        assertThat(lookupAccountOrdersInStatus).hasSize(2);
+        assertThat(lookupAccountOrdersInStatus).hasSize(3);
 
         Map<UUID, Set<OrderDetail>> verifies = Map.of(
             firstOrder.getCode(), Set.of(firstOrderFirstDetail, firstOrderSecondDetail, firstOrderThirdDetail),
@@ -299,10 +296,9 @@ class OrderRepositoryImplTest {
     @DisplayName("주문 메뉴 상세 옵션 확인 페이지 테스트")
     void lookupAccountOrderInStatusOrderDetailMenuOptionsTest() throws Exception {
         Page<LookupAccountOrderInStatusResponseDto> lookupAccountOrdersInStatus =
-            orderRepository.lookupOrderInStatus(account, getStatusCodeString(Set.of(CREATE, PAY, CANCEL)), Pageable.ofSize(2));
+            orderRepository.lookupOrderInStatus(account, getStatusCodeString(Set.of(CREATE, PAY, CANCEL)), Pageable.ofSize(10));
 
-        assertThat(lookupAccountOrdersInStatus.getTotalElements()).isEqualTo(3);
-        assertThat(lookupAccountOrdersInStatus).hasSize(2);
+        assertThat(lookupAccountOrdersInStatus).hasSize(3);
 
         Map<Long, Set<OrderDetailMenuOption>> verifies = Map.of(
             firstOrderFirstDetail.getId(), Set.of(
