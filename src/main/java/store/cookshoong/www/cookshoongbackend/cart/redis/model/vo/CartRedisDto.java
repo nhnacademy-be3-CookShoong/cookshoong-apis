@@ -133,7 +133,7 @@ public class CartRedisDto {
      */
     public void incrementCount() {
 
-        if (count <= 100) {
+        if (count < 100) {
             count++;
         }
     }
