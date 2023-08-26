@@ -16,6 +16,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static store.cookshoong.www.cookshoongbackend.cart.utils.CartConstant.EMPTY_CART;
 
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -77,7 +78,6 @@ class CartRedisControllerTest {
     CartOptionDto cartOptionDto1;
     List<CartOptionDto> cartOptionDtos;
     CartRedisDto cartRedisDto;
-    private static final String NO_MENU = "NO_KEY";
 
     @BeforeEach
     void setUp() {
@@ -156,7 +156,7 @@ class CartRedisControllerTest {
     @DisplayName("빈 장바구니 등록")
     void postCreateEmptyCart() throws Exception {
 
-        mockMvc.perform(post("/api/carts/{cartKey}/add-menu/{noKey}/empty", redisKey, NO_MENU)
+        mockMvc.perform(post("/api/carts/{cartKey}/add-menu/{noKey}/empty", redisKey, EMPTY_CART)
                 .contentType(APPLICATION_JSON))
             .andExpect(status().isCreated())
             .andDo(document("post-create-empty-cart",

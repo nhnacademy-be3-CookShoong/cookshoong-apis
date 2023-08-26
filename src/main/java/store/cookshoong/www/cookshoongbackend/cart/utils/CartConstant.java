@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class CartConstant {
 
     public static final String PHANTOM = ":phantom";
-    public static final String NO_MENU = "NO_KEY";
+    public static final String EMPTY_CART = "EMPTY_CART";
     public static final String CART = "cartKey=";
     public static final String LOCK = "lockKey=";
 }
