@@ -75,7 +75,7 @@ public class ProvideCouponService {
         provideCoupon(issueCoupons, account);
     }
 
-    private static void validPolicyDeleted(CouponPolicy couponPolicy) {
+    private void validPolicyDeleted(CouponPolicy couponPolicy) {
         if (couponPolicy.isDeleted()) {
             throw new CouponPolicyNotFoundException();
         }
@@ -87,7 +87,7 @@ public class ProvideCouponService {
         }
     }
 
-    private static void isIssueCouponsEmpty(List<IssueCoupon> issueCoupons) {
+    private void isIssueCouponsEmpty(List<IssueCoupon> issueCoupons) {
         if (issueCoupons.isEmpty()) {
             throw new CouponExhaustionException();
         }
@@ -135,25 +135,11 @@ public class ProvideCouponService {
     }
 
     private void provideCouponByEvent(UpdateProvideCouponRequestDto updateProvideCouponRequestDto) {
-        Long couponPolicyId = updateProvideCouponRequestDto.getCouponPolicyId();
-        String key = couponPolicyId.toString();
-
-        CouponPolicy couponPolicy = couponPolicyRepository.findById(couponPolicyId)
-            .orElseThrow(CouponPolicyNotFoundException::new);
-
         Long accountId = updateProvideCouponRequestDto.getAccountId();
-        validBeforeProvide(accountId, couponPolicy);
 
-        BoundSetOperations<String, Object> couponIds = couponRedisRepository.getRedisSet(key);
-        String couponId = (String) couponIds.pop();
+        UUID couponCode = getCouponCode(updateProvideCouponRequestDto.getCouponPolicyId(), accountId);
 
-        if (Objects.isNull(couponId)) {
-            Long unclaimedCouponCount = couponPolicyRepository.lookupUnclaimedCouponCount(couponPolicyId);
-            validUnclaimedCoupon(unclaimedCouponCount, key);
-            couponId = updateCouponId(couponIds);
-        }
-
-        IssueCoupon issueCoupon = issueCouponRepository.findById(UUID.fromString(couponId))
+        IssueCoupon issueCoupon = issueCouponRepository.findById(couponCode)
             .orElseThrow(IssueCouponNotFoundException::new);
 
         if (Objects.nonNull(issueCoupon.getAccount())) {
@@ -164,14 +150,39 @@ public class ProvideCouponService {
         issueCouponRepository.provideCouponToAccount(issueCoupon, account);
     }
 
-    private static String updateCouponId(BoundSetOperations<String, Object> couponIds) {
-        String couponId = (String) couponIds.pop();
+    private UUID getCouponCode(Long couponPolicyId, Long accountId) {
+        String key = couponPolicyId.toString();
 
-        if (Objects.isNull(couponId)) {
+        CouponPolicy couponPolicy = couponPolicyRepository.findById(couponPolicyId)
+            .orElseThrow(CouponPolicyNotFoundException::new);
+
+        validBeforeProvide(accountId, couponPolicy);
+
+        BoundSetOperations<String, Object> issuableCouponCodes = couponRedisRepository.getRedisSet(key);
+        String couponCode = (String) issuableCouponCodes.pop();
+
+        if (Objects.isNull(couponCode)) {
+            couponCode = updateCouponCode(couponPolicyId, key, issuableCouponCodes);
+        }
+
+        return UUID.fromString(couponCode);
+    }
+
+    private String updateCouponCode(Long couponPolicyId, String key,
+                                    BoundSetOperations<String, Object> issuableCouponCodes) {
+        Long unclaimedCouponCount = couponPolicyRepository.lookupUnclaimedCouponCount(couponPolicyId);
+        validUnclaimedCoupon(unclaimedCouponCount, key);
+        return updateCouponCode(issuableCouponCodes);
+    }
+
+    private String updateCouponCode(BoundSetOperations<String, Object> issuableCouponCodes) {
+        String couponCode = (String) issuableCouponCodes.pop();
+
+        if (Objects.isNull(couponCode)) {
             throw new CouponExhaustionException();
         }
 
-        return couponId;
+        return couponCode;
     }
 
     private void validUnclaimedCoupon(Long unclaimedCouponCount, String key) {
