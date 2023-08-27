@@ -63,6 +63,8 @@ public class ProvideCouponController {
             throw new IssueCouponRequestValidationException(bindingResult);
         }
 
+        provideCouponService.validBeforeProvide(requestDto.getAccountId(), requestDto.getCouponPolicyId());
+
         rabbitTemplate.convertAndSend(requestDto);
 
         return ResponseEntity
