@@ -6,7 +6,7 @@ package store.cookshoong.www.cookshoongbackend.coupon.exception;
  * @author eora21 (김주호)
  * @since 2023.07.23
  */
-public class AlreadyHasCouponWithinSamePolicyException extends RuntimeException {
+public class AlreadyHasCouponWithinSamePolicyException extends CustomCouponException {
     public AlreadyHasCouponWithinSamePolicyException() {
         super("이미 해당 쿠폰을 수령하셨습니다.");
     }

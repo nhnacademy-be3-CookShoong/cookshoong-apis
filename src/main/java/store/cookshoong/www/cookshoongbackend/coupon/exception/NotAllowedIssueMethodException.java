@@ -6,7 +6,7 @@ package store.cookshoong.www.cookshoongbackend.coupon.exception;
  * @author eora21 (김주호)
  * @since 2023.07.26
  */
-public class NotAllowedIssueMethodException extends RuntimeException {
+public class NotAllowedIssueMethodException extends CustomCouponException {
     public NotAllowedIssueMethodException() {
         super("허용되지 않는 발행 방법입니다.");
     }
