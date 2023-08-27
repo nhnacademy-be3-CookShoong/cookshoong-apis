@@ -43,6 +43,7 @@ import store.cookshoong.www.cookshoongbackend.menu_order.exception.menu.BelowMin
 @Transactional
 @RequiredArgsConstructor
 public class ProvideCouponService {
+    private static final String ACCOUNT_LOCK = "AccountLock: ";
     private static final int SPARE_MINUTE = 30;
 
     private final IssueCouponRepository issueCouponRepository;
@@ -105,6 +106,19 @@ public class ProvideCouponService {
         throw new ProvideIssueCouponFailureException();
     }
 
+    /**
+     * 쿠폰 발급 이전 검증 메서드.
+     *
+     * @param accountId      the account id
+     * @param couponPolicyId the coupon policy id
+     */
+    public void validBeforeProvide(Long accountId, Long couponPolicyId) {
+        CouponPolicy couponPolicy = couponPolicyRepository.findById(couponPolicyId)
+            .orElseThrow(CouponPolicyNotFoundException::new);
+
+        validBeforeProvide(accountId, couponPolicy);
+    }
+
     private void validBeforeProvide(Long accountId, CouponPolicy couponPolicy) {
         validPolicyDeleted(couponPolicy);
         validReceivedBefore(accountId, couponPolicy);
@@ -116,6 +130,11 @@ public class ProvideCouponService {
      * @param updateProvideCouponRequestDto the update provide coupon request
      */
     public void provideCouponToAccountByEvent(UpdateProvideCouponRequestDto updateProvideCouponRequestDto) {
+        lockProcessor.lock(ACCOUNT_LOCK + updateProvideCouponRequestDto.getAccountId(), ignore ->
+            provideCouponByEvent(updateProvideCouponRequestDto));
+    }
+
+    private void provideCouponByEvent(UpdateProvideCouponRequestDto updateProvideCouponRequestDto) {
         Long couponPolicyId = updateProvideCouponRequestDto.getCouponPolicyId();
         String key = couponPolicyId.toString();
 
