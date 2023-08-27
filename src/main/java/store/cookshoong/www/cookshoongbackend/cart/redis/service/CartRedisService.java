@@ -1,7 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.cart.redis.service;
 
 import static store.cookshoong.www.cookshoongbackend.cart.utils.CartConstant.CART;
-import static store.cookshoong.www.cookshoongbackend.cart.utils.CartConstant.NO_MENU;
+import static store.cookshoong.www.cookshoongbackend.cart.utils.CartConstant.EMPTY_CART;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -70,8 +70,8 @@ public class CartRedisService {
 
     private void validateBeforeSavingToRedis(String redisKey, CartRedisDto cart, List<Object> cartRedis) {
         Long storeId;
-        if (cartRedisRepository.existMenuInCartRedis(redisKey, NO_MENU)) {
-            cartRedisRepository.deleteCartMenu(redisKey, NO_MENU);
+        if (cartRedisRepository.existMenuInCartRedis(redisKey, EMPTY_CART)) {
+            cartRedisRepository.deleteCartMenu(redisKey, EMPTY_CART);
             return;
         }
 
@@ -189,8 +189,8 @@ public class CartRedisService {
         }
 
         if (!cartRepository.hasCartByAccountId(Long.valueOf(userId))) {
-            cartRedisRepository.cartRedisSave(redisKey, NO_MENU, null);
-            CartRedisDto cartRedisDto = (CartRedisDto) cartRedisRepository.findByCartMenu(redisKey, NO_MENU);
+            cartRedisRepository.cartRedisSave(redisKey, EMPTY_CART, null);
+            CartRedisDto cartRedisDto = (CartRedisDto) cartRedisRepository.findByCartMenu(redisKey, EMPTY_CART);
             carts.add(cartRedisDto);
             return carts;
         }
@@ -250,7 +250,7 @@ public class CartRedisService {
 
         if (cartRedisRepository.cartRedisSize(redisKey) == 1) {
             cartRedisRepository.deleteCartMenu(redisKey, hashKey);
-            createCartEmpty(redisKey, NO_MENU);
+            createCartEmpty(redisKey, EMPTY_CART);
             return;
         }
         cartRedisRepository.deleteCartMenu(redisKey, hashKey);
@@ -276,7 +276,7 @@ public class CartRedisService {
             throw new NotFoundCartRedisKey();
         }
         cartRedisRepository.deleteCartAll(redisKey);
-        createCartEmpty(redisKey, NO_MENU);
+        createCartEmpty(redisKey, EMPTY_CART);
     }
 
     /**

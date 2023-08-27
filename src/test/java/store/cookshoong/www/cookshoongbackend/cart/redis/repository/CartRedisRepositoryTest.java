@@ -50,7 +50,6 @@ class CartRedisRepositoryTest extends IntegrationTestBase {
     Integer minimumOrderPrice = 10000;
     Long menuId = 1L;
     int count = 1;
-    private static final String NO_MENU = "NO_KEY";
 
     @Test
     @Order(1)

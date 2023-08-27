@@ -1,7 +1,7 @@
 package store.cookshoong.www.cookshoongbackend.cart.redis.listener;
 
 import static store.cookshoong.www.cookshoongbackend.cart.utils.CartConstant.CART;
-import static store.cookshoong.www.cookshoongbackend.cart.utils.CartConstant.NO_MENU;
+import static store.cookshoong.www.cookshoongbackend.cart.utils.CartConstant.EMPTY_CART;
 import static store.cookshoong.www.cookshoongbackend.cart.utils.CartConstant.PHANTOM;
 
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ public class CartKeyExpiredEventListener extends KeyExpirationEventMessageListen
             return;
         }
 
-        if (!expiredRedisKey.endsWith(CART)) {
+        if (!expiredRedisKey.startsWith(CART)) {
             return;
         }
 
@@ -68,7 +68,7 @@ public class CartKeyExpiredEventListener extends KeyExpirationEventMessageListen
         Long accountId = Long.valueOf(redisKey.replaceAll(CART, ""));
 
         lockProcessor.lock(redisKey, ignore -> {
-            if (cartRedisService.hasMenuInCartRedis(redisKey, NO_MENU)) {
+            if (cartRedisService.hasMenuInCartRedis(redisKey, EMPTY_CART)) {
                 cartService.createCartDb(accountId, cartRedisList);
             } else {
                 if (!finalCartRedisList.isEmpty()) {

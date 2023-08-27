@@ -11,6 +11,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static store.cookshoong.www.cookshoongbackend.cart.utils.CartConstant.EMPTY_CART;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +78,6 @@ class CartRedisServiceTest {
     CartOptionDto cartOptionDto;
     CartOptionDto cartOptionDto1;
     List<CartOptionDto> cartOptionDtos;
-    private static final String NO_MENU = "NO_KEY";
 
     @BeforeEach
     void setup() {
@@ -147,11 +147,11 @@ class CartRedisServiceTest {
         ReflectionTestUtils.setField(cartRedisDto, "menuOptName", cartRedisDto.generateMenuOptionName());
         ReflectionTestUtils.setField(cartRedisDto, "totalMenuPrice", cartRedisDto.generateTotalMenuPrice());
 
-        when(cartRedisRepository.existMenuInCartRedis(redisKey, NO_MENU)).thenReturn(true);
+        when(cartRedisRepository.existMenuInCartRedis(redisKey, EMPTY_CART)).thenReturn(true);
 
         cartRedisService.createCartMenu(redisKey, hashKey, cartRedisDto);
 
-        verify(cartRedisRepository).deleteCartMenu(redisKey, NO_MENU);
+        verify(cartRedisRepository).deleteCartMenu(redisKey, EMPTY_CART);
     }
 
     @Test
@@ -176,7 +176,7 @@ class CartRedisServiceTest {
 
         cartRedisDto.incrementCount();
 
-        when(cartRedisRepository.existMenuInCartRedis(redisKey, NO_MENU)).thenReturn(false);
+        when(cartRedisRepository.existMenuInCartRedis(redisKey, EMPTY_CART)).thenReturn(false);
         when(cartRedisRepository.existMenuInCartRedis(redisKey, hashKey)).thenReturn(true);
         when(cartRedisRepository.findByCartMenu(redisKey, hashKey)).thenReturn(cartRedisDto);
 
@@ -190,9 +190,9 @@ class CartRedisServiceTest {
     @DisplayName("빈 장바구니 생성하기")
     void createCartEmpty() {
 
-        cartRedisService.createCartEmpty(redisKey, NO_MENU);
+        cartRedisService.createCartEmpty(redisKey, EMPTY_CART);
 
-        verify(cartRedisRepository).cartRedisSave(redisKey, NO_MENU, null);
+        verify(cartRedisRepository).cartRedisSave(redisKey, EMPTY_CART, null);
 
     }
 
@@ -211,7 +211,7 @@ class CartRedisServiceTest {
         ReflectionTestUtils.setField(cartRedisDto2, "storeId", 2L);
 
         // Mock behavior
-        when(cartRedisRepository.existMenuInCartRedis(redisKey, NO_MENU)).thenReturn(false);
+        when(cartRedisRepository.existMenuInCartRedis(redisKey, EMPTY_CART)).thenReturn(false);
         when(cartRedisRepository.findByCartAll(redisKey)).thenReturn(List.of(cartRedisDto));
 
         // Verify exception
@@ -220,7 +220,7 @@ class CartRedisServiceTest {
 
         // Verify repository method calls
         verify(cartRedisRepository, times(1)).findByCartAll(redisKey);
-        verify(cartRedisRepository, times(1)).existMenuInCartRedis(redisKey, NO_MENU);
+        verify(cartRedisRepository, times(1)).existMenuInCartRedis(redisKey, EMPTY_CART);
         verify(cartRedisRepository, never()).cartRedisSave(any(), any(), any());
     }
 
@@ -418,7 +418,7 @@ class CartRedisServiceTest {
         List<CartRedisDto> actual = cartRedisService.selectCartMenuAll(String.valueOf(accountId));
 
         verify(cartRedisRepository, times(1)).existKeyInCartRedis(String.valueOf(accountId));
-        verify(cartRedisRepository, never()).findByCartMenu(String.valueOf(accountId), NO_MENU);
+        verify(cartRedisRepository, never()).findByCartMenu(String.valueOf(accountId), EMPTY_CART);
         verify(cartRedisRepository, times(1)).findByCartAll(String.valueOf(accountId));
 
         assertNotNull(actual);
@@ -443,13 +443,13 @@ class CartRedisServiceTest {
     void selectCartMenuAll_List_No_Cart() {
 
 //        when(cartRedisRepository.existMenuInCartRedis(redisKey, NO_MENU)).thenReturn(true);
-        when(cartRedisRepository.findByCartMenu(redisKey, NO_MENU)).thenReturn(null);
+        when(cartRedisRepository.findByCartMenu(redisKey, EMPTY_CART)).thenReturn(null);
 
         cartRedisService
             .selectCartMenuAll(redisKey);
 
 //        verify(cartRedisRepository).existMenuInCartRedis(redisKey, NO_MENU);
-        verify(cartRedisRepository).findByCartMenu(redisKey, NO_MENU);
+        verify(cartRedisRepository).findByCartMenu(redisKey, EMPTY_CART);
     }
 
     @Test
@@ -508,7 +508,7 @@ class CartRedisServiceTest {
         List<CartRedisDto> actual = cartRedisService.selectCartMenuAll(String.valueOf(accountId));
 
         verify(cartRedisRepository, times(1)).existKeyInCartRedis(String.valueOf(accountId));
-        verify(cartRedisRepository, never()).findByCartMenu(String.valueOf(accountId), NO_MENU);
+        verify(cartRedisRepository, never()).findByCartMenu(String.valueOf(accountId), EMPTY_CART);
         verify(cartRepository, times(1)).lookupCartDbList(accountId);
         verify(cartRedisRepository, times(1)).findByCartAll(String.valueOf(accountId));
 
@@ -580,7 +580,7 @@ class CartRedisServiceTest {
         List<CartRedisDto> actual = cartRedisService.selectCartMenuAll(String.valueOf(accountId));
 
         verify(cartRedisRepository, times(1)).existKeyInCartRedis(String.valueOf(accountId));
-        verify(cartRedisRepository, never()).findByCartMenu(String.valueOf(accountId), NO_MENU);
+        verify(cartRedisRepository, never()).findByCartMenu(String.valueOf(accountId), EMPTY_CART);
         verify(cartRepository, times(1)).lookupCartDbList(accountId);
         verify(cartRedisRepository, times(1)).findByCartAll(String.valueOf(accountId));
 
