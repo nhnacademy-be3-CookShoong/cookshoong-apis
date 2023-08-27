@@ -183,4 +183,18 @@ class IssueCouponServiceTest {
         verify(issueCouponRepository).saveAllAndFlush(any());
         verify(couponRedisRepository).bulkInsertCouponCode(any(), anyString());
     }
+
+    @Test
+    @DisplayName("전체 이벤트 쿠폰 발행 실패 - 허용되지 않은 발행 방법")
+    void createIssueCouponThrowNotAllowedMethodExceptionFailTest() throws Exception {
+        ReflectionTestUtils.setField(createIssueCouponRequestDto, "issueMethod", IssueMethod.BULK);
+        CouponPolicy couponPolicy = te.persist(
+            te.getCouponPolicy(te.getCouponTypeCash_1000_10000(), te.getCouponUsageAll()));
+
+        when(couponPolicyRepository.findById(any(Long.class)))
+            .thenReturn(Optional.of(couponPolicy));
+
+        assertThrowsExactly(NotAllowedIssueMethodException.class, () ->
+            issueCouponService.createIssueCoupon(createIssueCouponRequestDto));
+    }
 }
