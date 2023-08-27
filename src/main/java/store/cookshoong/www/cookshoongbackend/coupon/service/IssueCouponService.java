@@ -14,6 +14,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.entity.CouponPolicy;
 import store.cookshoong.www.cookshoongbackend.coupon.entity.IssueCoupon;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponPolicyNotFoundException;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.IssueCouponOverCountException;
+import store.cookshoong.www.cookshoongbackend.coupon.exception.NotAllowedIssueMethodException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.CreateIssueCouponRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponRedisRepository;
@@ -61,7 +62,7 @@ public class IssueCouponService {
         couponPolicy.getCouponUsage()
             .validIssueMethod(issueMethod);
 
-        issueMethodConsumer.get(issueMethod)
+        issueMethodConsumer.getOrDefault(issueMethod, this::throwNotAllowedMethodException)
             .accept(couponPolicy, createIssueCouponRequestDto.getIssueQuantity());
     }
 
@@ -84,6 +85,10 @@ public class IssueCouponService {
         Stream.generate(() -> new IssueCoupon(couponPolicy))
             .limit(issueQuantity)
             .forEach(issueCouponRepository::save);
+    }
+
+    private void throwNotAllowedMethodException(CouponPolicy couponPolicy, Long issueQuantity) {
+        throw new NotAllowedIssueMethodException();
     }
 
     /**
