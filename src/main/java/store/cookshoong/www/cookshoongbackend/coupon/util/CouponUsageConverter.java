@@ -22,7 +22,7 @@ public class CouponUsageConverter {
         CouponUsageMerchant.class, CouponUsageConverter::couponUsageMerchantToDto,
         CouponUsageStore.class, CouponUsageConverter::couponUsageStoreToDto
     );
-    private static final String COUPON_USAGE_ALL_STRING = "모든 매장!";
+    private static final String COUPON_USAGE_ALL_STRING = "모든 매장";
 
     private static String couponUsageAllToDto(CouponUsage couponUsageAll) {
         return COUPON_USAGE_ALL_STRING;
