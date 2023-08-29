@@ -29,4 +29,9 @@ public abstract class ValidationFailureException extends RuntimeException {
     public Map<String, String> getErrors() {
         return errors;
     }
+
+    @Override
+    public String getMessage() {
+        return getErrors().toString();
+    }
 }
