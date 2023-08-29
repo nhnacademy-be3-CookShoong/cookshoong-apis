@@ -6,7 +6,7 @@ package store.cookshoong.www.cookshoongbackend.coupon.exception;
  * @author eora21 (김주호)
  * @since 2023.07.29
  */
-public class CouponExhaustionException extends RuntimeException {
+public class CouponExhaustionException extends CustomCouponException {
     public CouponExhaustionException() {
         super("쿠폰이 모두 소진되었습니다.");
     }

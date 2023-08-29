@@ -6,10 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
 import org.springframework.data.redis.core.BoundSetOperations;
 import org.springframework.test.util.ReflectionTestUtils;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
@@ -51,6 +54,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponLogReposit
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponPolicyRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.CouponRedisRepository;
 import store.cookshoong.www.cookshoongbackend.coupon.repository.IssueCouponRepository;
+import store.cookshoong.www.cookshoongbackend.lock.LockProcessor;
 import store.cookshoong.www.cookshoongbackend.menu_order.exception.menu.BelowMinimumOrderPriceException;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
 import store.cookshoong.www.cookshoongbackend.util.TestPersistEntity;
@@ -73,6 +77,8 @@ class ProvideCouponServiceTest {
     CouponRedisRepository couponRedisRepository;
     @Mock
     CouponLogRepository couponLogRepository;
+    @Mock
+    LockProcessor lockProcessor;
     UpdateProvideCouponRequestDto updateProvideCouponRequestDto;
 
     @BeforeEach
@@ -198,6 +204,12 @@ class ProvideCouponServiceTest {
     @Test
     @DisplayName("쿠폰 이벤트 발급 실패 - 쿠폰 정책 미존재")
     void provideCouponToAccountByEventNonPolicyFailTest() throws Exception {
+        doAnswer(invocation -> {
+            Consumer<String> argument = invocation.getArgument(1);
+            argument.accept(invocation.getArgument(0));
+            return null;
+        }).when(lockProcessor).lock(anyString(), any(Consumer.class));
+
         when(couponPolicyRepository.findById(anyLong()))
             .thenReturn(Optional.empty());
 
@@ -208,6 +220,12 @@ class ProvideCouponServiceTest {
     @Test
     @DisplayName("쿠폰 이벤트 발급 실패 - 삭제된 쿠폰 정책")
     void provideCouponToAccountByEventDeletedPolicyFailTest() throws Exception {
+        doAnswer(invocation -> {
+            Consumer<String> argument = invocation.getArgument(1);
+            argument.accept(invocation.getArgument(0));
+            return null;
+        }).when(lockProcessor).lock(anyString(), any(Consumer.class));
+
         CouponPolicy couponPolicy = te.persist(
             te.getCouponPolicy(te.getCouponTypeCash_1000_10000(), te.getCouponUsageStore(tpe.getOpenStore())));
 
@@ -223,6 +241,12 @@ class ProvideCouponServiceTest {
     @Test
     @DisplayName("쿠폰 이벤트 발급 실패 - 유효 쿠폰 없음")
     void provideCouponToAccountByEventNonIssueCouponsFailTest() throws Exception {
+        doAnswer(invocation -> {
+            Consumer<String> argument = invocation.getArgument(1);
+            argument.accept(invocation.getArgument(0));
+            return null;
+        }).when(lockProcessor).lock(anyString(), any(Consumer.class));
+
         CouponPolicy couponPolicy = te.persist(
             te.getCouponPolicy(te.getCouponTypeCash_1000_10000(), te.getCouponUsageStore(tpe.getOpenStore())));
 
@@ -247,6 +271,12 @@ class ProvideCouponServiceTest {
     @Test
     @DisplayName("쿠폰 이벤트 발급 실패 - 이미 발급한 기록이 있음")
     void provideCouponToAccountByEventIssueAlreadyFailTest() throws Exception {
+        doAnswer(invocation -> {
+            Consumer<String> argument = invocation.getArgument(1);
+            argument.accept(invocation.getArgument(0));
+            return null;
+        }).when(lockProcessor).lock(anyString(), any(Consumer.class));
+
         CouponPolicy couponPolicy = te.persist(
             te.getCouponPolicy(te.getCouponTypeCash_1000_10000(), te.getCouponUsageStore(tpe.getOpenStore())));
 
@@ -266,6 +296,12 @@ class ProvideCouponServiceTest {
     @Test
     @DisplayName("쿠폰 이벤트 발급 실패 - 이미 발급된 쿠폰")
     void provideCouponToAccountByEventAlreadyIssueCouponFailTest() throws Exception {
+        doAnswer(invocation -> {
+            Consumer<String> argument = invocation.getArgument(1);
+            argument.accept(invocation.getArgument(0));
+            return null;
+        }).when(lockProcessor).lock(anyString(), any(Consumer.class));
+
         CouponPolicy couponPolicy = te.persist(
             te.getCouponPolicy(te.getCouponTypeCash_1000_10000(), te.getCouponUsageStore(tpe.getOpenStore())));
 
@@ -297,6 +333,12 @@ class ProvideCouponServiceTest {
     @Test
     @DisplayName("쿠폰 이벤트 발급 성공")
     void provideCouponToAccountByEventSuccessTest() throws Exception {
+        doAnswer(invocation -> {
+            Consumer<String> argument = invocation.getArgument(1);
+            argument.accept(invocation.getArgument(0));
+            return null;
+        }).when(lockProcessor).lock(anyString(), any(Consumer.class));
+
         CouponPolicy couponPolicy = te.persist(
             te.getCouponPolicy(te.getCouponTypeCash_1000_10000(), te.getCouponUsageStore(tpe.getOpenStore())));
 
@@ -557,5 +599,26 @@ class ProvideCouponServiceTest {
 
         assertThat(provideCouponService.getDiscountPrice(UUID.randomUUID(), 10_000))
             .isEqualTo(9_000);
+    }
+
+    @Test
+    @DisplayName("발급 전 검증 실패 - 쿠폰 정책 없음")
+    void validBeforeProvideNonPolicyFailTest() throws Exception {
+        when(couponPolicyRepository.findById(anyLong()))
+            .thenReturn(Optional.empty());
+
+        assertThrowsExactly(CouponPolicyNotFoundException.class, () ->
+        provideCouponService.validBeforeProvide(Long.MIN_VALUE, Long.MIN_VALUE));
+    }
+
+    @Test
+    @DisplayName("발급 전 검증")
+    void validBeforeProvideTest() throws Exception {
+        CouponPolicy couponPolicy = mock(CouponPolicy.class);
+        when(couponPolicyRepository.findById(anyLong()))
+            .thenReturn(Optional.of(couponPolicy));
+
+        assertDoesNotThrow(() ->
+            provideCouponService.validBeforeProvide(Long.MIN_VALUE, Long.MIN_VALUE));
     }
 }
