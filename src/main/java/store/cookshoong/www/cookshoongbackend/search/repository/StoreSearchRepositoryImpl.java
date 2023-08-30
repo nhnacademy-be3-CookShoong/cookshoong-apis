@@ -108,15 +108,28 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepositoryCustom {
     @Override
     public Page<StoreDocument> searchByKeywordText(String keywordText, Long addressId, Pageable pageable) {
 
-        MatchQueryBuilder matchQueryBuilder = QueryBuilders
-            .matchQuery("keywordText", keywordText)
+        MatchQueryBuilder matchQueryBuilderNori = QueryBuilders
+            .matchQuery("keywordText_nori", keywordText)
             .fuzziness("AUTO");
+
+        MatchQueryBuilder matchQueryBuilderJamoName = QueryBuilders
+            .matchQuery("keywordText_jaso_name", keywordText);
+
+        MatchQueryBuilder matchQueryBuilderJamoPlace = QueryBuilders
+            .matchQuery("keywordText_jaso_place", keywordText);
+
+        MatchQueryBuilder matchQueryBuilderJamoCategories = QueryBuilders
+            .matchQuery("keywordText_jaso_categories", keywordText);
 
         BoolQueryBuilder boolQueryBuilder = QueryBuilders
             .boolQuery()
             .mustNot(QueryBuilders.termQuery(STORE_STATUS_CODE, OUTED))
-            .must(matchQueryBuilder)
-            .filter(buildGeoDistanceQuery(addressId));
+            .should(matchQueryBuilderNori)
+            .should(matchQueryBuilderJamoName)
+            .should(matchQueryBuilderJamoPlace)
+            .should(matchQueryBuilderJamoCategories)
+            .filter(buildGeoDistanceQuery(addressId))
+            .minimumShouldMatch(1);
 
         FieldSortBuilder sortBuilder = SortBuilders.fieldSort(STORE_STATUS_CODE)
             .order(SortOrder.DESC);
@@ -126,7 +139,6 @@ public class StoreSearchRepositoryImpl implements StoreSearchRepositoryCustom {
 
         NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
             .withQuery(boolQueryBuilder)
-            .withMinScore(0.6f)
             .withPageable(pageable)
             .withSorts(sortBuilder, sortBuilderById, buildGeoDistanceSort(addressId))
             .build();
