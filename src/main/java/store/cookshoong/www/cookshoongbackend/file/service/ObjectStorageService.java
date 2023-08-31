@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.UUID;
 import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.http.HttpEntity;
@@ -32,6 +33,7 @@ import store.cookshoong.www.cookshoongbackend.file.repository.ImageRepository;
  * @author seungyeon (유승연)
  * @since 2023.07.26
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ObjectStorageService implements FileUtils {
@@ -113,35 +115,39 @@ public class ObjectStorageService implements FileUtils {
 
     @Override
     public Image storeFile(MultipartFile multipartFile, String domainName, boolean isPublic) throws IOException {
+        log.error("Image Store file start");
         if (multipartFile.isEmpty()) {
             return null;
         }
 
         String token = objectStorageAuth.requestToken(); // 토큰 가져오기
-
+        log.error("Image Store file2");
         String originFileName = multipartFile.getOriginalFilename(); // 파일 업로드시 이름
         if (Objects.isNull(originFileName)) {
             throw new NullPointerException();
         }
         String savedName = UUID.randomUUID() + "." + extractExt(originFileName); // 저장된 이름
-
+        log.error("before thumbnail");
         if (thumbnailManager.isImageContainsThumb(domainName)) {
             String thumbUrl = getSavedPath(thumbnailManager.getThumbnailDomain(domainName), savedName);
+            log.error("thumbnail");
             InputStream thumbnailInputStream =
                 resizeImage(multipartFile.getBytes(), 300, 300, extractExt(originFileName));
+            log.error("thumbnail Upload");
             uploadObject(thumbnailInputStream, thumbUrl, token);
         }
 
         String url = getSavedPath(domainName, savedName);
         InputStream inputStream = new ByteArrayInputStream(multipartFile.getBytes());
-
+        log.error("upload file");
         uploadObject(inputStream, url, token); // 업로드
-
+        log.error("save image");
         return imageRepository.save(new Image(getStorageType(), domainName, originFileName, savedName, isPublic));
     }
 
     @Override
     public Image updateFile(MultipartFile multipartFile, Image image) throws IOException {
+        log.error("updateFile Start");
         if (multipartFile.isEmpty()) {
             return null;
         }
@@ -155,7 +161,7 @@ public class ObjectStorageService implements FileUtils {
 
         String url = getSavedPath(image.getDomainName(), image.getSavedName());
         InputStream inputStream = new ByteArrayInputStream(multipartFile.getBytes());
-
+        log.error("uploadImage");
         uploadObject(inputStream, url, token);
 
         image.updateImageInfo(originFileName);
