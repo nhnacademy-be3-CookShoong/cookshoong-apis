@@ -7,7 +7,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -27,9 +26,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.Answer;
 import org.springframework.data.redis.core.BoundSetOperations;
 import org.springframework.test.util.ReflectionTestUtils;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
@@ -125,37 +122,10 @@ class ProvideCouponServiceTest {
         IssueCoupon issueCoupon = new IssueCoupon(couponPolicy);
         ReflectionTestUtils.setField(issueCoupon, "code", UUID.randomUUID());
 
-        when(issueCouponRepository.findTop10ByCouponPolicyAndAccountIsNull(any(CouponPolicy.class)))
-            .thenReturn(Collections.emptyList());
+        when(issueCouponRepository.findTopByCouponPolicyAndAccountIsNull(any(CouponPolicy.class)))
+            .thenReturn(Optional.empty());
 
         assertThrowsExactly(CouponExhaustionException.class,
-            () -> provideCouponService.provideCouponToAccountByApi(updateProvideCouponRequestDto));
-    }
-
-    @Test
-    @DisplayName("쿠폰 발급 실패 - 유효 쿠폰 경쟁 밀림")
-    void provideCouponToAccountIssueFailTest() throws Exception {
-        CouponPolicy couponPolicy = te.persist(
-            te.getCouponPolicy(te.getCouponTypeCash_1000_10000(), te.getCouponUsageStore(tpe.getOpenStore())));
-
-        when(couponPolicyRepository.findById(anyLong()))
-            .thenReturn(Optional.of(couponPolicy));
-
-        Account customer = tpe.getLevelOneActiveCustomer();
-        when(accountRepository.getReferenceById(anyLong()))
-            .thenReturn(customer);
-
-        IssueCoupon issueCoupon = new IssueCoupon(couponPolicy);
-        ReflectionTestUtils.setField(issueCoupon, "code", UUID.randomUUID());
-
-        when(issueCouponRepository.findTop10ByCouponPolicyAndAccountIsNull(any(CouponPolicy.class)))
-            .thenReturn(List.of(issueCoupon));
-
-        doThrow(ProvideIssueCouponFailureException.class).
-            when(issueCouponRepository).provideCouponToAccount(any(IssueCoupon.class), any(Account.class));
-
-
-        assertThrowsExactly(ProvideIssueCouponFailureException.class,
             () -> provideCouponService.provideCouponToAccountByApi(updateProvideCouponRequestDto));
     }
 
@@ -191,8 +161,8 @@ class ProvideCouponServiceTest {
         IssueCoupon issueCoupon = new IssueCoupon(couponPolicy);
         ReflectionTestUtils.setField(issueCoupon, "code", UUID.randomUUID());
 
-        when(issueCouponRepository.findTop10ByCouponPolicyAndAccountIsNull(any(CouponPolicy.class)))
-            .thenReturn(List.of(issueCoupon));
+        when(issueCouponRepository.findTopByCouponPolicyAndAccountIsNull(any(CouponPolicy.class)))
+            .thenReturn(Optional.of(issueCoupon));
 
         Account customer = tpe.getLevelOneActiveCustomer();
         when(accountRepository.getReferenceById(anyLong()))
