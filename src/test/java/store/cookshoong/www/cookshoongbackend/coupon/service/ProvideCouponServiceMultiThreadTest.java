@@ -175,7 +175,6 @@ class ProvideCouponServiceMultiThreadTest extends IntegrationTestBase {
         assertThat(result.getReceiveCount()).isEqualTo(receiveCount);
         assertThat(result.getTotalFailCount()).isEqualTo(failCount);
         assertThat(unclaimedCouponCount).isEqualTo(leftCount);
-        couponRedisTemplate.delete(couponPolicy.getId().toString());
     }
 
     @ParameterizedTest
