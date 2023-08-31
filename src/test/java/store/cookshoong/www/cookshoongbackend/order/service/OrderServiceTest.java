@@ -11,6 +11,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static store.cookshoong.www.cookshoongbackend.order.entity.OrderStatus.StatusCode.COMPLETE;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -465,6 +466,12 @@ class OrderServiceTest {
         if (statusCode.equals(OrderStatus.StatusCode.COMPLETE)) {
             doNothing().when(publisher)
                 .publishEvent(any(PointOrderCompleteEvent.class));
+        }
+
+        if (statusCode.equals(OrderStatus.StatusCode.DELIVER)) {
+            OrderStatus complete = mock(OrderStatus.class);
+            when(orderStatusRepository.findByOrderStatusCode(COMPLETE))
+                .thenReturn(Optional.of(complete));
         }
 
         assertDoesNotThrow(() ->
