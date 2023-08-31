@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -65,6 +66,7 @@ import store.cookshoong.www.cookshoongbackend.shop.repository.store.StoreReposit
  * @since 2023.07.05
  */
 @Service
+@Slf4j
 @RequiredArgsConstructor
 @Transactional
 public class StoreService {
@@ -297,21 +299,28 @@ public class StoreService {
      * @throws IOException the io exception
      */
     public void updateStoreImage(Long accountId, Long storeId, MultipartFile storeImage) throws IOException {
+        log.error("매장 사진 수정 서비스 들어옴.");
         Store store = getStoreById(storeId);
         accessDeniedException(accountId, store);
+        log.error("이미지 찾기 전.");
         Image storeMainImage = imageRepository.findById(store.getStoreImage().getId()).orElseThrow((ImageNotFoundException::new));
-
+        log.error("이미지 업로드 전.");
         Image updatedImage = updateImage(store.getStoreImage().getId(), storeImage, storeMainImage);
+        log.error("이미지 수정.");
         store.modifyStoreImage(updatedImage);
     }
 
     private Image updateImage(Long storeImageId, MultipartFile storeImage, Image storeMainImage) throws IOException {
+        log.error("file스토리지 찾기");
         FileUtils fileUtils = fileUtilResolver.getFileService(storeMainImage.getLocationType());
         if (storeImageId.equals(BASIC_IMAGE)) {
+            log.error("이미지 있을시 파일스토리지에 저장");
             return fileUtils.storeFile(storeImage, FileDomain.STORE_IMAGE.getVariable(), true);
         }
+        log.error("기존이미지 삭제");
         fileUtils.deleteFile(storeMainImage);
         imageRepository.deleteById(storeImageId);
+        log.error("새로운 이미지등록");
         return fileUtils.storeFile(storeImage, FileDomain.STORE_IMAGE.getVariable(), true);
     }
 
