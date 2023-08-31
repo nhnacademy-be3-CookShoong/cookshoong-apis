@@ -48,8 +48,7 @@ public class RequestExceptionHandler {
      */
     @ExceptionHandler({AuthorityNotFoundException.class, UserNotFoundException.class,
         AccountStatusNotFoundException.class})
-    public ResponseEntity<ErrorMessage> handleNotFound(NotFoundException e,
-                                                                HttpServletRequest request) {
+    public ResponseEntity<ErrorMessage> handleNotFound(NotFoundException e, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(new ErrorMessage(e));
     }

@@ -6,6 +6,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import store.cookshoong.www.cookshoongbackend.common.exception.ValidationFailureException;
 import store.cookshoong.www.cookshoongbackend.common.util.IpResolver;
 
 /**
@@ -28,7 +29,7 @@ public class ErrorLoggingAspect {
     public void logError(JoinPoint joinPoint) {
         if (joinPoint.getArgs()[0] instanceof Exception) {
             Exception exception = (Exception) joinPoint.getArgs()[0];
-            log.error("발생한 예외 : {} \n --> {}", exception.getClass(), ExceptionUtils.getStackTrace(exception));
+            log.error("처리 완료된 예외 : {} \n --> {}", exception.getMessage(), ExceptionUtils.getStackTrace(exception));
         }
 
         if (joinPoint.getArgs().length >= 2 && joinPoint.getArgs()[1] instanceof HttpServletRequest) {
