@@ -218,7 +218,13 @@ public class OrderService {
     }
 
     private void startDeliverEvent(UUID orderCode) {
-        publisher.publishEvent(new DeliveryEvent(this, orderCode));
+        Order order = orderRepository.findById(orderCode)
+            .orElseThrow(OrderNotFoundException::new);
+
+        OrderStatus orderStatusComplete = orderStatusRepository.findByOrderStatusCode(COMPLETE)
+            .orElseThrow(OrderStatusNotFoundException::new);
+
+        order.updateOrderStatus(orderStatusComplete);
     }
 
     /**
