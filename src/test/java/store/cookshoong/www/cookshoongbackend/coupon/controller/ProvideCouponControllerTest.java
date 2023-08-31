@@ -1,10 +1,13 @@
 package store.cookshoong.www.cookshoongbackend.coupon.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -14,6 +17,7 @@ import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.function.Consumer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,6 +38,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.exception.CouponPolicyNotFo
 import store.cookshoong.www.cookshoongbackend.coupon.exception.ProvideIssueCouponFailureException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.UpdateProvideCouponRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.service.ProvideCouponService;
+import store.cookshoong.www.cookshoongbackend.lock.LockProcessor;
 import store.cookshoong.www.cookshoongbackend.util.TestEntity;
 
 @AutoConfigureRestDocs
@@ -50,6 +55,9 @@ class ProvideCouponControllerTest {
 
     @MockBean
     RabbitTemplate rabbitTemplate;
+
+    @MockBean
+    LockProcessor lockProcessor;
 
     TestEntity te = new TestEntity();
 
@@ -81,6 +89,12 @@ class ProvideCouponControllerTest {
     @Test
     @DisplayName("쿠폰 발급 성공")
     void postOfferCouponToAccountSuccessTest() throws Exception {
+        doAnswer(invocation -> {
+            Consumer<String> argument = invocation.getArgument(1);
+            argument.accept(invocation.getArgument(0));
+            return null;
+        }).when(lockProcessor).lock(anyString(), any(Consumer.class));
+
         doNothing().when(provideCouponService)
             .provideCouponToAccountByApi(any(UpdateProvideCouponRequestDto.class));
 
@@ -108,6 +122,12 @@ class ProvideCouponControllerTest {
     @Test
     @DisplayName("쿠폰 발급 실패 - 쿠폰 정책 미존재")
     void postOfferCouponToAccountNonPolicyFailTest() throws Exception {
+        doAnswer(invocation -> {
+            Consumer<String> argument = invocation.getArgument(1);
+            argument.accept(invocation.getArgument(0));
+            return null;
+        }).when(lockProcessor).lock(anyString(), any(Consumer.class));
+
         doThrow(CouponPolicyNotFoundException.class)
             .when(provideCouponService)
             .provideCouponToAccountByApi(any(UpdateProvideCouponRequestDto.class));
@@ -125,6 +145,12 @@ class ProvideCouponControllerTest {
     @Test
     @DisplayName("쿠폰 발급 실패 - 유효 쿠폰 없음")
     void postOfferCouponToAccountNonIssueCouponsFailTest() throws Exception {
+        doAnswer(invocation -> {
+            Consumer<String> argument = invocation.getArgument(1);
+            argument.accept(invocation.getArgument(0));
+            return null;
+        }).when(lockProcessor).lock(anyString(), any(Consumer.class));
+
         doThrow(CouponExhaustionException.class)
             .when(provideCouponService)
             .provideCouponToAccountByApi(any(UpdateProvideCouponRequestDto.class));
@@ -142,6 +168,12 @@ class ProvideCouponControllerTest {
     @Test
     @DisplayName("쿠폰 발급 실패 - 유효 쿠폰 경쟁 밀림")
     void postOfferCouponToAccountIssueFailTest() throws Exception {
+        doAnswer(invocation -> {
+            Consumer<String> argument = invocation.getArgument(1);
+            argument.accept(invocation.getArgument(0));
+            return null;
+        }).when(lockProcessor).lock(anyString(), any(Consumer.class));
+
         doThrow(ProvideIssueCouponFailureException.class)
             .when(provideCouponService)
             .provideCouponToAccountByApi(any(UpdateProvideCouponRequestDto.class));
