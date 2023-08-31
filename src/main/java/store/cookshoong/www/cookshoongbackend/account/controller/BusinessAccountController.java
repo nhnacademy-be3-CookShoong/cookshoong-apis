@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -40,6 +41,7 @@ import store.cookshoong.www.cookshoongbackend.shop.service.StoreService;
  * @since 2023.07.06
  */
 @RestController
+@Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/accounts/{accountId}")
 public class BusinessAccountController {
@@ -173,6 +175,7 @@ public class BusinessAccountController {
     public ResponseEntity<Void> patchStore(@PathVariable("storeId") Long storeId,
                                            @PathVariable("accountId") Long accountId,
                                            @RequestPart("uploadImage") MultipartFile storeImage) throws IOException {
+        log.error("매장 사진 수정 컨트롤러 들어옴.");
         storeService.updateStoreImage(accountId, storeId, storeImage);
         return ResponseEntity
             .status(HttpStatus.CREATED)
