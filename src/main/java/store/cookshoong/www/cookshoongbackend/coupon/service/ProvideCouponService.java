@@ -176,7 +176,7 @@ public class ProvideCouponService {
 
     private void updateRedisCouponState(String key) {
         if (!couponRedisRepository.hasKey(key)) {
-            Set<UUID> couponCodes = issueCouponRepository.lookupUnclaimedCouponCodes();
+            Set<UUID> couponCodes = issueCouponRepository.lookupUnclaimedCouponCodes(Long.parseLong(key));
             couponRedisRepository.bulkInsertCouponCode(couponCodes, key);
         }
     }
