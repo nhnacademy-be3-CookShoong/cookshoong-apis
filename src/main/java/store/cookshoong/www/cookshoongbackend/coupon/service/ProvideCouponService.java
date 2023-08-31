@@ -67,12 +67,12 @@ public class ProvideCouponService {
 
         validBeforeProvide(accountId, couponPolicy);
 
-        List<IssueCoupon> issueCoupons = issueCouponRepository.findTop10ByCouponPolicyAndAccountIsNull(couponPolicy);
-        isIssueCouponsEmpty(issueCoupons);
+        IssueCoupon issueCoupon = issueCouponRepository.findTopByCouponPolicyAndAccountIsNull(couponPolicy)
+            .orElseThrow(CouponExhaustionException::new);
 
         Account account = accountRepository.getReferenceById(accountId);
 
-        provideCoupon(issueCoupons, account);
+        issueCoupon.provideToAccount(account);
     }
 
     private void validPolicyDeleted(CouponPolicy couponPolicy) {
@@ -85,25 +85,6 @@ public class ProvideCouponService {
         if (issueCouponRepository.isReceivedBefore(couponPolicy.getId(), accountId, couponPolicy.getUsagePeriod())) {
             throw new AlreadyHasCouponWithinSamePolicyException();
         }
-    }
-
-    private void isIssueCouponsEmpty(List<IssueCoupon> issueCoupons) {
-        if (issueCoupons.isEmpty()) {
-            throw new CouponExhaustionException();
-        }
-    }
-
-    private void provideCoupon(List<IssueCoupon> issueCoupons, Account account) {
-        for (IssueCoupon issueCoupon : issueCoupons) {
-            try {
-                issueCouponRepository.provideCouponToAccount(issueCoupon, account);
-                return;
-            } catch (ProvideIssueCouponFailureException ignore) {
-                // ignore
-            }
-        }
-
-        throw new ProvideIssueCouponFailureException();
     }
 
     /**
@@ -195,7 +176,7 @@ public class ProvideCouponService {
 
     private void updateRedisCouponState(String key) {
         if (!couponRedisRepository.hasKey(key)) {
-            Set<UUID> couponCodes = issueCouponRepository.lookupUnclaimedCouponCodes();
+            Set<UUID> couponCodes = issueCouponRepository.lookupUnclaimedCouponCodes(Long.parseLong(key));
             couponRedisRepository.bulkInsertCouponCode(couponCodes, key);
         }
     }

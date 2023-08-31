@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import store.cookshoong.www.cookshoongbackend.coupon.exception.IssueCouponRequestValidationException;
 import store.cookshoong.www.cookshoongbackend.coupon.model.request.UpdateProvideCouponRequestDto;
 import store.cookshoong.www.cookshoongbackend.coupon.service.ProvideCouponService;
+import store.cookshoong.www.cookshoongbackend.lock.LockProcessor;
 
 /**
  * 쿠폰 발급 RestController.
@@ -26,6 +27,7 @@ import store.cookshoong.www.cookshoongbackend.coupon.service.ProvideCouponServic
 public class ProvideCouponController {
     private final ProvideCouponService provideCouponService;
     private final RabbitTemplate rabbitTemplate;
+    private final LockProcessor lockProcessor;
 
     /**
      * 사용자에게 쿠폰을 발급하는 메서드.
@@ -42,7 +44,9 @@ public class ProvideCouponController {
             throw new IssueCouponRequestValidationException(bindingResult);
         }
 
-        provideCouponService.provideCouponToAccountByApi(updateProvideCouponRequestDto);
+        lockProcessor.lock(updateProvideCouponRequestDto.getCouponPolicyId().toString(), ignore ->
+            provideCouponService.provideCouponToAccountByApi(updateProvideCouponRequestDto));
+
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .build();

@@ -53,5 +53,5 @@ public interface IssueCouponRepositoryCustom {
      *
      * @return the set
      */
-    Set<UUID> lookupUnclaimedCouponCodes();
+    Set<UUID> lookupUnclaimedCouponCodes(Long couponPolicyId);
 }

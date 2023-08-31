@@ -219,11 +219,11 @@ public class IssueCouponRepositoryImpl implements IssueCouponRepositoryCustom {
      * {@inheritDoc}
      */
     @Override
-    public Set<UUID> lookupUnclaimedCouponCodes() {
+    public Set<UUID> lookupUnclaimedCouponCodes(Long couponPolicyId) {
         return new HashSet<>(queryFactory
             .select(issueCoupon.code)
             .from(issueCoupon)
-            .where(issueCoupon.account.isNull())
+            .where(issueCoupon.couponPolicy.id.eq(couponPolicyId), issueCoupon.account.isNull())
             .fetch());
     }
 }
