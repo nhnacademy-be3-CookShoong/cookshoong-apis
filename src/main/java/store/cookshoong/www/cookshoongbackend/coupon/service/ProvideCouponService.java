@@ -2,14 +2,12 @@ package store.cookshoong.www.cookshoongbackend.coupon.service;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.BoundSetOperations;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import store.cookshoong.www.cookshoongbackend.account.entity.Account;
 import store.cookshoong.www.cookshoongbackend.account.repository.AccountRepository;
@@ -58,7 +56,6 @@ public class ProvideCouponService {
      *
      * @param updateProvideCouponRequestDto the offer coupon request
      */
-    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public void provideCouponToAccountByApi(UpdateProvideCouponRequestDto updateProvideCouponRequestDto) {
         Long accountId = updateProvideCouponRequestDto.getAccountId();
 

@@ -74,7 +74,6 @@ public class PaymentService {
      *
      * @param createPaymentDto 결제 성공한 정보 Dto
      */
-    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public void createPayment(CreatePaymentDto createPaymentDto) {
         Order order = orderRepository.findById(createPaymentDto.getOrderId())
                 .orElseThrow(OrderNotFoundException::new);
